@@ -1,0 +1,50 @@
+/*
+ * KIELER - Kiel Integrated Environment for Layout Eclipse RichClient
+ *
+ * http://rtsys.informatik.uni-kiel.de/kieler
+ * 
+ * Copyright 2020 by
+ * + Kiel University
+ *   + Department of Computer Science
+ *     + Real-Time and Embedded Systems Group
+ * 
+ * This code is provided under the terms of the Eclipse Public License 2.0 (EPL-2.0).
+ */
+grammar de.cau.cs.kieler.spviz.spviz.SPViz with org.eclipse.xtext.common.Terminals
+
+generate sPViz "http://www.cau.de/cs/kieler/spviz/spviz/SPViz"
+
+import "http://www.cau.de/cs/kieler/spviz/spvizmodel/SPVizModel" as spvizmodel
+
+SPViz returns SPViz:
+    'use' importedNamespace=QualifiedName // TODO: check how importing of a different model works
+    'SPViz' name=ID '{'
+        views += View*
+    '}'
+;
+
+View returns View:
+    name=ID '{'
+        shownElements+=ShownElement*
+        shownConnections+=ShownConnection*
+    '}'
+;
+
+ShownElement returns ShownElement:
+    'show' shownElement=[spvizmodel::Artifact|QualifiedName] // TODO: this should be an artifact defined in the imported model
+    (
+        'in' containedIn=[spvizmodel::Artifact|QualifiedName] // TODO: this should be an artifact defined in the imported model
+    )?
+;
+
+ShownConnection returns ShownConnection:
+    'connect' shownConnection=[spvizmodel::Connection|QualifiedName] // TODO: this should be a connection defined in the imported model
+    (
+        'via' via=[spvizmodel::Artifact|QualifiedName] // TODO: this should be an artifact defined in the imported model
+    )?
+;
+
+
+QualifiedName:
+    ID ('.' ID)*
+;

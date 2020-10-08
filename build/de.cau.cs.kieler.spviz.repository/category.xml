@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+
+   <description name="OpenKieler (Nightly Builds)" url="http://rtsys.informatik.uni-kiel.de/~kieler/updatesite/nightly-openkieler/">
+      Update site for the OpenKieler nightly builds.
+   </description>
+
+   <!-- CATEGORY DEFINITIONS -->
+   <category-def name="spviz" label="Software Project Visualization">
+      <description>
+         Kieler components for the generation of diagrams for software projects and architectures.
+      </description>
+   </category-def>
+
+   <!-- SPViz -->
+   <feature url="features/de.cau.cs.kieler.spviz_0.1.0.qualifier.jar" id="de.cau.cs.kieler.spviz.feature" version="0.1.0.qualifier">
+      <category name="spviz"/>
+   </feature>
+
+</site>

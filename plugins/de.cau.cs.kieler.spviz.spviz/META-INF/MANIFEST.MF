@@ -1,0 +1,31 @@
+Manifest-Version: 1.0
+Automatic-Module-Name: de.cau.cs.kieler.spviz.spviz
+Bundle-ManifestVersion: 2
+Bundle-Name: de.cau.cs.kieler.spviz.spviz
+Bundle-Vendor: Kiel University
+Bundle-Version: 0.1.0.qualifier
+Bundle-SymbolicName: de.cau.cs.kieler.spviz.spviz; singleton:=true
+Bundle-ActivationPolicy: lazy
+Require-Bundle: de.cau.cs.kieler.spviz.spvizmodel,
+ org.antlr.runtime;bundle-version="[3.2.0,3.2.1)",
+ org.eclipse.emf.common,
+ org.eclipse.equinox.common;bundle-version="3.5.0",
+ org.eclipse.emf.ecore,
+ org.eclipse.xtend.lib;bundle-version="2.14.0",
+ org.eclipse.xtext,
+ org.eclipse.xtext.xbase,
+ org.eclipse.xtext.xbase.lib;bundle-version="2.14.0",
+ org.eclipse.xtext.util
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Export-Package: de.cau.cs.kieler.spviz.spviz.services,
+ de.cau.cs.kieler.spviz.spviz.parser.antlr,
+ de.cau.cs.kieler.spviz.spviz.scoping,
+ de.cau.cs.kieler.spviz.spviz.generator,
+ de.cau.cs.kieler.spviz.spviz.parser.antlr.internal,
+ de.cau.cs.kieler.spviz.spviz.serializer,
+ de.cau.cs.kieler.spviz.spviz.validation,
+ de.cau.cs.kieler.spviz.spviz,
+ de.cau.cs.kieler.spviz.spviz.sPViz,
+ de.cau.cs.kieler.spviz.spviz.sPViz.util,
+ de.cau.cs.kieler.spviz.spviz.sPViz.impl
+Import-Package: org.apache.log4j
