@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="sPViz" nsURI="http://www.cau.de/cs/kieler/spviz/spviz/SPViz"
+    nsPrefix="sPViz">
+  <eClassifiers xsi:type="ecore:EClass" name="SPViz">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="importedNamespace" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="views" upperBound="-1"
+        eType="#//View" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="View">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="shownElements" upperBound="-1"
+        eType="#//ShownElement" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="shownConnections" upperBound="-1"
+        eType="#//ShownConnection" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ShownElement">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="shownElement" eType="ecore:EClass platform:/resource/de.cau.cs.kieler.spviz.spvizmodel/model/generated/SPVizModel.ecore#//Artifact"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="containedIn" eType="ecore:EClass platform:/resource/de.cau.cs.kieler.spviz.spvizmodel/model/generated/SPVizModel.ecore#//Artifact"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ShownConnection">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="shownConnection" eType="ecore:EClass platform:/resource/de.cau.cs.kieler.spviz.spvizmodel/model/generated/SPVizModel.ecore#//Connection"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="via" eType="ecore:EClass platform:/resource/de.cau.cs.kieler.spviz.spvizmodel/model/generated/SPVizModel.ecore#//Artifact"/>
+  </eClassifiers>
+</ecore:EPackage>
