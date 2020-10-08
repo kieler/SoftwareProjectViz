@@ -16,5 +16,8 @@
    <feature url="features/de.cau.cs.kieler.spviz_0.1.0.qualifier.jar" id="de.cau.cs.kieler.spviz.feature" version="0.1.0.qualifier">
       <category name="spviz"/>
    </feature>
+   <feature url="features/de.cau.cs.kieler.spviz.ui_0.1.0.qualifier.jar" id="de.cau.cs.kieler.spviz.ui.feature" version="0.1.0.qualifier">
+      <category name="spviz"/>
+   </feature>
 
 </site>

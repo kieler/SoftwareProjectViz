@@ -40,6 +40,12 @@
         <module>../plugins/de.cau.cs.kieler.spviz.spvizmodel.ide</module>
         <module>../plugins/de.cau.cs.kieler.spviz.spvizmodel.ui</module>
         <module>../features/de.cau.cs.kieler.spviz.feature</module>
+        <module>../features/de.cau.cs.kieler.spviz.ui.feature</module>
+        <module>../tests/de.cau.cs.kieler.spviz.spviz.tests</module>
+        <!-- Comment back in if we get UI tests -->
+        <!-- <module>../tests/de.cau.cs.kieler.spviz.spviz.ui.tests</module> -->
+        <module>../tests/de.cau.cs.kieler.spviz.spvizmodel.tests</module>
+        <!-- <module>../tests/de.cau.cs.kieler.spviz.spvizmodel.ui.tests</module> -->
         <module>de.cau.cs.kieler.spviz.repository</module>
       </modules>
     </profile>
@@ -90,7 +96,7 @@
             <environment>
               <os>win32</os>
               <ws>win32</ws>
-              <arch>x86</arch>
+              <arch>x86_64</arch>
             </environment>
             <environment>
               <os>linux</os>
