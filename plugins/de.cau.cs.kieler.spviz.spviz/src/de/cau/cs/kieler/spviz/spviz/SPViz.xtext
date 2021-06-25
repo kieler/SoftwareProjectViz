@@ -17,34 +17,34 @@ generate sPViz "http://www.cau.de/cs/kieler/spviz/spviz/SPViz"
 import "http://www.cau.de/cs/kieler/spviz/spvizmodel/SPVizModel" as spvizmodel
 
 SPViz returns SPViz:
-    'use' importedNamespace=QualifiedName // TODO: check how importing of a different model works
-    'SPViz' name=ID '{'
-        views += View*
-    '}'
+	'package' package=QualifiedName
+	'use' importedNamespace=QualifiedName
+	'SPViz' name=ID '{'
+		views += View*
+	'}'
 ;
 
 View returns View:
-    name=ID '{'
-        shownElements+=ShownElement*
-        shownConnections+=ShownConnection*
-    '}'
+	name=ID '{'
+		shownElements+=ShownElement*
+		shownConnections+=ShownConnection*
+	'}'
 ;
 
 ShownElement returns ShownElement:
-    'show' shownElement=[spvizmodel::Artifact|QualifiedName] // TODO: this should be an artifact defined in the imported model
-    (
-        'in' containedIn=[spvizmodel::Artifact|QualifiedName] // TODO: this should be an artifact defined in the imported model
-    )?
+	'show' shownElement=[spvizmodel::Artifact|QualifiedName]
+	(
+		'in' containedIn=[spvizmodel::Artifact|QualifiedName]
+	)?
 ;
 
 ShownConnection returns ShownConnection:
-    'connect' shownConnection=[spvizmodel::Connection|QualifiedName] // TODO: this should be a connection defined in the imported model
-    (
-        'via' via=[spvizmodel::Artifact|QualifiedName] // TODO: this should be an artifact defined in the imported model
-    )?
+	'connect' shownConnection=[spvizmodel::Connection|QualifiedName]
+	(
+		'via' via=[spvizmodel::Artifact|QualifiedName]
+	)?
 ;
 
-
 QualifiedName:
-    ID ('.' ID)*
+	ID ('.' ID)*
 ;
