@@ -76,16 +76,39 @@ ruleSPViz returns [EObject current=null]
 	leaveRule();
 }:
 	(
-		otherlv_0='use'
+		otherlv_0='package'
 		{
-			newLeafNode(otherlv_0, grammarAccess.getSPVizAccess().getUseKeyword_0());
+			newLeafNode(otherlv_0, grammarAccess.getSPVizAccess().getPackageKeyword_0());
 		}
 		(
 			(
 				{
-					newCompositeNode(grammarAccess.getSPVizAccess().getImportedNamespaceQualifiedNameParserRuleCall_1_0());
+					newCompositeNode(grammarAccess.getSPVizAccess().getPackageQualifiedNameParserRuleCall_1_0());
 				}
-				lv_importedNamespace_1_0=ruleQualifiedName
+				lv_package_1_0=ruleQualifiedName
+				{
+					if ($current==null) {
+						$current = createModelElementForParent(grammarAccess.getSPVizRule());
+					}
+					set(
+						$current,
+						"package",
+						lv_package_1_0,
+						"de.cau.cs.kieler.spviz.spviz.SPViz.QualifiedName");
+					afterParserOrEnumRuleCall();
+				}
+			)
+		)
+		otherlv_2='use'
+		{
+			newLeafNode(otherlv_2, grammarAccess.getSPVizAccess().getUseKeyword_2());
+		}
+		(
+			(
+				{
+					newCompositeNode(grammarAccess.getSPVizAccess().getImportedNamespaceQualifiedNameParserRuleCall_3_0());
+				}
+				lv_importedNamespace_3_0=ruleQualifiedName
 				{
 					if ($current==null) {
 						$current = createModelElementForParent(grammarAccess.getSPVizRule());
@@ -93,21 +116,21 @@ ruleSPViz returns [EObject current=null]
 					set(
 						$current,
 						"importedNamespace",
-						lv_importedNamespace_1_0,
+						lv_importedNamespace_3_0,
 						"de.cau.cs.kieler.spviz.spviz.SPViz.QualifiedName");
 					afterParserOrEnumRuleCall();
 				}
 			)
 		)
-		otherlv_2='SPViz'
+		otherlv_4='SPViz'
 		{
-			newLeafNode(otherlv_2, grammarAccess.getSPVizAccess().getSPVizKeyword_2());
+			newLeafNode(otherlv_4, grammarAccess.getSPVizAccess().getSPVizKeyword_4());
 		}
 		(
 			(
-				lv_name_3_0=RULE_ID
+				lv_name_5_0=RULE_ID
 				{
-					newLeafNode(lv_name_3_0, grammarAccess.getSPVizAccess().getNameIDTerminalRuleCall_3_0());
+					newLeafNode(lv_name_5_0, grammarAccess.getSPVizAccess().getNameIDTerminalRuleCall_5_0());
 				}
 				{
 					if ($current==null) {
@@ -116,21 +139,21 @@ ruleSPViz returns [EObject current=null]
 					setWithLastConsumed(
 						$current,
 						"name",
-						lv_name_3_0,
+						lv_name_5_0,
 						"org.eclipse.xtext.common.Terminals.ID");
 				}
 			)
 		)
-		otherlv_4='{'
+		otherlv_6='{'
 		{
-			newLeafNode(otherlv_4, grammarAccess.getSPVizAccess().getLeftCurlyBracketKeyword_4());
+			newLeafNode(otherlv_6, grammarAccess.getSPVizAccess().getLeftCurlyBracketKeyword_6());
 		}
 		(
 			(
 				{
-					newCompositeNode(grammarAccess.getSPVizAccess().getViewsViewParserRuleCall_5_0());
+					newCompositeNode(grammarAccess.getSPVizAccess().getViewsViewParserRuleCall_7_0());
 				}
-				lv_views_5_0=ruleView
+				lv_views_7_0=ruleView
 				{
 					if ($current==null) {
 						$current = createModelElementForParent(grammarAccess.getSPVizRule());
@@ -138,15 +161,15 @@ ruleSPViz returns [EObject current=null]
 					add(
 						$current,
 						"views",
-						lv_views_5_0,
+						lv_views_7_0,
 						"de.cau.cs.kieler.spviz.spviz.SPViz.View");
 					afterParserOrEnumRuleCall();
 				}
 			)
 		)*
-		otherlv_6='}'
+		otherlv_8='}'
 		{
-			newLeafNode(otherlv_6, grammarAccess.getSPVizAccess().getRightCurlyBracketKeyword_6());
+			newLeafNode(otherlv_8, grammarAccess.getSPVizAccess().getRightCurlyBracketKeyword_8());
 		}
 	)
 ;

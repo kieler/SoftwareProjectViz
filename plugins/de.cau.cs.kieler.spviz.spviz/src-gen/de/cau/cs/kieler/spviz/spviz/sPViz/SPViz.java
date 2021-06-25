@@ -16,6 +16,7 @@ import org.eclipse.emf.ecore.EObject;
  * The following features are supported:
  * </p>
  * <ul>
+ *   <li>{@link de.cau.cs.kieler.spviz.spviz.sPViz.SPViz#getPackage <em>Package</em>}</li>
  *   <li>{@link de.cau.cs.kieler.spviz.spviz.sPViz.SPViz#getImportedNamespace <em>Imported Namespace</em>}</li>
  *   <li>{@link de.cau.cs.kieler.spviz.spviz.sPViz.SPViz#getName <em>Name</em>}</li>
  *   <li>{@link de.cau.cs.kieler.spviz.spviz.sPViz.SPViz#getViews <em>Views</em>}</li>
@@ -27,6 +28,28 @@ import org.eclipse.emf.ecore.EObject;
  */
 public interface SPViz extends EObject
 {
+  /**
+   * Returns the value of the '<em><b>Package</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the value of the '<em>Package</em>' attribute.
+   * @see #setPackage(String)
+   * @see de.cau.cs.kieler.spviz.spviz.sPViz.SPVizPackage#getSPViz_Package()
+   * @model
+   * @generated
+   */
+  String getPackage();
+
+  /**
+   * Sets the value of the '{@link de.cau.cs.kieler.spviz.spviz.sPViz.SPViz#getPackage <em>Package</em>}' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @param value the new value of the '<em>Package</em>' attribute.
+   * @see #getPackage()
+   * @generated
+   */
+  void setPackage(String value);
+
   /**
    * Returns the value of the '<em><b>Imported Namespace</b></em>' attribute.
    * <!-- begin-user-doc -->

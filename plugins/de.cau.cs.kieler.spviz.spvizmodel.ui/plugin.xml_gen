@@ -4,48 +4,48 @@
 	<extension
 		point="org.eclipse.ui.editors">
 		<editor
-			class="de.cau.cs.kieler.spviz.spviz.ui.SPVizExecutableExtensionFactory:org.eclipse.xtext.ui.editor.XtextEditor"
+			class="de.cau.cs.kieler.spviz.spvizmodel.ui.SPVizModelExecutableExtensionFactory:org.eclipse.xtext.ui.editor.XtextEditor"
 			contributorClass="org.eclipse.ui.editors.text.TextEditorActionContributor"
 			default="true"
-			extensions="spviz"
-			id="de.cau.cs.kieler.spviz.spviz.SPViz"
-			name="SPViz Editor">
+			extensions="spvizmodel"
+			id="de.cau.cs.kieler.spviz.spvizmodel.SPVizModel"
+			name="SPVizModel Editor">
 		</editor>
 	</extension>
 	<extension
 		point="org.eclipse.ui.handlers">
 		<handler
-			class="de.cau.cs.kieler.spviz.spviz.ui.SPVizExecutableExtensionFactory:org.eclipse.xtext.ui.editor.hyperlinking.OpenDeclarationHandler"
+			class="de.cau.cs.kieler.spviz.spvizmodel.ui.SPVizModelExecutableExtensionFactory:org.eclipse.xtext.ui.editor.hyperlinking.OpenDeclarationHandler"
 			commandId="org.eclipse.xtext.ui.editor.hyperlinking.OpenDeclaration">
 			<activeWhen>
 				<reference
-					definitionId="de.cau.cs.kieler.spviz.spviz.SPViz.Editor.opened">
+					definitionId="de.cau.cs.kieler.spviz.spvizmodel.SPVizModel.Editor.opened">
 				</reference>
 			</activeWhen>
 		</handler>
 		<handler
-			class="de.cau.cs.kieler.spviz.spviz.ui.SPVizExecutableExtensionFactory:org.eclipse.xtext.ui.editor.handler.ValidateActionHandler"
-			commandId="de.cau.cs.kieler.spviz.spviz.SPViz.validate">
+			class="de.cau.cs.kieler.spviz.spvizmodel.ui.SPVizModelExecutableExtensionFactory:org.eclipse.xtext.ui.editor.handler.ValidateActionHandler"
+			commandId="de.cau.cs.kieler.spviz.spvizmodel.SPVizModel.validate">
 			<activeWhen>
 				<reference
-					definitionId="de.cau.cs.kieler.spviz.spviz.SPViz.Editor.opened">
+					definitionId="de.cau.cs.kieler.spviz.spvizmodel.SPVizModel.Editor.opened">
 				</reference>
 			</activeWhen>
 		</handler>
 		<!-- copy qualified name -->
 		<handler
-			class="de.cau.cs.kieler.spviz.spviz.ui.SPVizExecutableExtensionFactory:org.eclipse.xtext.ui.editor.copyqualifiedname.EditorCopyQualifiedNameHandler"
+			class="de.cau.cs.kieler.spviz.spvizmodel.ui.SPVizModelExecutableExtensionFactory:org.eclipse.xtext.ui.editor.copyqualifiedname.EditorCopyQualifiedNameHandler"
 			commandId="org.eclipse.xtext.ui.editor.copyqualifiedname.EditorCopyQualifiedName">
 			<activeWhen>
-				<reference definitionId="de.cau.cs.kieler.spviz.spviz.SPViz.Editor.opened" />
+				<reference definitionId="de.cau.cs.kieler.spviz.spvizmodel.SPVizModel.Editor.opened" />
 			</activeWhen>
 		</handler>
 		<handler
-			class="de.cau.cs.kieler.spviz.spviz.ui.SPVizExecutableExtensionFactory:org.eclipse.xtext.ui.editor.copyqualifiedname.OutlineCopyQualifiedNameHandler"
+			class="de.cau.cs.kieler.spviz.spvizmodel.ui.SPVizModelExecutableExtensionFactory:org.eclipse.xtext.ui.editor.copyqualifiedname.OutlineCopyQualifiedNameHandler"
 			commandId="org.eclipse.xtext.ui.editor.copyqualifiedname.OutlineCopyQualifiedName">
 			<activeWhen>
 				<and>
-					<reference definitionId="de.cau.cs.kieler.spviz.spviz.SPViz.XtextEditor.opened" />
+					<reference definitionId="de.cau.cs.kieler.spviz.spvizmodel.SPVizModel.XtextEditor.opened" />
 					<iterate>
 						<adapt type="org.eclipse.xtext.ui.editor.outline.IOutlineNode" />
 					</iterate>
@@ -54,22 +54,22 @@
 		</handler>
 	</extension>
 	<extension point="org.eclipse.core.expressions.definitions">
-		<definition id="de.cau.cs.kieler.spviz.spviz.SPViz.Editor.opened">
+		<definition id="de.cau.cs.kieler.spviz.spvizmodel.SPVizModel.Editor.opened">
 			<and>
 				<reference definitionId="isActiveEditorAnInstanceOfXtextEditor"/>
 				<with variable="activeEditor">
 					<test property="org.eclipse.xtext.ui.editor.XtextEditor.languageName"
-						value="de.cau.cs.kieler.spviz.spviz.SPViz"
+						value="de.cau.cs.kieler.spviz.spvizmodel.SPVizModel"
 						forcePluginActivation="true"/>
 				</with>
 			</and>
 		</definition>
-		<definition id="de.cau.cs.kieler.spviz.spviz.SPViz.XtextEditor.opened">
+		<definition id="de.cau.cs.kieler.spviz.spvizmodel.SPVizModel.XtextEditor.opened">
 			<and>
 				<reference definitionId="isXtextEditorActive"/>
 				<with variable="activeEditor">
 					<test property="org.eclipse.xtext.ui.editor.XtextEditor.languageName"
-						value="de.cau.cs.kieler.spviz.spviz.SPViz"
+						value="de.cau.cs.kieler.spviz.spvizmodel.SPVizModel"
 						forcePluginActivation="true"/>
 				</with>
 			</and>
@@ -78,33 +78,33 @@
 	<extension
 			point="org.eclipse.ui.preferencePages">
 		<page
-			class="de.cau.cs.kieler.spviz.spviz.ui.SPVizExecutableExtensionFactory:org.eclipse.xtext.ui.editor.preferences.LanguageRootPreferencePage"
-			id="de.cau.cs.kieler.spviz.spviz.SPViz"
-			name="SPViz">
-			<keywordReference id="de.cau.cs.kieler.spviz.spviz.ui.keyword_SPViz"/>
+			class="de.cau.cs.kieler.spviz.spvizmodel.ui.SPVizModelExecutableExtensionFactory:org.eclipse.xtext.ui.editor.preferences.LanguageRootPreferencePage"
+			id="de.cau.cs.kieler.spviz.spvizmodel.SPVizModel"
+			name="SPVizModel">
+			<keywordReference id="de.cau.cs.kieler.spviz.spvizmodel.ui.keyword_SPVizModel"/>
 		</page>
 		<page
-			category="de.cau.cs.kieler.spviz.spviz.SPViz"
-			class="de.cau.cs.kieler.spviz.spviz.ui.SPVizExecutableExtensionFactory:org.eclipse.xtext.ui.editor.syntaxcoloring.SyntaxColoringPreferencePage"
-			id="de.cau.cs.kieler.spviz.spviz.SPViz.coloring"
+			category="de.cau.cs.kieler.spviz.spvizmodel.SPVizModel"
+			class="de.cau.cs.kieler.spviz.spvizmodel.ui.SPVizModelExecutableExtensionFactory:org.eclipse.xtext.ui.editor.syntaxcoloring.SyntaxColoringPreferencePage"
+			id="de.cau.cs.kieler.spviz.spvizmodel.SPVizModel.coloring"
 			name="Syntax Coloring">
-			<keywordReference id="de.cau.cs.kieler.spviz.spviz.ui.keyword_SPViz"/>
+			<keywordReference id="de.cau.cs.kieler.spviz.spvizmodel.ui.keyword_SPVizModel"/>
 		</page>
 		<page
-			category="de.cau.cs.kieler.spviz.spviz.SPViz"
-			class="de.cau.cs.kieler.spviz.spviz.ui.SPVizExecutableExtensionFactory:org.eclipse.xtext.ui.editor.templates.XtextTemplatePreferencePage"
-			id="de.cau.cs.kieler.spviz.spviz.SPViz.templates"
+			category="de.cau.cs.kieler.spviz.spvizmodel.SPVizModel"
+			class="de.cau.cs.kieler.spviz.spvizmodel.ui.SPVizModelExecutableExtensionFactory:org.eclipse.xtext.ui.editor.templates.XtextTemplatePreferencePage"
+			id="de.cau.cs.kieler.spviz.spvizmodel.SPVizModel.templates"
 			name="Templates">
-			<keywordReference id="de.cau.cs.kieler.spviz.spviz.ui.keyword_SPViz"/>
+			<keywordReference id="de.cau.cs.kieler.spviz.spvizmodel.ui.keyword_SPVizModel"/>
 		</page>
 	</extension>
 	<extension
 			point="org.eclipse.ui.propertyPages">
 		<page
-			class="de.cau.cs.kieler.spviz.spviz.ui.SPVizExecutableExtensionFactory:org.eclipse.xtext.ui.editor.preferences.LanguageRootPreferencePage"
-			id="de.cau.cs.kieler.spviz.spviz.SPViz"
-			name="SPViz">
-			<keywordReference id="de.cau.cs.kieler.spviz.spviz.ui.keyword_SPViz"/>
+			class="de.cau.cs.kieler.spviz.spvizmodel.ui.SPVizModelExecutableExtensionFactory:org.eclipse.xtext.ui.editor.preferences.LanguageRootPreferencePage"
+			id="de.cau.cs.kieler.spviz.spvizmodel.SPVizModel"
+			name="SPVizModel">
+			<keywordReference id="de.cau.cs.kieler.spviz.spvizmodel.ui.keyword_SPVizModel"/>
 			<enabledWhen>
 				<adapt type="org.eclipse.core.resources.IProject"/>
 			</enabledWhen>
@@ -114,14 +114,14 @@
 	<extension
 		point="org.eclipse.ui.keywords">
 		<keyword
-			id="de.cau.cs.kieler.spviz.spviz.ui.keyword_SPViz"
-			label="SPViz"/>
+			id="de.cau.cs.kieler.spviz.spvizmodel.ui.keyword_SPVizModel"
+			label="SPVizModel"/>
 	</extension>
 	<extension
 		point="org.eclipse.ui.commands">
 		<command
 			description="Trigger expensive validation"
-			id="de.cau.cs.kieler.spviz.spviz.SPViz.validate"
+			id="de.cau.cs.kieler.spviz.spvizmodel.SPVizModel.validate"
 			name="Validate">
 		</command>
 		<!-- copy qualified name -->
@@ -142,12 +142,12 @@
 		<menuContribution
 			locationURI="popup:#TextEditorContext?after=group.edit">
 			<command
-				commandId="de.cau.cs.kieler.spviz.spviz.SPViz.validate"
+				commandId="de.cau.cs.kieler.spviz.spvizmodel.SPVizModel.validate"
 				style="push"
 				tooltip="Trigger expensive validation">
 				<visibleWhen checkEnabled="false">
 					<reference
-						definitionId="de.cau.cs.kieler.spviz.spviz.SPViz.Editor.opened">
+						definitionId="de.cau.cs.kieler.spviz.spvizmodel.SPVizModel.Editor.opened">
 					</reference>
 				</visibleWhen>
 			</command>
@@ -157,7 +157,7 @@
 			<command commandId="org.eclipse.xtext.ui.editor.copyqualifiedname.EditorCopyQualifiedName"
 				style="push" tooltip="Copy Qualified Name">
 				<visibleWhen checkEnabled="false">
-					<reference definitionId="de.cau.cs.kieler.spviz.spviz.SPViz.Editor.opened" />
+					<reference definitionId="de.cau.cs.kieler.spviz.spvizmodel.SPVizModel.Editor.opened" />
 				</visibleWhen>
 			</command>
 		</menuContribution>
@@ -165,7 +165,7 @@
 			<command commandId="org.eclipse.xtext.ui.editor.copyqualifiedname.EditorCopyQualifiedName"
 				style="push" tooltip="Copy Qualified Name">
 				<visibleWhen checkEnabled="false">
-					<reference definitionId="de.cau.cs.kieler.spviz.spviz.SPViz.Editor.opened" />
+					<reference definitionId="de.cau.cs.kieler.spviz.spvizmodel.SPVizModel.Editor.opened" />
 				</visibleWhen>
 			</command>
 		</menuContribution>
@@ -174,7 +174,7 @@
 				style="push" tooltip="Copy Qualified Name">
 				<visibleWhen checkEnabled="false">
 					<and>
-						<reference definitionId="de.cau.cs.kieler.spviz.spviz.SPViz.XtextEditor.opened" />
+						<reference definitionId="de.cau.cs.kieler.spviz.spvizmodel.SPVizModel.XtextEditor.opened" />
 						<iterate>
 							<adapt type="org.eclipse.xtext.ui.editor.outline.IOutlineNode" />
 						</iterate>
@@ -187,7 +187,7 @@
 		<menuContribution locationURI="popup:#TextEditorContext?endof=group.find">
 			<command commandId="org.eclipse.xtext.ui.editor.FindReferences">
 				<visibleWhen checkEnabled="false">
-					<reference definitionId="de.cau.cs.kieler.spviz.spviz.SPViz.Editor.opened">
+					<reference definitionId="de.cau.cs.kieler.spviz.spvizmodel.SPVizModel.Editor.opened">
 					</reference>
 				</visibleWhen>
 			</command>
@@ -195,11 +195,11 @@
 	</extension>
 	<extension point="org.eclipse.ui.handlers">
 		<handler
-			class="de.cau.cs.kieler.spviz.spviz.ui.SPVizExecutableExtensionFactory:org.eclipse.xtext.ui.editor.findrefs.FindReferencesHandler"
+			class="de.cau.cs.kieler.spviz.spvizmodel.ui.SPVizModelExecutableExtensionFactory:org.eclipse.xtext.ui.editor.findrefs.FindReferencesHandler"
 			commandId="org.eclipse.xtext.ui.editor.FindReferences">
 			<activeWhen>
 				<reference
-					definitionId="de.cau.cs.kieler.spviz.spviz.SPViz.Editor.opened">
+					definitionId="de.cau.cs.kieler.spviz.spvizmodel.SPVizModel.Editor.opened">
 				</reference>
 			</activeWhen>
 		</handler>
@@ -207,9 +207,9 @@
 	<extension point="org.eclipse.core.contenttype.contentTypes">
 		<content-type
 			base-type="org.eclipse.core.runtime.text"
-			file-extensions="spviz"
-			id="de.cau.cs.kieler.spviz.spviz.SPViz.contenttype"
-			name="SPViz File"
+			file-extensions="spvizmodel"
+			id="de.cau.cs.kieler.spviz.spvizmodel.SPVizModel.contenttype"
+			name="SPVizModel File"
 			priority="normal">
 		</content-type>
 	</extension>
@@ -217,68 +217,68 @@
 	<extension
 		point="org.eclipse.emf.ecore.extension_parser">
 		<parser
-			class="de.cau.cs.kieler.spviz.spviz.ui.SPVizExecutableExtensionFactory:org.eclipse.xtext.resource.IResourceFactory"
-			type="spviz">
+			class="de.cau.cs.kieler.spviz.spvizmodel.ui.SPVizModelExecutableExtensionFactory:org.eclipse.xtext.resource.IResourceFactory"
+			type="spvizmodel">
 		</parser>
 	</extension>
 	<extension point="org.eclipse.xtext.extension_resourceServiceProvider">
 		<resourceServiceProvider
-			class="de.cau.cs.kieler.spviz.spviz.ui.SPVizExecutableExtensionFactory:org.eclipse.xtext.ui.resource.IResourceUIServiceProvider"
-			uriExtension="spviz">
+			class="de.cau.cs.kieler.spviz.spvizmodel.ui.SPVizModelExecutableExtensionFactory:org.eclipse.xtext.ui.resource.IResourceUIServiceProvider"
+			uriExtension="spvizmodel">
 		</resourceServiceProvider>
 	</extension>
-	<!-- marker definitions for de.cau.cs.kieler.spviz.spviz.SPViz -->
+	<!-- marker definitions for de.cau.cs.kieler.spviz.spvizmodel.SPVizModel -->
 	<extension
-			id="spviz.check.fast"
-			name="SPViz Problem"
+			id="spvizmodel.check.fast"
+			name="SPVizModel Problem"
 			point="org.eclipse.core.resources.markers">
 		<super type="org.eclipse.xtext.ui.check.fast"/>
 		<persistent value="true"/>
 	</extension>
 	<extension
-			id="spviz.check.normal"
-			name="SPViz Problem"
+			id="spvizmodel.check.normal"
+			name="SPVizModel Problem"
 			point="org.eclipse.core.resources.markers">
 		<super type="org.eclipse.xtext.ui.check.normal"/>
 		<persistent value="true"/>
 	</extension>
 	<extension
-			id="spviz.check.expensive"
-			name="SPViz Problem"
+			id="spvizmodel.check.expensive"
+			name="SPVizModel Problem"
 			point="org.eclipse.core.resources.markers">
 		<super type="org.eclipse.xtext.ui.check.expensive"/>
 		<persistent value="true"/>
 	</extension>
 	<extension point="org.eclipse.ui.preferencePages">
 		<page
-			category="de.cau.cs.kieler.spviz.spviz.SPViz"
-			class="de.cau.cs.kieler.spviz.spviz.ui.SPVizExecutableExtensionFactory:org.eclipse.xtext.ui.validation.ValidatorPreferencePage"
-			id="de.cau.cs.kieler.spviz.spviz.SPViz.validator.preferencePage"
+			category="de.cau.cs.kieler.spviz.spvizmodel.SPVizModel"
+			class="de.cau.cs.kieler.spviz.spvizmodel.ui.SPVizModelExecutableExtensionFactory:org.eclipse.xtext.ui.validation.ValidatorPreferencePage"
+			id="de.cau.cs.kieler.spviz.spvizmodel.SPVizModel.validator.preferencePage"
 			name="Errors/Warnings">
-			<keywordReference id="de.cau.cs.kieler.spviz.spviz.ui.keyword_SPViz"/>
+			<keywordReference id="de.cau.cs.kieler.spviz.spvizmodel.ui.keyword_SPVizModel"/>
 		</page>
 	</extension>
 	<extension point="org.eclipse.xtext.builder.participant">
 		<participant
-			class="de.cau.cs.kieler.spviz.spviz.ui.SPVizExecutableExtensionFactory:org.eclipse.xtext.builder.IXtextBuilderParticipant"
-			fileExtensions="spviz"/>
+			class="de.cau.cs.kieler.spviz.spvizmodel.ui.SPVizModelExecutableExtensionFactory:org.eclipse.xtext.builder.IXtextBuilderParticipant"
+			fileExtensions="spvizmodel"/>
 	</extension>
 	<extension point="org.eclipse.ui.preferencePages">
 		<page
-			category="de.cau.cs.kieler.spviz.spviz.SPViz"
-			class="de.cau.cs.kieler.spviz.spviz.ui.SPVizExecutableExtensionFactory:org.eclipse.xtext.builder.preferences.BuilderPreferencePage"
-			id="de.cau.cs.kieler.spviz.spviz.SPViz.compiler.preferencePage"
+			category="de.cau.cs.kieler.spviz.spvizmodel.SPVizModel"
+			class="de.cau.cs.kieler.spviz.spvizmodel.ui.SPVizModelExecutableExtensionFactory:org.eclipse.xtext.builder.preferences.BuilderPreferencePage"
+			id="de.cau.cs.kieler.spviz.spvizmodel.SPVizModel.compiler.preferencePage"
 			name="Compiler">
-			<keywordReference id="de.cau.cs.kieler.spviz.spviz.ui.keyword_SPViz"/>
+			<keywordReference id="de.cau.cs.kieler.spviz.spvizmodel.ui.keyword_SPVizModel"/>
 		</page>
 	</extension>
 	<extension point="org.eclipse.ui.propertyPages">
 		<page
-			category="de.cau.cs.kieler.spviz.spviz.SPViz"
-			class="de.cau.cs.kieler.spviz.spviz.ui.SPVizExecutableExtensionFactory:org.eclipse.xtext.builder.preferences.BuilderPreferencePage"
-			id="de.cau.cs.kieler.spviz.spviz.SPViz.compiler.propertyPage"
+			category="de.cau.cs.kieler.spviz.spvizmodel.SPVizModel"
+			class="de.cau.cs.kieler.spviz.spvizmodel.ui.SPVizModelExecutableExtensionFactory:org.eclipse.xtext.builder.preferences.BuilderPreferencePage"
+			id="de.cau.cs.kieler.spviz.spvizmodel.SPVizModel.compiler.propertyPage"
 			name="Compiler">
-			<keywordReference id="de.cau.cs.kieler.spviz.spviz.ui.keyword_SPViz"/>
+			<keywordReference id="de.cau.cs.kieler.spviz.spvizmodel.ui.keyword_SPVizModel"/>
 			<enabledWhen>
 				<adapt type="org.eclipse.core.resources.IProject"/>
 			</enabledWhen>
@@ -289,20 +289,20 @@
 		<menuContribution locationURI="popup:#TextEditorContext?after=xtext.ui.openDeclaration">
 			<command
 				commandId="org.eclipse.xtext.ui.OpenGeneratedFileCommand"
-				id="de.cau.cs.kieler.spviz.spviz.SPViz.OpenGeneratedCode"
+				id="de.cau.cs.kieler.spviz.spvizmodel.SPVizModel.OpenGeneratedCode"
 				style="push">
 				<visibleWhen checkEnabled="false">
-					<reference definitionId="de.cau.cs.kieler.spviz.spviz.SPViz.Editor.opened" />
+					<reference definitionId="de.cau.cs.kieler.spviz.spvizmodel.SPVizModel.Editor.opened" />
 				</visibleWhen>
 			</command>
 		</menuContribution>
 	</extension>
 	<extension point="org.eclipse.ui.handlers">
 		<handler
-			class="de.cau.cs.kieler.spviz.spviz.ui.SPVizExecutableExtensionFactory:org.eclipse.xtext.ui.generator.trace.OpenGeneratedFileHandler"
+			class="de.cau.cs.kieler.spviz.spvizmodel.ui.SPVizModelExecutableExtensionFactory:org.eclipse.xtext.ui.generator.trace.OpenGeneratedFileHandler"
 			commandId="org.eclipse.xtext.ui.OpenGeneratedFileCommand">
 			<activeWhen>
-				<reference definitionId="de.cau.cs.kieler.spviz.spviz.SPViz.Editor.opened" />
+				<reference definitionId="de.cau.cs.kieler.spviz.spvizmodel.SPVizModel.Editor.opened" />
 			</activeWhen>
 		</handler>
 	</extension>
@@ -310,11 +310,11 @@
 	<extension
 		point="org.eclipse.ui.handlers">
 		<handler
-			class="de.cau.cs.kieler.spviz.spviz.ui.SPVizExecutableExtensionFactory:org.eclipse.xtext.ui.editor.outline.quickoutline.ShowQuickOutlineActionHandler"
+			class="de.cau.cs.kieler.spviz.spvizmodel.ui.SPVizModelExecutableExtensionFactory:org.eclipse.xtext.ui.editor.outline.quickoutline.ShowQuickOutlineActionHandler"
 			commandId="org.eclipse.xtext.ui.editor.outline.QuickOutline">
 			<activeWhen>
 				<reference
-					definitionId="de.cau.cs.kieler.spviz.spviz.SPViz.Editor.opened">
+					definitionId="de.cau.cs.kieler.spviz.spvizmodel.SPVizModel.Editor.opened">
 				</reference>
 			</activeWhen>
 		</handler>
@@ -334,33 +334,33 @@
 				style="push"
 				tooltip="Open Quick Outline">
 				<visibleWhen checkEnabled="false">
-					<reference definitionId="de.cau.cs.kieler.spviz.spviz.SPViz.Editor.opened"/>
+					<reference definitionId="de.cau.cs.kieler.spviz.spvizmodel.SPVizModel.Editor.opened"/>
 				</visibleWhen>
 			</command>
 		</menuContribution>
 	</extension>
-	<!-- quickfix marker resolution generator for de.cau.cs.kieler.spviz.spviz.SPViz -->
+	<!-- quickfix marker resolution generator for de.cau.cs.kieler.spviz.spvizmodel.SPVizModel -->
 	<extension
 			point="org.eclipse.ui.ide.markerResolution">
 		<markerResolutionGenerator
-			class="de.cau.cs.kieler.spviz.spviz.ui.SPVizExecutableExtensionFactory:org.eclipse.xtext.ui.editor.quickfix.MarkerResolutionGenerator"
-			markerType="de.cau.cs.kieler.spviz.spviz.ui.spviz.check.fast">
+			class="de.cau.cs.kieler.spviz.spvizmodel.ui.SPVizModelExecutableExtensionFactory:org.eclipse.xtext.ui.editor.quickfix.MarkerResolutionGenerator"
+			markerType="de.cau.cs.kieler.spviz.spvizmodel.ui.spvizmodel.check.fast">
 			<attribute
 				name="FIXABLE_KEY"
 				value="true">
 			</attribute>
 		</markerResolutionGenerator>
 		<markerResolutionGenerator
-			class="de.cau.cs.kieler.spviz.spviz.ui.SPVizExecutableExtensionFactory:org.eclipse.xtext.ui.editor.quickfix.MarkerResolutionGenerator"
-			markerType="de.cau.cs.kieler.spviz.spviz.ui.spviz.check.normal">
+			class="de.cau.cs.kieler.spviz.spvizmodel.ui.SPVizModelExecutableExtensionFactory:org.eclipse.xtext.ui.editor.quickfix.MarkerResolutionGenerator"
+			markerType="de.cau.cs.kieler.spviz.spvizmodel.ui.spvizmodel.check.normal">
 			<attribute
 				name="FIXABLE_KEY"
 				value="true">
 			</attribute>
 		</markerResolutionGenerator>
 		<markerResolutionGenerator
-			class="de.cau.cs.kieler.spviz.spviz.ui.SPVizExecutableExtensionFactory:org.eclipse.xtext.ui.editor.quickfix.MarkerResolutionGenerator"
-			markerType="de.cau.cs.kieler.spviz.spviz.ui.spviz.check.expensive">
+			class="de.cau.cs.kieler.spviz.spvizmodel.ui.SPVizModelExecutableExtensionFactory:org.eclipse.xtext.ui.editor.quickfix.MarkerResolutionGenerator"
+			markerType="de.cau.cs.kieler.spviz.spvizmodel.ui.spvizmodel.check.expensive">
 			<attribute
 				name="FIXABLE_KEY"
 				value="true">
@@ -370,11 +370,11 @@
 	<!-- Rename Refactoring -->
 	<extension point="org.eclipse.ui.handlers">
 		<handler
-			class="de.cau.cs.kieler.spviz.spviz.ui.SPVizExecutableExtensionFactory:org.eclipse.xtext.ui.refactoring.ui.DefaultRenameElementHandler"
+			class="de.cau.cs.kieler.spviz.spvizmodel.ui.SPVizModelExecutableExtensionFactory:org.eclipse.xtext.ui.refactoring.ui.DefaultRenameElementHandler"
 			commandId="org.eclipse.xtext.ui.refactoring.RenameElement">
 			<activeWhen>
 				<reference
-					definitionId="de.cau.cs.kieler.spviz.spviz.SPViz.Editor.opened">
+					definitionId="de.cau.cs.kieler.spviz.spvizmodel.SPVizModel.Editor.opened">
 				</reference>
 			</activeWhen>
 		</handler>
@@ -386,7 +386,7 @@
 				style="push">
 				<visibleWhen checkEnabled="false">
 					<reference
-						definitionId="de.cau.cs.kieler.spviz.spviz.SPViz.Editor.opened">
+						definitionId="de.cau.cs.kieler.spviz.spvizmodel.SPVizModel.Editor.opened">
 					</reference>
 				</visibleWhen>
 			</command>
@@ -394,40 +394,40 @@
 	</extension>
 	<extension point="org.eclipse.ui.preferencePages">
 		<page
-			category="de.cau.cs.kieler.spviz.spviz.SPViz"
-			class="de.cau.cs.kieler.spviz.spviz.ui.SPVizExecutableExtensionFactory:org.eclipse.xtext.ui.refactoring.ui.RefactoringPreferencePage"
-			id="de.cau.cs.kieler.spviz.spviz.SPViz.refactoring"
+			category="de.cau.cs.kieler.spviz.spvizmodel.SPVizModel"
+			class="de.cau.cs.kieler.spviz.spvizmodel.ui.SPVizModelExecutableExtensionFactory:org.eclipse.xtext.ui.refactoring.ui.RefactoringPreferencePage"
+			id="de.cau.cs.kieler.spviz.spvizmodel.SPVizModel.refactoring"
 			name="Refactoring">
-			<keywordReference id="de.cau.cs.kieler.spviz.spviz.ui.keyword_SPViz"/>
+			<keywordReference id="de.cau.cs.kieler.spviz.spvizmodel.ui.keyword_SPVizModel"/>
 		</page>
 	</extension>
 	<extension point="org.eclipse.compare.contentViewers">
-		<viewer id="de.cau.cs.kieler.spviz.spviz.SPViz.compare.contentViewers"
-			class="de.cau.cs.kieler.spviz.spviz.ui.SPVizExecutableExtensionFactory:org.eclipse.xtext.ui.compare.InjectableViewerCreator"
-			extensions="spviz">
+		<viewer id="de.cau.cs.kieler.spviz.spvizmodel.SPVizModel.compare.contentViewers"
+			class="de.cau.cs.kieler.spviz.spvizmodel.ui.SPVizModelExecutableExtensionFactory:org.eclipse.xtext.ui.compare.InjectableViewerCreator"
+			extensions="spvizmodel">
 		</viewer>
 		<contentTypeBinding
-			contentTypeId="de.cau.cs.kieler.spviz.spviz.SPViz.contenttype"
-			contentViewerId="de.cau.cs.kieler.spviz.spviz.SPViz.compare.contentViewers" />
+			contentTypeId="de.cau.cs.kieler.spviz.spvizmodel.SPVizModel.contenttype"
+			contentViewerId="de.cau.cs.kieler.spviz.spvizmodel.SPVizModel.compare.contentViewers" />
 	</extension>
 	<extension point="org.eclipse.compare.contentMergeViewers">
-		<viewer id="de.cau.cs.kieler.spviz.spviz.SPViz.compare.contentMergeViewers"
-			class="de.cau.cs.kieler.spviz.spviz.ui.SPVizExecutableExtensionFactory:org.eclipse.xtext.ui.compare.InjectableViewerCreator"
-			extensions="spviz" label="SPViz Compare">
+		<viewer id="de.cau.cs.kieler.spviz.spvizmodel.SPVizModel.compare.contentMergeViewers"
+			class="de.cau.cs.kieler.spviz.spvizmodel.ui.SPVizModelExecutableExtensionFactory:org.eclipse.xtext.ui.compare.InjectableViewerCreator"
+			extensions="spvizmodel" label="SPVizModel Compare">
 		</viewer>
 		<contentTypeBinding
-			contentTypeId="de.cau.cs.kieler.spviz.spviz.SPViz.contenttype"
-			contentMergeViewerId="de.cau.cs.kieler.spviz.spviz.SPViz.compare.contentMergeViewers" />
+			contentTypeId="de.cau.cs.kieler.spviz.spvizmodel.SPVizModel.contenttype"
+			contentMergeViewerId="de.cau.cs.kieler.spviz.spvizmodel.SPVizModel.compare.contentMergeViewers" />
 	</extension>
 	<extension point="org.eclipse.ui.editors.documentProviders">
-		<provider id="de.cau.cs.kieler.spviz.spviz.SPViz.editors.documentProviders"
-			class="de.cau.cs.kieler.spviz.spviz.ui.SPVizExecutableExtensionFactory:org.eclipse.xtext.ui.editor.model.XtextDocumentProvider"
-			extensions="spviz">
+		<provider id="de.cau.cs.kieler.spviz.spvizmodel.SPVizModel.editors.documentProviders"
+			class="de.cau.cs.kieler.spviz.spvizmodel.ui.SPVizModelExecutableExtensionFactory:org.eclipse.xtext.ui.editor.model.XtextDocumentProvider"
+			extensions="spvizmodel">
 		</provider>
 	</extension>
 	<extension point="org.eclipse.team.core.fileTypes">
 		<fileTypes
-			extension="spviz"
+			extension="spvizmodel"
 			type="text">
 		</fileTypes>
 	</extension>
