@@ -1,10 +1,6 @@
 package de.cau.cs.kieler.spviz.spviz.generator
 
 import org.eclipse.xtext.generator.IFileSystemAccess2
-import java.util.ArrayList
-import de.cau.cs.kieler.spviz.spviz.sPViz.SPViz
-import de.cau.cs.kieler.spviz.spviz.sPViz.View
-import java.util.LinkedHashMap
 
 /**
  * Generates sub syntheses classes for overviews and their contained artifacts.

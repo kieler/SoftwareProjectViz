@@ -17,11 +17,6 @@ import org.eclipse.xtext.generator.AbstractGenerator
 import org.eclipse.xtext.generator.IFileSystemAccess2
 import org.eclipse.xtext.generator.IGeneratorContext
 import de.cau.cs.kieler.spviz.spviz.sPViz.SPViz
-import java.util.ArrayList
-import java.util.regex.Pattern
-import java.util.regex.Matcher
-import java.util.LinkedHashMap
-import de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.Artifact
 
 /**
  * Generates code from your model files on save.

@@ -1,11 +1,6 @@
 package de.cau.cs.kieler.spviz.spviz.generator
 
 import org.eclipse.xtext.generator.IFileSystemAccess2
-import de.cau.cs.kieler.spviz.spviz.sPViz.SPViz
-import java.util.ArrayList
-import java.util.LinkedHashMap
-import java.util.regex.Pattern
-import java.util.regex.Matcher
 
 /**
  * Generates action classes for the visualisation.
