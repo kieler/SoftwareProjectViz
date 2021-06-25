@@ -7,6 +7,7 @@
   <genPackages prefix="SPViz" basePackage="de.cau.cs.kieler.spviz.spviz" disposableProviderFactory="true"
       fileExtensions="spviz" ecorePackage="SPViz.ecore#/">
     <genClasses ecoreClass="SPViz.ecore#//SPViz">
+      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute SPViz.ecore#//SPViz/package"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute SPViz.ecore#//SPViz/importedNamespace"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute SPViz.ecore#//SPViz/name"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference SPViz.ecore#//SPViz/views"/>

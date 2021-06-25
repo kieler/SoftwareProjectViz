@@ -39,9 +39,10 @@ public class SPVizParser extends AbstractContentAssistParser {
 			builder.put(grammarAccess.getShownConnectionAccess().getGroup_2(), "rule__ShownConnection__Group_2__0");
 			builder.put(grammarAccess.getQualifiedNameAccess().getGroup(), "rule__QualifiedName__Group__0");
 			builder.put(grammarAccess.getQualifiedNameAccess().getGroup_1(), "rule__QualifiedName__Group_1__0");
-			builder.put(grammarAccess.getSPVizAccess().getImportedNamespaceAssignment_1(), "rule__SPViz__ImportedNamespaceAssignment_1");
-			builder.put(grammarAccess.getSPVizAccess().getNameAssignment_3(), "rule__SPViz__NameAssignment_3");
-			builder.put(grammarAccess.getSPVizAccess().getViewsAssignment_5(), "rule__SPViz__ViewsAssignment_5");
+			builder.put(grammarAccess.getSPVizAccess().getPackageAssignment_1(), "rule__SPViz__PackageAssignment_1");
+			builder.put(grammarAccess.getSPVizAccess().getImportedNamespaceAssignment_3(), "rule__SPViz__ImportedNamespaceAssignment_3");
+			builder.put(grammarAccess.getSPVizAccess().getNameAssignment_5(), "rule__SPViz__NameAssignment_5");
+			builder.put(grammarAccess.getSPVizAccess().getViewsAssignment_7(), "rule__SPViz__ViewsAssignment_7");
 			builder.put(grammarAccess.getViewAccess().getNameAssignment_0(), "rule__View__NameAssignment_0");
 			builder.put(grammarAccess.getViewAccess().getShownElementsAssignment_2(), "rule__View__ShownElementsAssignment_2");
 			builder.put(grammarAccess.getViewAccess().getShownConnectionsAssignment_3(), "rule__View__ShownConnectionsAssignment_3");

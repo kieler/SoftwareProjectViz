@@ -68,13 +68,22 @@ public interface SPVizPackage extends EPackage
   int SP_VIZ = 0;
 
   /**
+   * The feature id for the '<em><b>Package</b></em>' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int SP_VIZ__PACKAGE = 0;
+
+  /**
    * The feature id for the '<em><b>Imported Namespace</b></em>' attribute.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int SP_VIZ__IMPORTED_NAMESPACE = 0;
+  int SP_VIZ__IMPORTED_NAMESPACE = 1;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -83,7 +92,7 @@ public interface SPVizPackage extends EPackage
    * @generated
    * @ordered
    */
-  int SP_VIZ__NAME = 1;
+  int SP_VIZ__NAME = 2;
 
   /**
    * The feature id for the '<em><b>Views</b></em>' containment reference list.
@@ -92,7 +101,7 @@ public interface SPVizPackage extends EPackage
    * @generated
    * @ordered
    */
-  int SP_VIZ__VIEWS = 2;
+  int SP_VIZ__VIEWS = 3;
 
   /**
    * The number of structural features of the '<em>SP Viz</em>' class.
@@ -101,7 +110,7 @@ public interface SPVizPackage extends EPackage
    * @generated
    * @ordered
    */
-  int SP_VIZ_FEATURE_COUNT = 3;
+  int SP_VIZ_FEATURE_COUNT = 4;
 
   /**
    * The meta object id for the '{@link de.cau.cs.kieler.spviz.spviz.sPViz.impl.ViewImpl <em>View</em>}' class.
@@ -233,6 +242,17 @@ public interface SPVizPackage extends EPackage
    * @generated
    */
   EClass getSPViz();
+
+  /**
+   * Returns the meta object for the attribute '{@link de.cau.cs.kieler.spviz.spviz.sPViz.SPViz#getPackage <em>Package</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the attribute '<em>Package</em>'.
+   * @see de.cau.cs.kieler.spviz.spviz.sPViz.SPViz#getPackage()
+   * @see #getSPViz()
+   * @generated
+   */
+  EAttribute getSPViz_Package();
 
   /**
    * Returns the meta object for the attribute '{@link de.cau.cs.kieler.spviz.spviz.sPViz.SPViz#getImportedNamespace <em>Imported Namespace</em>}'.
@@ -406,6 +426,14 @@ public interface SPVizPackage extends EPackage
      * @generated
      */
     EClass SP_VIZ = eINSTANCE.getSPViz();
+
+    /**
+     * The meta object literal for the '<em><b>Package</b></em>' attribute feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EAttribute SP_VIZ__PACKAGE = eINSTANCE.getSPViz_Package();
 
     /**
      * The meta object literal for the '<em><b>Imported Namespace</b></em>' attribute feature.
