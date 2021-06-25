@@ -1,13 +1,7 @@
 package de.cau.cs.kieler.spviz.spviz.generator
 
 import org.eclipse.xtext.generator.IFileSystemAccess2
-import java.util.ArrayList
-import de.cau.cs.kieler.spviz.spviz.sPViz.SPViz
-import de.cau.cs.kieler.spviz.spviz.sPViz.View
-import org.eclipse.emf.common.util.EList
 import java.util.LinkedHashMap
-import java.util.regex.Pattern
-import java.util.regex.Matcher
 
 /**
  * Generates classes for the syntheses of the visualisation.
@@ -685,8 +679,7 @@ class GenerateSyntheses {
 					]
 				}
 				
-				// ------------------------------------- Project renderings -------------------------------------
-				
+				// ------------------------------------- Project renderings ------------------------------------
 				/**
 				 * Adds the rendering as a project overview.
 				 */
