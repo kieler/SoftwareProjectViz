@@ -27,11 +27,11 @@ class GenerateActions {
 		for (overview : spviz.overviews)
 		for (connection : spviz.getOverviewConnections(overview)) {
 			// reveal required artifacts	
-			content = generateRevealAction(spviz, overview, connection.get(0), connection.get(1), connection.get(2), "Required")
+			content = generateRevealAction(spviz, overview, connection.get(0), connection.get(1), connection.get(2), true)
 			fsa.generateFile(folder + "RevealRequired" + connection.get(0) + connection.get(2) + "sAction.xtend", content)
 			// reveal requiring artifacts
-			content = generateRevealAction(spviz, overview, connection.get(0), connection.get(2), connection.get(1), "Requiring")
-			fsa.generateFile(folder + "RevealRequiring" + connection.get(0) + connection.get(1) + "sAction.xtend", content)
+			content = generateRevealAction(spviz, overview, connection.get(0), connection.get(2), connection.get(1), false)
+			fsa.generateFile(folder + "RevealRequiring" + connection.get(0) + connection.get(2) + "sAction.xtend", content)
 		}
 	}
 	
@@ -48,12 +48,15 @@ class GenerateActions {
 	 * 		name of an artifact as a string
 	 * @param artifactTo
 	 * 		name of an artifact as a string
-	 * @param requiringOrRequired
-	 * 		in which direction the connection is defined
+	 * @param isRequired
+	 * 		boolean which defines the direction of the connection
 	 * @return
 	 * 		the generated file content as a string
 	 */
-	def static generateRevealAction(DataAccess spviz, String overview, String connectionName, String artifactFrom, String artifactTo, String requiringOrRequired) {
+	def static generateRevealAction(DataAccess spviz, String overview, String connectionName, String artifactFrom, String artifactTo, boolean isRequired) {
+		val String requiringOrRequired = isRequired ? "Required" : "Requiring"  
+		val className = "Reveal" + requiringOrRequired + connectionName + (isRequired ? artifactTo : artifactFrom) + "sAction"
+		
 		return '''
 		package «spviz.packageName».viz.actions
 		
@@ -73,12 +76,12 @@ class GenerateActions {
 		 * 
 		 * @author nre
 		 */
-		class Reveal«requiringOrRequired»«connectionName»«artifactTo»sAction extends AbstractVisualizationContextChangingAction {
+		class «className» extends AbstractVisualizationContextChangingAction {
 			
 			/**
 			 * This action's ID.
 			 */
-			public static val String ID = Reveal«requiringOrRequired»«connectionName»«artifactTo»sAction.name
+			public static val String ID = «className».name
 			
 			override <M> changeVisualization(IVisualizationContext<M> modelVisualizationContext, ActionContext actionContext) {
 				// The «artifactFrom»Context element for the element that was clicked on.
@@ -111,7 +114,11 @@ class GenerateActions {
 «««		//			]
 «««		//		} else {
 				«requiringOrRequired.toFirstLower»«artifactTo»Contexts.forEach [ «requiringOrRequired.toFirstLower»«artifactTo»Context |
-					«artifactFrom.toFirstLower»Context.add«connectionName»«artifactTo»Edge(«requiringOrRequired.toFirstLower»«artifactTo»Context as «artifactTo»Context)
+					«IF isRequired»
+						«artifactFrom.toFirstLower»Context.add«connectionName»«artifactTo»Edge(«requiringOrRequired.toFirstLower»«artifactTo»Context as «artifactTo»Context)
+					«ELSE»
+						(«requiringOrRequired.toFirstLower»«artifactTo»Context as «artifactTo»Context).add«connectionName»«artifactFrom»Edge(«artifactFrom.toFirstLower»Context)
+					«ENDIF»
 				]
 «««		//		}
 			}
