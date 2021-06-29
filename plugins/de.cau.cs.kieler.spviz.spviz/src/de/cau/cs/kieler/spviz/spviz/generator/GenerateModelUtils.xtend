@@ -461,7 +461,7 @@ class GenerateModelUtils {
 					if (overview.collapsedElements.contains(detailedContext)) {
 						return
 					}
-			
+				
 					// This element was previously detailed, so put it in the collapsed list now.
 					overview.detailedElements.remove(detailedContext)
 					// Only this cast will allow to add the context. We know this adding is type-safe, as the collapsed- and
@@ -627,7 +627,7 @@ class GenerateModelUtils {
 	def static String concatenateStringArray(String[] elements, String symbol, boolean lowercase, String prefix, String suffix){
 		var res = prefix + (lowercase ? elements.get(0).toFirstLower : elements.get(0)) + suffix
 		for (i : 1 ..< elements.size){
-			res += "\n"+ symbol +" " + prefix + (lowercase ? elements.get(0).toFirstLower : elements.get(0)) + suffix
+			res += "\n"+ symbol +" " + prefix + (lowercase ? elements.get(i).toFirstLower : elements.get(i)) + suffix
 		}
 		return res
 	}

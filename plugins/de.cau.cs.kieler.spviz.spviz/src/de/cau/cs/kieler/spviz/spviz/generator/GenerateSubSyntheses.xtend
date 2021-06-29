@@ -237,6 +237,7 @@ class GenerateSubSyntheses {
 				import «spviz.packageName».model.«overview»OverviewContext
 			«ENDIF»
 			import org.eclipse.elk.core.options.CoreOptions
+			import org.eclipse.elk.core.options.PortConstraints
 			import org.eclipse.elk.core.options.PortSide
 			
 			/**
@@ -252,6 +253,7 @@ class GenerateSubSyntheses {
 					val «artifact.toFirstLower» = context.modelElement
 					return #[
 						context.createNode() => [
+							addLayoutParam(CoreOptions::PORT_CONSTRAINTS, PortConstraints::FIXED_ORDER)
 							associateWith(context)
 							data += createKIdentifier => [ it.id = context.hashCode.toString ]
 							
@@ -282,7 +284,7 @@ class GenerateSubSyntheses {
 									// Requiring «artifact.toFirstLower»s are always shown and expanded to the west against the drawing direction.
 									addLayoutParam(CoreOptions::PORT_SIDE, PortSide::WEST)
 									addLayoutParam(CoreOptions::PORT_INDEX, 1)
-									addRequiring«requiring.get(0)»«requiring.get(1)»sActionPortRendering(filteredRequiring«requiring.get(1)»s.size, context.allRequiring«requiring.get(0)»«requiring.get(1)»sShown)
+									addRequiring«requiring.get(0)»«artifact»sActionPortRendering(filteredRequiring«requiring.get(1)»s.size, context.allRequiring«requiring.get(0)»«requiring.get(1)»sShown)
 									width = 12
 									height = 12
 								]
