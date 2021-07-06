@@ -23,6 +23,8 @@ class GenerateActions {
 		fsa.generateFile(folder + "RedoAction.xtend", content)
 		content = generateResetViewAction(spviz)
 		fsa.generateFile(folder + "ResetViewAction.xtend", content)
+		content = generateContextExpandAllAction(spviz)
+		fsa.generateFile(folder + "ContextExpandAllAction.xtend", content)
 		
 		for (overview : spviz.overviews)
 		for (connection : spviz.getOverviewConnections(overview)) {
@@ -33,6 +35,45 @@ class GenerateActions {
 			content = generateRevealAction(spviz, overview, connection.get(0), connection.get(2), connection.get(1), false)
 			fsa.generateFile(folder + "RevealRequiring" + connection.get(0) + connection.get(2) + "sAction.xtend", content)
 		}
+	}
+	
+	def static generateContextExpandAllAction(DataAccess spviz) {
+		return '''
+		package «spviz.packageName».viz.actions
+		
+		import «spviz.packageName».model.IOverviewVisualizationContext
+		import «spviz.packageName».model.IVisualizationContext
+		
+		import static extension «spviz.packageName».model.util.ContextExtensions.*
+		
+		/**
+		 * An action that expands all element by making them detailed in an {@link IOverviewVisualizationContext}.
+		 * 
+		 * @author nre
+		 */
+		class ContextExpandAllAction extends AbstractVisualizationContextChangingAction {
+		    /**
+		     * This action's ID.
+		     */
+		    public static val String ID = ContextExpandAllAction.name
+		    
+		    override <M> changeVisualization(IVisualizationContext<M> modelVisualizationContext, ActionContext actionContext) {
+		        // This action will always be performed on an IOverviewVisualizationContext.
+		        if (!(modelVisualizationContext instanceof IOverviewVisualizationContext)) {
+		            throw new IllegalStateException("This action is performed on an element that is not inside an overview " +
+		                "visualization!")
+		        }
+		        val ovc = (modelVisualizationContext as IOverviewVisualizationContext<M>)
+		        
+		        val collapsedElements = ovc.collapsedElements.clone
+		        collapsedElements.forEach [
+		            ovc.makeDetailed(it)
+		        ]
+		    }
+		    
+		}
+		
+		'''
 	}
 	
 	/**

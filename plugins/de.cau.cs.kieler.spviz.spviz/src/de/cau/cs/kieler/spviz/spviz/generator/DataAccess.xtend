@@ -139,6 +139,58 @@ class DataAccess {
 	}
 	
 	/** 
+	 * Returns all required artifacts for a given artifact, if the connection
+	 * is displayed. 
+	 * 
+	 * @param requiring
+	 * 		the artifact which requires other artifacts
+	 * @return
+	 * 		List of the required artifact names
+	 */
+	def ArrayList<String[]> getRequiredArtifactsInOverview (String requiring, String overview) { 
+		val ArrayList<String[]> requiredPairs = newArrayList
+		if (!requiredArtifacts.containsKey(requiring)){
+			return requiredPairs
+		}
+		for(requiredConnectionNameAndArtifact : requiredArtifacts.get(requiring)){
+			val String[] connection = newArrayOfSize(3)
+			connection.set(0, requiredConnectionNameAndArtifact.get(0))
+			connection.set(1, requiring)
+			connection.set(2, requiredConnectionNameAndArtifact.get(1))
+			if(isConnectionDisplayedInOverview(overview, connection)){
+				requiredPairs.add(requiredConnectionNameAndArtifact)
+			}
+		}
+		return requiredPairs
+	}
+	
+	/** 
+	 * Returns all requiring artifacts for a given artifact, if the connection
+	 * is displayed. 
+	 * 
+	 * @param required
+	 * 		the artifact which is required by other artifacts
+	 * @return
+	 * 		List of the requiring artifact names
+	 */
+	def ArrayList<String[]> getRequiringArtifactsInOverview (String required, String overview) {
+		val ArrayList<String[]> requiringPairs = newArrayList
+		if (!requiringArtifacts.containsKey(required)){
+			return requiringPairs
+		}
+		for(requiringConnectionNameAndArtifact : requiringArtifacts.get(required)){
+			val String[] connection = newArrayOfSize(3)
+			connection.set(0, requiringConnectionNameAndArtifact.get(0))
+			connection.set(1, requiringConnectionNameAndArtifact.get(1))
+			connection.set(2, required)
+			if(isConnectionDisplayedInOverview(overview, connection)){
+				requiringPairs.add(requiringConnectionNameAndArtifact)
+			}
+		}
+		return requiringPairs
+	}
+	
+	/** 
 	 * Returns all shown artifacts for an overview. 
 	 * 
 	 * @param overviewName
@@ -186,6 +238,18 @@ class DataAccess {
 		}
 		System.out.println("artifact "+ artifact +" not found in any overview")
 		return ""
+	}
+	
+	def boolean isConnectionDisplayedInOverview(String overview, String[] connection){
+		for(overviewConnection : getOverviewConnections(overview)){
+			if(overviewConnection.get(0) == connection.get(0)
+				&& overviewConnection.get(1) == connection.get(1)
+				&& overviewConnection.get(2) == connection.get(2) 
+			){
+				return true
+			}
+		}
+		return false
 	}
 	
 	

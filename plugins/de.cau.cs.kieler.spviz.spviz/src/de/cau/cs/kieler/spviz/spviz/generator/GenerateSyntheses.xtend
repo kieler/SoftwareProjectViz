@@ -209,7 +209,7 @@ class GenerateSyntheses {
 			import de.cau.cs.kieler.klighd.KlighdDataManager
 «««			import «spviz.packageName».viz.actions.ConnectAllAction
 			import «spviz.packageName».viz.actions.ContextCollapseExpandAction
-«««			import «spviz.packageName».viz.actions.ContextExpandAllAction
+			import «spviz.packageName».viz.actions.ContextExpandAllAction
 «««			import «spviz.packageName».viz.actions.ContextRemoveAction
 «««			import «spviz.packageName».viz.actions.FocusAction
 			import «spviz.packageName».viz.actions.OverviewContextCollapseExpandAction
@@ -237,7 +237,7 @@ class GenerateSyntheses {
 					.registerAction(ResetViewAction.ID, new ResetViewAction)
 «««					.registerAction(StoreModelAction.ID, new StoreModelAction)
 					.registerAction(ContextCollapseExpandAction.ID, new ContextCollapseExpandAction)
-«««					.registerAction(ContextExpandAllAction.ID, new ContextExpandAllAction)
+					.registerAction(ContextExpandAllAction.ID, new ContextExpandAllAction)
 «««					.registerAction(ContextRemoveAction.ID, new ContextRemoveAction)
 					.registerAction(OverviewContextCollapseExpandAction.ID, new OverviewContextCollapseExpandAction)
 «««					.registerAction(ConnectAllAction.ID, new ConnectAllAction)
@@ -301,7 +301,7 @@ class GenerateSyntheses {
 			import de.cau.cs.kieler.klighd.krendering.extensions.KRenderingExtensions
 «««			import «spviz.packageName».viz.actions.ConnectAllAction
 			import «spviz.packageName».viz.actions.ContextCollapseExpandAction
-«««			import «spviz.packageName».viz.actions.ContextExpandAllAction
+			import «spviz.packageName».viz.actions.ContextExpandAllAction
 «««			import «spviz.packageName».viz.actions.ContextRemoveAction
 «««			import «spviz.packageName».viz.actions.FocusAction
 			import «spviz.packageName».viz.actions.OverviewContextCollapseExpandAction
@@ -407,7 +407,7 @@ class GenerateSyntheses {
 						setGridPlacement(1)
 						addDoubleClickAction(OverviewContextCollapseExpandAction.ID)
 						addRectangle => [
-							var columns = 3
+							var columns = 4
 «««							val interactiveButtons = context.getOptionValue(INTERACTIVE_BUTTONS) as Boolean
 «««							if (interactiveButtons) {
 «««								columns += 4
@@ -427,7 +427,7 @@ class GenerateSyntheses {
 «««							if (interactiveButtons) {
 								addVerticalLine
 «««								addFocusButton(context)
-«««								addExpandAllButton(context)
+								addExpandAllButton(context)
 «««								if (isConnectable) {
 «««									addConnectAllButton(context)
 «««								}
@@ -541,33 +541,34 @@ class GenerateSyntheses {
 «««						}
 					]
 				}
-«««				
-«««				/**
-«««				 * Adds a button in a grid placement rendering that causes the {@link ContextExpandAllAction} to be called.
-«««				 * 
-«««				 * @param container The parent rendering this button should be added to.
-«««				 * @param context The used ViewContext.
-«««				 */
-«««				def KRectangle addExpandAllButton(KContainerRendering container, ViewContext context) {
-«««					val action = ContextExpandAllAction::ID
-«««					return container.addRectangle => [
-«««						setGridPlacementData => [
-«««							flexibleWidth = false
-«««						]
-«««						addSingleOrMultiClickAction(action)
-«««						lineWidth = 0
-«««						tooltip = "Expand all elements in this overview."
+				
+				/**
+				 * Adds a button in a grid placement rendering that causes the {@link ContextExpandAllAction} to be called.
+				 * 
+				 * @param container The parent rendering this button should be added to.
+				 * @param context The used ViewContext.
+				 */
+				def KRectangle addExpandAllButton(KContainerRendering container, ViewContext context) {
+					val action = ContextExpandAllAction::ID
+					return container.addRectangle => [
+						setGridPlacementData => [
+							flexibleWidth = false
+						]
+						addSingleOrMultiClickAction(action)
+						lineWidth = 0
+						tooltip = "Expand all elements in this overview."
 «««						if (context.getOptionValue(SHOW_ICONS) as Boolean) {
 «««							addImage("«spviz.packageName».viz", "icons/expand128.png") => [
 «««								setPointPlacementData(RIGHT, 0, 0.5f, TOP, 0, 0.5f, H_CENTRAL, V_CENTRAL, 4f, 4f, 12, 12)
 «««								addSingleOrMultiClickAction(action)
 «««							]
 «««						} else {
-«««							val label = "Expand all"
-«««							addButton(label, action)
+«««						placeholder label
+						val label = "⭱" 
+						addButton(label, action)
 «««						}
-«««					]
-«««				}
+					]
+				}
 				
 «««				/**
 «««				 * Adds a button in a grid placement rendering that causes the {@link ConnectAllAction} to be called.
