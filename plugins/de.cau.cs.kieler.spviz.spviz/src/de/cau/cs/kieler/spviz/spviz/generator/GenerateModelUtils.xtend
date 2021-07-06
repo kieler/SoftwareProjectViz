@@ -1,6 +1,9 @@
 package de.cau.cs.kieler.spviz.spviz.generator
 
 import org.eclipse.xtext.generator.IFileSystemAccess2
+import java.util.LinkedHashMap
+import java.util.ArrayList
+import java.lang.reflect.Array
 
 /**
  * Generates utility classes for the model and visualisation model.
@@ -327,14 +330,51 @@ class GenerateModelUtils {
 					return false
 				}
 				
-«««				TODO: implement remove edges for all artifacts
-«««				«FOR view : spviz.overviews»
-«««					def dispatch static void removeEdges(«overview»OverviewContext overviewContext, «check edges»Context context) {
-				def static void removeEdges(IOverviewVisualizationContext<?> overviewContext, IVisualizationContext<?> context){
-					// do nothing yet.
-				}	
-«««				«ENDFOR»
 
+				/**
+				 * Removes all edges incident to the context.
+				 * 
+				 * @param overviewContext The overview context containing the edge.
+				 * @param context The context of that all incoming or outgoing edges should be removed (not internal ones).
+				 */
+				def dispatch static void removeEdges(IOverviewVisualizationContext<?> overviewContext, IVisualizationContext<?> context){
+					// do nothing yet.
+				}
+				
+				«FOR overview : spviz.overviews»
+					«IF spviz.getOverviewConnections(overview).size == 0»
+						def static void removeEdges(«overview»OverviewContext overviewContext, IVisualizationContext<?> context){
+							// There are no edges in «overview.toFirstLower» overview contexts. So do nothing.
+						}
+						
+					«ELSE»
+						«FOR artifact : spviz.getDisplayedArtifacts(overview)»
+							def dispatch static void removeEdges(«overview»OverviewContext overviewContext, «artifact»Context context) {
+								«FOR requiredConnection : spviz.getRequiredArtifactsInOverview(artifact, overview)»
+									overviewContext.required«requiredConnection.get(0)»«requiredConnection.get(1)»Edges.clone.forEach[
+										if (key === context){
+											overviewContext.required«requiredConnection.get(0)»«requiredConnection.get(1)»Edges.remove(it)
+											key.allRequired«requiredConnection.get(0)»«requiredConnection.get(1)»sShown = false
+											value.allRequiring«requiredConnection.get(0)»«artifact»sShown = false
+										}
+									]
+									
+								«ENDFOR»
+								«FOR requiringConnection : spviz.getRequiringArtifactsInOverview(artifact, overview)»
+									overviewContext.required«requiringConnection.get(0)»«artifact»Edges.clone.forEach[
+										if (value === context){
+											overviewContext.required«requiringConnection.get(0)»«artifact»Edges.remove(it)
+											key.allRequired«requiringConnection.get(0)»«artifact»sShown = false
+											value.allRequiring«requiringConnection.get(0)»«requiringConnection.get(1)»sShown = false
+										}
+									]
+									
+								«ENDFOR»
+							}
+							
+						«ENDFOR»
+					«ENDIF»
+				«ENDFOR»
 				/**
 				 * Determines whether the {@code project} is the root model this {@code context} comes from.
 				 * 
