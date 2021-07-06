@@ -31,6 +31,7 @@ import org.eclipse.emf.ecore.util.InternalEList;
  * The following features are implemented:
  * </p>
  * <ul>
+ *   <li>{@link de.cau.cs.kieler.spviz.spviz.sPViz.impl.SPVizImpl#getPackage <em>Package</em>}</li>
  *   <li>{@link de.cau.cs.kieler.spviz.spviz.sPViz.impl.SPVizImpl#getImportedNamespace <em>Imported Namespace</em>}</li>
  *   <li>{@link de.cau.cs.kieler.spviz.spviz.sPViz.impl.SPVizImpl#getName <em>Name</em>}</li>
  *   <li>{@link de.cau.cs.kieler.spviz.spviz.sPViz.impl.SPVizImpl#getViews <em>Views</em>}</li>
@@ -40,6 +41,26 @@ import org.eclipse.emf.ecore.util.InternalEList;
  */
 public class SPVizImpl extends MinimalEObjectImpl.Container implements SPViz
 {
+  /**
+   * The default value of the '{@link #getPackage() <em>Package</em>}' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see #getPackage()
+   * @generated
+   * @ordered
+   */
+  protected static final String PACKAGE_EDEFAULT = null;
+
+  /**
+   * The cached value of the '{@link #getPackage() <em>Package</em>}' attribute.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see #getPackage()
+   * @generated
+   * @ordered
+   */
+  protected String package_ = PACKAGE_EDEFAULT;
+
   /**
    * The default value of the '{@link #getImportedNamespace() <em>Imported Namespace</em>}' attribute.
    * <!-- begin-user-doc -->
@@ -109,6 +130,31 @@ public class SPVizImpl extends MinimalEObjectImpl.Container implements SPViz
   protected EClass eStaticClass()
   {
     return SPVizPackage.Literals.SP_VIZ;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public String getPackage()
+  {
+    return package_;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public void setPackage(String newPackage)
+  {
+    String oldPackage = package_;
+    package_ = newPackage;
+    if (eNotificationRequired())
+      eNotify(new ENotificationImpl(this, Notification.SET, SPVizPackage.SP_VIZ__PACKAGE, oldPackage, package_));
   }
 
   /**
@@ -202,6 +248,8 @@ public class SPVizImpl extends MinimalEObjectImpl.Container implements SPViz
   {
     switch (featureID)
     {
+      case SPVizPackage.SP_VIZ__PACKAGE:
+        return getPackage();
       case SPVizPackage.SP_VIZ__IMPORTED_NAMESPACE:
         return getImportedNamespace();
       case SPVizPackage.SP_VIZ__NAME:
@@ -223,6 +271,9 @@ public class SPVizImpl extends MinimalEObjectImpl.Container implements SPViz
   {
     switch (featureID)
     {
+      case SPVizPackage.SP_VIZ__PACKAGE:
+        setPackage((String)newValue);
+        return;
       case SPVizPackage.SP_VIZ__IMPORTED_NAMESPACE:
         setImportedNamespace((String)newValue);
         return;
@@ -247,6 +298,9 @@ public class SPVizImpl extends MinimalEObjectImpl.Container implements SPViz
   {
     switch (featureID)
     {
+      case SPVizPackage.SP_VIZ__PACKAGE:
+        setPackage(PACKAGE_EDEFAULT);
+        return;
       case SPVizPackage.SP_VIZ__IMPORTED_NAMESPACE:
         setImportedNamespace(IMPORTED_NAMESPACE_EDEFAULT);
         return;
@@ -270,6 +324,8 @@ public class SPVizImpl extends MinimalEObjectImpl.Container implements SPViz
   {
     switch (featureID)
     {
+      case SPVizPackage.SP_VIZ__PACKAGE:
+        return PACKAGE_EDEFAULT == null ? package_ != null : !PACKAGE_EDEFAULT.equals(package_);
       case SPVizPackage.SP_VIZ__IMPORTED_NAMESPACE:
         return IMPORTED_NAMESPACE_EDEFAULT == null ? importedNamespace != null : !IMPORTED_NAMESPACE_EDEFAULT.equals(importedNamespace);
       case SPVizPackage.SP_VIZ__NAME:
@@ -291,7 +347,9 @@ public class SPVizImpl extends MinimalEObjectImpl.Container implements SPViz
     if (eIsProxy()) return super.toString();
 
     StringBuilder result = new StringBuilder(super.toString());
-    result.append(" (importedNamespace: ");
+    result.append(" (package: ");
+    result.append(package_);
+    result.append(", importedNamespace: ");
     result.append(importedNamespace);
     result.append(", name: ");
     result.append(name);

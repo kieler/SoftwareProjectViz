@@ -21,7 +21,7 @@ import java.util.ArrayList;
 @SuppressWarnings("all")
 public class InternalSPVizParser extends AbstractInternalAntlrParser {
     public static final String[] tokenNames = new String[] {
-        "<invalid>", "<EOR>", "<DOWN>", "<UP>", "RULE_ID", "RULE_INT", "RULE_STRING", "RULE_ML_COMMENT", "RULE_SL_COMMENT", "RULE_WS", "RULE_ANY_OTHER", "'use'", "'SPViz'", "'{'", "'}'", "'show'", "'in'", "'connect'", "'via'", "'.'"
+        "<invalid>", "<EOR>", "<DOWN>", "<UP>", "RULE_ID", "RULE_INT", "RULE_STRING", "RULE_ML_COMMENT", "RULE_SL_COMMENT", "RULE_WS", "RULE_ANY_OTHER", "'package'", "'use'", "'SPViz'", "'{'", "'}'", "'show'", "'in'", "'connect'", "'via'", "'.'"
     };
     public static final int RULE_STRING=6;
     public static final int RULE_SL_COMMENT=8;
@@ -40,6 +40,7 @@ public class InternalSPVizParser extends AbstractInternalAntlrParser {
     public static final int RULE_ANY_OTHER=10;
     public static final int RULE_INT=5;
     public static final int RULE_ML_COMMENT=7;
+    public static final int T__20=20;
 
     // delegates
     // delegators
@@ -117,45 +118,48 @@ public class InternalSPVizParser extends AbstractInternalAntlrParser {
 
 
     // $ANTLR start "ruleSPViz"
-    // InternalSPViz.g:71:1: ruleSPViz returns [EObject current=null] : (otherlv_0= 'use' ( (lv_importedNamespace_1_0= ruleQualifiedName ) ) otherlv_2= 'SPViz' ( (lv_name_3_0= RULE_ID ) ) otherlv_4= '{' ( (lv_views_5_0= ruleView ) )* otherlv_6= '}' ) ;
+    // InternalSPViz.g:71:1: ruleSPViz returns [EObject current=null] : (otherlv_0= 'package' ( (lv_package_1_0= ruleQualifiedName ) ) otherlv_2= 'use' ( (lv_importedNamespace_3_0= ruleQualifiedName ) ) otherlv_4= 'SPViz' ( (lv_name_5_0= RULE_ID ) ) otherlv_6= '{' ( (lv_views_7_0= ruleView ) )* otherlv_8= '}' ) ;
     public final EObject ruleSPViz() throws RecognitionException {
         EObject current = null;
 
         Token otherlv_0=null;
         Token otherlv_2=null;
-        Token lv_name_3_0=null;
         Token otherlv_4=null;
+        Token lv_name_5_0=null;
         Token otherlv_6=null;
-        AntlrDatatypeRuleToken lv_importedNamespace_1_0 = null;
+        Token otherlv_8=null;
+        AntlrDatatypeRuleToken lv_package_1_0 = null;
 
-        EObject lv_views_5_0 = null;
+        AntlrDatatypeRuleToken lv_importedNamespace_3_0 = null;
+
+        EObject lv_views_7_0 = null;
 
 
 
         	enterRule();
 
         try {
-            // InternalSPViz.g:77:2: ( (otherlv_0= 'use' ( (lv_importedNamespace_1_0= ruleQualifiedName ) ) otherlv_2= 'SPViz' ( (lv_name_3_0= RULE_ID ) ) otherlv_4= '{' ( (lv_views_5_0= ruleView ) )* otherlv_6= '}' ) )
-            // InternalSPViz.g:78:2: (otherlv_0= 'use' ( (lv_importedNamespace_1_0= ruleQualifiedName ) ) otherlv_2= 'SPViz' ( (lv_name_3_0= RULE_ID ) ) otherlv_4= '{' ( (lv_views_5_0= ruleView ) )* otherlv_6= '}' )
+            // InternalSPViz.g:77:2: ( (otherlv_0= 'package' ( (lv_package_1_0= ruleQualifiedName ) ) otherlv_2= 'use' ( (lv_importedNamespace_3_0= ruleQualifiedName ) ) otherlv_4= 'SPViz' ( (lv_name_5_0= RULE_ID ) ) otherlv_6= '{' ( (lv_views_7_0= ruleView ) )* otherlv_8= '}' ) )
+            // InternalSPViz.g:78:2: (otherlv_0= 'package' ( (lv_package_1_0= ruleQualifiedName ) ) otherlv_2= 'use' ( (lv_importedNamespace_3_0= ruleQualifiedName ) ) otherlv_4= 'SPViz' ( (lv_name_5_0= RULE_ID ) ) otherlv_6= '{' ( (lv_views_7_0= ruleView ) )* otherlv_8= '}' )
             {
-            // InternalSPViz.g:78:2: (otherlv_0= 'use' ( (lv_importedNamespace_1_0= ruleQualifiedName ) ) otherlv_2= 'SPViz' ( (lv_name_3_0= RULE_ID ) ) otherlv_4= '{' ( (lv_views_5_0= ruleView ) )* otherlv_6= '}' )
-            // InternalSPViz.g:79:3: otherlv_0= 'use' ( (lv_importedNamespace_1_0= ruleQualifiedName ) ) otherlv_2= 'SPViz' ( (lv_name_3_0= RULE_ID ) ) otherlv_4= '{' ( (lv_views_5_0= ruleView ) )* otherlv_6= '}'
+            // InternalSPViz.g:78:2: (otherlv_0= 'package' ( (lv_package_1_0= ruleQualifiedName ) ) otherlv_2= 'use' ( (lv_importedNamespace_3_0= ruleQualifiedName ) ) otherlv_4= 'SPViz' ( (lv_name_5_0= RULE_ID ) ) otherlv_6= '{' ( (lv_views_7_0= ruleView ) )* otherlv_8= '}' )
+            // InternalSPViz.g:79:3: otherlv_0= 'package' ( (lv_package_1_0= ruleQualifiedName ) ) otherlv_2= 'use' ( (lv_importedNamespace_3_0= ruleQualifiedName ) ) otherlv_4= 'SPViz' ( (lv_name_5_0= RULE_ID ) ) otherlv_6= '{' ( (lv_views_7_0= ruleView ) )* otherlv_8= '}'
             {
             otherlv_0=(Token)match(input,11,FOLLOW_3); 
 
-            			newLeafNode(otherlv_0, grammarAccess.getSPVizAccess().getUseKeyword_0());
+            			newLeafNode(otherlv_0, grammarAccess.getSPVizAccess().getPackageKeyword_0());
             		
-            // InternalSPViz.g:83:3: ( (lv_importedNamespace_1_0= ruleQualifiedName ) )
-            // InternalSPViz.g:84:4: (lv_importedNamespace_1_0= ruleQualifiedName )
+            // InternalSPViz.g:83:3: ( (lv_package_1_0= ruleQualifiedName ) )
+            // InternalSPViz.g:84:4: (lv_package_1_0= ruleQualifiedName )
             {
-            // InternalSPViz.g:84:4: (lv_importedNamespace_1_0= ruleQualifiedName )
-            // InternalSPViz.g:85:5: lv_importedNamespace_1_0= ruleQualifiedName
+            // InternalSPViz.g:84:4: (lv_package_1_0= ruleQualifiedName )
+            // InternalSPViz.g:85:5: lv_package_1_0= ruleQualifiedName
             {
 
-            					newCompositeNode(grammarAccess.getSPVizAccess().getImportedNamespaceQualifiedNameParserRuleCall_1_0());
+            					newCompositeNode(grammarAccess.getSPVizAccess().getPackageQualifiedNameParserRuleCall_1_0());
             				
             pushFollow(FOLLOW_4);
-            lv_importedNamespace_1_0=ruleQualifiedName();
+            lv_package_1_0=ruleQualifiedName();
 
             state._fsp--;
 
@@ -165,8 +169,8 @@ public class InternalSPVizParser extends AbstractInternalAntlrParser {
             					}
             					set(
             						current,
-            						"importedNamespace",
-            						lv_importedNamespace_1_0,
+            						"package",
+            						lv_package_1_0,
             						"de.cau.cs.kieler.spviz.spviz.SPViz.QualifiedName");
             					afterParserOrEnumRuleCall();
             				
@@ -178,17 +182,52 @@ public class InternalSPVizParser extends AbstractInternalAntlrParser {
 
             otherlv_2=(Token)match(input,12,FOLLOW_3); 
 
-            			newLeafNode(otherlv_2, grammarAccess.getSPVizAccess().getSPVizKeyword_2());
+            			newLeafNode(otherlv_2, grammarAccess.getSPVizAccess().getUseKeyword_2());
             		
-            // InternalSPViz.g:106:3: ( (lv_name_3_0= RULE_ID ) )
-            // InternalSPViz.g:107:4: (lv_name_3_0= RULE_ID )
+            // InternalSPViz.g:106:3: ( (lv_importedNamespace_3_0= ruleQualifiedName ) )
+            // InternalSPViz.g:107:4: (lv_importedNamespace_3_0= ruleQualifiedName )
             {
-            // InternalSPViz.g:107:4: (lv_name_3_0= RULE_ID )
-            // InternalSPViz.g:108:5: lv_name_3_0= RULE_ID
+            // InternalSPViz.g:107:4: (lv_importedNamespace_3_0= ruleQualifiedName )
+            // InternalSPViz.g:108:5: lv_importedNamespace_3_0= ruleQualifiedName
             {
-            lv_name_3_0=(Token)match(input,RULE_ID,FOLLOW_5); 
 
-            					newLeafNode(lv_name_3_0, grammarAccess.getSPVizAccess().getNameIDTerminalRuleCall_3_0());
+            					newCompositeNode(grammarAccess.getSPVizAccess().getImportedNamespaceQualifiedNameParserRuleCall_3_0());
+            				
+            pushFollow(FOLLOW_5);
+            lv_importedNamespace_3_0=ruleQualifiedName();
+
+            state._fsp--;
+
+
+            					if (current==null) {
+            						current = createModelElementForParent(grammarAccess.getSPVizRule());
+            					}
+            					set(
+            						current,
+            						"importedNamespace",
+            						lv_importedNamespace_3_0,
+            						"de.cau.cs.kieler.spviz.spviz.SPViz.QualifiedName");
+            					afterParserOrEnumRuleCall();
+            				
+
+            }
+
+
+            }
+
+            otherlv_4=(Token)match(input,13,FOLLOW_3); 
+
+            			newLeafNode(otherlv_4, grammarAccess.getSPVizAccess().getSPVizKeyword_4());
+            		
+            // InternalSPViz.g:129:3: ( (lv_name_5_0= RULE_ID ) )
+            // InternalSPViz.g:130:4: (lv_name_5_0= RULE_ID )
+            {
+            // InternalSPViz.g:130:4: (lv_name_5_0= RULE_ID )
+            // InternalSPViz.g:131:5: lv_name_5_0= RULE_ID
+            {
+            lv_name_5_0=(Token)match(input,RULE_ID,FOLLOW_6); 
+
+            					newLeafNode(lv_name_5_0, grammarAccess.getSPVizAccess().getNameIDTerminalRuleCall_5_0());
             				
 
             					if (current==null) {
@@ -197,7 +236,7 @@ public class InternalSPVizParser extends AbstractInternalAntlrParser {
             					setWithLastConsumed(
             						current,
             						"name",
-            						lv_name_3_0,
+            						lv_name_5_0,
             						"org.eclipse.xtext.common.Terminals.ID");
             				
 
@@ -206,11 +245,11 @@ public class InternalSPVizParser extends AbstractInternalAntlrParser {
 
             }
 
-            otherlv_4=(Token)match(input,13,FOLLOW_6); 
+            otherlv_6=(Token)match(input,14,FOLLOW_7); 
 
-            			newLeafNode(otherlv_4, grammarAccess.getSPVizAccess().getLeftCurlyBracketKeyword_4());
+            			newLeafNode(otherlv_6, grammarAccess.getSPVizAccess().getLeftCurlyBracketKeyword_6());
             		
-            // InternalSPViz.g:128:3: ( (lv_views_5_0= ruleView ) )*
+            // InternalSPViz.g:151:3: ( (lv_views_7_0= ruleView ) )*
             loop1:
             do {
                 int alt1=2;
@@ -223,16 +262,16 @@ public class InternalSPVizParser extends AbstractInternalAntlrParser {
 
                 switch (alt1) {
             	case 1 :
-            	    // InternalSPViz.g:129:4: (lv_views_5_0= ruleView )
+            	    // InternalSPViz.g:152:4: (lv_views_7_0= ruleView )
             	    {
-            	    // InternalSPViz.g:129:4: (lv_views_5_0= ruleView )
-            	    // InternalSPViz.g:130:5: lv_views_5_0= ruleView
+            	    // InternalSPViz.g:152:4: (lv_views_7_0= ruleView )
+            	    // InternalSPViz.g:153:5: lv_views_7_0= ruleView
             	    {
 
-            	    					newCompositeNode(grammarAccess.getSPVizAccess().getViewsViewParserRuleCall_5_0());
+            	    					newCompositeNode(grammarAccess.getSPVizAccess().getViewsViewParserRuleCall_7_0());
             	    				
-            	    pushFollow(FOLLOW_6);
-            	    lv_views_5_0=ruleView();
+            	    pushFollow(FOLLOW_7);
+            	    lv_views_7_0=ruleView();
 
             	    state._fsp--;
 
@@ -243,7 +282,7 @@ public class InternalSPVizParser extends AbstractInternalAntlrParser {
             	    					add(
             	    						current,
             	    						"views",
-            	    						lv_views_5_0,
+            	    						lv_views_7_0,
             	    						"de.cau.cs.kieler.spviz.spviz.SPViz.View");
             	    					afterParserOrEnumRuleCall();
             	    				
@@ -259,9 +298,9 @@ public class InternalSPVizParser extends AbstractInternalAntlrParser {
                 }
             } while (true);
 
-            otherlv_6=(Token)match(input,14,FOLLOW_2); 
+            otherlv_8=(Token)match(input,15,FOLLOW_2); 
 
-            			newLeafNode(otherlv_6, grammarAccess.getSPVizAccess().getRightCurlyBracketKeyword_6());
+            			newLeafNode(otherlv_8, grammarAccess.getSPVizAccess().getRightCurlyBracketKeyword_8());
             		
 
             }
@@ -286,7 +325,7 @@ public class InternalSPVizParser extends AbstractInternalAntlrParser {
 
 
     // $ANTLR start "entryRuleView"
-    // InternalSPViz.g:155:1: entryRuleView returns [EObject current=null] : iv_ruleView= ruleView EOF ;
+    // InternalSPViz.g:178:1: entryRuleView returns [EObject current=null] : iv_ruleView= ruleView EOF ;
     public final EObject entryRuleView() throws RecognitionException {
         EObject current = null;
 
@@ -294,8 +333,8 @@ public class InternalSPVizParser extends AbstractInternalAntlrParser {
 
 
         try {
-            // InternalSPViz.g:155:45: (iv_ruleView= ruleView EOF )
-            // InternalSPViz.g:156:2: iv_ruleView= ruleView EOF
+            // InternalSPViz.g:178:45: (iv_ruleView= ruleView EOF )
+            // InternalSPViz.g:179:2: iv_ruleView= ruleView EOF
             {
              newCompositeNode(grammarAccess.getViewRule()); 
             pushFollow(FOLLOW_1);
@@ -322,7 +361,7 @@ public class InternalSPVizParser extends AbstractInternalAntlrParser {
 
 
     // $ANTLR start "ruleView"
-    // InternalSPViz.g:162:1: ruleView returns [EObject current=null] : ( ( (lv_name_0_0= RULE_ID ) ) otherlv_1= '{' ( (lv_shownElements_2_0= ruleShownElement ) )* ( (lv_shownConnections_3_0= ruleShownConnection ) )* otherlv_4= '}' ) ;
+    // InternalSPViz.g:185:1: ruleView returns [EObject current=null] : ( ( (lv_name_0_0= RULE_ID ) ) otherlv_1= '{' ( (lv_shownElements_2_0= ruleShownElement ) )* ( (lv_shownConnections_3_0= ruleShownConnection ) )* otherlv_4= '}' ) ;
     public final EObject ruleView() throws RecognitionException {
         EObject current = null;
 
@@ -338,19 +377,19 @@ public class InternalSPVizParser extends AbstractInternalAntlrParser {
         	enterRule();
 
         try {
-            // InternalSPViz.g:168:2: ( ( ( (lv_name_0_0= RULE_ID ) ) otherlv_1= '{' ( (lv_shownElements_2_0= ruleShownElement ) )* ( (lv_shownConnections_3_0= ruleShownConnection ) )* otherlv_4= '}' ) )
-            // InternalSPViz.g:169:2: ( ( (lv_name_0_0= RULE_ID ) ) otherlv_1= '{' ( (lv_shownElements_2_0= ruleShownElement ) )* ( (lv_shownConnections_3_0= ruleShownConnection ) )* otherlv_4= '}' )
+            // InternalSPViz.g:191:2: ( ( ( (lv_name_0_0= RULE_ID ) ) otherlv_1= '{' ( (lv_shownElements_2_0= ruleShownElement ) )* ( (lv_shownConnections_3_0= ruleShownConnection ) )* otherlv_4= '}' ) )
+            // InternalSPViz.g:192:2: ( ( (lv_name_0_0= RULE_ID ) ) otherlv_1= '{' ( (lv_shownElements_2_0= ruleShownElement ) )* ( (lv_shownConnections_3_0= ruleShownConnection ) )* otherlv_4= '}' )
             {
-            // InternalSPViz.g:169:2: ( ( (lv_name_0_0= RULE_ID ) ) otherlv_1= '{' ( (lv_shownElements_2_0= ruleShownElement ) )* ( (lv_shownConnections_3_0= ruleShownConnection ) )* otherlv_4= '}' )
-            // InternalSPViz.g:170:3: ( (lv_name_0_0= RULE_ID ) ) otherlv_1= '{' ( (lv_shownElements_2_0= ruleShownElement ) )* ( (lv_shownConnections_3_0= ruleShownConnection ) )* otherlv_4= '}'
+            // InternalSPViz.g:192:2: ( ( (lv_name_0_0= RULE_ID ) ) otherlv_1= '{' ( (lv_shownElements_2_0= ruleShownElement ) )* ( (lv_shownConnections_3_0= ruleShownConnection ) )* otherlv_4= '}' )
+            // InternalSPViz.g:193:3: ( (lv_name_0_0= RULE_ID ) ) otherlv_1= '{' ( (lv_shownElements_2_0= ruleShownElement ) )* ( (lv_shownConnections_3_0= ruleShownConnection ) )* otherlv_4= '}'
             {
-            // InternalSPViz.g:170:3: ( (lv_name_0_0= RULE_ID ) )
-            // InternalSPViz.g:171:4: (lv_name_0_0= RULE_ID )
+            // InternalSPViz.g:193:3: ( (lv_name_0_0= RULE_ID ) )
+            // InternalSPViz.g:194:4: (lv_name_0_0= RULE_ID )
             {
-            // InternalSPViz.g:171:4: (lv_name_0_0= RULE_ID )
-            // InternalSPViz.g:172:5: lv_name_0_0= RULE_ID
+            // InternalSPViz.g:194:4: (lv_name_0_0= RULE_ID )
+            // InternalSPViz.g:195:5: lv_name_0_0= RULE_ID
             {
-            lv_name_0_0=(Token)match(input,RULE_ID,FOLLOW_5); 
+            lv_name_0_0=(Token)match(input,RULE_ID,FOLLOW_6); 
 
             					newLeafNode(lv_name_0_0, grammarAccess.getViewAccess().getNameIDTerminalRuleCall_0_0());
             				
@@ -370,32 +409,32 @@ public class InternalSPVizParser extends AbstractInternalAntlrParser {
 
             }
 
-            otherlv_1=(Token)match(input,13,FOLLOW_7); 
+            otherlv_1=(Token)match(input,14,FOLLOW_8); 
 
             			newLeafNode(otherlv_1, grammarAccess.getViewAccess().getLeftCurlyBracketKeyword_1());
             		
-            // InternalSPViz.g:192:3: ( (lv_shownElements_2_0= ruleShownElement ) )*
+            // InternalSPViz.g:215:3: ( (lv_shownElements_2_0= ruleShownElement ) )*
             loop2:
             do {
                 int alt2=2;
                 int LA2_0 = input.LA(1);
 
-                if ( (LA2_0==15) ) {
+                if ( (LA2_0==16) ) {
                     alt2=1;
                 }
 
 
                 switch (alt2) {
             	case 1 :
-            	    // InternalSPViz.g:193:4: (lv_shownElements_2_0= ruleShownElement )
+            	    // InternalSPViz.g:216:4: (lv_shownElements_2_0= ruleShownElement )
             	    {
-            	    // InternalSPViz.g:193:4: (lv_shownElements_2_0= ruleShownElement )
-            	    // InternalSPViz.g:194:5: lv_shownElements_2_0= ruleShownElement
+            	    // InternalSPViz.g:216:4: (lv_shownElements_2_0= ruleShownElement )
+            	    // InternalSPViz.g:217:5: lv_shownElements_2_0= ruleShownElement
             	    {
 
             	    					newCompositeNode(grammarAccess.getViewAccess().getShownElementsShownElementParserRuleCall_2_0());
             	    				
-            	    pushFollow(FOLLOW_7);
+            	    pushFollow(FOLLOW_8);
             	    lv_shownElements_2_0=ruleShownElement();
 
             	    state._fsp--;
@@ -423,28 +462,28 @@ public class InternalSPVizParser extends AbstractInternalAntlrParser {
                 }
             } while (true);
 
-            // InternalSPViz.g:211:3: ( (lv_shownConnections_3_0= ruleShownConnection ) )*
+            // InternalSPViz.g:234:3: ( (lv_shownConnections_3_0= ruleShownConnection ) )*
             loop3:
             do {
                 int alt3=2;
                 int LA3_0 = input.LA(1);
 
-                if ( (LA3_0==17) ) {
+                if ( (LA3_0==18) ) {
                     alt3=1;
                 }
 
 
                 switch (alt3) {
             	case 1 :
-            	    // InternalSPViz.g:212:4: (lv_shownConnections_3_0= ruleShownConnection )
+            	    // InternalSPViz.g:235:4: (lv_shownConnections_3_0= ruleShownConnection )
             	    {
-            	    // InternalSPViz.g:212:4: (lv_shownConnections_3_0= ruleShownConnection )
-            	    // InternalSPViz.g:213:5: lv_shownConnections_3_0= ruleShownConnection
+            	    // InternalSPViz.g:235:4: (lv_shownConnections_3_0= ruleShownConnection )
+            	    // InternalSPViz.g:236:5: lv_shownConnections_3_0= ruleShownConnection
             	    {
 
             	    					newCompositeNode(grammarAccess.getViewAccess().getShownConnectionsShownConnectionParserRuleCall_3_0());
             	    				
-            	    pushFollow(FOLLOW_8);
+            	    pushFollow(FOLLOW_9);
             	    lv_shownConnections_3_0=ruleShownConnection();
 
             	    state._fsp--;
@@ -472,7 +511,7 @@ public class InternalSPVizParser extends AbstractInternalAntlrParser {
                 }
             } while (true);
 
-            otherlv_4=(Token)match(input,14,FOLLOW_2); 
+            otherlv_4=(Token)match(input,15,FOLLOW_2); 
 
             			newLeafNode(otherlv_4, grammarAccess.getViewAccess().getRightCurlyBracketKeyword_4());
             		
@@ -499,7 +538,7 @@ public class InternalSPVizParser extends AbstractInternalAntlrParser {
 
 
     // $ANTLR start "entryRuleShownElement"
-    // InternalSPViz.g:238:1: entryRuleShownElement returns [EObject current=null] : iv_ruleShownElement= ruleShownElement EOF ;
+    // InternalSPViz.g:261:1: entryRuleShownElement returns [EObject current=null] : iv_ruleShownElement= ruleShownElement EOF ;
     public final EObject entryRuleShownElement() throws RecognitionException {
         EObject current = null;
 
@@ -507,8 +546,8 @@ public class InternalSPVizParser extends AbstractInternalAntlrParser {
 
 
         try {
-            // InternalSPViz.g:238:53: (iv_ruleShownElement= ruleShownElement EOF )
-            // InternalSPViz.g:239:2: iv_ruleShownElement= ruleShownElement EOF
+            // InternalSPViz.g:261:53: (iv_ruleShownElement= ruleShownElement EOF )
+            // InternalSPViz.g:262:2: iv_ruleShownElement= ruleShownElement EOF
             {
              newCompositeNode(grammarAccess.getShownElementRule()); 
             pushFollow(FOLLOW_1);
@@ -535,7 +574,7 @@ public class InternalSPVizParser extends AbstractInternalAntlrParser {
 
 
     // $ANTLR start "ruleShownElement"
-    // InternalSPViz.g:245:1: ruleShownElement returns [EObject current=null] : (otherlv_0= 'show' ( ( ruleQualifiedName ) ) (otherlv_2= 'in' ( ( ruleQualifiedName ) ) )? ) ;
+    // InternalSPViz.g:268:1: ruleShownElement returns [EObject current=null] : (otherlv_0= 'show' ( ( ruleQualifiedName ) ) (otherlv_2= 'in' ( ( ruleQualifiedName ) ) )? ) ;
     public final EObject ruleShownElement() throws RecognitionException {
         EObject current = null;
 
@@ -546,21 +585,21 @@ public class InternalSPVizParser extends AbstractInternalAntlrParser {
         	enterRule();
 
         try {
-            // InternalSPViz.g:251:2: ( (otherlv_0= 'show' ( ( ruleQualifiedName ) ) (otherlv_2= 'in' ( ( ruleQualifiedName ) ) )? ) )
-            // InternalSPViz.g:252:2: (otherlv_0= 'show' ( ( ruleQualifiedName ) ) (otherlv_2= 'in' ( ( ruleQualifiedName ) ) )? )
+            // InternalSPViz.g:274:2: ( (otherlv_0= 'show' ( ( ruleQualifiedName ) ) (otherlv_2= 'in' ( ( ruleQualifiedName ) ) )? ) )
+            // InternalSPViz.g:275:2: (otherlv_0= 'show' ( ( ruleQualifiedName ) ) (otherlv_2= 'in' ( ( ruleQualifiedName ) ) )? )
             {
-            // InternalSPViz.g:252:2: (otherlv_0= 'show' ( ( ruleQualifiedName ) ) (otherlv_2= 'in' ( ( ruleQualifiedName ) ) )? )
-            // InternalSPViz.g:253:3: otherlv_0= 'show' ( ( ruleQualifiedName ) ) (otherlv_2= 'in' ( ( ruleQualifiedName ) ) )?
+            // InternalSPViz.g:275:2: (otherlv_0= 'show' ( ( ruleQualifiedName ) ) (otherlv_2= 'in' ( ( ruleQualifiedName ) ) )? )
+            // InternalSPViz.g:276:3: otherlv_0= 'show' ( ( ruleQualifiedName ) ) (otherlv_2= 'in' ( ( ruleQualifiedName ) ) )?
             {
-            otherlv_0=(Token)match(input,15,FOLLOW_3); 
+            otherlv_0=(Token)match(input,16,FOLLOW_3); 
 
             			newLeafNode(otherlv_0, grammarAccess.getShownElementAccess().getShowKeyword_0());
             		
-            // InternalSPViz.g:257:3: ( ( ruleQualifiedName ) )
-            // InternalSPViz.g:258:4: ( ruleQualifiedName )
+            // InternalSPViz.g:280:3: ( ( ruleQualifiedName ) )
+            // InternalSPViz.g:281:4: ( ruleQualifiedName )
             {
-            // InternalSPViz.g:258:4: ( ruleQualifiedName )
-            // InternalSPViz.g:259:5: ruleQualifiedName
+            // InternalSPViz.g:281:4: ( ruleQualifiedName )
+            // InternalSPViz.g:282:5: ruleQualifiedName
             {
 
             					if (current==null) {
@@ -570,7 +609,7 @@ public class InternalSPVizParser extends AbstractInternalAntlrParser {
 
             					newCompositeNode(grammarAccess.getShownElementAccess().getShownElementArtifactCrossReference_1_0());
             				
-            pushFollow(FOLLOW_9);
+            pushFollow(FOLLOW_10);
             ruleQualifiedName();
 
             state._fsp--;
@@ -584,26 +623,26 @@ public class InternalSPVizParser extends AbstractInternalAntlrParser {
 
             }
 
-            // InternalSPViz.g:273:3: (otherlv_2= 'in' ( ( ruleQualifiedName ) ) )?
+            // InternalSPViz.g:296:3: (otherlv_2= 'in' ( ( ruleQualifiedName ) ) )?
             int alt4=2;
             int LA4_0 = input.LA(1);
 
-            if ( (LA4_0==16) ) {
+            if ( (LA4_0==17) ) {
                 alt4=1;
             }
             switch (alt4) {
                 case 1 :
-                    // InternalSPViz.g:274:4: otherlv_2= 'in' ( ( ruleQualifiedName ) )
+                    // InternalSPViz.g:297:4: otherlv_2= 'in' ( ( ruleQualifiedName ) )
                     {
-                    otherlv_2=(Token)match(input,16,FOLLOW_3); 
+                    otherlv_2=(Token)match(input,17,FOLLOW_3); 
 
                     				newLeafNode(otherlv_2, grammarAccess.getShownElementAccess().getInKeyword_2_0());
                     			
-                    // InternalSPViz.g:278:4: ( ( ruleQualifiedName ) )
-                    // InternalSPViz.g:279:5: ( ruleQualifiedName )
+                    // InternalSPViz.g:301:4: ( ( ruleQualifiedName ) )
+                    // InternalSPViz.g:302:5: ( ruleQualifiedName )
                     {
-                    // InternalSPViz.g:279:5: ( ruleQualifiedName )
-                    // InternalSPViz.g:280:6: ruleQualifiedName
+                    // InternalSPViz.g:302:5: ( ruleQualifiedName )
+                    // InternalSPViz.g:303:6: ruleQualifiedName
                     {
 
                     						if (current==null) {
@@ -656,7 +695,7 @@ public class InternalSPVizParser extends AbstractInternalAntlrParser {
 
 
     // $ANTLR start "entryRuleShownConnection"
-    // InternalSPViz.g:299:1: entryRuleShownConnection returns [EObject current=null] : iv_ruleShownConnection= ruleShownConnection EOF ;
+    // InternalSPViz.g:322:1: entryRuleShownConnection returns [EObject current=null] : iv_ruleShownConnection= ruleShownConnection EOF ;
     public final EObject entryRuleShownConnection() throws RecognitionException {
         EObject current = null;
 
@@ -664,8 +703,8 @@ public class InternalSPVizParser extends AbstractInternalAntlrParser {
 
 
         try {
-            // InternalSPViz.g:299:56: (iv_ruleShownConnection= ruleShownConnection EOF )
-            // InternalSPViz.g:300:2: iv_ruleShownConnection= ruleShownConnection EOF
+            // InternalSPViz.g:322:56: (iv_ruleShownConnection= ruleShownConnection EOF )
+            // InternalSPViz.g:323:2: iv_ruleShownConnection= ruleShownConnection EOF
             {
              newCompositeNode(grammarAccess.getShownConnectionRule()); 
             pushFollow(FOLLOW_1);
@@ -692,7 +731,7 @@ public class InternalSPVizParser extends AbstractInternalAntlrParser {
 
 
     // $ANTLR start "ruleShownConnection"
-    // InternalSPViz.g:306:1: ruleShownConnection returns [EObject current=null] : (otherlv_0= 'connect' ( ( ruleQualifiedName ) ) (otherlv_2= 'via' ( ( ruleQualifiedName ) ) )? ) ;
+    // InternalSPViz.g:329:1: ruleShownConnection returns [EObject current=null] : (otherlv_0= 'connect' ( ( ruleQualifiedName ) ) (otherlv_2= 'via' ( ( ruleQualifiedName ) ) )? ) ;
     public final EObject ruleShownConnection() throws RecognitionException {
         EObject current = null;
 
@@ -703,21 +742,21 @@ public class InternalSPVizParser extends AbstractInternalAntlrParser {
         	enterRule();
 
         try {
-            // InternalSPViz.g:312:2: ( (otherlv_0= 'connect' ( ( ruleQualifiedName ) ) (otherlv_2= 'via' ( ( ruleQualifiedName ) ) )? ) )
-            // InternalSPViz.g:313:2: (otherlv_0= 'connect' ( ( ruleQualifiedName ) ) (otherlv_2= 'via' ( ( ruleQualifiedName ) ) )? )
+            // InternalSPViz.g:335:2: ( (otherlv_0= 'connect' ( ( ruleQualifiedName ) ) (otherlv_2= 'via' ( ( ruleQualifiedName ) ) )? ) )
+            // InternalSPViz.g:336:2: (otherlv_0= 'connect' ( ( ruleQualifiedName ) ) (otherlv_2= 'via' ( ( ruleQualifiedName ) ) )? )
             {
-            // InternalSPViz.g:313:2: (otherlv_0= 'connect' ( ( ruleQualifiedName ) ) (otherlv_2= 'via' ( ( ruleQualifiedName ) ) )? )
-            // InternalSPViz.g:314:3: otherlv_0= 'connect' ( ( ruleQualifiedName ) ) (otherlv_2= 'via' ( ( ruleQualifiedName ) ) )?
+            // InternalSPViz.g:336:2: (otherlv_0= 'connect' ( ( ruleQualifiedName ) ) (otherlv_2= 'via' ( ( ruleQualifiedName ) ) )? )
+            // InternalSPViz.g:337:3: otherlv_0= 'connect' ( ( ruleQualifiedName ) ) (otherlv_2= 'via' ( ( ruleQualifiedName ) ) )?
             {
-            otherlv_0=(Token)match(input,17,FOLLOW_3); 
+            otherlv_0=(Token)match(input,18,FOLLOW_3); 
 
             			newLeafNode(otherlv_0, grammarAccess.getShownConnectionAccess().getConnectKeyword_0());
             		
-            // InternalSPViz.g:318:3: ( ( ruleQualifiedName ) )
-            // InternalSPViz.g:319:4: ( ruleQualifiedName )
+            // InternalSPViz.g:341:3: ( ( ruleQualifiedName ) )
+            // InternalSPViz.g:342:4: ( ruleQualifiedName )
             {
-            // InternalSPViz.g:319:4: ( ruleQualifiedName )
-            // InternalSPViz.g:320:5: ruleQualifiedName
+            // InternalSPViz.g:342:4: ( ruleQualifiedName )
+            // InternalSPViz.g:343:5: ruleQualifiedName
             {
 
             					if (current==null) {
@@ -727,7 +766,7 @@ public class InternalSPVizParser extends AbstractInternalAntlrParser {
 
             					newCompositeNode(grammarAccess.getShownConnectionAccess().getShownConnectionConnectionCrossReference_1_0());
             				
-            pushFollow(FOLLOW_10);
+            pushFollow(FOLLOW_11);
             ruleQualifiedName();
 
             state._fsp--;
@@ -741,26 +780,26 @@ public class InternalSPVizParser extends AbstractInternalAntlrParser {
 
             }
 
-            // InternalSPViz.g:334:3: (otherlv_2= 'via' ( ( ruleQualifiedName ) ) )?
+            // InternalSPViz.g:357:3: (otherlv_2= 'via' ( ( ruleQualifiedName ) ) )?
             int alt5=2;
             int LA5_0 = input.LA(1);
 
-            if ( (LA5_0==18) ) {
+            if ( (LA5_0==19) ) {
                 alt5=1;
             }
             switch (alt5) {
                 case 1 :
-                    // InternalSPViz.g:335:4: otherlv_2= 'via' ( ( ruleQualifiedName ) )
+                    // InternalSPViz.g:358:4: otherlv_2= 'via' ( ( ruleQualifiedName ) )
                     {
-                    otherlv_2=(Token)match(input,18,FOLLOW_3); 
+                    otherlv_2=(Token)match(input,19,FOLLOW_3); 
 
                     				newLeafNode(otherlv_2, grammarAccess.getShownConnectionAccess().getViaKeyword_2_0());
                     			
-                    // InternalSPViz.g:339:4: ( ( ruleQualifiedName ) )
-                    // InternalSPViz.g:340:5: ( ruleQualifiedName )
+                    // InternalSPViz.g:362:4: ( ( ruleQualifiedName ) )
+                    // InternalSPViz.g:363:5: ( ruleQualifiedName )
                     {
-                    // InternalSPViz.g:340:5: ( ruleQualifiedName )
-                    // InternalSPViz.g:341:6: ruleQualifiedName
+                    // InternalSPViz.g:363:5: ( ruleQualifiedName )
+                    // InternalSPViz.g:364:6: ruleQualifiedName
                     {
 
                     						if (current==null) {
@@ -813,7 +852,7 @@ public class InternalSPVizParser extends AbstractInternalAntlrParser {
 
 
     // $ANTLR start "entryRuleQualifiedName"
-    // InternalSPViz.g:360:1: entryRuleQualifiedName returns [String current=null] : iv_ruleQualifiedName= ruleQualifiedName EOF ;
+    // InternalSPViz.g:383:1: entryRuleQualifiedName returns [String current=null] : iv_ruleQualifiedName= ruleQualifiedName EOF ;
     public final String entryRuleQualifiedName() throws RecognitionException {
         String current = null;
 
@@ -821,8 +860,8 @@ public class InternalSPVizParser extends AbstractInternalAntlrParser {
 
 
         try {
-            // InternalSPViz.g:360:53: (iv_ruleQualifiedName= ruleQualifiedName EOF )
-            // InternalSPViz.g:361:2: iv_ruleQualifiedName= ruleQualifiedName EOF
+            // InternalSPViz.g:383:53: (iv_ruleQualifiedName= ruleQualifiedName EOF )
+            // InternalSPViz.g:384:2: iv_ruleQualifiedName= ruleQualifiedName EOF
             {
              newCompositeNode(grammarAccess.getQualifiedNameRule()); 
             pushFollow(FOLLOW_1);
@@ -849,7 +888,7 @@ public class InternalSPVizParser extends AbstractInternalAntlrParser {
 
 
     // $ANTLR start "ruleQualifiedName"
-    // InternalSPViz.g:367:1: ruleQualifiedName returns [AntlrDatatypeRuleToken current=new AntlrDatatypeRuleToken()] : (this_ID_0= RULE_ID (kw= '.' this_ID_2= RULE_ID )* ) ;
+    // InternalSPViz.g:390:1: ruleQualifiedName returns [AntlrDatatypeRuleToken current=new AntlrDatatypeRuleToken()] : (this_ID_0= RULE_ID (kw= '.' this_ID_2= RULE_ID )* ) ;
     public final AntlrDatatypeRuleToken ruleQualifiedName() throws RecognitionException {
         AntlrDatatypeRuleToken current = new AntlrDatatypeRuleToken();
 
@@ -861,40 +900,40 @@ public class InternalSPVizParser extends AbstractInternalAntlrParser {
         	enterRule();
 
         try {
-            // InternalSPViz.g:373:2: ( (this_ID_0= RULE_ID (kw= '.' this_ID_2= RULE_ID )* ) )
-            // InternalSPViz.g:374:2: (this_ID_0= RULE_ID (kw= '.' this_ID_2= RULE_ID )* )
+            // InternalSPViz.g:396:2: ( (this_ID_0= RULE_ID (kw= '.' this_ID_2= RULE_ID )* ) )
+            // InternalSPViz.g:397:2: (this_ID_0= RULE_ID (kw= '.' this_ID_2= RULE_ID )* )
             {
-            // InternalSPViz.g:374:2: (this_ID_0= RULE_ID (kw= '.' this_ID_2= RULE_ID )* )
-            // InternalSPViz.g:375:3: this_ID_0= RULE_ID (kw= '.' this_ID_2= RULE_ID )*
+            // InternalSPViz.g:397:2: (this_ID_0= RULE_ID (kw= '.' this_ID_2= RULE_ID )* )
+            // InternalSPViz.g:398:3: this_ID_0= RULE_ID (kw= '.' this_ID_2= RULE_ID )*
             {
-            this_ID_0=(Token)match(input,RULE_ID,FOLLOW_11); 
+            this_ID_0=(Token)match(input,RULE_ID,FOLLOW_12); 
 
             			current.merge(this_ID_0);
             		
 
             			newLeafNode(this_ID_0, grammarAccess.getQualifiedNameAccess().getIDTerminalRuleCall_0());
             		
-            // InternalSPViz.g:382:3: (kw= '.' this_ID_2= RULE_ID )*
+            // InternalSPViz.g:405:3: (kw= '.' this_ID_2= RULE_ID )*
             loop6:
             do {
                 int alt6=2;
                 int LA6_0 = input.LA(1);
 
-                if ( (LA6_0==19) ) {
+                if ( (LA6_0==20) ) {
                     alt6=1;
                 }
 
 
                 switch (alt6) {
             	case 1 :
-            	    // InternalSPViz.g:383:4: kw= '.' this_ID_2= RULE_ID
+            	    // InternalSPViz.g:406:4: kw= '.' this_ID_2= RULE_ID
             	    {
-            	    kw=(Token)match(input,19,FOLLOW_3); 
+            	    kw=(Token)match(input,20,FOLLOW_3); 
 
             	    				current.merge(kw);
             	    				newLeafNode(kw, grammarAccess.getQualifiedNameAccess().getFullStopKeyword_1_0());
             	    			
-            	    this_ID_2=(Token)match(input,RULE_ID,FOLLOW_11); 
+            	    this_ID_2=(Token)match(input,RULE_ID,FOLLOW_12); 
 
             	    				current.merge(this_ID_2);
             	    			
@@ -941,11 +980,12 @@ public class InternalSPVizParser extends AbstractInternalAntlrParser {
     public static final BitSet FOLLOW_3 = new BitSet(new long[]{0x0000000000000010L});
     public static final BitSet FOLLOW_4 = new BitSet(new long[]{0x0000000000001000L});
     public static final BitSet FOLLOW_5 = new BitSet(new long[]{0x0000000000002000L});
-    public static final BitSet FOLLOW_6 = new BitSet(new long[]{0x0000000000004010L});
-    public static final BitSet FOLLOW_7 = new BitSet(new long[]{0x000000000002C000L});
-    public static final BitSet FOLLOW_8 = new BitSet(new long[]{0x0000000000024000L});
-    public static final BitSet FOLLOW_9 = new BitSet(new long[]{0x0000000000010002L});
-    public static final BitSet FOLLOW_10 = new BitSet(new long[]{0x0000000000040002L});
+    public static final BitSet FOLLOW_6 = new BitSet(new long[]{0x0000000000004000L});
+    public static final BitSet FOLLOW_7 = new BitSet(new long[]{0x0000000000008010L});
+    public static final BitSet FOLLOW_8 = new BitSet(new long[]{0x0000000000058000L});
+    public static final BitSet FOLLOW_9 = new BitSet(new long[]{0x0000000000048000L});
+    public static final BitSet FOLLOW_10 = new BitSet(new long[]{0x0000000000020002L});
     public static final BitSet FOLLOW_11 = new BitSet(new long[]{0x0000000000080002L});
+    public static final BitSet FOLLOW_12 = new BitSet(new long[]{0x0000000000100002L});
 
 }

@@ -25,58 +25,69 @@ public class SPVizGrammarAccess extends AbstractElementFinder.AbstractGrammarEle
 	public class SPVizElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "de.cau.cs.kieler.spviz.spviz.SPViz.SPViz");
 		private final Group cGroup = (Group)rule.eContents().get(1);
-		private final Keyword cUseKeyword_0 = (Keyword)cGroup.eContents().get(0);
-		private final Assignment cImportedNamespaceAssignment_1 = (Assignment)cGroup.eContents().get(1);
-		private final RuleCall cImportedNamespaceQualifiedNameParserRuleCall_1_0 = (RuleCall)cImportedNamespaceAssignment_1.eContents().get(0);
-		private final Keyword cSPVizKeyword_2 = (Keyword)cGroup.eContents().get(2);
-		private final Assignment cNameAssignment_3 = (Assignment)cGroup.eContents().get(3);
-		private final RuleCall cNameIDTerminalRuleCall_3_0 = (RuleCall)cNameAssignment_3.eContents().get(0);
-		private final Keyword cLeftCurlyBracketKeyword_4 = (Keyword)cGroup.eContents().get(4);
-		private final Assignment cViewsAssignment_5 = (Assignment)cGroup.eContents().get(5);
-		private final RuleCall cViewsViewParserRuleCall_5_0 = (RuleCall)cViewsAssignment_5.eContents().get(0);
-		private final Keyword cRightCurlyBracketKeyword_6 = (Keyword)cGroup.eContents().get(6);
+		private final Keyword cPackageKeyword_0 = (Keyword)cGroup.eContents().get(0);
+		private final Assignment cPackageAssignment_1 = (Assignment)cGroup.eContents().get(1);
+		private final RuleCall cPackageQualifiedNameParserRuleCall_1_0 = (RuleCall)cPackageAssignment_1.eContents().get(0);
+		private final Keyword cUseKeyword_2 = (Keyword)cGroup.eContents().get(2);
+		private final Assignment cImportedNamespaceAssignment_3 = (Assignment)cGroup.eContents().get(3);
+		private final RuleCall cImportedNamespaceQualifiedNameParserRuleCall_3_0 = (RuleCall)cImportedNamespaceAssignment_3.eContents().get(0);
+		private final Keyword cSPVizKeyword_4 = (Keyword)cGroup.eContents().get(4);
+		private final Assignment cNameAssignment_5 = (Assignment)cGroup.eContents().get(5);
+		private final RuleCall cNameIDTerminalRuleCall_5_0 = (RuleCall)cNameAssignment_5.eContents().get(0);
+		private final Keyword cLeftCurlyBracketKeyword_6 = (Keyword)cGroup.eContents().get(6);
+		private final Assignment cViewsAssignment_7 = (Assignment)cGroup.eContents().get(7);
+		private final RuleCall cViewsViewParserRuleCall_7_0 = (RuleCall)cViewsAssignment_7.eContents().get(0);
+		private final Keyword cRightCurlyBracketKeyword_8 = (Keyword)cGroup.eContents().get(8);
 		
 		//SPViz:
-		//	'use' importedNamespace=QualifiedName // TODO: check how importing of a different model works
+		//	'package' package=QualifiedName
+		//	'use' importedNamespace=QualifiedName
 		//	'SPViz' name=ID '{'
 		//	views+=View*
 		//	'}';
 		@Override public ParserRule getRule() { return rule; }
 		
-		//'use' importedNamespace=QualifiedName // TODO: check how importing of a different model works
-		//'SPViz' name=ID '{' views+=View* '}'
+		//'package' package=QualifiedName 'use' importedNamespace=QualifiedName 'SPViz' name=ID '{' views+=View* '}'
 		public Group getGroup() { return cGroup; }
 		
-		//'use'
-		public Keyword getUseKeyword_0() { return cUseKeyword_0; }
+		//'package'
+		public Keyword getPackageKeyword_0() { return cPackageKeyword_0; }
 		
-		//importedNamespace=QualifiedName
-		public Assignment getImportedNamespaceAssignment_1() { return cImportedNamespaceAssignment_1; }
+		//package=QualifiedName
+		public Assignment getPackageAssignment_1() { return cPackageAssignment_1; }
 		
 		//QualifiedName
-		public RuleCall getImportedNamespaceQualifiedNameParserRuleCall_1_0() { return cImportedNamespaceQualifiedNameParserRuleCall_1_0; }
+		public RuleCall getPackageQualifiedNameParserRuleCall_1_0() { return cPackageQualifiedNameParserRuleCall_1_0; }
 		
-		//// TODO: check how importing of a different model works
+		//'use'
+		public Keyword getUseKeyword_2() { return cUseKeyword_2; }
+		
+		//importedNamespace=QualifiedName
+		public Assignment getImportedNamespaceAssignment_3() { return cImportedNamespaceAssignment_3; }
+		
+		//QualifiedName
+		public RuleCall getImportedNamespaceQualifiedNameParserRuleCall_3_0() { return cImportedNamespaceQualifiedNameParserRuleCall_3_0; }
+		
 		//'SPViz'
-		public Keyword getSPVizKeyword_2() { return cSPVizKeyword_2; }
+		public Keyword getSPVizKeyword_4() { return cSPVizKeyword_4; }
 		
 		//name=ID
-		public Assignment getNameAssignment_3() { return cNameAssignment_3; }
+		public Assignment getNameAssignment_5() { return cNameAssignment_5; }
 		
 		//ID
-		public RuleCall getNameIDTerminalRuleCall_3_0() { return cNameIDTerminalRuleCall_3_0; }
+		public RuleCall getNameIDTerminalRuleCall_5_0() { return cNameIDTerminalRuleCall_5_0; }
 		
 		//'{'
-		public Keyword getLeftCurlyBracketKeyword_4() { return cLeftCurlyBracketKeyword_4; }
+		public Keyword getLeftCurlyBracketKeyword_6() { return cLeftCurlyBracketKeyword_6; }
 		
 		//views+=View*
-		public Assignment getViewsAssignment_5() { return cViewsAssignment_5; }
+		public Assignment getViewsAssignment_7() { return cViewsAssignment_7; }
 		
 		//View
-		public RuleCall getViewsViewParserRuleCall_5_0() { return cViewsViewParserRuleCall_5_0; }
+		public RuleCall getViewsViewParserRuleCall_7_0() { return cViewsViewParserRuleCall_7_0; }
 		
 		//'}'
-		public Keyword getRightCurlyBracketKeyword_6() { return cRightCurlyBracketKeyword_6; }
+		public Keyword getRightCurlyBracketKeyword_8() { return cRightCurlyBracketKeyword_8; }
 	}
 	public class ViewElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "de.cau.cs.kieler.spviz.spviz.SPViz.View");
@@ -297,7 +308,8 @@ public class SPVizGrammarAccess extends AbstractElementFinder.AbstractGrammarEle
 
 	
 	//SPViz:
-	//	'use' importedNamespace=QualifiedName // TODO: check how importing of a different model works
+	//	'package' package=QualifiedName
+	//	'use' importedNamespace=QualifiedName
 	//	'SPViz' name=ID '{'
 	//	views+=View*
 	//	'}';

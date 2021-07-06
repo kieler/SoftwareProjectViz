@@ -207,13 +207,13 @@ public interface SPVizModelPackage extends EPackage
   int CONNECTION__NAME = REFERENCE_FEATURE_COUNT + 0;
 
   /**
-   * The feature id for the '<em><b>Connects To</b></em>' reference.
+   * The feature id for the '<em><b>Depends On</b></em>' reference.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int CONNECTION__CONNECTS_TO = REFERENCE_FEATURE_COUNT + 1;
+  int CONNECTION__DEPENDS_ON = REFERENCE_FEATURE_COUNT + 1;
 
   /**
    * The number of structural features of the '<em>Connection</em>' class.
@@ -353,15 +353,15 @@ public interface SPVizModelPackage extends EPackage
   EAttribute getConnection_Name();
 
   /**
-   * Returns the meta object for the reference '{@link de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.Connection#getConnectsTo <em>Connects To</em>}'.
+   * Returns the meta object for the reference '{@link de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.Connection#getDependsOn <em>Depends On</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return the meta object for the reference '<em>Connects To</em>'.
-   * @see de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.Connection#getConnectsTo()
+   * @return the meta object for the reference '<em>Depends On</em>'.
+   * @see de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.Connection#getDependsOn()
    * @see #getConnection()
    * @generated
    */
-  EReference getConnection_ConnectsTo();
+  EReference getConnection_DependsOn();
 
   /**
    * Returns the factory that creates the instances of the model.
@@ -493,12 +493,12 @@ public interface SPVizModelPackage extends EPackage
     EAttribute CONNECTION__NAME = eINSTANCE.getConnection_Name();
 
     /**
-     * The meta object literal for the '<em><b>Connects To</b></em>' reference feature.
+     * The meta object literal for the '<em><b>Depends On</b></em>' reference feature.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
-    EReference CONNECTION__CONNECTS_TO = eINSTANCE.getConnection_ConnectsTo();
+    EReference CONNECTION__DEPENDS_ON = eINSTANCE.getConnection_DependsOn();
 
   }
 

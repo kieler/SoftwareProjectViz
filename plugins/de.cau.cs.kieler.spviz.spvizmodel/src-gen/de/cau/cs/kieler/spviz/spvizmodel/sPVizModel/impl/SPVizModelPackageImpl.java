@@ -262,7 +262,7 @@ public class SPVizModelPackageImpl extends EPackageImpl implements SPVizModelPac
    * @generated
    */
   @Override
-  public EReference getConnection_ConnectsTo()
+  public EReference getConnection_DependsOn()
   {
     return (EReference)connectionEClass.getEStructuralFeatures().get(1);
   }
@@ -314,7 +314,7 @@ public class SPVizModelPackageImpl extends EPackageImpl implements SPVizModelPac
 
     connectionEClass = createEClass(CONNECTION);
     createEAttribute(connectionEClass, CONNECTION__NAME);
-    createEReference(connectionEClass, CONNECTION__CONNECTS_TO);
+    createEReference(connectionEClass, CONNECTION__DEPENDS_ON);
   }
 
   /**
@@ -366,7 +366,7 @@ public class SPVizModelPackageImpl extends EPackageImpl implements SPVizModelPac
 
     initEClass(connectionEClass, Connection.class, "Connection", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
     initEAttribute(getConnection_Name(), ecorePackage.getEString(), "name", null, 0, 1, Connection.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-    initEReference(getConnection_ConnectsTo(), this.getArtifact(), null, "connectsTo", null, 0, 1, Connection.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getConnection_DependsOn(), this.getArtifact(), null, "dependsOn", null, 0, 1, Connection.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
     // Create resource
     createResource(eNS_URI);

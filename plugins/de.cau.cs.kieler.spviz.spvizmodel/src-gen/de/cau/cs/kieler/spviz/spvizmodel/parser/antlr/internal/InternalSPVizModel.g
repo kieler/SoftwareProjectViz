@@ -323,9 +323,9 @@ ruleConnection returns [EObject current=null]
 				}
 			)
 		)
-		otherlv_1='connects'
+		otherlv_1='depends'
 		{
-			newLeafNode(otherlv_1, grammarAccess.getConnectionAccess().getConnectsKeyword_1());
+			newLeafNode(otherlv_1, grammarAccess.getConnectionAccess().getDependsKeyword_1());
 		}
 		(
 			(
@@ -336,7 +336,7 @@ ruleConnection returns [EObject current=null]
 				}
 				otherlv_2=RULE_ID
 				{
-					newLeafNode(otherlv_2, grammarAccess.getConnectionAccess().getConnectsToArtifactCrossReference_2_0());
+					newLeafNode(otherlv_2, grammarAccess.getConnectionAccess().getDependsOnArtifactCrossReference_2_0());
 				}
 			)
 		)

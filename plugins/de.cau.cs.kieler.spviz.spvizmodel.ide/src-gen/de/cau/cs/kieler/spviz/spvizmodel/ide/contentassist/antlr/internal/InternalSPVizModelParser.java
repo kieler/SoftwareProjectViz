@@ -22,7 +22,7 @@ import java.util.ArrayList;
 @SuppressWarnings("all")
 public class InternalSPVizModelParser extends AbstractInternalContentAssistParser {
     public static final String[] tokenNames = new String[] {
-        "<invalid>", "<EOR>", "<DOWN>", "<UP>", "RULE_ID", "RULE_INT", "RULE_STRING", "RULE_ML_COMMENT", "RULE_SL_COMMENT", "RULE_WS", "RULE_ANY_OTHER", "'package'", "'SPVizModel'", "'{'", "'}'", "'contains'", "'connects'", "'.'"
+        "<invalid>", "<EOR>", "<DOWN>", "<UP>", "RULE_ID", "RULE_INT", "RULE_STRING", "RULE_ML_COMMENT", "RULE_SL_COMMENT", "RULE_WS", "RULE_ANY_OTHER", "'package'", "'SPVizModel'", "'{'", "'}'", "'contains'", "'depends'", "'.'"
     };
     public static final int RULE_ID=4;
     public static final int RULE_WS=9;
@@ -1887,21 +1887,21 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "rule__Connection__Group__1__Impl"
-    // InternalSPVizModel.g:640:1: rule__Connection__Group__1__Impl : ( 'connects' ) ;
+    // InternalSPVizModel.g:640:1: rule__Connection__Group__1__Impl : ( 'depends' ) ;
     public final void rule__Connection__Group__1__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:644:1: ( ( 'connects' ) )
-            // InternalSPVizModel.g:645:1: ( 'connects' )
+            // InternalSPVizModel.g:644:1: ( ( 'depends' ) )
+            // InternalSPVizModel.g:645:1: ( 'depends' )
             {
-            // InternalSPVizModel.g:645:1: ( 'connects' )
-            // InternalSPVizModel.g:646:2: 'connects'
+            // InternalSPVizModel.g:645:1: ( 'depends' )
+            // InternalSPVizModel.g:646:2: 'depends'
             {
-             before(grammarAccess.getConnectionAccess().getConnectsKeyword_1()); 
+             before(grammarAccess.getConnectionAccess().getDependsKeyword_1()); 
             match(input,16,FOLLOW_2); 
-             after(grammarAccess.getConnectionAccess().getConnectsKeyword_1()); 
+             after(grammarAccess.getConnectionAccess().getDependsKeyword_1()); 
 
             }
 
@@ -1957,31 +1957,31 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "rule__Connection__Group__2__Impl"
-    // InternalSPVizModel.g:666:1: rule__Connection__Group__2__Impl : ( ( rule__Connection__ConnectsToAssignment_2 ) ) ;
+    // InternalSPVizModel.g:666:1: rule__Connection__Group__2__Impl : ( ( rule__Connection__DependsOnAssignment_2 ) ) ;
     public final void rule__Connection__Group__2__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:670:1: ( ( ( rule__Connection__ConnectsToAssignment_2 ) ) )
-            // InternalSPVizModel.g:671:1: ( ( rule__Connection__ConnectsToAssignment_2 ) )
+            // InternalSPVizModel.g:670:1: ( ( ( rule__Connection__DependsOnAssignment_2 ) ) )
+            // InternalSPVizModel.g:671:1: ( ( rule__Connection__DependsOnAssignment_2 ) )
             {
-            // InternalSPVizModel.g:671:1: ( ( rule__Connection__ConnectsToAssignment_2 ) )
-            // InternalSPVizModel.g:672:2: ( rule__Connection__ConnectsToAssignment_2 )
+            // InternalSPVizModel.g:671:1: ( ( rule__Connection__DependsOnAssignment_2 ) )
+            // InternalSPVizModel.g:672:2: ( rule__Connection__DependsOnAssignment_2 )
             {
-             before(grammarAccess.getConnectionAccess().getConnectsToAssignment_2()); 
-            // InternalSPVizModel.g:673:2: ( rule__Connection__ConnectsToAssignment_2 )
-            // InternalSPVizModel.g:673:3: rule__Connection__ConnectsToAssignment_2
+             before(grammarAccess.getConnectionAccess().getDependsOnAssignment_2()); 
+            // InternalSPVizModel.g:673:2: ( rule__Connection__DependsOnAssignment_2 )
+            // InternalSPVizModel.g:673:3: rule__Connection__DependsOnAssignment_2
             {
             pushFollow(FOLLOW_2);
-            rule__Connection__ConnectsToAssignment_2();
+            rule__Connection__DependsOnAssignment_2();
 
             state._fsp--;
 
 
             }
 
-             after(grammarAccess.getConnectionAccess().getConnectsToAssignment_2()); 
+             after(grammarAccess.getConnectionAccess().getDependsOnAssignment_2()); 
 
             }
 
@@ -2600,9 +2600,9 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
     // $ANTLR end "rule__Connection__NameAssignment_0"
 
 
-    // $ANTLR start "rule__Connection__ConnectsToAssignment_2"
-    // InternalSPVizModel.g:899:1: rule__Connection__ConnectsToAssignment_2 : ( ( RULE_ID ) ) ;
-    public final void rule__Connection__ConnectsToAssignment_2() throws RecognitionException {
+    // $ANTLR start "rule__Connection__DependsOnAssignment_2"
+    // InternalSPVizModel.g:899:1: rule__Connection__DependsOnAssignment_2 : ( ( RULE_ID ) ) ;
+    public final void rule__Connection__DependsOnAssignment_2() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
@@ -2613,17 +2613,17 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
             // InternalSPVizModel.g:904:2: ( ( RULE_ID ) )
             // InternalSPVizModel.g:905:3: ( RULE_ID )
             {
-             before(grammarAccess.getConnectionAccess().getConnectsToArtifactCrossReference_2_0()); 
+             before(grammarAccess.getConnectionAccess().getDependsOnArtifactCrossReference_2_0()); 
             // InternalSPVizModel.g:906:3: ( RULE_ID )
             // InternalSPVizModel.g:907:4: RULE_ID
             {
-             before(grammarAccess.getConnectionAccess().getConnectsToArtifactIDTerminalRuleCall_2_0_1()); 
+             before(grammarAccess.getConnectionAccess().getDependsOnArtifactIDTerminalRuleCall_2_0_1()); 
             match(input,RULE_ID,FOLLOW_2); 
-             after(grammarAccess.getConnectionAccess().getConnectsToArtifactIDTerminalRuleCall_2_0_1()); 
+             after(grammarAccess.getConnectionAccess().getDependsOnArtifactIDTerminalRuleCall_2_0_1()); 
 
             }
 
-             after(grammarAccess.getConnectionAccess().getConnectsToArtifactCrossReference_2_0()); 
+             after(grammarAccess.getConnectionAccess().getDependsOnArtifactCrossReference_2_0()); 
 
             }
 
@@ -2642,7 +2642,7 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
         }
         return ;
     }
-    // $ANTLR end "rule__Connection__ConnectsToAssignment_2"
+    // $ANTLR end "rule__Connection__DependsOnAssignment_2"
 
     // Delegated rules
 
