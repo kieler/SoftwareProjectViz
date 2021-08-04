@@ -32,16 +32,16 @@ View returns View:
 ;
 
 ShownElement returns ShownElement:
-	'show' shownElement=[spvizmodel::Artifact|QualifiedName]
+	'show' shownElement=[spvizmodel::Artifact|QualifiedName] // TODO: this should be an artifact defined in the imported model
 	(
-		'in' containedIn=[spvizmodel::Artifact|QualifiedName]
+		'in' containedIn=[spvizmodel::Artifact|QualifiedName] // TODO: this should be an artifact defined in the imported model
 	)?
 ;
 
 ShownConnection returns ShownConnection:
-	'connect' shownConnection=[spvizmodel::Connection|QualifiedName]
+	'connect' shownConnection=[spvizmodel::Connection|QualifiedName] // TODO: this should be an artifact defined in the imported model
 	(
-		'via' via=[spvizmodel::Artifact|QualifiedName]
+		'via' via=[spvizmodel::Artifact|QualifiedName] // TODO: this should be an artifact defined in the imported model
 	)?
 ;
 

@@ -9,19 +9,20 @@ import de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.Artifact
  * Simplifies access to the data in a SPViz representation
  */
 class DataAccess {
-	String packageName
-	String importedNamespace
-	String visualizationName
-	String projectName
-	String[] artifacts
-	String[] overviews
-	LinkedHashMap<String, ArrayList<String[]>> requiredArtifacts
-	LinkedHashMap<String, ArrayList<String[]>> requiringArtifacts
-	LinkedHashMap<String, String[]> artifactsInOverviews
-	LinkedHashMap<String, ArrayList<String[]>> overviewContentConnections
+	final String packageName
+	final String importedNamespace
+	final String visualizationName
+	final String projectName
+	final String[] artifacts
+	final String[] overviews
+	final LinkedHashMap<String, ArrayList<String[]>> requiredArtifacts
+	final LinkedHashMap<String, ArrayList<String[]>> requiringArtifacts
+	final LinkedHashMap<String, String[]> artifactsInOverviews
+	final LinkedHashMap<String, ArrayList<String[]>> overviewContentConnections
 	
 	/**
-	 * Constructor
+	 * Creates a DataAccess Object for a more convenient access to the data
+	 * contained within the given {@link SPViz} model via class methods.
 	 * 
 	 * @param spviz
 	 * 		a SPViz containing the required data
@@ -39,7 +40,7 @@ class DataAccess {
 		val ArrayList<String> artifactList = newArrayList()
 		overviews = newArrayOfSize(spviz.views.size);
 		
-		for(var i=0; i<spviz.views.size; i++){
+		for(var i=0; i<spviz.views.size; i++) {
 			val view = spviz.views.get(i)
 			overviews.set(i, view.name)
 			val String[] shownElements = newArrayOfSize(view.shownElements.size)
@@ -53,7 +54,7 @@ class DataAccess {
 			artifactsInOverviews.put(view.name, shownElements)
 		
 			// find all connections between artifacts
-			for(var j=0; j<view.shownConnections.size; j++){
+			for(var j=0; j<view.shownConnections.size; j++) {
 				val connection = view.shownConnections.get(j).shownConnection
 				val connectionName = connection.name
 				val requiring = (connection.eContainer as Artifact).name
@@ -90,7 +91,7 @@ class DataAccess {
 		}
 		
 		artifacts = newArrayOfSize(artifactList.size)
-		for(var i=0; i<artifactList.size; i++){
+		for(var i=0; i<artifactList.size; i++) {
 			artifacts.set(i, artifactList.get(i))
 		}
 	}
@@ -117,7 +118,7 @@ class DataAccess {
 	 * 		List of the required artifact names
 	 */
 	def ArrayList<String[]> getRequiredArtifacts (String requiring) { 
-		if (!requiredArtifacts.containsKey(requiring)){
+		if (!requiredArtifacts.containsKey(requiring)) {
 			return newArrayList
 		}
 		return requiredArtifacts.get(requiring)
@@ -132,7 +133,7 @@ class DataAccess {
 	 * 		List of the requiring artifact names
 	 */
 	def ArrayList<String[]> getRequiringArtifacts (String required) {
-		if (!requiringArtifacts.containsKey(required)){
+		if (!requiringArtifacts.containsKey(required)) {
 			return newArrayList
 		}
 		return requiringArtifacts.get(required)
@@ -149,15 +150,15 @@ class DataAccess {
 	 */
 	def ArrayList<String[]> getRequiredArtifactsInOverview (String requiring, String overview) { 
 		val ArrayList<String[]> requiredPairs = newArrayList
-		if (!requiredArtifacts.containsKey(requiring)){
+		if (!requiredArtifacts.containsKey(requiring)) {
 			return requiredPairs
 		}
-		for(requiredConnectionNameAndArtifact : requiredArtifacts.get(requiring)){
+		for(requiredConnectionNameAndArtifact : requiredArtifacts.get(requiring)) {
 			val String[] connection = newArrayOfSize(3)
 			connection.set(0, requiredConnectionNameAndArtifact.get(0))
 			connection.set(1, requiring)
 			connection.set(2, requiredConnectionNameAndArtifact.get(1))
-			if(isConnectionDisplayedInOverview(overview, connection)){
+			if(isConnectionDisplayedInOverview(overview, connection)) {
 				requiredPairs.add(requiredConnectionNameAndArtifact)
 			}
 		}
@@ -175,15 +176,15 @@ class DataAccess {
 	 */
 	def ArrayList<String[]> getRequiringArtifactsInOverview (String required, String overview) {
 		val ArrayList<String[]> requiringPairs = newArrayList
-		if (!requiringArtifacts.containsKey(required)){
+		if (!requiringArtifacts.containsKey(required)) {
 			return requiringPairs
 		}
-		for(requiringConnectionNameAndArtifact : requiringArtifacts.get(required)){
+		for(requiringConnectionNameAndArtifact : requiringArtifacts.get(required)) {
 			val String[] connection = newArrayOfSize(3)
 			connection.set(0, requiringConnectionNameAndArtifact.get(0))
 			connection.set(1, requiringConnectionNameAndArtifact.get(1))
 			connection.set(2, required)
-			if(isConnectionDisplayedInOverview(overview, connection)){
+			if(isConnectionDisplayedInOverview(overview, connection)) {
 				requiringPairs.add(requiringConnectionNameAndArtifact)
 			}
 		}
@@ -199,7 +200,7 @@ class DataAccess {
 	 * 		List of the artifacts shown in an overview
 	 */
 	def String[] getDisplayedArtifacts (String overviewName) { 
-		if (!artifactsInOverviews.containsKey(overviewName)){
+		if (!artifactsInOverviews.containsKey(overviewName)) {
 			return #[]
 		}
 		return artifactsInOverviews.get(overviewName)
@@ -216,7 +217,7 @@ class DataAccess {
 	 * 			[connection name, requiring artifact name, required artifact name]
 	 */
 	def ArrayList<String[]> getOverviewConnections (String overviewName) {
-		if (!overviewContentConnections.containsKey(overviewName)){
+		if (!overviewContentConnections.containsKey(overviewName)) {
 			return newArrayList
 		}
 		return overviewContentConnections.get(overviewName)
@@ -231,26 +232,25 @@ class DataAccess {
 	 * 		an overview as a string
 	 */
 	def String getOverview (String artifact) {
-		for(overview : overviews)
-		for(overviewArtifact : getDisplayedArtifacts(overview)) {
-			if(overviewArtifact == artifact)
-				return overview
+		for(overview : overviews) {
+			for(overviewArtifact : getDisplayedArtifacts(overview)) {
+				if(overviewArtifact == artifact) return overview
+			}
 		}
 		System.out.println("artifact "+ artifact +" not found in any overview")
 		return ""
 	}
 	
 	def boolean isConnectionDisplayedInOverview(String overview, String[] connection){
-		for(overviewConnection : getOverviewConnections(overview)){
+		for(overviewConnection : getOverviewConnections(overview)) {
 			if(overviewConnection.get(0) == connection.get(0)
 				&& overviewConnection.get(1) == connection.get(1)
 				&& overviewConnection.get(2) == connection.get(2) 
-			){
+			) {
 				return true
 			}
 		}
 		return false
 	}
-	
 	
 }

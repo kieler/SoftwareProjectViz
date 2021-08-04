@@ -214,10 +214,10 @@ class GenerateSyntheses {
 «««			import «spviz.packageName».viz.actions.FocusAction
 			import «spviz.packageName».viz.actions.OverviewContextCollapseExpandAction
 			«FOR overview : spviz.overviews»
-			«FOR connection : spviz.getOverviewConnections(overview)»
-				import «spviz.packageName».viz.actions.RevealRequired«connection.get(0)»«connection.get(2)»sAction
-				import «spviz.packageName».viz.actions.RevealRequiring«connection.get(0)»«connection.get(1)»sAction
-			«ENDFOR»
+				«FOR connection : spviz.getOverviewConnections(overview)»
+					import «spviz.packageName».viz.actions.RevealRequired«connection.get(0)»«connection.get(2)»sAction
+					import «spviz.packageName».viz.actions.RevealRequiring«connection.get(0)»«connection.get(1)»sAction
+				«ENDFOR»
 			«ENDFOR»
 «««			import «spviz.packageName».viz.actions.SelectRelatedAction
 			import «spviz.packageName».viz.actions.UndoAction
@@ -242,10 +242,10 @@ class GenerateSyntheses {
 					.registerAction(OverviewContextCollapseExpandAction.ID, new OverviewContextCollapseExpandAction)
 «««					.registerAction(ConnectAllAction.ID, new ConnectAllAction)
 					«FOR overview : spviz.overviews»
-					«FOR connection : spviz.getOverviewConnections(overview)»
-						.registerAction(RevealRequired«connection.get(0)»«connection.get(2)»sAction.ID, new RevealRequired«connection.get(0)»«connection.get(2)»sAction)
-						.registerAction(RevealRequiring«connection.get(0)»«connection.get(1)»sAction.ID, new RevealRequiring«connection.get(0)»«connection.get(1)»sAction)
-					«ENDFOR»
+						«FOR connection : spviz.getOverviewConnections(overview)»
+							.registerAction(RevealRequired«connection.get(0)»«connection.get(2)»sAction.ID, new RevealRequired«connection.get(0)»«connection.get(2)»sAction)
+							.registerAction(RevealRequiring«connection.get(0)»«connection.get(1)»sAction.ID, new RevealRequiring«connection.get(0)»«connection.get(1)»sAction)
+						«ENDFOR»
 					«ENDFOR»
 					.registerDiagramSynthesisClass(DiagramSynthesis.name, DiagramSynthesis)
 «««					.registerDiagramSynthesisClass(OsgiVizSynthesis.name, OsgiVizSynthesis)

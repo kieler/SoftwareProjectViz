@@ -29,13 +29,15 @@ import java.util.ArrayList
  */
 class SPVizModelGenerator extends AbstractGenerator {
 	
+	/**
+	 *TODO: directly generate a project model project 
+	 */
+	 
 	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
 		val SPVizModel model =  resource.contents.head as SPVizModel
 		
 		val String fileContent = xcoreContent(model)		
 		fsa.generateFile(model.name + 'Model.xcore', fileContent)
-		// TODO: generate a project model project from this xcore file and build it.
-		// Template files that are then filled with data from here are probably the way to go.
 	}
 	
 	/**

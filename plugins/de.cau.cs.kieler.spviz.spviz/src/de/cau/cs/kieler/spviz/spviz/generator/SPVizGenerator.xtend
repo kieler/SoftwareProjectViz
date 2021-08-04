@@ -28,12 +28,10 @@ class SPVizGenerator extends AbstractGenerator {
 	/**
 	 * TODO: add flags and a class for each 'via' connection (look at 'UsedPackagesOfBundleEdgeConnection' for reference) 
 	 * 
-	 * TODO: generate a visualization context model project from this xcore file and build it.
-	 * Template files that are then filled with data from here are probably the way to go.
+	 * TODO: directly generate a visualization model project 
 	 * 
-	 * TODO: generate a visualization project based on the model project and the visualization context project.
-	 * Start with a shallow cut through this to get a visualization going, work on details and more functionality later.
-	*/
+	 * TODO: directly generate a visualization project based on the model project and the visualization model project.
+	 */
 	
 	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
 		println("Generate visualization for " + resource.contents.head?.class)
@@ -76,7 +74,7 @@ class SPVizGenerator extends AbstractGenerator {
 			///////////////////////////////////////////////////////////////////////////////////////
 			
 			/*
-			 * Interface for visualization contexts of the (OSGi) model synthesis. Each context may contain child contexts, where each
+			 * Interface for visualization contexts of the model synthesis. Each context may contain child contexts, where each
 			 * context will give the synthesis additional information in which state parts of the model should be generated in.
 			 * 
 			 * @param <M> The model element class this visualization context is for.
