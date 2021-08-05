@@ -11,8 +11,8 @@
   <!-- Define a few properties used throughout all build profiles. -->
   <properties>
     <tycho-version>1.7.0</tycho-version>
-    <xtext-version>2.22.0</xtext-version>
-    <targetJdk>1.8</targetJdk>
+    <xtext-version>2.25.0</xtext-version>
+    <targetJdk>11</targetJdk>
     
     <!-- Non-breakable space, as normal spaces are trimmed. -->
     <sourceFeatureLabelSuffix>&#xA0;(Sources)</sourceFeatureLabelSuffix>
@@ -41,11 +41,10 @@
         <module>../plugins/de.cau.cs.kieler.spviz.spvizmodel.ui</module>
         <module>../features/de.cau.cs.kieler.spviz.feature</module>
         <module>../features/de.cau.cs.kieler.spviz.ui.feature</module>
-        <module>../tests/de.cau.cs.kieler.spviz.spviz.tests</module>
-        <!-- Comment back in if we get UI tests -->
-        <!-- <module>../tests/de.cau.cs.kieler.spviz.spviz.ui.tests</module> -->
-        <module>../tests/de.cau.cs.kieler.spviz.spvizmodel.tests</module>
-        <!-- <module>../tests/de.cau.cs.kieler.spviz.spvizmodel.ui.tests</module> -->
+        <module>../plugins/de.cau.cs.kieler.spviz.spviz.tests</module>
+        <!-- <module>../plugins/de.cau.cs.kieler.spviz.spviz.ui.tests</module> -->
+        <module>../plugins/de.cau.cs.kieler.spviz.spvizmodel.tests</module>
+        <!-- <module>../plugins/de.cau.cs.kieler.spviz.spvizmodel.ui.tests</module> -->
         <module>de.cau.cs.kieler.spviz.repository</module>
       </modules>
     </profile>
