@@ -1,0 +1,25 @@
+package de.cau.cs.kieler.spviz.osgi
+
+SPVizModel OSGi {
+	Product {
+		contains Feature
+		contains Bundle
+	}
+	Feature {
+		contains Bundle
+	}
+	Bundle {
+		Dependency depends Bundle
+		PackageDependency depends Package
+		contains ServiceInterface
+		contains ServiceComponent
+		contains Package
+	}
+	ServiceInterface {
+		Required depends ServiceComponent
+	}
+	ServiceComponent {
+		Required depends ServiceInterface
+	}
+	Package
+}
