@@ -1,0 +1,16 @@
+package de.cau.cs.kieler.spviz.osgiviz
+use de.cau.cs.kieler.spviz.osgi
+
+SPViz OSGiViz {
+	Services {
+		show OSGi.ServiceInterface
+		show OSGi.ServiceComponent
+		connect OSGi.ServiceComponent.Required
+		connect OSGi.ServiceInterface.Required
+	}
+	BundleDependencies { 
+		show OSGi.Bundle
+		connect OSGi.Bundle.Dependency
+//		connect OSGi.Bundle via OSGi.Bundle.PackageDependency
+	}
+} 
