@@ -79,7 +79,7 @@ public class InternalSPVizModelParser extends AbstractInternalAntlrParser {
 
 
     // $ANTLR start "entryRuleSPVizModel"
-    // InternalSPVizModel.g:64:1: entryRuleSPVizModel returns [EObject current=null] : iv_ruleSPVizModel= ruleSPVizModel EOF ;
+    // InternalSPVizModel.g:79:1: entryRuleSPVizModel returns [EObject current=null] : iv_ruleSPVizModel= ruleSPVizModel EOF ;
     public final EObject entryRuleSPVizModel() throws RecognitionException {
         EObject current = null;
 
@@ -87,8 +87,8 @@ public class InternalSPVizModelParser extends AbstractInternalAntlrParser {
 
 
         try {
-            // InternalSPVizModel.g:64:51: (iv_ruleSPVizModel= ruleSPVizModel EOF )
-            // InternalSPVizModel.g:65:2: iv_ruleSPVizModel= ruleSPVizModel EOF
+            // InternalSPVizModel.g:79:51: (iv_ruleSPVizModel= ruleSPVizModel EOF )
+            // InternalSPVizModel.g:80:2: iv_ruleSPVizModel= ruleSPVizModel EOF
             {
              newCompositeNode(grammarAccess.getSPVizModelRule()); 
             pushFollow(FOLLOW_1);
@@ -115,7 +115,7 @@ public class InternalSPVizModelParser extends AbstractInternalAntlrParser {
 
 
     // $ANTLR start "ruleSPVizModel"
-    // InternalSPVizModel.g:71:1: ruleSPVizModel returns [EObject current=null] : (otherlv_0= 'package' ( (lv_package_1_0= ruleQualifiedName ) ) otherlv_2= 'SPVizModel' ( (lv_name_3_0= RULE_ID ) ) otherlv_4= '{' ( (lv_artifacts_5_0= ruleArtifact ) )* otherlv_6= '}' ) ;
+    // InternalSPVizModel.g:86:1: ruleSPVizModel returns [EObject current=null] : (otherlv_0= 'package' ( (lv_package_1_0= ruleQualifiedName ) ) otherlv_2= 'SPVizModel' ( (lv_name_3_0= RULE_ID ) ) otherlv_4= '{' ( (lv_artifacts_5_0= ruleArtifact ) )* otherlv_6= '}' ) ;
     public final EObject ruleSPVizModel() throws RecognitionException {
         EObject current = null;
 
@@ -133,21 +133,21 @@ public class InternalSPVizModelParser extends AbstractInternalAntlrParser {
         	enterRule();
 
         try {
-            // InternalSPVizModel.g:77:2: ( (otherlv_0= 'package' ( (lv_package_1_0= ruleQualifiedName ) ) otherlv_2= 'SPVizModel' ( (lv_name_3_0= RULE_ID ) ) otherlv_4= '{' ( (lv_artifacts_5_0= ruleArtifact ) )* otherlv_6= '}' ) )
-            // InternalSPVizModel.g:78:2: (otherlv_0= 'package' ( (lv_package_1_0= ruleQualifiedName ) ) otherlv_2= 'SPVizModel' ( (lv_name_3_0= RULE_ID ) ) otherlv_4= '{' ( (lv_artifacts_5_0= ruleArtifact ) )* otherlv_6= '}' )
+            // InternalSPVizModel.g:92:2: ( (otherlv_0= 'package' ( (lv_package_1_0= ruleQualifiedName ) ) otherlv_2= 'SPVizModel' ( (lv_name_3_0= RULE_ID ) ) otherlv_4= '{' ( (lv_artifacts_5_0= ruleArtifact ) )* otherlv_6= '}' ) )
+            // InternalSPVizModel.g:93:2: (otherlv_0= 'package' ( (lv_package_1_0= ruleQualifiedName ) ) otherlv_2= 'SPVizModel' ( (lv_name_3_0= RULE_ID ) ) otherlv_4= '{' ( (lv_artifacts_5_0= ruleArtifact ) )* otherlv_6= '}' )
             {
-            // InternalSPVizModel.g:78:2: (otherlv_0= 'package' ( (lv_package_1_0= ruleQualifiedName ) ) otherlv_2= 'SPVizModel' ( (lv_name_3_0= RULE_ID ) ) otherlv_4= '{' ( (lv_artifacts_5_0= ruleArtifact ) )* otherlv_6= '}' )
-            // InternalSPVizModel.g:79:3: otherlv_0= 'package' ( (lv_package_1_0= ruleQualifiedName ) ) otherlv_2= 'SPVizModel' ( (lv_name_3_0= RULE_ID ) ) otherlv_4= '{' ( (lv_artifacts_5_0= ruleArtifact ) )* otherlv_6= '}'
+            // InternalSPVizModel.g:93:2: (otherlv_0= 'package' ( (lv_package_1_0= ruleQualifiedName ) ) otherlv_2= 'SPVizModel' ( (lv_name_3_0= RULE_ID ) ) otherlv_4= '{' ( (lv_artifacts_5_0= ruleArtifact ) )* otherlv_6= '}' )
+            // InternalSPVizModel.g:94:3: otherlv_0= 'package' ( (lv_package_1_0= ruleQualifiedName ) ) otherlv_2= 'SPVizModel' ( (lv_name_3_0= RULE_ID ) ) otherlv_4= '{' ( (lv_artifacts_5_0= ruleArtifact ) )* otherlv_6= '}'
             {
             otherlv_0=(Token)match(input,11,FOLLOW_3); 
 
             			newLeafNode(otherlv_0, grammarAccess.getSPVizModelAccess().getPackageKeyword_0());
             		
-            // InternalSPVizModel.g:83:3: ( (lv_package_1_0= ruleQualifiedName ) )
-            // InternalSPVizModel.g:84:4: (lv_package_1_0= ruleQualifiedName )
+            // InternalSPVizModel.g:98:3: ( (lv_package_1_0= ruleQualifiedName ) )
+            // InternalSPVizModel.g:99:4: (lv_package_1_0= ruleQualifiedName )
             {
-            // InternalSPVizModel.g:84:4: (lv_package_1_0= ruleQualifiedName )
-            // InternalSPVizModel.g:85:5: lv_package_1_0= ruleQualifiedName
+            // InternalSPVizModel.g:99:4: (lv_package_1_0= ruleQualifiedName )
+            // InternalSPVizModel.g:100:5: lv_package_1_0= ruleQualifiedName
             {
 
             					newCompositeNode(grammarAccess.getSPVizModelAccess().getPackageQualifiedNameParserRuleCall_1_0());
@@ -178,11 +178,11 @@ public class InternalSPVizModelParser extends AbstractInternalAntlrParser {
 
             			newLeafNode(otherlv_2, grammarAccess.getSPVizModelAccess().getSPVizModelKeyword_2());
             		
-            // InternalSPVizModel.g:106:3: ( (lv_name_3_0= RULE_ID ) )
-            // InternalSPVizModel.g:107:4: (lv_name_3_0= RULE_ID )
+            // InternalSPVizModel.g:121:3: ( (lv_name_3_0= RULE_ID ) )
+            // InternalSPVizModel.g:122:4: (lv_name_3_0= RULE_ID )
             {
-            // InternalSPVizModel.g:107:4: (lv_name_3_0= RULE_ID )
-            // InternalSPVizModel.g:108:5: lv_name_3_0= RULE_ID
+            // InternalSPVizModel.g:122:4: (lv_name_3_0= RULE_ID )
+            // InternalSPVizModel.g:123:5: lv_name_3_0= RULE_ID
             {
             lv_name_3_0=(Token)match(input,RULE_ID,FOLLOW_5); 
 
@@ -208,7 +208,7 @@ public class InternalSPVizModelParser extends AbstractInternalAntlrParser {
 
             			newLeafNode(otherlv_4, grammarAccess.getSPVizModelAccess().getLeftCurlyBracketKeyword_4());
             		
-            // InternalSPVizModel.g:128:3: ( (lv_artifacts_5_0= ruleArtifact ) )*
+            // InternalSPVizModel.g:143:3: ( (lv_artifacts_5_0= ruleArtifact ) )*
             loop1:
             do {
                 int alt1=2;
@@ -221,10 +221,10 @@ public class InternalSPVizModelParser extends AbstractInternalAntlrParser {
 
                 switch (alt1) {
             	case 1 :
-            	    // InternalSPVizModel.g:129:4: (lv_artifacts_5_0= ruleArtifact )
+            	    // InternalSPVizModel.g:144:4: (lv_artifacts_5_0= ruleArtifact )
             	    {
-            	    // InternalSPVizModel.g:129:4: (lv_artifacts_5_0= ruleArtifact )
-            	    // InternalSPVizModel.g:130:5: lv_artifacts_5_0= ruleArtifact
+            	    // InternalSPVizModel.g:144:4: (lv_artifacts_5_0= ruleArtifact )
+            	    // InternalSPVizModel.g:145:5: lv_artifacts_5_0= ruleArtifact
             	    {
 
             	    					newCompositeNode(grammarAccess.getSPVizModelAccess().getArtifactsArtifactParserRuleCall_5_0());
@@ -284,7 +284,7 @@ public class InternalSPVizModelParser extends AbstractInternalAntlrParser {
 
 
     // $ANTLR start "entryRuleArtifact"
-    // InternalSPVizModel.g:155:1: entryRuleArtifact returns [EObject current=null] : iv_ruleArtifact= ruleArtifact EOF ;
+    // InternalSPVizModel.g:170:1: entryRuleArtifact returns [EObject current=null] : iv_ruleArtifact= ruleArtifact EOF ;
     public final EObject entryRuleArtifact() throws RecognitionException {
         EObject current = null;
 
@@ -292,8 +292,8 @@ public class InternalSPVizModelParser extends AbstractInternalAntlrParser {
 
 
         try {
-            // InternalSPVizModel.g:155:49: (iv_ruleArtifact= ruleArtifact EOF )
-            // InternalSPVizModel.g:156:2: iv_ruleArtifact= ruleArtifact EOF
+            // InternalSPVizModel.g:170:49: (iv_ruleArtifact= ruleArtifact EOF )
+            // InternalSPVizModel.g:171:2: iv_ruleArtifact= ruleArtifact EOF
             {
              newCompositeNode(grammarAccess.getArtifactRule()); 
             pushFollow(FOLLOW_1);
@@ -320,7 +320,7 @@ public class InternalSPVizModelParser extends AbstractInternalAntlrParser {
 
 
     // $ANTLR start "ruleArtifact"
-    // InternalSPVizModel.g:162:1: ruleArtifact returns [EObject current=null] : ( ( (lv_name_0_0= RULE_ID ) ) (otherlv_1= '{' ( (lv_references_2_0= ruleReference ) )* otherlv_3= '}' )? ) ;
+    // InternalSPVizModel.g:177:1: ruleArtifact returns [EObject current=null] : ( ( (lv_name_0_0= RULE_ID ) ) (otherlv_1= '{' ( (lv_references_2_0= ruleReference ) )* otherlv_3= '}' )? ) ;
     public final EObject ruleArtifact() throws RecognitionException {
         EObject current = null;
 
@@ -334,17 +334,17 @@ public class InternalSPVizModelParser extends AbstractInternalAntlrParser {
         	enterRule();
 
         try {
-            // InternalSPVizModel.g:168:2: ( ( ( (lv_name_0_0= RULE_ID ) ) (otherlv_1= '{' ( (lv_references_2_0= ruleReference ) )* otherlv_3= '}' )? ) )
-            // InternalSPVizModel.g:169:2: ( ( (lv_name_0_0= RULE_ID ) ) (otherlv_1= '{' ( (lv_references_2_0= ruleReference ) )* otherlv_3= '}' )? )
+            // InternalSPVizModel.g:183:2: ( ( ( (lv_name_0_0= RULE_ID ) ) (otherlv_1= '{' ( (lv_references_2_0= ruleReference ) )* otherlv_3= '}' )? ) )
+            // InternalSPVizModel.g:184:2: ( ( (lv_name_0_0= RULE_ID ) ) (otherlv_1= '{' ( (lv_references_2_0= ruleReference ) )* otherlv_3= '}' )? )
             {
-            // InternalSPVizModel.g:169:2: ( ( (lv_name_0_0= RULE_ID ) ) (otherlv_1= '{' ( (lv_references_2_0= ruleReference ) )* otherlv_3= '}' )? )
-            // InternalSPVizModel.g:170:3: ( (lv_name_0_0= RULE_ID ) ) (otherlv_1= '{' ( (lv_references_2_0= ruleReference ) )* otherlv_3= '}' )?
+            // InternalSPVizModel.g:184:2: ( ( (lv_name_0_0= RULE_ID ) ) (otherlv_1= '{' ( (lv_references_2_0= ruleReference ) )* otherlv_3= '}' )? )
+            // InternalSPVizModel.g:185:3: ( (lv_name_0_0= RULE_ID ) ) (otherlv_1= '{' ( (lv_references_2_0= ruleReference ) )* otherlv_3= '}' )?
             {
-            // InternalSPVizModel.g:170:3: ( (lv_name_0_0= RULE_ID ) )
-            // InternalSPVizModel.g:171:4: (lv_name_0_0= RULE_ID )
+            // InternalSPVizModel.g:185:3: ( (lv_name_0_0= RULE_ID ) )
+            // InternalSPVizModel.g:186:4: (lv_name_0_0= RULE_ID )
             {
-            // InternalSPVizModel.g:171:4: (lv_name_0_0= RULE_ID )
-            // InternalSPVizModel.g:172:5: lv_name_0_0= RULE_ID
+            // InternalSPVizModel.g:186:4: (lv_name_0_0= RULE_ID )
+            // InternalSPVizModel.g:187:5: lv_name_0_0= RULE_ID
             {
             lv_name_0_0=(Token)match(input,RULE_ID,FOLLOW_7); 
 
@@ -366,7 +366,7 @@ public class InternalSPVizModelParser extends AbstractInternalAntlrParser {
 
             }
 
-            // InternalSPVizModel.g:188:3: (otherlv_1= '{' ( (lv_references_2_0= ruleReference ) )* otherlv_3= '}' )?
+            // InternalSPVizModel.g:203:3: (otherlv_1= '{' ( (lv_references_2_0= ruleReference ) )* otherlv_3= '}' )?
             int alt3=2;
             int LA3_0 = input.LA(1);
 
@@ -375,13 +375,13 @@ public class InternalSPVizModelParser extends AbstractInternalAntlrParser {
             }
             switch (alt3) {
                 case 1 :
-                    // InternalSPVizModel.g:189:4: otherlv_1= '{' ( (lv_references_2_0= ruleReference ) )* otherlv_3= '}'
+                    // InternalSPVizModel.g:204:4: otherlv_1= '{' ( (lv_references_2_0= ruleReference ) )* otherlv_3= '}'
                     {
                     otherlv_1=(Token)match(input,13,FOLLOW_8); 
 
                     				newLeafNode(otherlv_1, grammarAccess.getArtifactAccess().getLeftCurlyBracketKeyword_1_0());
                     			
-                    // InternalSPVizModel.g:193:4: ( (lv_references_2_0= ruleReference ) )*
+                    // InternalSPVizModel.g:208:4: ( (lv_references_2_0= ruleReference ) )*
                     loop2:
                     do {
                         int alt2=2;
@@ -394,10 +394,10 @@ public class InternalSPVizModelParser extends AbstractInternalAntlrParser {
 
                         switch (alt2) {
                     	case 1 :
-                    	    // InternalSPVizModel.g:194:5: (lv_references_2_0= ruleReference )
+                    	    // InternalSPVizModel.g:209:5: (lv_references_2_0= ruleReference )
                     	    {
-                    	    // InternalSPVizModel.g:194:5: (lv_references_2_0= ruleReference )
-                    	    // InternalSPVizModel.g:195:6: lv_references_2_0= ruleReference
+                    	    // InternalSPVizModel.g:209:5: (lv_references_2_0= ruleReference )
+                    	    // InternalSPVizModel.g:210:6: lv_references_2_0= ruleReference
                     	    {
 
                     	    						newCompositeNode(grammarAccess.getArtifactAccess().getReferencesReferenceParserRuleCall_1_1_0());
@@ -463,7 +463,7 @@ public class InternalSPVizModelParser extends AbstractInternalAntlrParser {
 
 
     // $ANTLR start "entryRuleReference"
-    // InternalSPVizModel.g:221:1: entryRuleReference returns [EObject current=null] : iv_ruleReference= ruleReference EOF ;
+    // InternalSPVizModel.g:236:1: entryRuleReference returns [EObject current=null] : iv_ruleReference= ruleReference EOF ;
     public final EObject entryRuleReference() throws RecognitionException {
         EObject current = null;
 
@@ -471,8 +471,8 @@ public class InternalSPVizModelParser extends AbstractInternalAntlrParser {
 
 
         try {
-            // InternalSPVizModel.g:221:50: (iv_ruleReference= ruleReference EOF )
-            // InternalSPVizModel.g:222:2: iv_ruleReference= ruleReference EOF
+            // InternalSPVizModel.g:236:50: (iv_ruleReference= ruleReference EOF )
+            // InternalSPVizModel.g:237:2: iv_ruleReference= ruleReference EOF
             {
              newCompositeNode(grammarAccess.getReferenceRule()); 
             pushFollow(FOLLOW_1);
@@ -499,7 +499,7 @@ public class InternalSPVizModelParser extends AbstractInternalAntlrParser {
 
 
     // $ANTLR start "ruleReference"
-    // InternalSPVizModel.g:228:1: ruleReference returns [EObject current=null] : (this_Containment_0= ruleContainment | this_Connection_1= ruleConnection ) ;
+    // InternalSPVizModel.g:243:1: ruleReference returns [EObject current=null] : (this_Containment_0= ruleContainment | this_Connection_1= ruleConnection ) ;
     public final EObject ruleReference() throws RecognitionException {
         EObject current = null;
 
@@ -512,10 +512,10 @@ public class InternalSPVizModelParser extends AbstractInternalAntlrParser {
         	enterRule();
 
         try {
-            // InternalSPVizModel.g:234:2: ( (this_Containment_0= ruleContainment | this_Connection_1= ruleConnection ) )
-            // InternalSPVizModel.g:235:2: (this_Containment_0= ruleContainment | this_Connection_1= ruleConnection )
+            // InternalSPVizModel.g:249:2: ( (this_Containment_0= ruleContainment | this_Connection_1= ruleConnection ) )
+            // InternalSPVizModel.g:250:2: (this_Containment_0= ruleContainment | this_Connection_1= ruleConnection )
             {
-            // InternalSPVizModel.g:235:2: (this_Containment_0= ruleContainment | this_Connection_1= ruleConnection )
+            // InternalSPVizModel.g:250:2: (this_Containment_0= ruleContainment | this_Connection_1= ruleConnection )
             int alt4=2;
             int LA4_0 = input.LA(1);
 
@@ -533,7 +533,7 @@ public class InternalSPVizModelParser extends AbstractInternalAntlrParser {
             }
             switch (alt4) {
                 case 1 :
-                    // InternalSPVizModel.g:236:3: this_Containment_0= ruleContainment
+                    // InternalSPVizModel.g:251:3: this_Containment_0= ruleContainment
                     {
 
                     			newCompositeNode(grammarAccess.getReferenceAccess().getContainmentParserRuleCall_0());
@@ -551,7 +551,7 @@ public class InternalSPVizModelParser extends AbstractInternalAntlrParser {
                     }
                     break;
                 case 2 :
-                    // InternalSPVizModel.g:245:3: this_Connection_1= ruleConnection
+                    // InternalSPVizModel.g:260:3: this_Connection_1= ruleConnection
                     {
 
                     			newCompositeNode(grammarAccess.getReferenceAccess().getConnectionParserRuleCall_1());
@@ -591,7 +591,7 @@ public class InternalSPVizModelParser extends AbstractInternalAntlrParser {
 
 
     // $ANTLR start "entryRuleContainment"
-    // InternalSPVizModel.g:257:1: entryRuleContainment returns [EObject current=null] : iv_ruleContainment= ruleContainment EOF ;
+    // InternalSPVizModel.g:272:1: entryRuleContainment returns [EObject current=null] : iv_ruleContainment= ruleContainment EOF ;
     public final EObject entryRuleContainment() throws RecognitionException {
         EObject current = null;
 
@@ -599,8 +599,8 @@ public class InternalSPVizModelParser extends AbstractInternalAntlrParser {
 
 
         try {
-            // InternalSPVizModel.g:257:52: (iv_ruleContainment= ruleContainment EOF )
-            // InternalSPVizModel.g:258:2: iv_ruleContainment= ruleContainment EOF
+            // InternalSPVizModel.g:272:52: (iv_ruleContainment= ruleContainment EOF )
+            // InternalSPVizModel.g:273:2: iv_ruleContainment= ruleContainment EOF
             {
              newCompositeNode(grammarAccess.getContainmentRule()); 
             pushFollow(FOLLOW_1);
@@ -627,7 +627,7 @@ public class InternalSPVizModelParser extends AbstractInternalAntlrParser {
 
 
     // $ANTLR start "ruleContainment"
-    // InternalSPVizModel.g:264:1: ruleContainment returns [EObject current=null] : (otherlv_0= 'contains' ( (otherlv_1= RULE_ID ) ) ) ;
+    // InternalSPVizModel.g:279:1: ruleContainment returns [EObject current=null] : (otherlv_0= 'contains' ( (otherlv_1= RULE_ID ) ) ) ;
     public final EObject ruleContainment() throws RecognitionException {
         EObject current = null;
 
@@ -638,21 +638,21 @@ public class InternalSPVizModelParser extends AbstractInternalAntlrParser {
         	enterRule();
 
         try {
-            // InternalSPVizModel.g:270:2: ( (otherlv_0= 'contains' ( (otherlv_1= RULE_ID ) ) ) )
-            // InternalSPVizModel.g:271:2: (otherlv_0= 'contains' ( (otherlv_1= RULE_ID ) ) )
+            // InternalSPVizModel.g:285:2: ( (otherlv_0= 'contains' ( (otherlv_1= RULE_ID ) ) ) )
+            // InternalSPVizModel.g:286:2: (otherlv_0= 'contains' ( (otherlv_1= RULE_ID ) ) )
             {
-            // InternalSPVizModel.g:271:2: (otherlv_0= 'contains' ( (otherlv_1= RULE_ID ) ) )
-            // InternalSPVizModel.g:272:3: otherlv_0= 'contains' ( (otherlv_1= RULE_ID ) )
+            // InternalSPVizModel.g:286:2: (otherlv_0= 'contains' ( (otherlv_1= RULE_ID ) ) )
+            // InternalSPVizModel.g:287:3: otherlv_0= 'contains' ( (otherlv_1= RULE_ID ) )
             {
             otherlv_0=(Token)match(input,15,FOLLOW_3); 
 
             			newLeafNode(otherlv_0, grammarAccess.getContainmentAccess().getContainsKeyword_0());
             		
-            // InternalSPVizModel.g:276:3: ( (otherlv_1= RULE_ID ) )
-            // InternalSPVizModel.g:277:4: (otherlv_1= RULE_ID )
+            // InternalSPVizModel.g:291:3: ( (otherlv_1= RULE_ID ) )
+            // InternalSPVizModel.g:292:4: (otherlv_1= RULE_ID )
             {
-            // InternalSPVizModel.g:277:4: (otherlv_1= RULE_ID )
-            // InternalSPVizModel.g:278:5: otherlv_1= RULE_ID
+            // InternalSPVizModel.g:292:4: (otherlv_1= RULE_ID )
+            // InternalSPVizModel.g:293:5: otherlv_1= RULE_ID
             {
 
             					if (current==null) {
@@ -692,7 +692,7 @@ public class InternalSPVizModelParser extends AbstractInternalAntlrParser {
 
 
     // $ANTLR start "entryRuleConnection"
-    // InternalSPVizModel.g:293:1: entryRuleConnection returns [EObject current=null] : iv_ruleConnection= ruleConnection EOF ;
+    // InternalSPVizModel.g:308:1: entryRuleConnection returns [EObject current=null] : iv_ruleConnection= ruleConnection EOF ;
     public final EObject entryRuleConnection() throws RecognitionException {
         EObject current = null;
 
@@ -700,8 +700,8 @@ public class InternalSPVizModelParser extends AbstractInternalAntlrParser {
 
 
         try {
-            // InternalSPVizModel.g:293:51: (iv_ruleConnection= ruleConnection EOF )
-            // InternalSPVizModel.g:294:2: iv_ruleConnection= ruleConnection EOF
+            // InternalSPVizModel.g:308:51: (iv_ruleConnection= ruleConnection EOF )
+            // InternalSPVizModel.g:309:2: iv_ruleConnection= ruleConnection EOF
             {
              newCompositeNode(grammarAccess.getConnectionRule()); 
             pushFollow(FOLLOW_1);
@@ -728,7 +728,7 @@ public class InternalSPVizModelParser extends AbstractInternalAntlrParser {
 
 
     // $ANTLR start "ruleConnection"
-    // InternalSPVizModel.g:300:1: ruleConnection returns [EObject current=null] : ( ( (lv_name_0_0= RULE_ID ) ) otherlv_1= 'depends' ( (otherlv_2= RULE_ID ) ) ) ;
+    // InternalSPVizModel.g:315:1: ruleConnection returns [EObject current=null] : ( ( (lv_name_0_0= RULE_ID ) ) otherlv_1= 'depends' ( (otherlv_2= RULE_ID ) ) ) ;
     public final EObject ruleConnection() throws RecognitionException {
         EObject current = null;
 
@@ -740,17 +740,17 @@ public class InternalSPVizModelParser extends AbstractInternalAntlrParser {
         	enterRule();
 
         try {
-            // InternalSPVizModel.g:306:2: ( ( ( (lv_name_0_0= RULE_ID ) ) otherlv_1= 'depends' ( (otherlv_2= RULE_ID ) ) ) )
-            // InternalSPVizModel.g:307:2: ( ( (lv_name_0_0= RULE_ID ) ) otherlv_1= 'depends' ( (otherlv_2= RULE_ID ) ) )
+            // InternalSPVizModel.g:321:2: ( ( ( (lv_name_0_0= RULE_ID ) ) otherlv_1= 'depends' ( (otherlv_2= RULE_ID ) ) ) )
+            // InternalSPVizModel.g:322:2: ( ( (lv_name_0_0= RULE_ID ) ) otherlv_1= 'depends' ( (otherlv_2= RULE_ID ) ) )
             {
-            // InternalSPVizModel.g:307:2: ( ( (lv_name_0_0= RULE_ID ) ) otherlv_1= 'depends' ( (otherlv_2= RULE_ID ) ) )
-            // InternalSPVizModel.g:308:3: ( (lv_name_0_0= RULE_ID ) ) otherlv_1= 'depends' ( (otherlv_2= RULE_ID ) )
+            // InternalSPVizModel.g:322:2: ( ( (lv_name_0_0= RULE_ID ) ) otherlv_1= 'depends' ( (otherlv_2= RULE_ID ) ) )
+            // InternalSPVizModel.g:323:3: ( (lv_name_0_0= RULE_ID ) ) otherlv_1= 'depends' ( (otherlv_2= RULE_ID ) )
             {
-            // InternalSPVizModel.g:308:3: ( (lv_name_0_0= RULE_ID ) )
-            // InternalSPVizModel.g:309:4: (lv_name_0_0= RULE_ID )
+            // InternalSPVizModel.g:323:3: ( (lv_name_0_0= RULE_ID ) )
+            // InternalSPVizModel.g:324:4: (lv_name_0_0= RULE_ID )
             {
-            // InternalSPVizModel.g:309:4: (lv_name_0_0= RULE_ID )
-            // InternalSPVizModel.g:310:5: lv_name_0_0= RULE_ID
+            // InternalSPVizModel.g:324:4: (lv_name_0_0= RULE_ID )
+            // InternalSPVizModel.g:325:5: lv_name_0_0= RULE_ID
             {
             lv_name_0_0=(Token)match(input,RULE_ID,FOLLOW_9); 
 
@@ -776,11 +776,11 @@ public class InternalSPVizModelParser extends AbstractInternalAntlrParser {
 
             			newLeafNode(otherlv_1, grammarAccess.getConnectionAccess().getDependsKeyword_1());
             		
-            // InternalSPVizModel.g:330:3: ( (otherlv_2= RULE_ID ) )
-            // InternalSPVizModel.g:331:4: (otherlv_2= RULE_ID )
+            // InternalSPVizModel.g:345:3: ( (otherlv_2= RULE_ID ) )
+            // InternalSPVizModel.g:346:4: (otherlv_2= RULE_ID )
             {
-            // InternalSPVizModel.g:331:4: (otherlv_2= RULE_ID )
-            // InternalSPVizModel.g:332:5: otherlv_2= RULE_ID
+            // InternalSPVizModel.g:346:4: (otherlv_2= RULE_ID )
+            // InternalSPVizModel.g:347:5: otherlv_2= RULE_ID
             {
 
             					if (current==null) {
@@ -820,7 +820,7 @@ public class InternalSPVizModelParser extends AbstractInternalAntlrParser {
 
 
     // $ANTLR start "entryRuleQualifiedName"
-    // InternalSPVizModel.g:347:1: entryRuleQualifiedName returns [String current=null] : iv_ruleQualifiedName= ruleQualifiedName EOF ;
+    // InternalSPVizModel.g:362:1: entryRuleQualifiedName returns [String current=null] : iv_ruleQualifiedName= ruleQualifiedName EOF ;
     public final String entryRuleQualifiedName() throws RecognitionException {
         String current = null;
 
@@ -828,8 +828,8 @@ public class InternalSPVizModelParser extends AbstractInternalAntlrParser {
 
 
         try {
-            // InternalSPVizModel.g:347:53: (iv_ruleQualifiedName= ruleQualifiedName EOF )
-            // InternalSPVizModel.g:348:2: iv_ruleQualifiedName= ruleQualifiedName EOF
+            // InternalSPVizModel.g:362:53: (iv_ruleQualifiedName= ruleQualifiedName EOF )
+            // InternalSPVizModel.g:363:2: iv_ruleQualifiedName= ruleQualifiedName EOF
             {
              newCompositeNode(grammarAccess.getQualifiedNameRule()); 
             pushFollow(FOLLOW_1);
@@ -856,7 +856,7 @@ public class InternalSPVizModelParser extends AbstractInternalAntlrParser {
 
 
     // $ANTLR start "ruleQualifiedName"
-    // InternalSPVizModel.g:354:1: ruleQualifiedName returns [AntlrDatatypeRuleToken current=new AntlrDatatypeRuleToken()] : (this_ID_0= RULE_ID (kw= '.' this_ID_2= RULE_ID )* ) ;
+    // InternalSPVizModel.g:369:1: ruleQualifiedName returns [AntlrDatatypeRuleToken current=new AntlrDatatypeRuleToken()] : (this_ID_0= RULE_ID (kw= '.' this_ID_2= RULE_ID )* ) ;
     public final AntlrDatatypeRuleToken ruleQualifiedName() throws RecognitionException {
         AntlrDatatypeRuleToken current = new AntlrDatatypeRuleToken();
 
@@ -868,11 +868,11 @@ public class InternalSPVizModelParser extends AbstractInternalAntlrParser {
         	enterRule();
 
         try {
-            // InternalSPVizModel.g:360:2: ( (this_ID_0= RULE_ID (kw= '.' this_ID_2= RULE_ID )* ) )
-            // InternalSPVizModel.g:361:2: (this_ID_0= RULE_ID (kw= '.' this_ID_2= RULE_ID )* )
+            // InternalSPVizModel.g:375:2: ( (this_ID_0= RULE_ID (kw= '.' this_ID_2= RULE_ID )* ) )
+            // InternalSPVizModel.g:376:2: (this_ID_0= RULE_ID (kw= '.' this_ID_2= RULE_ID )* )
             {
-            // InternalSPVizModel.g:361:2: (this_ID_0= RULE_ID (kw= '.' this_ID_2= RULE_ID )* )
-            // InternalSPVizModel.g:362:3: this_ID_0= RULE_ID (kw= '.' this_ID_2= RULE_ID )*
+            // InternalSPVizModel.g:376:2: (this_ID_0= RULE_ID (kw= '.' this_ID_2= RULE_ID )* )
+            // InternalSPVizModel.g:377:3: this_ID_0= RULE_ID (kw= '.' this_ID_2= RULE_ID )*
             {
             this_ID_0=(Token)match(input,RULE_ID,FOLLOW_10); 
 
@@ -881,7 +881,7 @@ public class InternalSPVizModelParser extends AbstractInternalAntlrParser {
 
             			newLeafNode(this_ID_0, grammarAccess.getQualifiedNameAccess().getIDTerminalRuleCall_0());
             		
-            // InternalSPVizModel.g:369:3: (kw= '.' this_ID_2= RULE_ID )*
+            // InternalSPVizModel.g:384:3: (kw= '.' this_ID_2= RULE_ID )*
             loop5:
             do {
                 int alt5=2;
@@ -894,7 +894,7 @@ public class InternalSPVizModelParser extends AbstractInternalAntlrParser {
 
                 switch (alt5) {
             	case 1 :
-            	    // InternalSPVizModel.g:370:4: kw= '.' this_ID_2= RULE_ID
+            	    // InternalSPVizModel.g:385:4: kw= '.' this_ID_2= RULE_ID
             	    {
             	    kw=(Token)match(input,17,FOLLOW_3); 
 

@@ -190,10 +190,10 @@ public class InternalSPVizModelLexer extends Lexer {
         try {
             int _type = RULE_ID;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // InternalSPVizModel.g:918:9: ( ( '^' )? ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' )* )
-            // InternalSPVizModel.g:918:11: ( '^' )? ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' )*
+            // InternalSPVizModel.g:933:9: ( ( '^' )? ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' )* )
+            // InternalSPVizModel.g:933:11: ( '^' )? ( 'a' .. 'z' | 'A' .. 'Z' | '_' ) ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' )*
             {
-            // InternalSPVizModel.g:918:11: ( '^' )?
+            // InternalSPVizModel.g:933:11: ( '^' )?
             int alt1=2;
             int LA1_0 = input.LA(1);
 
@@ -202,7 +202,7 @@ public class InternalSPVizModelLexer extends Lexer {
             }
             switch (alt1) {
                 case 1 :
-                    // InternalSPVizModel.g:918:11: '^'
+                    // InternalSPVizModel.g:933:11: '^'
                     {
                     match('^'); 
 
@@ -220,7 +220,7 @@ public class InternalSPVizModelLexer extends Lexer {
                 recover(mse);
                 throw mse;}
 
-            // InternalSPVizModel.g:918:40: ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' )*
+            // InternalSPVizModel.g:933:40: ( 'a' .. 'z' | 'A' .. 'Z' | '_' | '0' .. '9' )*
             loop2:
             do {
                 int alt2=2;
@@ -269,10 +269,10 @@ public class InternalSPVizModelLexer extends Lexer {
         try {
             int _type = RULE_INT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // InternalSPVizModel.g:920:10: ( ( '0' .. '9' )+ )
-            // InternalSPVizModel.g:920:12: ( '0' .. '9' )+
+            // InternalSPVizModel.g:935:10: ( ( '0' .. '9' )+ )
+            // InternalSPVizModel.g:935:12: ( '0' .. '9' )+
             {
-            // InternalSPVizModel.g:920:12: ( '0' .. '9' )+
+            // InternalSPVizModel.g:935:12: ( '0' .. '9' )+
             int cnt3=0;
             loop3:
             do {
@@ -286,7 +286,7 @@ public class InternalSPVizModelLexer extends Lexer {
 
                 switch (alt3) {
             	case 1 :
-            	    // InternalSPVizModel.g:920:13: '0' .. '9'
+            	    // InternalSPVizModel.g:935:13: '0' .. '9'
             	    {
             	    matchRange('0','9'); 
 
@@ -318,10 +318,10 @@ public class InternalSPVizModelLexer extends Lexer {
         try {
             int _type = RULE_STRING;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // InternalSPVizModel.g:922:13: ( ( '\"' ( '\\\\' . | ~ ( ( '\\\\' | '\"' ) ) )* '\"' | '\\'' ( '\\\\' . | ~ ( ( '\\\\' | '\\'' ) ) )* '\\'' ) )
-            // InternalSPVizModel.g:922:15: ( '\"' ( '\\\\' . | ~ ( ( '\\\\' | '\"' ) ) )* '\"' | '\\'' ( '\\\\' . | ~ ( ( '\\\\' | '\\'' ) ) )* '\\'' )
+            // InternalSPVizModel.g:937:13: ( ( '\"' ( '\\\\' . | ~ ( ( '\\\\' | '\"' ) ) )* '\"' | '\\'' ( '\\\\' . | ~ ( ( '\\\\' | '\\'' ) ) )* '\\'' ) )
+            // InternalSPVizModel.g:937:15: ( '\"' ( '\\\\' . | ~ ( ( '\\\\' | '\"' ) ) )* '\"' | '\\'' ( '\\\\' . | ~ ( ( '\\\\' | '\\'' ) ) )* '\\'' )
             {
-            // InternalSPVizModel.g:922:15: ( '\"' ( '\\\\' . | ~ ( ( '\\\\' | '\"' ) ) )* '\"' | '\\'' ( '\\\\' . | ~ ( ( '\\\\' | '\\'' ) ) )* '\\'' )
+            // InternalSPVizModel.g:937:15: ( '\"' ( '\\\\' . | ~ ( ( '\\\\' | '\"' ) ) )* '\"' | '\\'' ( '\\\\' . | ~ ( ( '\\\\' | '\\'' ) ) )* '\\'' )
             int alt6=2;
             int LA6_0 = input.LA(1);
 
@@ -339,10 +339,10 @@ public class InternalSPVizModelLexer extends Lexer {
             }
             switch (alt6) {
                 case 1 :
-                    // InternalSPVizModel.g:922:16: '\"' ( '\\\\' . | ~ ( ( '\\\\' | '\"' ) ) )* '\"'
+                    // InternalSPVizModel.g:937:16: '\"' ( '\\\\' . | ~ ( ( '\\\\' | '\"' ) ) )* '\"'
                     {
                     match('\"'); 
-                    // InternalSPVizModel.g:922:20: ( '\\\\' . | ~ ( ( '\\\\' | '\"' ) ) )*
+                    // InternalSPVizModel.g:937:20: ( '\\\\' . | ~ ( ( '\\\\' | '\"' ) ) )*
                     loop4:
                     do {
                         int alt4=3;
@@ -358,7 +358,7 @@ public class InternalSPVizModelLexer extends Lexer {
 
                         switch (alt4) {
                     	case 1 :
-                    	    // InternalSPVizModel.g:922:21: '\\\\' .
+                    	    // InternalSPVizModel.g:937:21: '\\\\' .
                     	    {
                     	    match('\\'); 
                     	    matchAny(); 
@@ -366,7 +366,7 @@ public class InternalSPVizModelLexer extends Lexer {
                     	    }
                     	    break;
                     	case 2 :
-                    	    // InternalSPVizModel.g:922:28: ~ ( ( '\\\\' | '\"' ) )
+                    	    // InternalSPVizModel.g:937:28: ~ ( ( '\\\\' | '\"' ) )
                     	    {
                     	    if ( (input.LA(1)>='\u0000' && input.LA(1)<='!')||(input.LA(1)>='#' && input.LA(1)<='[')||(input.LA(1)>=']' && input.LA(1)<='\uFFFF') ) {
                     	        input.consume();
@@ -391,10 +391,10 @@ public class InternalSPVizModelLexer extends Lexer {
                     }
                     break;
                 case 2 :
-                    // InternalSPVizModel.g:922:48: '\\'' ( '\\\\' . | ~ ( ( '\\\\' | '\\'' ) ) )* '\\''
+                    // InternalSPVizModel.g:937:48: '\\'' ( '\\\\' . | ~ ( ( '\\\\' | '\\'' ) ) )* '\\''
                     {
                     match('\''); 
-                    // InternalSPVizModel.g:922:53: ( '\\\\' . | ~ ( ( '\\\\' | '\\'' ) ) )*
+                    // InternalSPVizModel.g:937:53: ( '\\\\' . | ~ ( ( '\\\\' | '\\'' ) ) )*
                     loop5:
                     do {
                         int alt5=3;
@@ -410,7 +410,7 @@ public class InternalSPVizModelLexer extends Lexer {
 
                         switch (alt5) {
                     	case 1 :
-                    	    // InternalSPVizModel.g:922:54: '\\\\' .
+                    	    // InternalSPVizModel.g:937:54: '\\\\' .
                     	    {
                     	    match('\\'); 
                     	    matchAny(); 
@@ -418,7 +418,7 @@ public class InternalSPVizModelLexer extends Lexer {
                     	    }
                     	    break;
                     	case 2 :
-                    	    // InternalSPVizModel.g:922:61: ~ ( ( '\\\\' | '\\'' ) )
+                    	    // InternalSPVizModel.g:937:61: ~ ( ( '\\\\' | '\\'' ) )
                     	    {
                     	    if ( (input.LA(1)>='\u0000' && input.LA(1)<='&')||(input.LA(1)>='(' && input.LA(1)<='[')||(input.LA(1)>=']' && input.LA(1)<='\uFFFF') ) {
                     	        input.consume();
@@ -461,12 +461,12 @@ public class InternalSPVizModelLexer extends Lexer {
         try {
             int _type = RULE_ML_COMMENT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // InternalSPVizModel.g:924:17: ( '/*' ( options {greedy=false; } : . )* '*/' )
-            // InternalSPVizModel.g:924:19: '/*' ( options {greedy=false; } : . )* '*/'
+            // InternalSPVizModel.g:939:17: ( '/*' ( options {greedy=false; } : . )* '*/' )
+            // InternalSPVizModel.g:939:19: '/*' ( options {greedy=false; } : . )* '*/'
             {
             match("/*"); 
 
-            // InternalSPVizModel.g:924:24: ( options {greedy=false; } : . )*
+            // InternalSPVizModel.g:939:24: ( options {greedy=false; } : . )*
             loop7:
             do {
                 int alt7=2;
@@ -491,7 +491,7 @@ public class InternalSPVizModelLexer extends Lexer {
 
                 switch (alt7) {
             	case 1 :
-            	    // InternalSPVizModel.g:924:52: .
+            	    // InternalSPVizModel.g:939:52: .
             	    {
             	    matchAny(); 
 
@@ -521,12 +521,12 @@ public class InternalSPVizModelLexer extends Lexer {
         try {
             int _type = RULE_SL_COMMENT;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // InternalSPVizModel.g:926:17: ( '//' (~ ( ( '\\n' | '\\r' ) ) )* ( ( '\\r' )? '\\n' )? )
-            // InternalSPVizModel.g:926:19: '//' (~ ( ( '\\n' | '\\r' ) ) )* ( ( '\\r' )? '\\n' )?
+            // InternalSPVizModel.g:941:17: ( '//' (~ ( ( '\\n' | '\\r' ) ) )* ( ( '\\r' )? '\\n' )? )
+            // InternalSPVizModel.g:941:19: '//' (~ ( ( '\\n' | '\\r' ) ) )* ( ( '\\r' )? '\\n' )?
             {
             match("//"); 
 
-            // InternalSPVizModel.g:926:24: (~ ( ( '\\n' | '\\r' ) ) )*
+            // InternalSPVizModel.g:941:24: (~ ( ( '\\n' | '\\r' ) ) )*
             loop8:
             do {
                 int alt8=2;
@@ -539,7 +539,7 @@ public class InternalSPVizModelLexer extends Lexer {
 
                 switch (alt8) {
             	case 1 :
-            	    // InternalSPVizModel.g:926:24: ~ ( ( '\\n' | '\\r' ) )
+            	    // InternalSPVizModel.g:941:24: ~ ( ( '\\n' | '\\r' ) )
             	    {
             	    if ( (input.LA(1)>='\u0000' && input.LA(1)<='\t')||(input.LA(1)>='\u000B' && input.LA(1)<='\f')||(input.LA(1)>='\u000E' && input.LA(1)<='\uFFFF') ) {
             	        input.consume();
@@ -559,7 +559,7 @@ public class InternalSPVizModelLexer extends Lexer {
                 }
             } while (true);
 
-            // InternalSPVizModel.g:926:40: ( ( '\\r' )? '\\n' )?
+            // InternalSPVizModel.g:941:40: ( ( '\\r' )? '\\n' )?
             int alt10=2;
             int LA10_0 = input.LA(1);
 
@@ -568,9 +568,9 @@ public class InternalSPVizModelLexer extends Lexer {
             }
             switch (alt10) {
                 case 1 :
-                    // InternalSPVizModel.g:926:41: ( '\\r' )? '\\n'
+                    // InternalSPVizModel.g:941:41: ( '\\r' )? '\\n'
                     {
-                    // InternalSPVizModel.g:926:41: ( '\\r' )?
+                    // InternalSPVizModel.g:941:41: ( '\\r' )?
                     int alt9=2;
                     int LA9_0 = input.LA(1);
 
@@ -579,7 +579,7 @@ public class InternalSPVizModelLexer extends Lexer {
                     }
                     switch (alt9) {
                         case 1 :
-                            // InternalSPVizModel.g:926:41: '\\r'
+                            // InternalSPVizModel.g:941:41: '\\r'
                             {
                             match('\r'); 
 
@@ -611,10 +611,10 @@ public class InternalSPVizModelLexer extends Lexer {
         try {
             int _type = RULE_WS;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // InternalSPVizModel.g:928:9: ( ( ' ' | '\\t' | '\\r' | '\\n' )+ )
-            // InternalSPVizModel.g:928:11: ( ' ' | '\\t' | '\\r' | '\\n' )+
+            // InternalSPVizModel.g:943:9: ( ( ' ' | '\\t' | '\\r' | '\\n' )+ )
+            // InternalSPVizModel.g:943:11: ( ' ' | '\\t' | '\\r' | '\\n' )+
             {
-            // InternalSPVizModel.g:928:11: ( ' ' | '\\t' | '\\r' | '\\n' )+
+            // InternalSPVizModel.g:943:11: ( ' ' | '\\t' | '\\r' | '\\n' )+
             int cnt11=0;
             loop11:
             do {
@@ -668,8 +668,8 @@ public class InternalSPVizModelLexer extends Lexer {
         try {
             int _type = RULE_ANY_OTHER;
             int _channel = DEFAULT_TOKEN_CHANNEL;
-            // InternalSPVizModel.g:930:16: ( . )
-            // InternalSPVizModel.g:930:18: .
+            // InternalSPVizModel.g:945:16: ( . )
+            // InternalSPVizModel.g:945:18: .
             {
             matchAny(); 
 
