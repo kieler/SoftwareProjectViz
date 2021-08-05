@@ -76,11 +76,11 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "entryRuleSPVizModel"
-    // InternalSPVizModel.g:53:1: entryRuleSPVizModel : ruleSPVizModel EOF ;
+    // InternalSPVizModel.g:68:1: entryRuleSPVizModel : ruleSPVizModel EOF ;
     public final void entryRuleSPVizModel() throws RecognitionException {
         try {
-            // InternalSPVizModel.g:54:1: ( ruleSPVizModel EOF )
-            // InternalSPVizModel.g:55:1: ruleSPVizModel EOF
+            // InternalSPVizModel.g:69:1: ( ruleSPVizModel EOF )
+            // InternalSPVizModel.g:70:1: ruleSPVizModel EOF
             {
              before(grammarAccess.getSPVizModelRule()); 
             pushFollow(FOLLOW_1);
@@ -106,21 +106,21 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "ruleSPVizModel"
-    // InternalSPVizModel.g:62:1: ruleSPVizModel : ( ( rule__SPVizModel__Group__0 ) ) ;
+    // InternalSPVizModel.g:77:1: ruleSPVizModel : ( ( rule__SPVizModel__Group__0 ) ) ;
     public final void ruleSPVizModel() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:66:2: ( ( ( rule__SPVizModel__Group__0 ) ) )
-            // InternalSPVizModel.g:67:2: ( ( rule__SPVizModel__Group__0 ) )
+            // InternalSPVizModel.g:81:2: ( ( ( rule__SPVizModel__Group__0 ) ) )
+            // InternalSPVizModel.g:82:2: ( ( rule__SPVizModel__Group__0 ) )
             {
-            // InternalSPVizModel.g:67:2: ( ( rule__SPVizModel__Group__0 ) )
-            // InternalSPVizModel.g:68:3: ( rule__SPVizModel__Group__0 )
+            // InternalSPVizModel.g:82:2: ( ( rule__SPVizModel__Group__0 ) )
+            // InternalSPVizModel.g:83:3: ( rule__SPVizModel__Group__0 )
             {
              before(grammarAccess.getSPVizModelAccess().getGroup()); 
-            // InternalSPVizModel.g:69:3: ( rule__SPVizModel__Group__0 )
-            // InternalSPVizModel.g:69:4: rule__SPVizModel__Group__0
+            // InternalSPVizModel.g:84:3: ( rule__SPVizModel__Group__0 )
+            // InternalSPVizModel.g:84:4: rule__SPVizModel__Group__0
             {
             pushFollow(FOLLOW_2);
             rule__SPVizModel__Group__0();
@@ -153,11 +153,11 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "entryRuleArtifact"
-    // InternalSPVizModel.g:78:1: entryRuleArtifact : ruleArtifact EOF ;
+    // InternalSPVizModel.g:93:1: entryRuleArtifact : ruleArtifact EOF ;
     public final void entryRuleArtifact() throws RecognitionException {
         try {
-            // InternalSPVizModel.g:79:1: ( ruleArtifact EOF )
-            // InternalSPVizModel.g:80:1: ruleArtifact EOF
+            // InternalSPVizModel.g:94:1: ( ruleArtifact EOF )
+            // InternalSPVizModel.g:95:1: ruleArtifact EOF
             {
              before(grammarAccess.getArtifactRule()); 
             pushFollow(FOLLOW_1);
@@ -183,21 +183,21 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "ruleArtifact"
-    // InternalSPVizModel.g:87:1: ruleArtifact : ( ( rule__Artifact__Group__0 ) ) ;
+    // InternalSPVizModel.g:102:1: ruleArtifact : ( ( rule__Artifact__Group__0 ) ) ;
     public final void ruleArtifact() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:91:2: ( ( ( rule__Artifact__Group__0 ) ) )
-            // InternalSPVizModel.g:92:2: ( ( rule__Artifact__Group__0 ) )
+            // InternalSPVizModel.g:106:2: ( ( ( rule__Artifact__Group__0 ) ) )
+            // InternalSPVizModel.g:107:2: ( ( rule__Artifact__Group__0 ) )
             {
-            // InternalSPVizModel.g:92:2: ( ( rule__Artifact__Group__0 ) )
-            // InternalSPVizModel.g:93:3: ( rule__Artifact__Group__0 )
+            // InternalSPVizModel.g:107:2: ( ( rule__Artifact__Group__0 ) )
+            // InternalSPVizModel.g:108:3: ( rule__Artifact__Group__0 )
             {
              before(grammarAccess.getArtifactAccess().getGroup()); 
-            // InternalSPVizModel.g:94:3: ( rule__Artifact__Group__0 )
-            // InternalSPVizModel.g:94:4: rule__Artifact__Group__0
+            // InternalSPVizModel.g:109:3: ( rule__Artifact__Group__0 )
+            // InternalSPVizModel.g:109:4: rule__Artifact__Group__0
             {
             pushFollow(FOLLOW_2);
             rule__Artifact__Group__0();
@@ -230,11 +230,11 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "entryRuleReference"
-    // InternalSPVizModel.g:103:1: entryRuleReference : ruleReference EOF ;
+    // InternalSPVizModel.g:118:1: entryRuleReference : ruleReference EOF ;
     public final void entryRuleReference() throws RecognitionException {
         try {
-            // InternalSPVizModel.g:104:1: ( ruleReference EOF )
-            // InternalSPVizModel.g:105:1: ruleReference EOF
+            // InternalSPVizModel.g:119:1: ( ruleReference EOF )
+            // InternalSPVizModel.g:120:1: ruleReference EOF
             {
              before(grammarAccess.getReferenceRule()); 
             pushFollow(FOLLOW_1);
@@ -260,21 +260,21 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "ruleReference"
-    // InternalSPVizModel.g:112:1: ruleReference : ( ( rule__Reference__Alternatives ) ) ;
+    // InternalSPVizModel.g:127:1: ruleReference : ( ( rule__Reference__Alternatives ) ) ;
     public final void ruleReference() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:116:2: ( ( ( rule__Reference__Alternatives ) ) )
-            // InternalSPVizModel.g:117:2: ( ( rule__Reference__Alternatives ) )
+            // InternalSPVizModel.g:131:2: ( ( ( rule__Reference__Alternatives ) ) )
+            // InternalSPVizModel.g:132:2: ( ( rule__Reference__Alternatives ) )
             {
-            // InternalSPVizModel.g:117:2: ( ( rule__Reference__Alternatives ) )
-            // InternalSPVizModel.g:118:3: ( rule__Reference__Alternatives )
+            // InternalSPVizModel.g:132:2: ( ( rule__Reference__Alternatives ) )
+            // InternalSPVizModel.g:133:3: ( rule__Reference__Alternatives )
             {
              before(grammarAccess.getReferenceAccess().getAlternatives()); 
-            // InternalSPVizModel.g:119:3: ( rule__Reference__Alternatives )
-            // InternalSPVizModel.g:119:4: rule__Reference__Alternatives
+            // InternalSPVizModel.g:134:3: ( rule__Reference__Alternatives )
+            // InternalSPVizModel.g:134:4: rule__Reference__Alternatives
             {
             pushFollow(FOLLOW_2);
             rule__Reference__Alternatives();
@@ -307,11 +307,11 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "entryRuleContainment"
-    // InternalSPVizModel.g:128:1: entryRuleContainment : ruleContainment EOF ;
+    // InternalSPVizModel.g:143:1: entryRuleContainment : ruleContainment EOF ;
     public final void entryRuleContainment() throws RecognitionException {
         try {
-            // InternalSPVizModel.g:129:1: ( ruleContainment EOF )
-            // InternalSPVizModel.g:130:1: ruleContainment EOF
+            // InternalSPVizModel.g:144:1: ( ruleContainment EOF )
+            // InternalSPVizModel.g:145:1: ruleContainment EOF
             {
              before(grammarAccess.getContainmentRule()); 
             pushFollow(FOLLOW_1);
@@ -337,21 +337,21 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "ruleContainment"
-    // InternalSPVizModel.g:137:1: ruleContainment : ( ( rule__Containment__Group__0 ) ) ;
+    // InternalSPVizModel.g:152:1: ruleContainment : ( ( rule__Containment__Group__0 ) ) ;
     public final void ruleContainment() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:141:2: ( ( ( rule__Containment__Group__0 ) ) )
-            // InternalSPVizModel.g:142:2: ( ( rule__Containment__Group__0 ) )
+            // InternalSPVizModel.g:156:2: ( ( ( rule__Containment__Group__0 ) ) )
+            // InternalSPVizModel.g:157:2: ( ( rule__Containment__Group__0 ) )
             {
-            // InternalSPVizModel.g:142:2: ( ( rule__Containment__Group__0 ) )
-            // InternalSPVizModel.g:143:3: ( rule__Containment__Group__0 )
+            // InternalSPVizModel.g:157:2: ( ( rule__Containment__Group__0 ) )
+            // InternalSPVizModel.g:158:3: ( rule__Containment__Group__0 )
             {
              before(grammarAccess.getContainmentAccess().getGroup()); 
-            // InternalSPVizModel.g:144:3: ( rule__Containment__Group__0 )
-            // InternalSPVizModel.g:144:4: rule__Containment__Group__0
+            // InternalSPVizModel.g:159:3: ( rule__Containment__Group__0 )
+            // InternalSPVizModel.g:159:4: rule__Containment__Group__0
             {
             pushFollow(FOLLOW_2);
             rule__Containment__Group__0();
@@ -384,11 +384,11 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "entryRuleConnection"
-    // InternalSPVizModel.g:153:1: entryRuleConnection : ruleConnection EOF ;
+    // InternalSPVizModel.g:168:1: entryRuleConnection : ruleConnection EOF ;
     public final void entryRuleConnection() throws RecognitionException {
         try {
-            // InternalSPVizModel.g:154:1: ( ruleConnection EOF )
-            // InternalSPVizModel.g:155:1: ruleConnection EOF
+            // InternalSPVizModel.g:169:1: ( ruleConnection EOF )
+            // InternalSPVizModel.g:170:1: ruleConnection EOF
             {
              before(grammarAccess.getConnectionRule()); 
             pushFollow(FOLLOW_1);
@@ -414,21 +414,21 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "ruleConnection"
-    // InternalSPVizModel.g:162:1: ruleConnection : ( ( rule__Connection__Group__0 ) ) ;
+    // InternalSPVizModel.g:177:1: ruleConnection : ( ( rule__Connection__Group__0 ) ) ;
     public final void ruleConnection() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:166:2: ( ( ( rule__Connection__Group__0 ) ) )
-            // InternalSPVizModel.g:167:2: ( ( rule__Connection__Group__0 ) )
+            // InternalSPVizModel.g:181:2: ( ( ( rule__Connection__Group__0 ) ) )
+            // InternalSPVizModel.g:182:2: ( ( rule__Connection__Group__0 ) )
             {
-            // InternalSPVizModel.g:167:2: ( ( rule__Connection__Group__0 ) )
-            // InternalSPVizModel.g:168:3: ( rule__Connection__Group__0 )
+            // InternalSPVizModel.g:182:2: ( ( rule__Connection__Group__0 ) )
+            // InternalSPVizModel.g:183:3: ( rule__Connection__Group__0 )
             {
              before(grammarAccess.getConnectionAccess().getGroup()); 
-            // InternalSPVizModel.g:169:3: ( rule__Connection__Group__0 )
-            // InternalSPVizModel.g:169:4: rule__Connection__Group__0
+            // InternalSPVizModel.g:184:3: ( rule__Connection__Group__0 )
+            // InternalSPVizModel.g:184:4: rule__Connection__Group__0
             {
             pushFollow(FOLLOW_2);
             rule__Connection__Group__0();
@@ -461,11 +461,11 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "entryRuleQualifiedName"
-    // InternalSPVizModel.g:178:1: entryRuleQualifiedName : ruleQualifiedName EOF ;
+    // InternalSPVizModel.g:193:1: entryRuleQualifiedName : ruleQualifiedName EOF ;
     public final void entryRuleQualifiedName() throws RecognitionException {
         try {
-            // InternalSPVizModel.g:179:1: ( ruleQualifiedName EOF )
-            // InternalSPVizModel.g:180:1: ruleQualifiedName EOF
+            // InternalSPVizModel.g:194:1: ( ruleQualifiedName EOF )
+            // InternalSPVizModel.g:195:1: ruleQualifiedName EOF
             {
              before(grammarAccess.getQualifiedNameRule()); 
             pushFollow(FOLLOW_1);
@@ -491,21 +491,21 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "ruleQualifiedName"
-    // InternalSPVizModel.g:187:1: ruleQualifiedName : ( ( rule__QualifiedName__Group__0 ) ) ;
+    // InternalSPVizModel.g:202:1: ruleQualifiedName : ( ( rule__QualifiedName__Group__0 ) ) ;
     public final void ruleQualifiedName() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:191:2: ( ( ( rule__QualifiedName__Group__0 ) ) )
-            // InternalSPVizModel.g:192:2: ( ( rule__QualifiedName__Group__0 ) )
+            // InternalSPVizModel.g:206:2: ( ( ( rule__QualifiedName__Group__0 ) ) )
+            // InternalSPVizModel.g:207:2: ( ( rule__QualifiedName__Group__0 ) )
             {
-            // InternalSPVizModel.g:192:2: ( ( rule__QualifiedName__Group__0 ) )
-            // InternalSPVizModel.g:193:3: ( rule__QualifiedName__Group__0 )
+            // InternalSPVizModel.g:207:2: ( ( rule__QualifiedName__Group__0 ) )
+            // InternalSPVizModel.g:208:3: ( rule__QualifiedName__Group__0 )
             {
              before(grammarAccess.getQualifiedNameAccess().getGroup()); 
-            // InternalSPVizModel.g:194:3: ( rule__QualifiedName__Group__0 )
-            // InternalSPVizModel.g:194:4: rule__QualifiedName__Group__0
+            // InternalSPVizModel.g:209:3: ( rule__QualifiedName__Group__0 )
+            // InternalSPVizModel.g:209:4: rule__QualifiedName__Group__0
             {
             pushFollow(FOLLOW_2);
             rule__QualifiedName__Group__0();
@@ -538,13 +538,13 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "rule__Reference__Alternatives"
-    // InternalSPVizModel.g:202:1: rule__Reference__Alternatives : ( ( ruleContainment ) | ( ruleConnection ) );
+    // InternalSPVizModel.g:217:1: rule__Reference__Alternatives : ( ( ruleContainment ) | ( ruleConnection ) );
     public final void rule__Reference__Alternatives() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:206:1: ( ( ruleContainment ) | ( ruleConnection ) )
+            // InternalSPVizModel.g:221:1: ( ( ruleContainment ) | ( ruleConnection ) )
             int alt1=2;
             int LA1_0 = input.LA(1);
 
@@ -562,10 +562,10 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
             }
             switch (alt1) {
                 case 1 :
-                    // InternalSPVizModel.g:207:2: ( ruleContainment )
+                    // InternalSPVizModel.g:222:2: ( ruleContainment )
                     {
-                    // InternalSPVizModel.g:207:2: ( ruleContainment )
-                    // InternalSPVizModel.g:208:3: ruleContainment
+                    // InternalSPVizModel.g:222:2: ( ruleContainment )
+                    // InternalSPVizModel.g:223:3: ruleContainment
                     {
                      before(grammarAccess.getReferenceAccess().getContainmentParserRuleCall_0()); 
                     pushFollow(FOLLOW_2);
@@ -581,10 +581,10 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
                     }
                     break;
                 case 2 :
-                    // InternalSPVizModel.g:213:2: ( ruleConnection )
+                    // InternalSPVizModel.g:228:2: ( ruleConnection )
                     {
-                    // InternalSPVizModel.g:213:2: ( ruleConnection )
-                    // InternalSPVizModel.g:214:3: ruleConnection
+                    // InternalSPVizModel.g:228:2: ( ruleConnection )
+                    // InternalSPVizModel.g:229:3: ruleConnection
                     {
                      before(grammarAccess.getReferenceAccess().getConnectionParserRuleCall_1()); 
                     pushFollow(FOLLOW_2);
@@ -617,14 +617,14 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "rule__SPVizModel__Group__0"
-    // InternalSPVizModel.g:223:1: rule__SPVizModel__Group__0 : rule__SPVizModel__Group__0__Impl rule__SPVizModel__Group__1 ;
+    // InternalSPVizModel.g:238:1: rule__SPVizModel__Group__0 : rule__SPVizModel__Group__0__Impl rule__SPVizModel__Group__1 ;
     public final void rule__SPVizModel__Group__0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:227:1: ( rule__SPVizModel__Group__0__Impl rule__SPVizModel__Group__1 )
-            // InternalSPVizModel.g:228:2: rule__SPVizModel__Group__0__Impl rule__SPVizModel__Group__1
+            // InternalSPVizModel.g:242:1: ( rule__SPVizModel__Group__0__Impl rule__SPVizModel__Group__1 )
+            // InternalSPVizModel.g:243:2: rule__SPVizModel__Group__0__Impl rule__SPVizModel__Group__1
             {
             pushFollow(FOLLOW_3);
             rule__SPVizModel__Group__0__Impl();
@@ -655,17 +655,17 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "rule__SPVizModel__Group__0__Impl"
-    // InternalSPVizModel.g:235:1: rule__SPVizModel__Group__0__Impl : ( 'package' ) ;
+    // InternalSPVizModel.g:250:1: rule__SPVizModel__Group__0__Impl : ( 'package' ) ;
     public final void rule__SPVizModel__Group__0__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:239:1: ( ( 'package' ) )
-            // InternalSPVizModel.g:240:1: ( 'package' )
+            // InternalSPVizModel.g:254:1: ( ( 'package' ) )
+            // InternalSPVizModel.g:255:1: ( 'package' )
             {
-            // InternalSPVizModel.g:240:1: ( 'package' )
-            // InternalSPVizModel.g:241:2: 'package'
+            // InternalSPVizModel.g:255:1: ( 'package' )
+            // InternalSPVizModel.g:256:2: 'package'
             {
              before(grammarAccess.getSPVizModelAccess().getPackageKeyword_0()); 
             match(input,11,FOLLOW_2); 
@@ -692,14 +692,14 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "rule__SPVizModel__Group__1"
-    // InternalSPVizModel.g:250:1: rule__SPVizModel__Group__1 : rule__SPVizModel__Group__1__Impl rule__SPVizModel__Group__2 ;
+    // InternalSPVizModel.g:265:1: rule__SPVizModel__Group__1 : rule__SPVizModel__Group__1__Impl rule__SPVizModel__Group__2 ;
     public final void rule__SPVizModel__Group__1() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:254:1: ( rule__SPVizModel__Group__1__Impl rule__SPVizModel__Group__2 )
-            // InternalSPVizModel.g:255:2: rule__SPVizModel__Group__1__Impl rule__SPVizModel__Group__2
+            // InternalSPVizModel.g:269:1: ( rule__SPVizModel__Group__1__Impl rule__SPVizModel__Group__2 )
+            // InternalSPVizModel.g:270:2: rule__SPVizModel__Group__1__Impl rule__SPVizModel__Group__2
             {
             pushFollow(FOLLOW_4);
             rule__SPVizModel__Group__1__Impl();
@@ -730,21 +730,21 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "rule__SPVizModel__Group__1__Impl"
-    // InternalSPVizModel.g:262:1: rule__SPVizModel__Group__1__Impl : ( ( rule__SPVizModel__PackageAssignment_1 ) ) ;
+    // InternalSPVizModel.g:277:1: rule__SPVizModel__Group__1__Impl : ( ( rule__SPVizModel__PackageAssignment_1 ) ) ;
     public final void rule__SPVizModel__Group__1__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:266:1: ( ( ( rule__SPVizModel__PackageAssignment_1 ) ) )
-            // InternalSPVizModel.g:267:1: ( ( rule__SPVizModel__PackageAssignment_1 ) )
+            // InternalSPVizModel.g:281:1: ( ( ( rule__SPVizModel__PackageAssignment_1 ) ) )
+            // InternalSPVizModel.g:282:1: ( ( rule__SPVizModel__PackageAssignment_1 ) )
             {
-            // InternalSPVizModel.g:267:1: ( ( rule__SPVizModel__PackageAssignment_1 ) )
-            // InternalSPVizModel.g:268:2: ( rule__SPVizModel__PackageAssignment_1 )
+            // InternalSPVizModel.g:282:1: ( ( rule__SPVizModel__PackageAssignment_1 ) )
+            // InternalSPVizModel.g:283:2: ( rule__SPVizModel__PackageAssignment_1 )
             {
              before(grammarAccess.getSPVizModelAccess().getPackageAssignment_1()); 
-            // InternalSPVizModel.g:269:2: ( rule__SPVizModel__PackageAssignment_1 )
-            // InternalSPVizModel.g:269:3: rule__SPVizModel__PackageAssignment_1
+            // InternalSPVizModel.g:284:2: ( rule__SPVizModel__PackageAssignment_1 )
+            // InternalSPVizModel.g:284:3: rule__SPVizModel__PackageAssignment_1
             {
             pushFollow(FOLLOW_2);
             rule__SPVizModel__PackageAssignment_1();
@@ -777,14 +777,14 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "rule__SPVizModel__Group__2"
-    // InternalSPVizModel.g:277:1: rule__SPVizModel__Group__2 : rule__SPVizModel__Group__2__Impl rule__SPVizModel__Group__3 ;
+    // InternalSPVizModel.g:292:1: rule__SPVizModel__Group__2 : rule__SPVizModel__Group__2__Impl rule__SPVizModel__Group__3 ;
     public final void rule__SPVizModel__Group__2() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:281:1: ( rule__SPVizModel__Group__2__Impl rule__SPVizModel__Group__3 )
-            // InternalSPVizModel.g:282:2: rule__SPVizModel__Group__2__Impl rule__SPVizModel__Group__3
+            // InternalSPVizModel.g:296:1: ( rule__SPVizModel__Group__2__Impl rule__SPVizModel__Group__3 )
+            // InternalSPVizModel.g:297:2: rule__SPVizModel__Group__2__Impl rule__SPVizModel__Group__3
             {
             pushFollow(FOLLOW_3);
             rule__SPVizModel__Group__2__Impl();
@@ -815,17 +815,17 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "rule__SPVizModel__Group__2__Impl"
-    // InternalSPVizModel.g:289:1: rule__SPVizModel__Group__2__Impl : ( 'SPVizModel' ) ;
+    // InternalSPVizModel.g:304:1: rule__SPVizModel__Group__2__Impl : ( 'SPVizModel' ) ;
     public final void rule__SPVizModel__Group__2__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:293:1: ( ( 'SPVizModel' ) )
-            // InternalSPVizModel.g:294:1: ( 'SPVizModel' )
+            // InternalSPVizModel.g:308:1: ( ( 'SPVizModel' ) )
+            // InternalSPVizModel.g:309:1: ( 'SPVizModel' )
             {
-            // InternalSPVizModel.g:294:1: ( 'SPVizModel' )
-            // InternalSPVizModel.g:295:2: 'SPVizModel'
+            // InternalSPVizModel.g:309:1: ( 'SPVizModel' )
+            // InternalSPVizModel.g:310:2: 'SPVizModel'
             {
              before(grammarAccess.getSPVizModelAccess().getSPVizModelKeyword_2()); 
             match(input,12,FOLLOW_2); 
@@ -852,14 +852,14 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "rule__SPVizModel__Group__3"
-    // InternalSPVizModel.g:304:1: rule__SPVizModel__Group__3 : rule__SPVizModel__Group__3__Impl rule__SPVizModel__Group__4 ;
+    // InternalSPVizModel.g:319:1: rule__SPVizModel__Group__3 : rule__SPVizModel__Group__3__Impl rule__SPVizModel__Group__4 ;
     public final void rule__SPVizModel__Group__3() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:308:1: ( rule__SPVizModel__Group__3__Impl rule__SPVizModel__Group__4 )
-            // InternalSPVizModel.g:309:2: rule__SPVizModel__Group__3__Impl rule__SPVizModel__Group__4
+            // InternalSPVizModel.g:323:1: ( rule__SPVizModel__Group__3__Impl rule__SPVizModel__Group__4 )
+            // InternalSPVizModel.g:324:2: rule__SPVizModel__Group__3__Impl rule__SPVizModel__Group__4
             {
             pushFollow(FOLLOW_5);
             rule__SPVizModel__Group__3__Impl();
@@ -890,21 +890,21 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "rule__SPVizModel__Group__3__Impl"
-    // InternalSPVizModel.g:316:1: rule__SPVizModel__Group__3__Impl : ( ( rule__SPVizModel__NameAssignment_3 ) ) ;
+    // InternalSPVizModel.g:331:1: rule__SPVizModel__Group__3__Impl : ( ( rule__SPVizModel__NameAssignment_3 ) ) ;
     public final void rule__SPVizModel__Group__3__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:320:1: ( ( ( rule__SPVizModel__NameAssignment_3 ) ) )
-            // InternalSPVizModel.g:321:1: ( ( rule__SPVizModel__NameAssignment_3 ) )
+            // InternalSPVizModel.g:335:1: ( ( ( rule__SPVizModel__NameAssignment_3 ) ) )
+            // InternalSPVizModel.g:336:1: ( ( rule__SPVizModel__NameAssignment_3 ) )
             {
-            // InternalSPVizModel.g:321:1: ( ( rule__SPVizModel__NameAssignment_3 ) )
-            // InternalSPVizModel.g:322:2: ( rule__SPVizModel__NameAssignment_3 )
+            // InternalSPVizModel.g:336:1: ( ( rule__SPVizModel__NameAssignment_3 ) )
+            // InternalSPVizModel.g:337:2: ( rule__SPVizModel__NameAssignment_3 )
             {
              before(grammarAccess.getSPVizModelAccess().getNameAssignment_3()); 
-            // InternalSPVizModel.g:323:2: ( rule__SPVizModel__NameAssignment_3 )
-            // InternalSPVizModel.g:323:3: rule__SPVizModel__NameAssignment_3
+            // InternalSPVizModel.g:338:2: ( rule__SPVizModel__NameAssignment_3 )
+            // InternalSPVizModel.g:338:3: rule__SPVizModel__NameAssignment_3
             {
             pushFollow(FOLLOW_2);
             rule__SPVizModel__NameAssignment_3();
@@ -937,14 +937,14 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "rule__SPVizModel__Group__4"
-    // InternalSPVizModel.g:331:1: rule__SPVizModel__Group__4 : rule__SPVizModel__Group__4__Impl rule__SPVizModel__Group__5 ;
+    // InternalSPVizModel.g:346:1: rule__SPVizModel__Group__4 : rule__SPVizModel__Group__4__Impl rule__SPVizModel__Group__5 ;
     public final void rule__SPVizModel__Group__4() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:335:1: ( rule__SPVizModel__Group__4__Impl rule__SPVizModel__Group__5 )
-            // InternalSPVizModel.g:336:2: rule__SPVizModel__Group__4__Impl rule__SPVizModel__Group__5
+            // InternalSPVizModel.g:350:1: ( rule__SPVizModel__Group__4__Impl rule__SPVizModel__Group__5 )
+            // InternalSPVizModel.g:351:2: rule__SPVizModel__Group__4__Impl rule__SPVizModel__Group__5
             {
             pushFollow(FOLLOW_6);
             rule__SPVizModel__Group__4__Impl();
@@ -975,17 +975,17 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "rule__SPVizModel__Group__4__Impl"
-    // InternalSPVizModel.g:343:1: rule__SPVizModel__Group__4__Impl : ( '{' ) ;
+    // InternalSPVizModel.g:358:1: rule__SPVizModel__Group__4__Impl : ( '{' ) ;
     public final void rule__SPVizModel__Group__4__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:347:1: ( ( '{' ) )
-            // InternalSPVizModel.g:348:1: ( '{' )
+            // InternalSPVizModel.g:362:1: ( ( '{' ) )
+            // InternalSPVizModel.g:363:1: ( '{' )
             {
-            // InternalSPVizModel.g:348:1: ( '{' )
-            // InternalSPVizModel.g:349:2: '{'
+            // InternalSPVizModel.g:363:1: ( '{' )
+            // InternalSPVizModel.g:364:2: '{'
             {
              before(grammarAccess.getSPVizModelAccess().getLeftCurlyBracketKeyword_4()); 
             match(input,13,FOLLOW_2); 
@@ -1012,14 +1012,14 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "rule__SPVizModel__Group__5"
-    // InternalSPVizModel.g:358:1: rule__SPVizModel__Group__5 : rule__SPVizModel__Group__5__Impl rule__SPVizModel__Group__6 ;
+    // InternalSPVizModel.g:373:1: rule__SPVizModel__Group__5 : rule__SPVizModel__Group__5__Impl rule__SPVizModel__Group__6 ;
     public final void rule__SPVizModel__Group__5() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:362:1: ( rule__SPVizModel__Group__5__Impl rule__SPVizModel__Group__6 )
-            // InternalSPVizModel.g:363:2: rule__SPVizModel__Group__5__Impl rule__SPVizModel__Group__6
+            // InternalSPVizModel.g:377:1: ( rule__SPVizModel__Group__5__Impl rule__SPVizModel__Group__6 )
+            // InternalSPVizModel.g:378:2: rule__SPVizModel__Group__5__Impl rule__SPVizModel__Group__6
             {
             pushFollow(FOLLOW_6);
             rule__SPVizModel__Group__5__Impl();
@@ -1050,20 +1050,20 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "rule__SPVizModel__Group__5__Impl"
-    // InternalSPVizModel.g:370:1: rule__SPVizModel__Group__5__Impl : ( ( rule__SPVizModel__ArtifactsAssignment_5 )* ) ;
+    // InternalSPVizModel.g:385:1: rule__SPVizModel__Group__5__Impl : ( ( rule__SPVizModel__ArtifactsAssignment_5 )* ) ;
     public final void rule__SPVizModel__Group__5__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:374:1: ( ( ( rule__SPVizModel__ArtifactsAssignment_5 )* ) )
-            // InternalSPVizModel.g:375:1: ( ( rule__SPVizModel__ArtifactsAssignment_5 )* )
+            // InternalSPVizModel.g:389:1: ( ( ( rule__SPVizModel__ArtifactsAssignment_5 )* ) )
+            // InternalSPVizModel.g:390:1: ( ( rule__SPVizModel__ArtifactsAssignment_5 )* )
             {
-            // InternalSPVizModel.g:375:1: ( ( rule__SPVizModel__ArtifactsAssignment_5 )* )
-            // InternalSPVizModel.g:376:2: ( rule__SPVizModel__ArtifactsAssignment_5 )*
+            // InternalSPVizModel.g:390:1: ( ( rule__SPVizModel__ArtifactsAssignment_5 )* )
+            // InternalSPVizModel.g:391:2: ( rule__SPVizModel__ArtifactsAssignment_5 )*
             {
              before(grammarAccess.getSPVizModelAccess().getArtifactsAssignment_5()); 
-            // InternalSPVizModel.g:377:2: ( rule__SPVizModel__ArtifactsAssignment_5 )*
+            // InternalSPVizModel.g:392:2: ( rule__SPVizModel__ArtifactsAssignment_5 )*
             loop2:
             do {
                 int alt2=2;
@@ -1076,7 +1076,7 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
                 switch (alt2) {
             	case 1 :
-            	    // InternalSPVizModel.g:377:3: rule__SPVizModel__ArtifactsAssignment_5
+            	    // InternalSPVizModel.g:392:3: rule__SPVizModel__ArtifactsAssignment_5
             	    {
             	    pushFollow(FOLLOW_7);
             	    rule__SPVizModel__ArtifactsAssignment_5();
@@ -1115,14 +1115,14 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "rule__SPVizModel__Group__6"
-    // InternalSPVizModel.g:385:1: rule__SPVizModel__Group__6 : rule__SPVizModel__Group__6__Impl ;
+    // InternalSPVizModel.g:400:1: rule__SPVizModel__Group__6 : rule__SPVizModel__Group__6__Impl ;
     public final void rule__SPVizModel__Group__6() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:389:1: ( rule__SPVizModel__Group__6__Impl )
-            // InternalSPVizModel.g:390:2: rule__SPVizModel__Group__6__Impl
+            // InternalSPVizModel.g:404:1: ( rule__SPVizModel__Group__6__Impl )
+            // InternalSPVizModel.g:405:2: rule__SPVizModel__Group__6__Impl
             {
             pushFollow(FOLLOW_2);
             rule__SPVizModel__Group__6__Impl();
@@ -1148,17 +1148,17 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "rule__SPVizModel__Group__6__Impl"
-    // InternalSPVizModel.g:396:1: rule__SPVizModel__Group__6__Impl : ( '}' ) ;
+    // InternalSPVizModel.g:411:1: rule__SPVizModel__Group__6__Impl : ( '}' ) ;
     public final void rule__SPVizModel__Group__6__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:400:1: ( ( '}' ) )
-            // InternalSPVizModel.g:401:1: ( '}' )
+            // InternalSPVizModel.g:415:1: ( ( '}' ) )
+            // InternalSPVizModel.g:416:1: ( '}' )
             {
-            // InternalSPVizModel.g:401:1: ( '}' )
-            // InternalSPVizModel.g:402:2: '}'
+            // InternalSPVizModel.g:416:1: ( '}' )
+            // InternalSPVizModel.g:417:2: '}'
             {
              before(grammarAccess.getSPVizModelAccess().getRightCurlyBracketKeyword_6()); 
             match(input,14,FOLLOW_2); 
@@ -1185,14 +1185,14 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "rule__Artifact__Group__0"
-    // InternalSPVizModel.g:412:1: rule__Artifact__Group__0 : rule__Artifact__Group__0__Impl rule__Artifact__Group__1 ;
+    // InternalSPVizModel.g:427:1: rule__Artifact__Group__0 : rule__Artifact__Group__0__Impl rule__Artifact__Group__1 ;
     public final void rule__Artifact__Group__0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:416:1: ( rule__Artifact__Group__0__Impl rule__Artifact__Group__1 )
-            // InternalSPVizModel.g:417:2: rule__Artifact__Group__0__Impl rule__Artifact__Group__1
+            // InternalSPVizModel.g:431:1: ( rule__Artifact__Group__0__Impl rule__Artifact__Group__1 )
+            // InternalSPVizModel.g:432:2: rule__Artifact__Group__0__Impl rule__Artifact__Group__1
             {
             pushFollow(FOLLOW_5);
             rule__Artifact__Group__0__Impl();
@@ -1223,21 +1223,21 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "rule__Artifact__Group__0__Impl"
-    // InternalSPVizModel.g:424:1: rule__Artifact__Group__0__Impl : ( ( rule__Artifact__NameAssignment_0 ) ) ;
+    // InternalSPVizModel.g:439:1: rule__Artifact__Group__0__Impl : ( ( rule__Artifact__NameAssignment_0 ) ) ;
     public final void rule__Artifact__Group__0__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:428:1: ( ( ( rule__Artifact__NameAssignment_0 ) ) )
-            // InternalSPVizModel.g:429:1: ( ( rule__Artifact__NameAssignment_0 ) )
+            // InternalSPVizModel.g:443:1: ( ( ( rule__Artifact__NameAssignment_0 ) ) )
+            // InternalSPVizModel.g:444:1: ( ( rule__Artifact__NameAssignment_0 ) )
             {
-            // InternalSPVizModel.g:429:1: ( ( rule__Artifact__NameAssignment_0 ) )
-            // InternalSPVizModel.g:430:2: ( rule__Artifact__NameAssignment_0 )
+            // InternalSPVizModel.g:444:1: ( ( rule__Artifact__NameAssignment_0 ) )
+            // InternalSPVizModel.g:445:2: ( rule__Artifact__NameAssignment_0 )
             {
              before(grammarAccess.getArtifactAccess().getNameAssignment_0()); 
-            // InternalSPVizModel.g:431:2: ( rule__Artifact__NameAssignment_0 )
-            // InternalSPVizModel.g:431:3: rule__Artifact__NameAssignment_0
+            // InternalSPVizModel.g:446:2: ( rule__Artifact__NameAssignment_0 )
+            // InternalSPVizModel.g:446:3: rule__Artifact__NameAssignment_0
             {
             pushFollow(FOLLOW_2);
             rule__Artifact__NameAssignment_0();
@@ -1270,14 +1270,14 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "rule__Artifact__Group__1"
-    // InternalSPVizModel.g:439:1: rule__Artifact__Group__1 : rule__Artifact__Group__1__Impl ;
+    // InternalSPVizModel.g:454:1: rule__Artifact__Group__1 : rule__Artifact__Group__1__Impl ;
     public final void rule__Artifact__Group__1() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:443:1: ( rule__Artifact__Group__1__Impl )
-            // InternalSPVizModel.g:444:2: rule__Artifact__Group__1__Impl
+            // InternalSPVizModel.g:458:1: ( rule__Artifact__Group__1__Impl )
+            // InternalSPVizModel.g:459:2: rule__Artifact__Group__1__Impl
             {
             pushFollow(FOLLOW_2);
             rule__Artifact__Group__1__Impl();
@@ -1303,20 +1303,20 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "rule__Artifact__Group__1__Impl"
-    // InternalSPVizModel.g:450:1: rule__Artifact__Group__1__Impl : ( ( rule__Artifact__Group_1__0 )? ) ;
+    // InternalSPVizModel.g:465:1: rule__Artifact__Group__1__Impl : ( ( rule__Artifact__Group_1__0 )? ) ;
     public final void rule__Artifact__Group__1__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:454:1: ( ( ( rule__Artifact__Group_1__0 )? ) )
-            // InternalSPVizModel.g:455:1: ( ( rule__Artifact__Group_1__0 )? )
+            // InternalSPVizModel.g:469:1: ( ( ( rule__Artifact__Group_1__0 )? ) )
+            // InternalSPVizModel.g:470:1: ( ( rule__Artifact__Group_1__0 )? )
             {
-            // InternalSPVizModel.g:455:1: ( ( rule__Artifact__Group_1__0 )? )
-            // InternalSPVizModel.g:456:2: ( rule__Artifact__Group_1__0 )?
+            // InternalSPVizModel.g:470:1: ( ( rule__Artifact__Group_1__0 )? )
+            // InternalSPVizModel.g:471:2: ( rule__Artifact__Group_1__0 )?
             {
              before(grammarAccess.getArtifactAccess().getGroup_1()); 
-            // InternalSPVizModel.g:457:2: ( rule__Artifact__Group_1__0 )?
+            // InternalSPVizModel.g:472:2: ( rule__Artifact__Group_1__0 )?
             int alt3=2;
             int LA3_0 = input.LA(1);
 
@@ -1325,7 +1325,7 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
             }
             switch (alt3) {
                 case 1 :
-                    // InternalSPVizModel.g:457:3: rule__Artifact__Group_1__0
+                    // InternalSPVizModel.g:472:3: rule__Artifact__Group_1__0
                     {
                     pushFollow(FOLLOW_2);
                     rule__Artifact__Group_1__0();
@@ -1361,14 +1361,14 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "rule__Artifact__Group_1__0"
-    // InternalSPVizModel.g:466:1: rule__Artifact__Group_1__0 : rule__Artifact__Group_1__0__Impl rule__Artifact__Group_1__1 ;
+    // InternalSPVizModel.g:481:1: rule__Artifact__Group_1__0 : rule__Artifact__Group_1__0__Impl rule__Artifact__Group_1__1 ;
     public final void rule__Artifact__Group_1__0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:470:1: ( rule__Artifact__Group_1__0__Impl rule__Artifact__Group_1__1 )
-            // InternalSPVizModel.g:471:2: rule__Artifact__Group_1__0__Impl rule__Artifact__Group_1__1
+            // InternalSPVizModel.g:485:1: ( rule__Artifact__Group_1__0__Impl rule__Artifact__Group_1__1 )
+            // InternalSPVizModel.g:486:2: rule__Artifact__Group_1__0__Impl rule__Artifact__Group_1__1
             {
             pushFollow(FOLLOW_8);
             rule__Artifact__Group_1__0__Impl();
@@ -1399,17 +1399,17 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "rule__Artifact__Group_1__0__Impl"
-    // InternalSPVizModel.g:478:1: rule__Artifact__Group_1__0__Impl : ( '{' ) ;
+    // InternalSPVizModel.g:493:1: rule__Artifact__Group_1__0__Impl : ( '{' ) ;
     public final void rule__Artifact__Group_1__0__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:482:1: ( ( '{' ) )
-            // InternalSPVizModel.g:483:1: ( '{' )
+            // InternalSPVizModel.g:497:1: ( ( '{' ) )
+            // InternalSPVizModel.g:498:1: ( '{' )
             {
-            // InternalSPVizModel.g:483:1: ( '{' )
-            // InternalSPVizModel.g:484:2: '{'
+            // InternalSPVizModel.g:498:1: ( '{' )
+            // InternalSPVizModel.g:499:2: '{'
             {
              before(grammarAccess.getArtifactAccess().getLeftCurlyBracketKeyword_1_0()); 
             match(input,13,FOLLOW_2); 
@@ -1436,14 +1436,14 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "rule__Artifact__Group_1__1"
-    // InternalSPVizModel.g:493:1: rule__Artifact__Group_1__1 : rule__Artifact__Group_1__1__Impl rule__Artifact__Group_1__2 ;
+    // InternalSPVizModel.g:508:1: rule__Artifact__Group_1__1 : rule__Artifact__Group_1__1__Impl rule__Artifact__Group_1__2 ;
     public final void rule__Artifact__Group_1__1() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:497:1: ( rule__Artifact__Group_1__1__Impl rule__Artifact__Group_1__2 )
-            // InternalSPVizModel.g:498:2: rule__Artifact__Group_1__1__Impl rule__Artifact__Group_1__2
+            // InternalSPVizModel.g:512:1: ( rule__Artifact__Group_1__1__Impl rule__Artifact__Group_1__2 )
+            // InternalSPVizModel.g:513:2: rule__Artifact__Group_1__1__Impl rule__Artifact__Group_1__2
             {
             pushFollow(FOLLOW_8);
             rule__Artifact__Group_1__1__Impl();
@@ -1474,20 +1474,20 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "rule__Artifact__Group_1__1__Impl"
-    // InternalSPVizModel.g:505:1: rule__Artifact__Group_1__1__Impl : ( ( rule__Artifact__ReferencesAssignment_1_1 )* ) ;
+    // InternalSPVizModel.g:520:1: rule__Artifact__Group_1__1__Impl : ( ( rule__Artifact__ReferencesAssignment_1_1 )* ) ;
     public final void rule__Artifact__Group_1__1__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:509:1: ( ( ( rule__Artifact__ReferencesAssignment_1_1 )* ) )
-            // InternalSPVizModel.g:510:1: ( ( rule__Artifact__ReferencesAssignment_1_1 )* )
+            // InternalSPVizModel.g:524:1: ( ( ( rule__Artifact__ReferencesAssignment_1_1 )* ) )
+            // InternalSPVizModel.g:525:1: ( ( rule__Artifact__ReferencesAssignment_1_1 )* )
             {
-            // InternalSPVizModel.g:510:1: ( ( rule__Artifact__ReferencesAssignment_1_1 )* )
-            // InternalSPVizModel.g:511:2: ( rule__Artifact__ReferencesAssignment_1_1 )*
+            // InternalSPVizModel.g:525:1: ( ( rule__Artifact__ReferencesAssignment_1_1 )* )
+            // InternalSPVizModel.g:526:2: ( rule__Artifact__ReferencesAssignment_1_1 )*
             {
              before(grammarAccess.getArtifactAccess().getReferencesAssignment_1_1()); 
-            // InternalSPVizModel.g:512:2: ( rule__Artifact__ReferencesAssignment_1_1 )*
+            // InternalSPVizModel.g:527:2: ( rule__Artifact__ReferencesAssignment_1_1 )*
             loop4:
             do {
                 int alt4=2;
@@ -1500,7 +1500,7 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
                 switch (alt4) {
             	case 1 :
-            	    // InternalSPVizModel.g:512:3: rule__Artifact__ReferencesAssignment_1_1
+            	    // InternalSPVizModel.g:527:3: rule__Artifact__ReferencesAssignment_1_1
             	    {
             	    pushFollow(FOLLOW_9);
             	    rule__Artifact__ReferencesAssignment_1_1();
@@ -1539,14 +1539,14 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "rule__Artifact__Group_1__2"
-    // InternalSPVizModel.g:520:1: rule__Artifact__Group_1__2 : rule__Artifact__Group_1__2__Impl ;
+    // InternalSPVizModel.g:535:1: rule__Artifact__Group_1__2 : rule__Artifact__Group_1__2__Impl ;
     public final void rule__Artifact__Group_1__2() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:524:1: ( rule__Artifact__Group_1__2__Impl )
-            // InternalSPVizModel.g:525:2: rule__Artifact__Group_1__2__Impl
+            // InternalSPVizModel.g:539:1: ( rule__Artifact__Group_1__2__Impl )
+            // InternalSPVizModel.g:540:2: rule__Artifact__Group_1__2__Impl
             {
             pushFollow(FOLLOW_2);
             rule__Artifact__Group_1__2__Impl();
@@ -1572,17 +1572,17 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "rule__Artifact__Group_1__2__Impl"
-    // InternalSPVizModel.g:531:1: rule__Artifact__Group_1__2__Impl : ( '}' ) ;
+    // InternalSPVizModel.g:546:1: rule__Artifact__Group_1__2__Impl : ( '}' ) ;
     public final void rule__Artifact__Group_1__2__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:535:1: ( ( '}' ) )
-            // InternalSPVizModel.g:536:1: ( '}' )
+            // InternalSPVizModel.g:550:1: ( ( '}' ) )
+            // InternalSPVizModel.g:551:1: ( '}' )
             {
-            // InternalSPVizModel.g:536:1: ( '}' )
-            // InternalSPVizModel.g:537:2: '}'
+            // InternalSPVizModel.g:551:1: ( '}' )
+            // InternalSPVizModel.g:552:2: '}'
             {
              before(grammarAccess.getArtifactAccess().getRightCurlyBracketKeyword_1_2()); 
             match(input,14,FOLLOW_2); 
@@ -1609,14 +1609,14 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "rule__Containment__Group__0"
-    // InternalSPVizModel.g:547:1: rule__Containment__Group__0 : rule__Containment__Group__0__Impl rule__Containment__Group__1 ;
+    // InternalSPVizModel.g:562:1: rule__Containment__Group__0 : rule__Containment__Group__0__Impl rule__Containment__Group__1 ;
     public final void rule__Containment__Group__0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:551:1: ( rule__Containment__Group__0__Impl rule__Containment__Group__1 )
-            // InternalSPVizModel.g:552:2: rule__Containment__Group__0__Impl rule__Containment__Group__1
+            // InternalSPVizModel.g:566:1: ( rule__Containment__Group__0__Impl rule__Containment__Group__1 )
+            // InternalSPVizModel.g:567:2: rule__Containment__Group__0__Impl rule__Containment__Group__1
             {
             pushFollow(FOLLOW_3);
             rule__Containment__Group__0__Impl();
@@ -1647,17 +1647,17 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "rule__Containment__Group__0__Impl"
-    // InternalSPVizModel.g:559:1: rule__Containment__Group__0__Impl : ( 'contains' ) ;
+    // InternalSPVizModel.g:574:1: rule__Containment__Group__0__Impl : ( 'contains' ) ;
     public final void rule__Containment__Group__0__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:563:1: ( ( 'contains' ) )
-            // InternalSPVizModel.g:564:1: ( 'contains' )
+            // InternalSPVizModel.g:578:1: ( ( 'contains' ) )
+            // InternalSPVizModel.g:579:1: ( 'contains' )
             {
-            // InternalSPVizModel.g:564:1: ( 'contains' )
-            // InternalSPVizModel.g:565:2: 'contains'
+            // InternalSPVizModel.g:579:1: ( 'contains' )
+            // InternalSPVizModel.g:580:2: 'contains'
             {
              before(grammarAccess.getContainmentAccess().getContainsKeyword_0()); 
             match(input,15,FOLLOW_2); 
@@ -1684,14 +1684,14 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "rule__Containment__Group__1"
-    // InternalSPVizModel.g:574:1: rule__Containment__Group__1 : rule__Containment__Group__1__Impl ;
+    // InternalSPVizModel.g:589:1: rule__Containment__Group__1 : rule__Containment__Group__1__Impl ;
     public final void rule__Containment__Group__1() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:578:1: ( rule__Containment__Group__1__Impl )
-            // InternalSPVizModel.g:579:2: rule__Containment__Group__1__Impl
+            // InternalSPVizModel.g:593:1: ( rule__Containment__Group__1__Impl )
+            // InternalSPVizModel.g:594:2: rule__Containment__Group__1__Impl
             {
             pushFollow(FOLLOW_2);
             rule__Containment__Group__1__Impl();
@@ -1717,21 +1717,21 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "rule__Containment__Group__1__Impl"
-    // InternalSPVizModel.g:585:1: rule__Containment__Group__1__Impl : ( ( rule__Containment__ContainsAssignment_1 ) ) ;
+    // InternalSPVizModel.g:600:1: rule__Containment__Group__1__Impl : ( ( rule__Containment__ContainsAssignment_1 ) ) ;
     public final void rule__Containment__Group__1__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:589:1: ( ( ( rule__Containment__ContainsAssignment_1 ) ) )
-            // InternalSPVizModel.g:590:1: ( ( rule__Containment__ContainsAssignment_1 ) )
+            // InternalSPVizModel.g:604:1: ( ( ( rule__Containment__ContainsAssignment_1 ) ) )
+            // InternalSPVizModel.g:605:1: ( ( rule__Containment__ContainsAssignment_1 ) )
             {
-            // InternalSPVizModel.g:590:1: ( ( rule__Containment__ContainsAssignment_1 ) )
-            // InternalSPVizModel.g:591:2: ( rule__Containment__ContainsAssignment_1 )
+            // InternalSPVizModel.g:605:1: ( ( rule__Containment__ContainsAssignment_1 ) )
+            // InternalSPVizModel.g:606:2: ( rule__Containment__ContainsAssignment_1 )
             {
              before(grammarAccess.getContainmentAccess().getContainsAssignment_1()); 
-            // InternalSPVizModel.g:592:2: ( rule__Containment__ContainsAssignment_1 )
-            // InternalSPVizModel.g:592:3: rule__Containment__ContainsAssignment_1
+            // InternalSPVizModel.g:607:2: ( rule__Containment__ContainsAssignment_1 )
+            // InternalSPVizModel.g:607:3: rule__Containment__ContainsAssignment_1
             {
             pushFollow(FOLLOW_2);
             rule__Containment__ContainsAssignment_1();
@@ -1764,14 +1764,14 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "rule__Connection__Group__0"
-    // InternalSPVizModel.g:601:1: rule__Connection__Group__0 : rule__Connection__Group__0__Impl rule__Connection__Group__1 ;
+    // InternalSPVizModel.g:616:1: rule__Connection__Group__0 : rule__Connection__Group__0__Impl rule__Connection__Group__1 ;
     public final void rule__Connection__Group__0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:605:1: ( rule__Connection__Group__0__Impl rule__Connection__Group__1 )
-            // InternalSPVizModel.g:606:2: rule__Connection__Group__0__Impl rule__Connection__Group__1
+            // InternalSPVizModel.g:620:1: ( rule__Connection__Group__0__Impl rule__Connection__Group__1 )
+            // InternalSPVizModel.g:621:2: rule__Connection__Group__0__Impl rule__Connection__Group__1
             {
             pushFollow(FOLLOW_10);
             rule__Connection__Group__0__Impl();
@@ -1802,21 +1802,21 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "rule__Connection__Group__0__Impl"
-    // InternalSPVizModel.g:613:1: rule__Connection__Group__0__Impl : ( ( rule__Connection__NameAssignment_0 ) ) ;
+    // InternalSPVizModel.g:628:1: rule__Connection__Group__0__Impl : ( ( rule__Connection__NameAssignment_0 ) ) ;
     public final void rule__Connection__Group__0__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:617:1: ( ( ( rule__Connection__NameAssignment_0 ) ) )
-            // InternalSPVizModel.g:618:1: ( ( rule__Connection__NameAssignment_0 ) )
+            // InternalSPVizModel.g:632:1: ( ( ( rule__Connection__NameAssignment_0 ) ) )
+            // InternalSPVizModel.g:633:1: ( ( rule__Connection__NameAssignment_0 ) )
             {
-            // InternalSPVizModel.g:618:1: ( ( rule__Connection__NameAssignment_0 ) )
-            // InternalSPVizModel.g:619:2: ( rule__Connection__NameAssignment_0 )
+            // InternalSPVizModel.g:633:1: ( ( rule__Connection__NameAssignment_0 ) )
+            // InternalSPVizModel.g:634:2: ( rule__Connection__NameAssignment_0 )
             {
              before(grammarAccess.getConnectionAccess().getNameAssignment_0()); 
-            // InternalSPVizModel.g:620:2: ( rule__Connection__NameAssignment_0 )
-            // InternalSPVizModel.g:620:3: rule__Connection__NameAssignment_0
+            // InternalSPVizModel.g:635:2: ( rule__Connection__NameAssignment_0 )
+            // InternalSPVizModel.g:635:3: rule__Connection__NameAssignment_0
             {
             pushFollow(FOLLOW_2);
             rule__Connection__NameAssignment_0();
@@ -1849,14 +1849,14 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "rule__Connection__Group__1"
-    // InternalSPVizModel.g:628:1: rule__Connection__Group__1 : rule__Connection__Group__1__Impl rule__Connection__Group__2 ;
+    // InternalSPVizModel.g:643:1: rule__Connection__Group__1 : rule__Connection__Group__1__Impl rule__Connection__Group__2 ;
     public final void rule__Connection__Group__1() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:632:1: ( rule__Connection__Group__1__Impl rule__Connection__Group__2 )
-            // InternalSPVizModel.g:633:2: rule__Connection__Group__1__Impl rule__Connection__Group__2
+            // InternalSPVizModel.g:647:1: ( rule__Connection__Group__1__Impl rule__Connection__Group__2 )
+            // InternalSPVizModel.g:648:2: rule__Connection__Group__1__Impl rule__Connection__Group__2
             {
             pushFollow(FOLLOW_3);
             rule__Connection__Group__1__Impl();
@@ -1887,17 +1887,17 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "rule__Connection__Group__1__Impl"
-    // InternalSPVizModel.g:640:1: rule__Connection__Group__1__Impl : ( 'depends' ) ;
+    // InternalSPVizModel.g:655:1: rule__Connection__Group__1__Impl : ( 'depends' ) ;
     public final void rule__Connection__Group__1__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:644:1: ( ( 'depends' ) )
-            // InternalSPVizModel.g:645:1: ( 'depends' )
+            // InternalSPVizModel.g:659:1: ( ( 'depends' ) )
+            // InternalSPVizModel.g:660:1: ( 'depends' )
             {
-            // InternalSPVizModel.g:645:1: ( 'depends' )
-            // InternalSPVizModel.g:646:2: 'depends'
+            // InternalSPVizModel.g:660:1: ( 'depends' )
+            // InternalSPVizModel.g:661:2: 'depends'
             {
              before(grammarAccess.getConnectionAccess().getDependsKeyword_1()); 
             match(input,16,FOLLOW_2); 
@@ -1924,14 +1924,14 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "rule__Connection__Group__2"
-    // InternalSPVizModel.g:655:1: rule__Connection__Group__2 : rule__Connection__Group__2__Impl ;
+    // InternalSPVizModel.g:670:1: rule__Connection__Group__2 : rule__Connection__Group__2__Impl ;
     public final void rule__Connection__Group__2() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:659:1: ( rule__Connection__Group__2__Impl )
-            // InternalSPVizModel.g:660:2: rule__Connection__Group__2__Impl
+            // InternalSPVizModel.g:674:1: ( rule__Connection__Group__2__Impl )
+            // InternalSPVizModel.g:675:2: rule__Connection__Group__2__Impl
             {
             pushFollow(FOLLOW_2);
             rule__Connection__Group__2__Impl();
@@ -1957,21 +1957,21 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "rule__Connection__Group__2__Impl"
-    // InternalSPVizModel.g:666:1: rule__Connection__Group__2__Impl : ( ( rule__Connection__DependsOnAssignment_2 ) ) ;
+    // InternalSPVizModel.g:681:1: rule__Connection__Group__2__Impl : ( ( rule__Connection__DependsOnAssignment_2 ) ) ;
     public final void rule__Connection__Group__2__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:670:1: ( ( ( rule__Connection__DependsOnAssignment_2 ) ) )
-            // InternalSPVizModel.g:671:1: ( ( rule__Connection__DependsOnAssignment_2 ) )
+            // InternalSPVizModel.g:685:1: ( ( ( rule__Connection__DependsOnAssignment_2 ) ) )
+            // InternalSPVizModel.g:686:1: ( ( rule__Connection__DependsOnAssignment_2 ) )
             {
-            // InternalSPVizModel.g:671:1: ( ( rule__Connection__DependsOnAssignment_2 ) )
-            // InternalSPVizModel.g:672:2: ( rule__Connection__DependsOnAssignment_2 )
+            // InternalSPVizModel.g:686:1: ( ( rule__Connection__DependsOnAssignment_2 ) )
+            // InternalSPVizModel.g:687:2: ( rule__Connection__DependsOnAssignment_2 )
             {
              before(grammarAccess.getConnectionAccess().getDependsOnAssignment_2()); 
-            // InternalSPVizModel.g:673:2: ( rule__Connection__DependsOnAssignment_2 )
-            // InternalSPVizModel.g:673:3: rule__Connection__DependsOnAssignment_2
+            // InternalSPVizModel.g:688:2: ( rule__Connection__DependsOnAssignment_2 )
+            // InternalSPVizModel.g:688:3: rule__Connection__DependsOnAssignment_2
             {
             pushFollow(FOLLOW_2);
             rule__Connection__DependsOnAssignment_2();
@@ -2004,14 +2004,14 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "rule__QualifiedName__Group__0"
-    // InternalSPVizModel.g:682:1: rule__QualifiedName__Group__0 : rule__QualifiedName__Group__0__Impl rule__QualifiedName__Group__1 ;
+    // InternalSPVizModel.g:697:1: rule__QualifiedName__Group__0 : rule__QualifiedName__Group__0__Impl rule__QualifiedName__Group__1 ;
     public final void rule__QualifiedName__Group__0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:686:1: ( rule__QualifiedName__Group__0__Impl rule__QualifiedName__Group__1 )
-            // InternalSPVizModel.g:687:2: rule__QualifiedName__Group__0__Impl rule__QualifiedName__Group__1
+            // InternalSPVizModel.g:701:1: ( rule__QualifiedName__Group__0__Impl rule__QualifiedName__Group__1 )
+            // InternalSPVizModel.g:702:2: rule__QualifiedName__Group__0__Impl rule__QualifiedName__Group__1
             {
             pushFollow(FOLLOW_11);
             rule__QualifiedName__Group__0__Impl();
@@ -2042,17 +2042,17 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "rule__QualifiedName__Group__0__Impl"
-    // InternalSPVizModel.g:694:1: rule__QualifiedName__Group__0__Impl : ( RULE_ID ) ;
+    // InternalSPVizModel.g:709:1: rule__QualifiedName__Group__0__Impl : ( RULE_ID ) ;
     public final void rule__QualifiedName__Group__0__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:698:1: ( ( RULE_ID ) )
-            // InternalSPVizModel.g:699:1: ( RULE_ID )
+            // InternalSPVizModel.g:713:1: ( ( RULE_ID ) )
+            // InternalSPVizModel.g:714:1: ( RULE_ID )
             {
-            // InternalSPVizModel.g:699:1: ( RULE_ID )
-            // InternalSPVizModel.g:700:2: RULE_ID
+            // InternalSPVizModel.g:714:1: ( RULE_ID )
+            // InternalSPVizModel.g:715:2: RULE_ID
             {
              before(grammarAccess.getQualifiedNameAccess().getIDTerminalRuleCall_0()); 
             match(input,RULE_ID,FOLLOW_2); 
@@ -2079,14 +2079,14 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "rule__QualifiedName__Group__1"
-    // InternalSPVizModel.g:709:1: rule__QualifiedName__Group__1 : rule__QualifiedName__Group__1__Impl ;
+    // InternalSPVizModel.g:724:1: rule__QualifiedName__Group__1 : rule__QualifiedName__Group__1__Impl ;
     public final void rule__QualifiedName__Group__1() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:713:1: ( rule__QualifiedName__Group__1__Impl )
-            // InternalSPVizModel.g:714:2: rule__QualifiedName__Group__1__Impl
+            // InternalSPVizModel.g:728:1: ( rule__QualifiedName__Group__1__Impl )
+            // InternalSPVizModel.g:729:2: rule__QualifiedName__Group__1__Impl
             {
             pushFollow(FOLLOW_2);
             rule__QualifiedName__Group__1__Impl();
@@ -2112,20 +2112,20 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "rule__QualifiedName__Group__1__Impl"
-    // InternalSPVizModel.g:720:1: rule__QualifiedName__Group__1__Impl : ( ( rule__QualifiedName__Group_1__0 )* ) ;
+    // InternalSPVizModel.g:735:1: rule__QualifiedName__Group__1__Impl : ( ( rule__QualifiedName__Group_1__0 )* ) ;
     public final void rule__QualifiedName__Group__1__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:724:1: ( ( ( rule__QualifiedName__Group_1__0 )* ) )
-            // InternalSPVizModel.g:725:1: ( ( rule__QualifiedName__Group_1__0 )* )
+            // InternalSPVizModel.g:739:1: ( ( ( rule__QualifiedName__Group_1__0 )* ) )
+            // InternalSPVizModel.g:740:1: ( ( rule__QualifiedName__Group_1__0 )* )
             {
-            // InternalSPVizModel.g:725:1: ( ( rule__QualifiedName__Group_1__0 )* )
-            // InternalSPVizModel.g:726:2: ( rule__QualifiedName__Group_1__0 )*
+            // InternalSPVizModel.g:740:1: ( ( rule__QualifiedName__Group_1__0 )* )
+            // InternalSPVizModel.g:741:2: ( rule__QualifiedName__Group_1__0 )*
             {
              before(grammarAccess.getQualifiedNameAccess().getGroup_1()); 
-            // InternalSPVizModel.g:727:2: ( rule__QualifiedName__Group_1__0 )*
+            // InternalSPVizModel.g:742:2: ( rule__QualifiedName__Group_1__0 )*
             loop5:
             do {
                 int alt5=2;
@@ -2138,7 +2138,7 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
                 switch (alt5) {
             	case 1 :
-            	    // InternalSPVizModel.g:727:3: rule__QualifiedName__Group_1__0
+            	    // InternalSPVizModel.g:742:3: rule__QualifiedName__Group_1__0
             	    {
             	    pushFollow(FOLLOW_12);
             	    rule__QualifiedName__Group_1__0();
@@ -2177,14 +2177,14 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "rule__QualifiedName__Group_1__0"
-    // InternalSPVizModel.g:736:1: rule__QualifiedName__Group_1__0 : rule__QualifiedName__Group_1__0__Impl rule__QualifiedName__Group_1__1 ;
+    // InternalSPVizModel.g:751:1: rule__QualifiedName__Group_1__0 : rule__QualifiedName__Group_1__0__Impl rule__QualifiedName__Group_1__1 ;
     public final void rule__QualifiedName__Group_1__0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:740:1: ( rule__QualifiedName__Group_1__0__Impl rule__QualifiedName__Group_1__1 )
-            // InternalSPVizModel.g:741:2: rule__QualifiedName__Group_1__0__Impl rule__QualifiedName__Group_1__1
+            // InternalSPVizModel.g:755:1: ( rule__QualifiedName__Group_1__0__Impl rule__QualifiedName__Group_1__1 )
+            // InternalSPVizModel.g:756:2: rule__QualifiedName__Group_1__0__Impl rule__QualifiedName__Group_1__1
             {
             pushFollow(FOLLOW_3);
             rule__QualifiedName__Group_1__0__Impl();
@@ -2215,17 +2215,17 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "rule__QualifiedName__Group_1__0__Impl"
-    // InternalSPVizModel.g:748:1: rule__QualifiedName__Group_1__0__Impl : ( '.' ) ;
+    // InternalSPVizModel.g:763:1: rule__QualifiedName__Group_1__0__Impl : ( '.' ) ;
     public final void rule__QualifiedName__Group_1__0__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:752:1: ( ( '.' ) )
-            // InternalSPVizModel.g:753:1: ( '.' )
+            // InternalSPVizModel.g:767:1: ( ( '.' ) )
+            // InternalSPVizModel.g:768:1: ( '.' )
             {
-            // InternalSPVizModel.g:753:1: ( '.' )
-            // InternalSPVizModel.g:754:2: '.'
+            // InternalSPVizModel.g:768:1: ( '.' )
+            // InternalSPVizModel.g:769:2: '.'
             {
              before(grammarAccess.getQualifiedNameAccess().getFullStopKeyword_1_0()); 
             match(input,17,FOLLOW_2); 
@@ -2252,14 +2252,14 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "rule__QualifiedName__Group_1__1"
-    // InternalSPVizModel.g:763:1: rule__QualifiedName__Group_1__1 : rule__QualifiedName__Group_1__1__Impl ;
+    // InternalSPVizModel.g:778:1: rule__QualifiedName__Group_1__1 : rule__QualifiedName__Group_1__1__Impl ;
     public final void rule__QualifiedName__Group_1__1() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:767:1: ( rule__QualifiedName__Group_1__1__Impl )
-            // InternalSPVizModel.g:768:2: rule__QualifiedName__Group_1__1__Impl
+            // InternalSPVizModel.g:782:1: ( rule__QualifiedName__Group_1__1__Impl )
+            // InternalSPVizModel.g:783:2: rule__QualifiedName__Group_1__1__Impl
             {
             pushFollow(FOLLOW_2);
             rule__QualifiedName__Group_1__1__Impl();
@@ -2285,17 +2285,17 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "rule__QualifiedName__Group_1__1__Impl"
-    // InternalSPVizModel.g:774:1: rule__QualifiedName__Group_1__1__Impl : ( RULE_ID ) ;
+    // InternalSPVizModel.g:789:1: rule__QualifiedName__Group_1__1__Impl : ( RULE_ID ) ;
     public final void rule__QualifiedName__Group_1__1__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:778:1: ( ( RULE_ID ) )
-            // InternalSPVizModel.g:779:1: ( RULE_ID )
+            // InternalSPVizModel.g:793:1: ( ( RULE_ID ) )
+            // InternalSPVizModel.g:794:1: ( RULE_ID )
             {
-            // InternalSPVizModel.g:779:1: ( RULE_ID )
-            // InternalSPVizModel.g:780:2: RULE_ID
+            // InternalSPVizModel.g:794:1: ( RULE_ID )
+            // InternalSPVizModel.g:795:2: RULE_ID
             {
              before(grammarAccess.getQualifiedNameAccess().getIDTerminalRuleCall_1_1()); 
             match(input,RULE_ID,FOLLOW_2); 
@@ -2322,17 +2322,17 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "rule__SPVizModel__PackageAssignment_1"
-    // InternalSPVizModel.g:790:1: rule__SPVizModel__PackageAssignment_1 : ( ruleQualifiedName ) ;
+    // InternalSPVizModel.g:805:1: rule__SPVizModel__PackageAssignment_1 : ( ruleQualifiedName ) ;
     public final void rule__SPVizModel__PackageAssignment_1() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:794:1: ( ( ruleQualifiedName ) )
-            // InternalSPVizModel.g:795:2: ( ruleQualifiedName )
+            // InternalSPVizModel.g:809:1: ( ( ruleQualifiedName ) )
+            // InternalSPVizModel.g:810:2: ( ruleQualifiedName )
             {
-            // InternalSPVizModel.g:795:2: ( ruleQualifiedName )
-            // InternalSPVizModel.g:796:3: ruleQualifiedName
+            // InternalSPVizModel.g:810:2: ( ruleQualifiedName )
+            // InternalSPVizModel.g:811:3: ruleQualifiedName
             {
              before(grammarAccess.getSPVizModelAccess().getPackageQualifiedNameParserRuleCall_1_0()); 
             pushFollow(FOLLOW_2);
@@ -2363,17 +2363,17 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "rule__SPVizModel__NameAssignment_3"
-    // InternalSPVizModel.g:805:1: rule__SPVizModel__NameAssignment_3 : ( RULE_ID ) ;
+    // InternalSPVizModel.g:820:1: rule__SPVizModel__NameAssignment_3 : ( RULE_ID ) ;
     public final void rule__SPVizModel__NameAssignment_3() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:809:1: ( ( RULE_ID ) )
-            // InternalSPVizModel.g:810:2: ( RULE_ID )
+            // InternalSPVizModel.g:824:1: ( ( RULE_ID ) )
+            // InternalSPVizModel.g:825:2: ( RULE_ID )
             {
-            // InternalSPVizModel.g:810:2: ( RULE_ID )
-            // InternalSPVizModel.g:811:3: RULE_ID
+            // InternalSPVizModel.g:825:2: ( RULE_ID )
+            // InternalSPVizModel.g:826:3: RULE_ID
             {
              before(grammarAccess.getSPVizModelAccess().getNameIDTerminalRuleCall_3_0()); 
             match(input,RULE_ID,FOLLOW_2); 
@@ -2400,17 +2400,17 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "rule__SPVizModel__ArtifactsAssignment_5"
-    // InternalSPVizModel.g:820:1: rule__SPVizModel__ArtifactsAssignment_5 : ( ruleArtifact ) ;
+    // InternalSPVizModel.g:835:1: rule__SPVizModel__ArtifactsAssignment_5 : ( ruleArtifact ) ;
     public final void rule__SPVizModel__ArtifactsAssignment_5() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:824:1: ( ( ruleArtifact ) )
-            // InternalSPVizModel.g:825:2: ( ruleArtifact )
+            // InternalSPVizModel.g:839:1: ( ( ruleArtifact ) )
+            // InternalSPVizModel.g:840:2: ( ruleArtifact )
             {
-            // InternalSPVizModel.g:825:2: ( ruleArtifact )
-            // InternalSPVizModel.g:826:3: ruleArtifact
+            // InternalSPVizModel.g:840:2: ( ruleArtifact )
+            // InternalSPVizModel.g:841:3: ruleArtifact
             {
              before(grammarAccess.getSPVizModelAccess().getArtifactsArtifactParserRuleCall_5_0()); 
             pushFollow(FOLLOW_2);
@@ -2441,17 +2441,17 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "rule__Artifact__NameAssignment_0"
-    // InternalSPVizModel.g:835:1: rule__Artifact__NameAssignment_0 : ( RULE_ID ) ;
+    // InternalSPVizModel.g:850:1: rule__Artifact__NameAssignment_0 : ( RULE_ID ) ;
     public final void rule__Artifact__NameAssignment_0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:839:1: ( ( RULE_ID ) )
-            // InternalSPVizModel.g:840:2: ( RULE_ID )
+            // InternalSPVizModel.g:854:1: ( ( RULE_ID ) )
+            // InternalSPVizModel.g:855:2: ( RULE_ID )
             {
-            // InternalSPVizModel.g:840:2: ( RULE_ID )
-            // InternalSPVizModel.g:841:3: RULE_ID
+            // InternalSPVizModel.g:855:2: ( RULE_ID )
+            // InternalSPVizModel.g:856:3: RULE_ID
             {
              before(grammarAccess.getArtifactAccess().getNameIDTerminalRuleCall_0_0()); 
             match(input,RULE_ID,FOLLOW_2); 
@@ -2478,17 +2478,17 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "rule__Artifact__ReferencesAssignment_1_1"
-    // InternalSPVizModel.g:850:1: rule__Artifact__ReferencesAssignment_1_1 : ( ruleReference ) ;
+    // InternalSPVizModel.g:865:1: rule__Artifact__ReferencesAssignment_1_1 : ( ruleReference ) ;
     public final void rule__Artifact__ReferencesAssignment_1_1() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:854:1: ( ( ruleReference ) )
-            // InternalSPVizModel.g:855:2: ( ruleReference )
+            // InternalSPVizModel.g:869:1: ( ( ruleReference ) )
+            // InternalSPVizModel.g:870:2: ( ruleReference )
             {
-            // InternalSPVizModel.g:855:2: ( ruleReference )
-            // InternalSPVizModel.g:856:3: ruleReference
+            // InternalSPVizModel.g:870:2: ( ruleReference )
+            // InternalSPVizModel.g:871:3: ruleReference
             {
              before(grammarAccess.getArtifactAccess().getReferencesReferenceParserRuleCall_1_1_0()); 
             pushFollow(FOLLOW_2);
@@ -2519,21 +2519,21 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "rule__Containment__ContainsAssignment_1"
-    // InternalSPVizModel.g:865:1: rule__Containment__ContainsAssignment_1 : ( ( RULE_ID ) ) ;
+    // InternalSPVizModel.g:880:1: rule__Containment__ContainsAssignment_1 : ( ( RULE_ID ) ) ;
     public final void rule__Containment__ContainsAssignment_1() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:869:1: ( ( ( RULE_ID ) ) )
-            // InternalSPVizModel.g:870:2: ( ( RULE_ID ) )
+            // InternalSPVizModel.g:884:1: ( ( ( RULE_ID ) ) )
+            // InternalSPVizModel.g:885:2: ( ( RULE_ID ) )
             {
-            // InternalSPVizModel.g:870:2: ( ( RULE_ID ) )
-            // InternalSPVizModel.g:871:3: ( RULE_ID )
+            // InternalSPVizModel.g:885:2: ( ( RULE_ID ) )
+            // InternalSPVizModel.g:886:3: ( RULE_ID )
             {
              before(grammarAccess.getContainmentAccess().getContainsArtifactCrossReference_1_0()); 
-            // InternalSPVizModel.g:872:3: ( RULE_ID )
-            // InternalSPVizModel.g:873:4: RULE_ID
+            // InternalSPVizModel.g:887:3: ( RULE_ID )
+            // InternalSPVizModel.g:888:4: RULE_ID
             {
              before(grammarAccess.getContainmentAccess().getContainsArtifactIDTerminalRuleCall_1_0_1()); 
             match(input,RULE_ID,FOLLOW_2); 
@@ -2564,17 +2564,17 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "rule__Connection__NameAssignment_0"
-    // InternalSPVizModel.g:884:1: rule__Connection__NameAssignment_0 : ( RULE_ID ) ;
+    // InternalSPVizModel.g:899:1: rule__Connection__NameAssignment_0 : ( RULE_ID ) ;
     public final void rule__Connection__NameAssignment_0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:888:1: ( ( RULE_ID ) )
-            // InternalSPVizModel.g:889:2: ( RULE_ID )
+            // InternalSPVizModel.g:903:1: ( ( RULE_ID ) )
+            // InternalSPVizModel.g:904:2: ( RULE_ID )
             {
-            // InternalSPVizModel.g:889:2: ( RULE_ID )
-            // InternalSPVizModel.g:890:3: RULE_ID
+            // InternalSPVizModel.g:904:2: ( RULE_ID )
+            // InternalSPVizModel.g:905:3: RULE_ID
             {
              before(grammarAccess.getConnectionAccess().getNameIDTerminalRuleCall_0_0()); 
             match(input,RULE_ID,FOLLOW_2); 
@@ -2601,21 +2601,21 @@ public class InternalSPVizModelParser extends AbstractInternalContentAssistParse
 
 
     // $ANTLR start "rule__Connection__DependsOnAssignment_2"
-    // InternalSPVizModel.g:899:1: rule__Connection__DependsOnAssignment_2 : ( ( RULE_ID ) ) ;
+    // InternalSPVizModel.g:914:1: rule__Connection__DependsOnAssignment_2 : ( ( RULE_ID ) ) ;
     public final void rule__Connection__DependsOnAssignment_2() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPVizModel.g:903:1: ( ( ( RULE_ID ) ) )
-            // InternalSPVizModel.g:904:2: ( ( RULE_ID ) )
+            // InternalSPVizModel.g:918:1: ( ( ( RULE_ID ) ) )
+            // InternalSPVizModel.g:919:2: ( ( RULE_ID ) )
             {
-            // InternalSPVizModel.g:904:2: ( ( RULE_ID ) )
-            // InternalSPVizModel.g:905:3: ( RULE_ID )
+            // InternalSPVizModel.g:919:2: ( ( RULE_ID ) )
+            // InternalSPVizModel.g:920:3: ( RULE_ID )
             {
              before(grammarAccess.getConnectionAccess().getDependsOnArtifactCrossReference_2_0()); 
-            // InternalSPVizModel.g:906:3: ( RULE_ID )
-            // InternalSPVizModel.g:907:4: RULE_ID
+            // InternalSPVizModel.g:921:3: ( RULE_ID )
+            // InternalSPVizModel.g:922:4: RULE_ID
             {
              before(grammarAccess.getConnectionAccess().getDependsOnArtifactIDTerminalRuleCall_2_0_1()); 
             match(input,RULE_ID,FOLLOW_2); 
