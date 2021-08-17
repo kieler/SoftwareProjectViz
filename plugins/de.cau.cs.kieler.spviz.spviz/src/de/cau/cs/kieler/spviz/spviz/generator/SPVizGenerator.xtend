@@ -3,7 +3,7 @@
  *
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2020 by
+ * Copyright 2020-2021 by
  * + Kiel University
  *   + Department of Computer Science
  *	 + Real-Time and Embedded Systems Group
@@ -12,51 +12,148 @@
  */
 package de.cau.cs.kieler.spviz.spviz.generator
 
+import de.cau.cs.kieler.spviz.spviz.sPViz.SPViz
+import de.cau.cs.kieler.spviz.spvizmodel.generator.FileGenerator
+import de.cau.cs.kieler.spviz.spvizmodel.generator.XCoreProjectGenerator
+import java.util.Collections
+import java.util.List
+import org.eclipse.core.resources.IProject
+import org.eclipse.core.resources.IProjectDescription
+import org.eclipse.core.resources.IncrementalProjectBuilder
+import org.eclipse.core.runtime.IPath
+import org.eclipse.core.runtime.NullProgressMonitor
+import org.eclipse.core.runtime.Path
+import org.eclipse.emf.codegen.ecore.Generator
 import org.eclipse.emf.ecore.resource.Resource
 import org.eclipse.xtext.generator.AbstractGenerator
 import org.eclipse.xtext.generator.IFileSystemAccess2
 import org.eclipse.xtext.generator.IGeneratorContext
-import de.cau.cs.kieler.spviz.spviz.sPViz.SPViz
 
 /**
  * Generates code from your model files on save.
  * 
- * See https://www.eclipse.org/Xtext/documentation/303_runtime_concepts.html#code-generation
+ * @author leo, nre
+ * @see https://www.eclipse.org/Xtext/documentation/303_runtime_concepts.html#code-generation
  */
 class SPVizGenerator extends AbstractGenerator {
 	
-	/**
-	 * TODO: add flags and a class for each 'via' connection (look at 'UsedPackagesOfBundleEdgeConnection' for reference) 
-	 * 
-	 * TODO: generate a visualization context model project from this xcore file and build it.
-	 * Template files that are then filled with data from here are probably the way to go.
-	 * 
-	 * TODO: generate a visualization project based on the model project and the visualization context project.
-	 * Start with a shallow cut through this to get a visualization going, work on details and more functionality later.
-	*/
+	
+//	TODO: add flags and a class for each 'via' connection (look at 'UsedPackagesOfBundleEdgeConnection' for reference) 
 	
 	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
 		println("Generate visualization for " + resource.contents.head?.class)
 		
 		val DataAccess spviz = new DataAccess(resource.contents.head as SPViz)
 		
-		val String content = xcoreContent(spviz)
-		fsa.generateFile(spviz.vizName + 'Model.xcore', content)
+		// Generate the -viz.model XCore project
+		val String xcoreContent = xcoreContent(spviz)
+		val progressMonitor = new NullProgressMonitor
+		val project = new XCoreProjectGenerator(spviz.packageName + ".model")
+		  .configureXCoreFile(spviz.vizName + 'Model.xcore', xcoreContent)
+		  .configureRequiredBundles(#[spviz.importedNamespace + ".model"])
+		  .generate(progressMonitor)
+        val sourceFolder = project.getFolder("src");
 		
-		/** syntheses files */
-		GenerateSyntheses.generate(fsa, spviz)
-		GenerateSubSyntheses.generate(fsa, spviz)
-		GenerateModelUtils.generate(fsa, spviz)
-		GenerateActions.generate(fsa, spviz)
+		// Generate further source files for the project
+		GenerateVizModelUtils.generate(sourceFolder, spviz, progressMonitor)
+		
+		
+		// Generate the -viz.viz model Plug-In Java project
+		val projectPath = new Path("/" + spviz.packageName + ".viz/src")
+        val vizProject = Generator.createEMFProject(projectPath, null as IPath,
+            Collections.<IProject>emptyList(), progressMonitor,
+            Generator.EMF_MODEL_PROJECT_STYLE.bitwiseOr(Generator.EMF_PLUGIN_PROJECT_STYLE))
+            
+            
+        val sourceVizFolder = vizProject.getFolder("src")
+        
+        // Generate the manifest
+        FileGenerator.generateOrUpdateFile(vizProject, "/META-INF/MANIFEST.MF",
+            FileGenerator.manifestContent(spviz.packageName + '.viz', requiredVizBundles(spviz)), progressMonitor)
+        
+        // Generate the services file
+        FileGenerator.generateOrUpdateFile(vizProject,
+            "/META-INF/services/de.cau.cs.kieler.klighd.IKlighdStartupHook", serviceFileContent(spviz), progressMonitor)
+        
+        // Generate the plugin.xml file
+        FileGenerator.generateOrUpdateFile(vizProject, "/plugin.xml", pluginXmlContent(spviz), progressMonitor)
+
+        // Add the Xtext nature to the project
+        val IProjectDescription projectDescription = vizProject.getDescription();
+        val String[] natureIds = projectDescription.getNatureIds();
+        val String[] newNatureIds = newArrayOfSize(natureIds.length + 1);
+        System.arraycopy(natureIds, 0, newNatureIds, 0, natureIds.length);
+        newNatureIds.set(natureIds.length, "org.eclipse.xtext.ui.shared.xtextNature");
+        projectDescription.setNatureIds(newNatureIds);
+        vizProject.setDescription(projectDescription, progressMonitor);
+        vizProject.build(IncrementalProjectBuilder.INCREMENTAL_BUILD, progressMonitor)        
+		
+		// Generate further source files for the project
+		GenerateSyntheses.generate(sourceVizFolder, spviz, progressMonitor)
+		GenerateSubSyntheses.generate(sourceVizFolder, spviz, progressMonitor)
+		GenerateActions.generate(sourceVizFolder, spviz, progressMonitor)
 	}
 	
+	protected def List<String> requiredVizBundles(DataAccess spviz) {
+        return #[
+            "de.cau.cs.kieler.klighd",
+            "de.cau.cs.kieler.klighd.krendering.extensions",
+            "org.eclipse.elk.alg.layered",
+            "org.eclipse.elk.core",
+            "org.eclipse.elk.core.service",
+            "org.eclipse.emf.ecore.xmi",
+            "org.eclipse.xtend.lib",
+            "org.eclipse.xtext.xbase.lib",
+            "com.google.inject",
+            spviz.packageName + ".model",
+            spviz.importedNamespace + ".model"
+        ]
+    }
+    
+    /**
+     * Generates the content for the plugin.xml file
+     * 
+     * @param spviz
+     *      a DataAccess instance for the Spviz data
+     * @return
+     *      the generated content for the plugin configuration as a String.
+     */
+    private def String pluginXmlContent(DataAccess spviz) {
+        return '''
+        <?xml version="1.0" encoding="UTF-8"?>
+        <?eclipse version=\"3.4\"?>
+        <plugin>
+            <extension
+                point="de.cau.cs.kieler.klighd.extensions">
+                <startupHook
+                    class="«spviz.packageName».viz.KlighdSetup">
+                </startupHook>
+            </extension>
+        </plugin>
+        '''
+    }
+    
+    /**
+     * Generates the content for the IKLighdStartupHook service file
+     * 
+     * @param spviz
+     *      a DataAccess instance for the Spviz data
+     * @return
+     *      the generated content for the service configuration as a String.
+     */
+    private def String serviceFileContent(DataAccess spviz) {
+        return '''
+        «spviz.packageName».viz.KlighdSetup
+        '''
+    }
+	
 	/**
-	 * Generates the contend for the Model.xcore file
+	 * Generates the content for the Model.xcore file
 	 * 
-	 * @param model
+	 * @param spviz
 	 *  	a DataAccess to easily get the information from
 	 * @return 
-	 * 		the generated contend for the visualisation model XCore file as a string
+	 * 		the generated content for the visualization model XCore file as a String
 	 */
 	private def String xcoreContent(DataAccess spviz) {
 		return '''

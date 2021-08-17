@@ -1,25 +1,44 @@
+/*
+ * KIELER - Kiel Integrated Environment for Layout Eclipse RichClient
+ *
+ * http://rtsys.informatik.uni-kiel.de/kieler
+ * 
+ * Copyright 2021 by
+ * + Kiel University
+ *   + Department of Computer Science
+ *   + Real-Time and Embedded Systems Group
+ * 
+ * This code is provided under the terms of the Eclipse Public License 2.0 (EPL-2.0).
+ */
 package de.cau.cs.kieler.spviz.spviz.generator
 
-import org.eclipse.xtext.generator.IFileSystemAccess2
+import de.cau.cs.kieler.spviz.spvizmodel.generator.FileGenerator
+import org.eclipse.core.resources.IFolder
+import org.eclipse.core.runtime.IProgressMonitor
 
 /**
  * Generates sub syntheses classes for overviews and their contained artifacts.
+ * 
+ * @author leo, nre
  */
 class GenerateSubSyntheses {
-	def static void generate(IFileSystemAccess2 fsa, DataAccess spviz){
+	def static void generate(IFolder sourceFolder, DataAccess spviz, IProgressMonitor progressMonitor) {
 		
 		val packageName = spviz.packageName
-		val folder = "viz/" + packageName.replace('.','/') + "/viz/subsyntheses/"
-		for (artifact : spviz.artifacts) {
-			var content = generateSimpleSynthesis(packageName, artifact)
-			fsa.generateFile(folder + "Simple" + artifact + "Synthesis.xtend", content)
-			
-			content = generateSynthesis(artifact, spviz)
-			fsa.generateFile(folder + artifact + "Synthesis.xtend", content)
-		}
-		for (overview : spviz.overviews) {
-			val content = generateOverviewSythesis(overview, spviz)
-			fsa.generateFile(folder + overview + "OverviewSynthesis.xtend", content)
+        val folder = packageName.replace('.', '/') + "/viz/subsyntheses/"
+        for (artifact : spviz.artifacts) {
+            var content = generateSimpleSynthesis(packageName, artifact)
+            FileGenerator.generateOrUpdateFile(sourceFolder, folder + "Simple" + artifact + "Synthesis.xtend", content,
+                progressMonitor)
+
+            content = generateSynthesis(artifact, spviz)
+            FileGenerator.generateOrUpdateFile(sourceFolder, folder + artifact + "Synthesis.xtend", content,
+                progressMonitor)
+        }
+        for (overview : spviz.overviews) {
+            val content = generateOverviewSythesis(overview, spviz)
+            FileGenerator.generateOrUpdateFile(sourceFolder, folder + overview + "OverviewSynthesis.xtend", content,
+                progressMonitor)
 		}
 	}
 
