@@ -1,3 +1,15 @@
+/*
+ * KIELER - Kiel Integrated Environment for Layout Eclipse RichClient
+ *
+ * http://rtsys.informatik.uni-kiel.de/kieler
+ * 
+ * Copyright 2021 by
+ * + Kiel University
+ *   + Department of Computer Science
+ *   + Real-Time and Embedded Systems Group
+ * 
+ * This code is provided under the terms of the Eclipse Public License 2.0 (EPL-2.0).
+ */
 package de.cau.cs.kieler.spviz.spviz.generator
 
 import de.cau.cs.kieler.spviz.spviz.sPViz.SPViz
@@ -6,7 +18,9 @@ import java.util.LinkedHashMap
 import de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.Artifact
 
 /**
- * Simplifies access to the data in a SPViz representation
+ * Simplifies access to the data in a SPViz representation.
+ * 
+ * @author leo
  */
 class DataAccess {
 	String packageName

@@ -1,21 +1,42 @@
+/*
+ * KIELER - Kiel Integrated Environment for Layout Eclipse RichClient
+ *
+ * http://rtsys.informatik.uni-kiel.de/kieler
+ * 
+ * Copyright 2021 by
+ * + Kiel University
+ *   + Department of Computer Science
+ *   + Real-Time and Embedded Systems Group
+ * 
+ * This code is provided under the terms of the Eclipse Public License 2.0 (EPL-2.0).
+ */
 package de.cau.cs.kieler.spviz.spviz.generator
 
-import org.eclipse.xtext.generator.IFileSystemAccess2
+import de.cau.cs.kieler.spviz.spvizmodel.generator.FileGenerator
 import java.util.LinkedHashMap
+import org.eclipse.core.resources.IFolder
+import org.eclipse.core.runtime.IProgressMonitor
 
 /**
- * Generates classes for the syntheses of the visualisation.
+ * Generates classes for the syntheses of the visualization.
+ * 
+ * @author leo, nre
  */
 class GenerateSyntheses {
-	def static void generate(IFileSystemAccess2 fsa, DataAccess spviz){
-		val folder = "viz/" + spviz.packageName.replace('.','/') + "/viz/"
+	def static void generate(IFolder sourceFolder, DataAccess spviz, IProgressMonitor progressMonitor) {
+		val folder = spviz.packageName.replace('.','/') + "/viz/"
 		
-		fsa.generateFile(folder + "DiagramSynthesis.xtend", generateDiagramSynthesis(spviz))
-		fsa.generateFile(folder + "KlighdSetup.xtend", generateKlighdSetup(spviz))
-		fsa.generateFile(folder + "Styles.xtend", generateStyles(spviz))
-		fsa.generateFile(folder + "SynthesisUtils.xtend", generateSynthesisUtils(spviz))
-		fsa.generateFile(folder + "SynthesisProperties.xtend", generateSynthesisProperties(spviz))
-//		fsa.generateFile(folder + "Options.xtend", generateOptions(vis.package))
+		FileGenerator.generateOrUpdateFile(sourceFolder, folder + "DiagramSynthesis.xtend", generateDiagramSynthesis(spviz),
+            progressMonitor)
+        FileGenerator.generateOrUpdateFile(sourceFolder, folder + "KlighdSetup.xtend", generateKlighdSetup(spviz),
+            progressMonitor)
+        FileGenerator.generateOrUpdateFile(sourceFolder, folder + "Styles.xtend", generateStyles(spviz),
+            progressMonitor)
+        FileGenerator.generateOrUpdateFile(sourceFolder, folder + "SynthesisUtils.xtend", generateSynthesisUtils(spviz),
+            progressMonitor)
+        FileGenerator.generateOrUpdateFile(sourceFolder, folder + "SynthesisProperties.xtend",
+            generateSynthesisProperties(spviz), progressMonitor)
+        FileGenerator.generateOrUpdateFile(sourceFolder, folder + "Options.xtend", generateOptions(spviz), progressMonitor)
 	}
 	
 	/**

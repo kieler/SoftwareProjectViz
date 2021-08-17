@@ -7,9 +7,13 @@ Bundle-Version: 0.1.0.qualifier
 Bundle-SymbolicName: de.cau.cs.kieler.spviz.spvizmodel; singleton:=true
 Bundle-ActivationPolicy: lazy
 Require-Bundle: org.antlr.runtime;bundle-version="[3.2.0,3.2.1)",
+ org.eclipse.core.resources;visibility:=reexport,
+ org.eclipse.core.runtime;visibility:=reexport,
+ org.eclipse.emf.codegen.ecore;visibility:=reexport,
  org.eclipse.emf.common,
  org.eclipse.emf.ecore,
  org.eclipse.equinox.common;bundle-version="3.5.0",
+ org.eclipse.jdt.core;visibility:=reexport,
  org.eclipse.xtext,
  org.eclipse.xtext.util,
  org.eclipse.xtext.xbase,

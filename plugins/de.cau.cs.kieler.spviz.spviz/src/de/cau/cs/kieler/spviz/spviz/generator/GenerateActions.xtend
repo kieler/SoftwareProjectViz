@@ -1,39 +1,55 @@
+/*
+ * KIELER - Kiel Integrated Environment for Layout Eclipse RichClient
+ *
+ * http://rtsys.informatik.uni-kiel.de/kieler
+ * 
+ * Copyright 2021 by
+ * + Kiel University
+ *   + Department of Computer Science
+ *   + Real-Time and Embedded Systems Group
+ * 
+ * This code is provided under the terms of the Eclipse Public License 2.0 (EPL-2.0).
+ */
 package de.cau.cs.kieler.spviz.spviz.generator
 
-import org.eclipse.xtext.generator.IFileSystemAccess2
+import de.cau.cs.kieler.spviz.spvizmodel.generator.FileGenerator
+import org.eclipse.core.resources.IFolder
+import org.eclipse.core.runtime.IProgressMonitor
 
 /**
- * Generates action classes for the visualisation.
+ * Generates action classes for the visualization.
+ * 
+ * @author leo, nre
  */
 class GenerateActions {
-	def static void generate(IFileSystemAccess2 fsa, DataAccess spviz){
+	def static void generate(IFolder sourceFolder, DataAccess spviz, IProgressMonitor progressMonitor) {
 		
 		val String packageName = spviz.packageName
-		val String folder = "viz/" + packageName.replace('.','/') + "/viz/actions/"
+		val String folder = packageName.replace('.','/') + "/viz/actions/"
 		
 		var String content = generateAbstractVisualizationContextChangingAction(spviz)
-		fsa.generateFile(folder + "AbstractVisualizationContextChangingAction.xtend", content)
+		FileGenerator.generateOrUpdateFile(sourceFolder, folder + "AbstractVisualizationContextChangingAction.xtend", content, progressMonitor)
 		content = generateContextCollapseExpandAction(spviz)
-		fsa.generateFile(folder + "ContextCollapseExpandAction.xtend", content)
+		FileGenerator.generateOrUpdateFile(sourceFolder, folder + "ContextCollapseExpandAction.xtend", content, progressMonitor)
 		content = generateOverviewContextCollapseExpandAction(spviz)
-		fsa.generateFile(folder + "OverviewContextCollapseExpandAction.xtend", content)
+		FileGenerator.generateOrUpdateFile(sourceFolder, folder + "OverviewContextCollapseExpandAction.xtend", content, progressMonitor)
 		content = generateUndoAction(spviz)
-		fsa.generateFile(folder + "UndoAction.xtend", content)
+		FileGenerator.generateOrUpdateFile(sourceFolder, folder + "UndoAction.xtend", content, progressMonitor)
 		content = generateRedoAction(spviz)
-		fsa.generateFile(folder + "RedoAction.xtend", content)
+		FileGenerator.generateOrUpdateFile(sourceFolder, folder + "RedoAction.xtend", content, progressMonitor)
 		content = generateResetViewAction(spviz)
-		fsa.generateFile(folder + "ResetViewAction.xtend", content)
+		FileGenerator.generateOrUpdateFile(sourceFolder, folder + "ResetViewAction.xtend", content, progressMonitor)
 		content = generateContextExpandAllAction(spviz)
-		fsa.generateFile(folder + "ContextExpandAllAction.xtend", content)
+		FileGenerator.generateOrUpdateFile(sourceFolder, folder + "ContextExpandAllAction.xtend", content, progressMonitor)
 		
 		for (overview : spviz.overviews)
 		for (connection : spviz.getOverviewConnections(overview)) {
 			// reveal required artifacts	
 			content = generateRevealAction(spviz, overview, connection.get(0), connection.get(1), connection.get(2), true)
-			fsa.generateFile(folder + "RevealRequired" + connection.get(0) + connection.get(2) + "sAction.xtend", content)
+			FileGenerator.generateOrUpdateFile(sourceFolder, folder + "RevealRequired" + connection.get(0) + connection.get(2) + "sAction.xtend", content, progressMonitor)
 			// reveal requiring artifacts
 			content = generateRevealAction(spviz, overview, connection.get(0), connection.get(2), connection.get(1), false)
-			fsa.generateFile(folder + "RevealRequiring" + connection.get(0) + connection.get(2) + "sAction.xtend", content)
+			FileGenerator.generateOrUpdateFile(sourceFolder, folder + "RevealRequiring" + connection.get(0) + connection.get(2) + "sAction.xtend", content, progressMonitor)
 		}
 	}
 	

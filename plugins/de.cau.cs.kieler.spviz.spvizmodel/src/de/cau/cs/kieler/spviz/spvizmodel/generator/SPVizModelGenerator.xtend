@@ -12,45 +12,53 @@
  */
 package de.cau.cs.kieler.spviz.spvizmodel.generator
 
+import de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.Connection
 import de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.Containment
 import de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.SPVizModel
+import java.util.ArrayList
+import java.util.LinkedHashMap
 import org.eclipse.emf.ecore.resource.Resource
 import org.eclipse.xtext.generator.AbstractGenerator
 import org.eclipse.xtext.generator.IFileSystemAccess2
 import org.eclipse.xtext.generator.IGeneratorContext
-import de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.Connection
-import java.util.LinkedHashMap
-import java.util.ArrayList
+import org.eclipse.core.runtime.NullProgressMonitor
 
 /**
  * Generates code from your model files on save.
  * 
- * See https://www.eclipse.org/Xtext/documentation/303_runtime_concepts.html#code-generation
+ * @author leo, nre
+ * @see https://www.eclipse.org/Xtext/documentation/303_runtime_concepts.html#code-generation
  */
 class SPVizModelGenerator extends AbstractGenerator {
 	
 	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
-		val SPVizModel model =  resource.contents.head as SPVizModel
-		
-		val String fileContent = xcoreContent(model)		
-		fsa.generateFile(model.name + 'Model.xcore', fileContent)
-		// TODO: generate a project model project from this xcore file and build it.
-		// Template files that are then filled with data from here are probably the way to go.
-	}
+        val SPVizModel model = resource.contents.head as SPVizModel
+
+        val String fileContent = xcoreContent(model)
+        val progressMonitor = new NullProgressMonitor
+        val project = new XCoreProjectGenerator(model.package + ".model")
+            .configureXCoreFile(model.name + "Model.xcore", fileContent)
+            .generate(progressMonitor)
+            
+        val sourceFolder = project.getFolder("src");
+        
+        // Generate further source files for the project
+        GenerateModelUtils.generate(sourceFolder, model, progressMonitor)
+    }
 	
 	/**
-	 * Generates the contend for the Model.xcore file
+	 * Generates the content for the Model.xcore file
 	 * 
 	 * @param model
 	 *  	a SPVizModel to get the needed information from
 	 * @return 
-	 * 		the generated contend for the model XCore file as a string
+	 * 		the generated content for the model XCore file as a string
 	 */
 	private def String xcoreContent(SPVizModel model) {
 		
 		// maps all artifacts to all artifacts they relate to, regardless of direction
 		val LinkedHashMap<String, ArrayList<String>> crossRef = newLinkedHashMap()
-		// initialise with empty lists
+		// initialize with empty lists
 		for(artifact : model.artifacts) crossRef.put(artifact.name, newArrayList())
 		for(artifact : model.artifacts) {
 			for(reference: artifact.references) {
@@ -63,7 +71,7 @@ class SPVizModelGenerator extends AbstractGenerator {
 		
 		// maps all artifacts to pairs of their connection name + connected artifact
 		val LinkedHashMap<String, ArrayList<String>> connections = newLinkedHashMap()
-		// initialise with empty lists
+		// initialize with empty lists
 		for(artifact : model.artifacts) connections.put(artifact.name, newArrayList)
 		for(artifact : model.artifacts) {
 			for(reference: artifact.references) {
