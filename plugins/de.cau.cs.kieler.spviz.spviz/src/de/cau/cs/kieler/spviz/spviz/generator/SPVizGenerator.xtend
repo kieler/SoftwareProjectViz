@@ -48,9 +48,9 @@ class SPVizGenerator extends AbstractGenerator {
 		// Generate the -viz.model XCore project
 		val String xcoreContent = xcoreContent(spviz)
 		val progressMonitor = new NullProgressMonitor
-		val project = new XCoreProjectGenerator(spviz.packageName + ".model")
+		val project = new XCoreProjectGenerator(spviz.getBundleNamePrefix + ".model")
 		  .configureXCoreFile(spviz.vizName + 'Model.xcore', xcoreContent)
-		  .configureRequiredBundles(#[spviz.importedNamespace + ".model"])
+		  .configureRequiredBundles(#[spviz.modelBundleNamePrefix + ".model"])
 		  .generate(progressMonitor)
         val sourceFolder = project.getFolder("src");
 		
@@ -59,7 +59,7 @@ class SPVizGenerator extends AbstractGenerator {
 		
 		
 		// Generate the -viz.viz model Plug-In Java project
-		val projectPath = new Path("/" + spviz.packageName + ".viz/src")
+		val projectPath = new Path("/" + spviz.getBundleNamePrefix + ".viz/src")
         val vizProject = Generator.createEMFProject(projectPath, null as IPath,
             Collections.<IProject>emptyList(), progressMonitor,
             Generator.EMF_MODEL_PROJECT_STYLE.bitwiseOr(Generator.EMF_PLUGIN_PROJECT_STYLE))
@@ -69,7 +69,7 @@ class SPVizGenerator extends AbstractGenerator {
         
         // Generate the manifest
         FileGenerator.generateOrUpdateFile(vizProject, "/META-INF/MANIFEST.MF",
-            FileGenerator.manifestContent(spviz.packageName + '.viz', requiredVizBundles(spviz)), progressMonitor)
+            FileGenerator.manifestContent(spviz.getBundleNamePrefix + '.viz', requiredVizBundles(spviz)), progressMonitor)
         
         // Generate the services file
         FileGenerator.generateOrUpdateFile(vizProject,
@@ -105,8 +105,8 @@ class SPVizGenerator extends AbstractGenerator {
             "org.eclipse.xtend.lib",
             "org.eclipse.xtext.xbase.lib",
             "com.google.inject",
-            spviz.packageName + ".model",
-            spviz.importedNamespace + ".model"
+            spviz.getBundleNamePrefix + ".model",
+            spviz.modelBundleNamePrefix + ".model"
         ]
     }
     
@@ -126,7 +126,7 @@ class SPVizGenerator extends AbstractGenerator {
             <extension
                 point="de.cau.cs.kieler.klighd.extensions">
                 <startupHook
-                    class="«spviz.packageName».viz.KlighdSetup">
+                    class="«spviz.getBundleNamePrefix».viz.KlighdSetup">
                 </startupHook>
             </extension>
         </plugin>
@@ -143,7 +143,7 @@ class SPVizGenerator extends AbstractGenerator {
      */
     private def String serviceFileContent(DataAccess spviz) {
         return '''
-        «spviz.packageName».viz.KlighdSetup
+        «spviz.getBundleNamePrefix».viz.KlighdSetup
         '''
     }
 	
@@ -157,15 +157,15 @@ class SPVizGenerator extends AbstractGenerator {
 	 */
 	private def String xcoreContent(DataAccess spviz) {
 		return '''
-			@GenModel(modelDirectory="«spviz.packageName».model/src")
+			@GenModel(modelDirectory="«spviz.getBundleNamePrefix».model/src")
 			
-			package «spviz.packageName».model
+			package «spviz.getBundleNamePrefix».model
 			
 			import org.eclipse.emf.ecore.EEList
 			«FOR artifact : spviz.artifacts»
-				import «spviz.importedNamespace».model.«artifact»
+				import «spviz.modelBundleNamePrefix».model.«artifact»
 			«ENDFOR»
-			import «spviz.importedNamespace».model.«spviz.projectName»
+			import «spviz.modelBundleNamePrefix».model.«spviz.projectName»
 			
 			
 			///////////////////////////////////////////////////////////////////////////////////////

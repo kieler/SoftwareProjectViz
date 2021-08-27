@@ -24,8 +24,8 @@ import org.eclipse.core.runtime.IProgressMonitor
 class GenerateActions {
 	def static void generate(IFolder sourceFolder, DataAccess spviz, IProgressMonitor progressMonitor) {
 		
-		val String packageName = spviz.packageName
-		val String folder = packageName.replace('.','/') + "/viz/actions/"
+		val String bundleNamePrefix = spviz.getBundleNamePrefix
+		val String folder = bundleNamePrefix.replace('.','/') + "/viz/actions/"
 		
 		var String content = generateAbstractVisualizationContextChangingAction(spviz)
 		FileGenerator.generateOrUpdateFile(sourceFolder, folder + "AbstractVisualizationContextChangingAction.xtend", content, progressMonitor)
@@ -55,12 +55,12 @@ class GenerateActions {
 	
 	def static generateContextExpandAllAction(DataAccess spviz) {
 		return '''
-		package «spviz.packageName».viz.actions
+		package «spviz.getBundleNamePrefix».viz.actions
 		
-		import «spviz.packageName».model.IOverviewVisualizationContext
-		import «spviz.packageName».model.IVisualizationContext
+		import «spviz.getBundleNamePrefix».model.IOverviewVisualizationContext
+		import «spviz.getBundleNamePrefix».model.IVisualizationContext
 		
-		import static extension «spviz.packageName».model.util.ContextExtensions.*
+		import static extension «spviz.getBundleNamePrefix».model.util.ContextExtensions.*
 		
 		/**
 		 * An action that expands all element by making them detailed in an {@link IOverviewVisualizationContext}.
@@ -115,16 +115,16 @@ class GenerateActions {
 		val className = "Reveal" + requiringOrRequired + connectionName + (isRequired ? artifactTo : artifactFrom) + "sAction"
 		
 		return '''
-		package «spviz.packageName».viz.actions
+		package «spviz.getBundleNamePrefix».viz.actions
 		
-		import «spviz.packageName».model.«overview»OverviewContext
-		import «spviz.packageName».model.«artifactFrom»Context
+		import «spviz.getBundleNamePrefix».model.«overview»OverviewContext
+		import «spviz.getBundleNamePrefix».model.«artifactFrom»Context
 		«IF artifactFrom != artifactTo»
-			import «spviz.packageName».model.«artifactTo»Context
+			import «spviz.getBundleNamePrefix».model.«artifactTo»Context
 		«ENDIF»
-		import «spviz.packageName».model.IVisualizationContext
+		import «spviz.getBundleNamePrefix».model.IVisualizationContext
 		
-		import static extension «spviz.packageName».model.util.ContextExtensions.*
+		import static extension «spviz.getBundleNamePrefix».model.util.ContextExtensions.*
 		
 		/**
 		 * Expands the «requiringOrRequired.toFirstLower» «artifactTo.toFirstLower»s of any «artifactFrom.toFirstLower» and connects them with an edge from the new «artifactTo.toFirstLower»'s
@@ -194,19 +194,19 @@ class GenerateActions {
 	 */
 	def static String generateAbstractVisualizationContextChangingAction (DataAccess spviz) {
 		return '''
-			package «spviz.packageName».viz.actions
+			package «spviz.getBundleNamePrefix».viz.actions
 			
 			import de.cau.cs.kieler.klighd.IAction
 			import de.cau.cs.kieler.klighd.kgraph.util.KGraphUtil
-			import «spviz.packageName».viz.SynthesisProperties
-			import «spviz.packageName».viz.SynthesisUtils
-			import «spviz.packageName».model.IVisualizationContext
-			import «spviz.packageName».model.«spviz.vizName»
+			import «spviz.getBundleNamePrefix».viz.SynthesisProperties
+			import «spviz.getBundleNamePrefix».viz.SynthesisUtils
+			import «spviz.getBundleNamePrefix».model.IVisualizationContext
+			import «spviz.getBundleNamePrefix».model.«spviz.vizName»
 			import org.eclipse.core.runtime.Status
 			import org.eclipse.emf.ecore.util.EcoreUtil.Copier
 			import org.eclipse.ui.statushandlers.StatusManager
 			
-			import static extension «spviz.packageName».model.util.ContextExtensions.*
+			import static extension «spviz.getBundleNamePrefix».model.util.ContextExtensions.*
 			
 			/**
 			 * An abstract action that allows to change the {@link IVisualizationContext} for a model so that the old one is still
@@ -272,7 +272,7 @@ class GenerateActions {
 «««						e.printStackTrace
 «««						TODO: remove this eclipse ui dependency once this is possible via a service.
 						
-						StatusManager.getManager().handle(new Status(Status.ERROR, "«spviz.packageName».viz",
+						StatusManager.getManager().handle(new Status(Status.ERROR, "«spviz.getBundleNamePrefix».viz",
 							"Something went wrong while executing the " + this.class.canonicalName + " action.\n" + 
 							"Please view the error log and send the stack trace and the way to " +
 							"reproduce this error to the developer.", e), 
@@ -313,12 +313,12 @@ class GenerateActions {
 	 */
 	def static String generateContextCollapseExpandAction (DataAccess spviz) {
 		return '''
-			package «spviz.packageName».viz.actions
+			package «spviz.getBundleNamePrefix».viz.actions
 			
-			import «spviz.packageName».model.IOverviewVisualizationContext
-			import «spviz.packageName».model.IVisualizationContext
+			import «spviz.getBundleNamePrefix».model.IOverviewVisualizationContext
+			import «spviz.getBundleNamePrefix».model.IVisualizationContext
 			
-			import static extension «spviz.packageName».model.util.ContextExtensions.*
+			import static extension «spviz.getBundleNamePrefix».model.util.ContextExtensions.*
 			
 			/**
 			 * An action that collapses or expands an element by making it detailed in an {@link IOverviewVisualizationContext}.
@@ -367,12 +367,12 @@ class GenerateActions {
 	 */
 	def static String generateOverviewContextCollapseExpandAction (DataAccess spviz) {
 		return '''
-			package «spviz.packageName».viz.actions
+			package «spviz.getBundleNamePrefix».viz.actions
 			
-			import «spviz.packageName».model.IOverviewVisualizationContext
-			import «spviz.packageName».model.IVisualizationContext
+			import «spviz.getBundleNamePrefix».model.IOverviewVisualizationContext
+			import «spviz.getBundleNamePrefix».model.IVisualizationContext
 			
-			import static extension «spviz.packageName».model.util.ContextExtensions.*
+			import static extension «spviz.getBundleNamePrefix».model.util.ContextExtensions.*
 			
 			/**
 			 * An action that collapses or expands an overview by setting its {@link IOverviewVisualizationContext} that way.
@@ -413,10 +413,10 @@ class GenerateActions {
 	 */
 	def static String generateUndoAction (DataAccess spviz) {
 		return '''
-		package «spviz.packageName».viz.actions
+		package «spviz.getBundleNamePrefix».viz.actions
 		
 		import de.cau.cs.kieler.klighd.IAction
-		import «spviz.packageName».viz.SynthesisProperties
+		import «spviz.getBundleNamePrefix».viz.SynthesisProperties
 		
 		/**
 		 * Undoes the last action performed on the view model.
@@ -453,10 +453,10 @@ class GenerateActions {
 	 */
 	def static String generateRedoAction (DataAccess spviz) {
 		return '''
-		package «spviz.packageName».viz.actions
+		package «spviz.getBundleNamePrefix».viz.actions
 		
 		import de.cau.cs.kieler.klighd.IAction
-		import «spviz.packageName».viz.SynthesisProperties
+		import «spviz.getBundleNamePrefix».viz.SynthesisProperties
 		
 		/**
 		 * Redoes the last action that was undone on the view model.
@@ -494,10 +494,10 @@ class GenerateActions {
 	 */
 	def static String generateResetViewAction (DataAccess spviz) {
 		return '''
-		package «spviz.packageName».viz.actions
+		package «spviz.getBundleNamePrefix».viz.actions
 		
 		import de.cau.cs.kieler.klighd.IAction
-		import «spviz.packageName».viz.SynthesisProperties
+		import «spviz.getBundleNamePrefix».viz.SynthesisProperties
 		
 		/**
 		 * Resets the view to its default overview state.

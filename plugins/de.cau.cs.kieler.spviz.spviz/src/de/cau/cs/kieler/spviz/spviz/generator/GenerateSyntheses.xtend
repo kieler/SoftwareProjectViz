@@ -24,7 +24,7 @@ import org.eclipse.core.runtime.IProgressMonitor
  */
 class GenerateSyntheses {
 	def static void generate(IFolder sourceFolder, DataAccess spviz, IProgressMonitor progressMonitor) {
-		val folder = spviz.packageName.replace('.','/') + "/viz/"
+		val folder = spviz.getBundleNamePrefix.replace('.','/') + "/viz/"
 		
 		FileGenerator.generateOrUpdateFile(sourceFolder, folder + "DiagramSynthesis.xtend", generateDiagramSynthesis(spviz),
             progressMonitor)
@@ -49,7 +49,7 @@ class GenerateSyntheses {
 	 */
 	def static String generateDiagramSynthesis(DataAccess spviz){
 		return '''
-			package «spviz.packageName».viz
+			package «spviz.getBundleNamePrefix».viz
 			
 			import com.google.common.collect.ImmutableList
 			import com.google.inject.Inject
@@ -58,20 +58,20 @@ class GenerateSyntheses {
 			import de.cau.cs.kieler.klighd.krendering.ViewSynthesisShared
 			import de.cau.cs.kieler.klighd.krendering.extensions.KNodeExtensions
 			import de.cau.cs.kieler.klighd.syntheses.AbstractDiagramSynthesis
-			import «spviz.packageName».viz.actions.RedoAction
-			import «spviz.packageName».viz.actions.ResetViewAction
+			import «spviz.getBundleNamePrefix».viz.actions.RedoAction
+			import «spviz.getBundleNamePrefix».viz.actions.ResetViewAction
 «««			import «spviz.packageName».viz.actions.StoreModelAction
-			import «spviz.packageName».viz.actions.UndoAction
-			import «spviz.packageName».model.IVisualizationContext
-			import «spviz.packageName».model.«spviz.vizName»
+			import «spviz.getBundleNamePrefix».viz.actions.UndoAction
+			import «spviz.getBundleNamePrefix».model.IVisualizationContext
+			import «spviz.getBundleNamePrefix».model.«spviz.vizName»
 			«FOR overview : spviz.overviews»
-				import «spviz.packageName».model.«overview»OverviewContext
+				import «spviz.getBundleNamePrefix».model.«overview»OverviewContext
 			«ENDFOR»
-			import «spviz.packageName».model.util.VizModelUtil
+			import «spviz.getBundleNamePrefix».model.util.VizModelUtil
 			«FOR overview : spviz.overviews»
-				import «spviz.packageName».viz.subsyntheses.«overview»OverviewSynthesis
+				import «spviz.getBundleNamePrefix».viz.subsyntheses.«overview»OverviewSynthesis
 			«ENDFOR»
-			import «spviz.importedNamespace».model.«spviz.projectName»
+			import «spviz.modelBundleNamePrefix».model.«spviz.projectName»
 			import java.util.LinkedHashSet
 			import org.eclipse.elk.alg.layered.options.CrossingMinimizationStrategy
 			import org.eclipse.elk.alg.layered.options.LayeredMetaDataProvider
@@ -80,7 +80,7 @@ class GenerateSyntheses {
 			import org.eclipse.elk.core.util.BoxLayoutProvider.PackingMode
 			
 «««			import static «spviz.packageName».viz.Options.*
-			import static extension «spviz.packageName».model.util.ContextExtensions.*
+			import static extension «spviz.getBundleNamePrefix».model.util.ContextExtensions.*
 			
 			/**
 			 * Main diagram synthesis for {@link «spviz.projectName»} models.
@@ -224,26 +224,26 @@ class GenerateSyntheses {
 	 */
 	def static String generateKlighdSetup(DataAccess spviz){
 		return '''
-			package «spviz.packageName».viz
+			package «spviz.getBundleNamePrefix».viz
 			
 			import de.cau.cs.kieler.klighd.IKlighdStartupHook
 			import de.cau.cs.kieler.klighd.KlighdDataManager
 «««			import «spviz.packageName».viz.actions.ConnectAllAction
-			import «spviz.packageName».viz.actions.ContextCollapseExpandAction
-			import «spviz.packageName».viz.actions.ContextExpandAllAction
+			import «spviz.getBundleNamePrefix».viz.actions.ContextCollapseExpandAction
+			import «spviz.getBundleNamePrefix».viz.actions.ContextExpandAllAction
 «««			import «spviz.packageName».viz.actions.ContextRemoveAction
 «««			import «spviz.packageName».viz.actions.FocusAction
-			import «spviz.packageName».viz.actions.OverviewContextCollapseExpandAction
+			import «spviz.getBundleNamePrefix».viz.actions.OverviewContextCollapseExpandAction
 			«FOR overview : spviz.overviews»
 			«FOR connection : spviz.getOverviewConnections(overview)»
-				import «spviz.packageName».viz.actions.RevealRequired«connection.get(0)»«connection.get(2)»sAction
-				import «spviz.packageName».viz.actions.RevealRequiring«connection.get(0)»«connection.get(1)»sAction
+				import «spviz.getBundleNamePrefix».viz.actions.RevealRequired«connection.get(0)»«connection.get(2)»sAction
+				import «spviz.getBundleNamePrefix».viz.actions.RevealRequiring«connection.get(0)»«connection.get(1)»sAction
 			«ENDFOR»
 			«ENDFOR»
 «««			import «spviz.packageName».viz.actions.SelectRelatedAction
-			import «spviz.packageName».viz.actions.UndoAction
-			import «spviz.packageName».viz.actions.RedoAction
-			import «spviz.packageName».viz.actions.ResetViewAction
+			import «spviz.getBundleNamePrefix».viz.actions.UndoAction
+			import «spviz.getBundleNamePrefix».viz.actions.RedoAction
+			import «spviz.getBundleNamePrefix».viz.actions.ResetViewAction
 			
 			/**
 			 * Setup registering all KLighD extensions required to run this bundle.
@@ -296,7 +296,7 @@ class GenerateSyntheses {
 		}
 			
 		return '''
-			package «spviz.packageName».viz
+			package «spviz.getBundleNamePrefix».viz
 			
 			import com.google.inject.Inject
 			import de.cau.cs.kieler.klighd.ViewContext
@@ -321,20 +321,20 @@ class GenerateSyntheses {
 			import de.cau.cs.kieler.klighd.krendering.extensions.KPolylineExtensions
 			import de.cau.cs.kieler.klighd.krendering.extensions.KRenderingExtensions
 «««			import «spviz.packageName».viz.actions.ConnectAllAction
-			import «spviz.packageName».viz.actions.ContextCollapseExpandAction
-			import «spviz.packageName».viz.actions.ContextExpandAllAction
+			import «spviz.getBundleNamePrefix».viz.actions.ContextCollapseExpandAction
+			import «spviz.getBundleNamePrefix».viz.actions.ContextExpandAllAction
 «««			import «spviz.packageName».viz.actions.ContextRemoveAction
 «««			import «spviz.packageName».viz.actions.FocusAction
-			import «spviz.packageName».viz.actions.OverviewContextCollapseExpandAction
+			import «spviz.getBundleNamePrefix».viz.actions.OverviewContextCollapseExpandAction
 «««			import «spviz.packageName».viz.actions.SelectRelatedAction
 			«FOR overview : spviz.overviews»
 				«FOR connection : spviz.getOverviewConnections(overview)»
-					import «spviz.packageName».viz.actions.RevealRequired«connection.get(0)»«connection.get(2)»sAction
-					import «spviz.packageName».viz.actions.RevealRequiring«connection.get(0)»«connection.get(1)»sAction
+					import «spviz.getBundleNamePrefix».viz.actions.RevealRequired«connection.get(0)»«connection.get(2)»sAction
+					import «spviz.getBundleNamePrefix».viz.actions.RevealRequiring«connection.get(0)»«connection.get(1)»sAction
 				«ENDFOR»
 			«ENDFOR»
 			«FOR artifact : spviz.artifacts»
-				import «spviz.importedNamespace».model.«artifact»
+				import «spviz.modelBundleNamePrefix».model.«artifact»
 			«ENDFOR»
 «««			import java.util.List
 			
@@ -909,7 +909,7 @@ class GenerateSyntheses {
 	 */
 	def static String generateSynthesisUtils(DataAccess spviz){
 		return '''
-			package «spviz.packageName».viz
+			package «spviz.getBundleNamePrefix».viz
 			
 			import de.cau.cs.kieler.klighd.IAction.ActionContext
 			import de.cau.cs.kieler.klighd.SynthesisOption
@@ -918,15 +918,15 @@ class GenerateSyntheses {
 			import de.cau.cs.kieler.klighd.kgraph.KGraphElement
 			import de.cau.cs.kieler.klighd.kgraph.KNode
 			import de.cau.cs.kieler.klighd.syntheses.DiagramSyntheses
-			import «spviz.packageName».model.IOverviewVisualizationContext
-			import «spviz.packageName».model.IVisualizationContext
+			import «spviz.getBundleNamePrefix».model.IOverviewVisualizationContext
+			import «spviz.getBundleNamePrefix».model.IVisualizationContext
 			import java.util.List
 			import org.eclipse.elk.core.options.CoreOptions
 			import org.eclipse.elk.core.options.Direction
 			import org.eclipse.elk.core.options.EdgeRouting
 			
 			import static extension de.cau.cs.kieler.klighd.syntheses.DiagramSyntheses.*
-			import static extension «spviz.packageName».model.util.ContextExtensions.*
+			import static extension «spviz.getBundleNamePrefix».model.util.ContextExtensions.*
 			
 			/**
 			 * Util class that contains some static methods commonly used for the Osgi synthesis.
@@ -1128,11 +1128,11 @@ class GenerateSyntheses {
 	 */
 	def static String generateSynthesisProperties(DataAccess spviz){
 		return '''
-			package «spviz.packageName».viz
+			package «spviz.getBundleNamePrefix».viz
 			
 			import de.cau.cs.kieler.klighd.ViewContext
-			import «spviz.packageName».model.IVisualizationContext
-			import «spviz.packageName».model.«spviz.vizName»
+			import «spviz.getBundleNamePrefix».model.IVisualizationContext
+			import «spviz.getBundleNamePrefix».model.«spviz.vizName»
 			import java.util.LinkedList
 			import java.util.List
 			import org.eclipse.elk.graph.properties.IProperty
@@ -1180,7 +1180,7 @@ class GenerateSyntheses {
 	 */
 	def static String generateOptions(DataAccess spviz){
 		return '''
-			package «spviz.packageName».viz
+			package «spviz.getBundleNamePrefix».viz
 			
 			import de.cau.cs.kieler.klighd.SynthesisOption
 			
