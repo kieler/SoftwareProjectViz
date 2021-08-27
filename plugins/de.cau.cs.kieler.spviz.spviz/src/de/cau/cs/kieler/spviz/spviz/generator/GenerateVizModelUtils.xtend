@@ -24,7 +24,7 @@ import org.eclipse.core.runtime.IProgressMonitor
 class GenerateVizModelUtils {
     
 	def static void generate(IFolder sourceFolder, DataAccess spviz, IProgressMonitor progressMonitor) {
-        val folder = spviz.packageName.replace('.', '/') + "/model/util/"
+        val folder = spviz.getBundleNamePrefix.replace('.', '/') + "/model/util/"
         FileGenerator.generateOrUpdateFile(sourceFolder, folder + "VizModelUtil.xtend", generateVizModelUtil(spviz),
             progressMonitor)
         FileGenerator.generateOrUpdateFile(sourceFolder, folder + "ContextExtensions.xtend",
@@ -41,26 +41,26 @@ class GenerateVizModelUtils {
 	 */
 	def static String generateVizModelUtil(DataAccess spviz){
 		return '''
-			package «spviz.packageName».model.util
+			package «spviz.getBundleNamePrefix».model.util
 			
-			import «spviz.importedNamespace».model.«spviz.projectName»
+			import «spviz.modelBundleNamePrefix».model.«spviz.projectName»
 			«FOR artifact : spviz.artifacts»
-				import «spviz.importedNamespace».model.«artifact»
+				import «spviz.modelBundleNamePrefix».model.«artifact»
 			«ENDFOR»
-			import «spviz.packageName».model.«spviz.vizName»
+			import «spviz.getBundleNamePrefix».model.«spviz.vizName»
 			«FOR artifact : spviz.artifacts»
-				import «spviz.packageName».model.«artifact»Context
+				import «spviz.getBundleNamePrefix».model.«artifact»Context
 			«ENDFOR»
 			«FOR view : spviz.overviews»
-				import «spviz.packageName».model.«view»OverviewContext
+				import «spviz.getBundleNamePrefix».model.«view»OverviewContext
 			«ENDFOR»
-			import «spviz.packageName».model.Pair
-			import «spviz.packageName».model.IVisualizationContext
-			import «spviz.packageName».model.IOverviewVisualizationContext
-			import «spviz.packageName».model.ModelFactory
+			import «spviz.getBundleNamePrefix».model.Pair
+			import «spviz.getBundleNamePrefix».model.IVisualizationContext
+			import «spviz.getBundleNamePrefix».model.IOverviewVisualizationContext
+			import «spviz.getBundleNamePrefix».model.ModelFactory
 			import java.util.List
 			
-			import static extension «spviz.packageName».model.util.ContextExtensions.*
+			import static extension «spviz.getBundleNamePrefix».model.util.ContextExtensions.*
 			
 			final class VizModelUtil {
 				
@@ -145,20 +145,20 @@ class GenerateVizModelUtils {
 	 */
 	def static String generateContextExtensions(DataAccess spviz){
 		return '''
-			package «spviz.packageName».model.util
+			package «spviz.getBundleNamePrefix».model.util
 			
 			«FOR overview : spviz.overviews»
-				import «spviz.packageName».model.«overview»OverviewContext
+				import «spviz.getBundleNamePrefix».model.«overview»OverviewContext
 			«ENDFOR»
-			import «spviz.packageName».model.IOverviewVisualizationContext
-			import «spviz.packageName».model.IVisualizationContext
-			import «spviz.packageName».model.«spviz.vizName»
+			import «spviz.getBundleNamePrefix».model.IOverviewVisualizationContext
+			import «spviz.getBundleNamePrefix».model.IVisualizationContext
+			import «spviz.getBundleNamePrefix».model.«spviz.vizName»
 			«FOR artifact : spviz.artifacts»
-				import «spviz.packageName».model.«artifact»Context
+				import «spviz.getBundleNamePrefix».model.«artifact»Context
 			«ENDFOR»
-			import «spviz.importedNamespace».model.«spviz.projectName»
+			import «spviz.modelBundleNamePrefix».model.«spviz.projectName»
 			«FOR artifact : spviz.artifacts»
-				import «spviz.importedNamespace».model.«artifact»
+				import «spviz.modelBundleNamePrefix».model.«artifact»
 			«ENDFOR»
 			import java.util.List
 			

@@ -24,10 +24,10 @@ import org.eclipse.core.runtime.IProgressMonitor
 class GenerateSubSyntheses {
 	def static void generate(IFolder sourceFolder, DataAccess spviz, IProgressMonitor progressMonitor) {
 		
-		val packageName = spviz.packageName
-        val folder = packageName.replace('.', '/') + "/viz/subsyntheses/"
+		val bundleNamePrefix = spviz.getBundleNamePrefix
+        val folder = bundleNamePrefix.replace('.', '/') + "/viz/subsyntheses/"
         for (artifact : spviz.artifacts) {
-            var content = generateSimpleSynthesis(packageName, artifact)
+            var content = generateSimpleSynthesis(bundleNamePrefix, artifact)
             FileGenerator.generateOrUpdateFile(sourceFolder, folder + "Simple" + artifact + "Synthesis.xtend", content,
                 progressMonitor)
 
@@ -54,7 +54,7 @@ class GenerateSubSyntheses {
 	 */
 	def static String generateOverviewSythesis(String overview, DataAccess spviz){
 		return '''
-			package «spviz.packageName».viz.subsyntheses
+			package «spviz.getBundleNamePrefix».viz.subsyntheses
 			
 			import com.google.inject.Inject
 			import de.cau.cs.kieler.klighd.kgraph.KGraphFactory
@@ -64,12 +64,12 @@ class GenerateSubSyntheses {
 			import de.cau.cs.kieler.klighd.krendering.extensions.KRenderingExtensions
 			import de.cau.cs.kieler.klighd.syntheses.AbstractSubSynthesis
 			import de.cau.cs.kieler.klighd.kgraph.KIdentifier
-			import «spviz.packageName».viz.Styles
-			import «spviz.packageName».viz.SynthesisUtils
+			import «spviz.getBundleNamePrefix».viz.Styles
+			import «spviz.getBundleNamePrefix».viz.SynthesisUtils
 			«FOR artifact : spviz.getDisplayedArtifacts(overview)»
-				import «spviz.packageName».model.«artifact»Context
+				import «spviz.getBundleNamePrefix».model.«artifact»Context
 			«ENDFOR»
-			import «spviz.packageName».model.«overview»OverviewContext
+			import «spviz.getBundleNamePrefix».model.«overview»OverviewContext
 			import java.util.EnumSet
 			import java.util.List
 			import org.eclipse.elk.core.math.ElkPadding
@@ -79,8 +79,8 @@ class GenerateSubSyntheses {
 
 			
 			import static extension de.cau.cs.kieler.klighd.syntheses.DiagramSyntheses.*
-			import static extension «spviz.packageName».viz.SynthesisUtils.*
-			import static extension «spviz.packageName».model.util.ContextExtensions.*
+			import static extension «spviz.getBundleNamePrefix».viz.SynthesisUtils.*
+			import static extension «spviz.getBundleNamePrefix».model.util.ContextExtensions.*
 			
 			/**
 			 * Transformation as an overview of all «overview.toFirstLower»s in the given list of «overview.toFirstLower»s.
@@ -228,7 +228,7 @@ class GenerateSubSyntheses {
 	def static String generateSynthesis(String artifact, DataAccess spviz){
 		val overview = spviz.getOverview(artifact)
 		return '''
-			package «spviz.packageName».viz.subsyntheses
+			package «spviz.getBundleNamePrefix».viz.subsyntheses
 			
 			import com.google.inject.Inject
 			import de.cau.cs.kieler.klighd.kgraph.KGraphFactory
@@ -236,24 +236,24 @@ class GenerateSubSyntheses {
 			import de.cau.cs.kieler.klighd.krendering.extensions.KNodeExtensions
 			import de.cau.cs.kieler.klighd.krendering.extensions.KPortExtensions
 			import de.cau.cs.kieler.klighd.syntheses.AbstractSubSynthesis
-			import «spviz.importedNamespace».model.«artifact»
+			import «spviz.modelBundleNamePrefix».model.«artifact»
 			«FOR required : spviz.getRequiredArtifacts(artifact)»
 				«IF required.get(1) != artifact»
-					import «spviz.importedNamespace».model.«required.get(1)»
+					import «spviz.modelBundleNamePrefix».model.«required.get(1)»
 				«ENDIF»
 			«ENDFOR»
 			«FOR requiring : spviz.getRequiredArtifacts(artifact)»
 				«IF requiring.get(1) != artifact»
-					import «spviz.importedNamespace».model.«requiring.get(1)»
+					import «spviz.modelBundleNamePrefix».model.«requiring.get(1)»
 				«ENDIF»
 			«ENDFOR»
-			import «spviz.importedNamespace».model.«spviz.projectName»
-			import «spviz.packageName».viz.SynthesisUtils
-			import «spviz.packageName».viz.Styles
-			import «spviz.packageName».model.«artifact»Context
-			import «spviz.packageName».model.IOverviewVisualizationContext
+			import «spviz.modelBundleNamePrefix».model.«spviz.projectName»
+			import «spviz.getBundleNamePrefix».viz.SynthesisUtils
+			import «spviz.getBundleNamePrefix».viz.Styles
+			import «spviz.getBundleNamePrefix».model.«artifact»Context
+			import «spviz.getBundleNamePrefix».model.IOverviewVisualizationContext
 			«IF overview != ""»
-				import «spviz.packageName».model.«overview»OverviewContext
+				import «spviz.getBundleNamePrefix».model.«overview»OverviewContext
 			«ENDIF»
 			import org.eclipse.elk.core.options.CoreOptions
 			import org.eclipse.elk.core.options.PortConstraints
