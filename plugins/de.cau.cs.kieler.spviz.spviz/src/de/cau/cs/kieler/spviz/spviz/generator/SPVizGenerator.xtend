@@ -43,7 +43,7 @@ class SPVizGenerator extends AbstractGenerator {
 	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
 		println("Generate visualization for " + resource.contents.head?.class)
 		
-		val DataAccess spviz = new DataAccess(resource.contents.head as SPViz)
+		val DataAccess spviz = new DataAccess(resource)
 		
 		// Generate the -viz.model XCore project
 		val String xcoreContent = xcoreContent(spviz)
