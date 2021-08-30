@@ -47,7 +47,7 @@ import org.eclipse.emf.ecore.util.InternalEList;
  * </p>
  * <ul>
  *   <li>{@link de.cau.cs.kieler.spviz.spviz.sPViz.impl.SPVizImpl#getPackage <em>Package</em>}</li>
- *   <li>{@link de.cau.cs.kieler.spviz.spviz.sPViz.impl.SPVizImpl#getImportedNamespace <em>Imported Namespace</em>}</li>
+ *   <li>{@link de.cau.cs.kieler.spviz.spviz.sPViz.impl.SPVizImpl#getImportURI <em>Import URI</em>}</li>
  *   <li>{@link de.cau.cs.kieler.spviz.spviz.sPViz.impl.SPVizImpl#getName <em>Name</em>}</li>
  *   <li>{@link de.cau.cs.kieler.spviz.spviz.sPViz.impl.SPVizImpl#getViews <em>Views</em>}</li>
  * </ul>
@@ -77,24 +77,24 @@ public class SPVizImpl extends MinimalEObjectImpl.Container implements SPViz
   protected String package_ = PACKAGE_EDEFAULT;
 
   /**
-   * The default value of the '{@link #getImportedNamespace() <em>Imported Namespace</em>}' attribute.
+   * The default value of the '{@link #getImportURI() <em>Import URI</em>}' attribute.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @see #getImportedNamespace()
+   * @see #getImportURI()
    * @generated
    * @ordered
    */
-  protected static final String IMPORTED_NAMESPACE_EDEFAULT = null;
+  protected static final String IMPORT_URI_EDEFAULT = null;
 
   /**
-   * The cached value of the '{@link #getImportedNamespace() <em>Imported Namespace</em>}' attribute.
+   * The cached value of the '{@link #getImportURI() <em>Import URI</em>}' attribute.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @see #getImportedNamespace()
+   * @see #getImportURI()
    * @generated
    * @ordered
    */
-  protected String importedNamespace = IMPORTED_NAMESPACE_EDEFAULT;
+  protected String importURI = IMPORT_URI_EDEFAULT;
 
   /**
    * The default value of the '{@link #getName() <em>Name</em>}' attribute.
@@ -178,9 +178,9 @@ public class SPVizImpl extends MinimalEObjectImpl.Container implements SPViz
    * @generated
    */
   @Override
-  public String getImportedNamespace()
+  public String getImportURI()
   {
-    return importedNamespace;
+    return importURI;
   }
 
   /**
@@ -189,12 +189,12 @@ public class SPVizImpl extends MinimalEObjectImpl.Container implements SPViz
    * @generated
    */
   @Override
-  public void setImportedNamespace(String newImportedNamespace)
+  public void setImportURI(String newImportURI)
   {
-    String oldImportedNamespace = importedNamespace;
-    importedNamespace = newImportedNamespace;
+    String oldImportURI = importURI;
+    importURI = newImportURI;
     if (eNotificationRequired())
-      eNotify(new ENotificationImpl(this, Notification.SET, SPVizPackage.SP_VIZ__IMPORTED_NAMESPACE, oldImportedNamespace, importedNamespace));
+      eNotify(new ENotificationImpl(this, Notification.SET, SPVizPackage.SP_VIZ__IMPORT_URI, oldImportURI, importURI));
   }
 
   /**
@@ -265,8 +265,8 @@ public class SPVizImpl extends MinimalEObjectImpl.Container implements SPViz
     {
       case SPVizPackage.SP_VIZ__PACKAGE:
         return getPackage();
-      case SPVizPackage.SP_VIZ__IMPORTED_NAMESPACE:
-        return getImportedNamespace();
+      case SPVizPackage.SP_VIZ__IMPORT_URI:
+        return getImportURI();
       case SPVizPackage.SP_VIZ__NAME:
         return getName();
       case SPVizPackage.SP_VIZ__VIEWS:
@@ -289,8 +289,8 @@ public class SPVizImpl extends MinimalEObjectImpl.Container implements SPViz
       case SPVizPackage.SP_VIZ__PACKAGE:
         setPackage((String)newValue);
         return;
-      case SPVizPackage.SP_VIZ__IMPORTED_NAMESPACE:
-        setImportedNamespace((String)newValue);
+      case SPVizPackage.SP_VIZ__IMPORT_URI:
+        setImportURI((String)newValue);
         return;
       case SPVizPackage.SP_VIZ__NAME:
         setName((String)newValue);
@@ -316,8 +316,8 @@ public class SPVizImpl extends MinimalEObjectImpl.Container implements SPViz
       case SPVizPackage.SP_VIZ__PACKAGE:
         setPackage(PACKAGE_EDEFAULT);
         return;
-      case SPVizPackage.SP_VIZ__IMPORTED_NAMESPACE:
-        setImportedNamespace(IMPORTED_NAMESPACE_EDEFAULT);
+      case SPVizPackage.SP_VIZ__IMPORT_URI:
+        setImportURI(IMPORT_URI_EDEFAULT);
         return;
       case SPVizPackage.SP_VIZ__NAME:
         setName(NAME_EDEFAULT);
@@ -341,8 +341,8 @@ public class SPVizImpl extends MinimalEObjectImpl.Container implements SPViz
     {
       case SPVizPackage.SP_VIZ__PACKAGE:
         return PACKAGE_EDEFAULT == null ? package_ != null : !PACKAGE_EDEFAULT.equals(package_);
-      case SPVizPackage.SP_VIZ__IMPORTED_NAMESPACE:
-        return IMPORTED_NAMESPACE_EDEFAULT == null ? importedNamespace != null : !IMPORTED_NAMESPACE_EDEFAULT.equals(importedNamespace);
+      case SPVizPackage.SP_VIZ__IMPORT_URI:
+        return IMPORT_URI_EDEFAULT == null ? importURI != null : !IMPORT_URI_EDEFAULT.equals(importURI);
       case SPVizPackage.SP_VIZ__NAME:
         return NAME_EDEFAULT == null ? name != null : !NAME_EDEFAULT.equals(name);
       case SPVizPackage.SP_VIZ__VIEWS:
@@ -364,8 +364,8 @@ public class SPVizImpl extends MinimalEObjectImpl.Container implements SPViz
     StringBuilder result = new StringBuilder(super.toString());
     result.append(" (package: ");
     result.append(package_);
-    result.append(", importedNamespace: ");
-    result.append(importedNamespace);
+    result.append(", importURI: ");
+    result.append(importURI);
     result.append(", name: ");
     result.append(name);
     result.append(')');

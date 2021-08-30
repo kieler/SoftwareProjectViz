@@ -261,9 +261,9 @@ rule__SPViz__Group__2__Impl
 	}
 :
 (
-	{ before(grammarAccess.getSPVizAccess().getUseKeyword_2()); }
-	'use'
-	{ after(grammarAccess.getSPVizAccess().getUseKeyword_2()); }
+	{ before(grammarAccess.getSPVizAccess().getImportKeyword_2()); }
+	'import'
+	{ after(grammarAccess.getSPVizAccess().getImportKeyword_2()); }
 )
 ;
 finally {
@@ -288,9 +288,9 @@ rule__SPViz__Group__3__Impl
 	}
 :
 (
-	{ before(grammarAccess.getSPVizAccess().getImportedNamespaceAssignment_3()); }
-	(rule__SPViz__ImportedNamespaceAssignment_3)
-	{ after(grammarAccess.getSPVizAccess().getImportedNamespaceAssignment_3()); }
+	{ before(grammarAccess.getSPVizAccess().getImportURIAssignment_3()); }
+	(rule__SPViz__ImportURIAssignment_3)
+	{ after(grammarAccess.getSPVizAccess().getImportURIAssignment_3()); }
 )
 ;
 finally {
@@ -960,15 +960,15 @@ finally {
 	restoreStackSize(stackSize);
 }
 
-rule__SPViz__ImportedNamespaceAssignment_3
+rule__SPViz__ImportURIAssignment_3
 	@init {
 		int stackSize = keepStackSize();
 	}
 :
 	(
-		{ before(grammarAccess.getSPVizAccess().getImportedNamespaceQualifiedNameParserRuleCall_3_0()); }
-		ruleQualifiedName
-		{ after(grammarAccess.getSPVizAccess().getImportedNamespaceQualifiedNameParserRuleCall_3_0()); }
+		{ before(grammarAccess.getSPVizAccess().getImportURISTRINGTerminalRuleCall_3_0()); }
+		RULE_STRING
+		{ after(grammarAccess.getSPVizAccess().getImportURISTRINGTerminalRuleCall_3_0()); }
 	)
 ;
 finally {

@@ -32,7 +32,7 @@ import org.eclipse.emf.ecore.EObject;
  * </p>
  * <ul>
  *   <li>{@link de.cau.cs.kieler.spviz.spviz.sPViz.SPViz#getPackage <em>Package</em>}</li>
- *   <li>{@link de.cau.cs.kieler.spviz.spviz.sPViz.SPViz#getImportedNamespace <em>Imported Namespace</em>}</li>
+ *   <li>{@link de.cau.cs.kieler.spviz.spviz.sPViz.SPViz#getImportURI <em>Import URI</em>}</li>
  *   <li>{@link de.cau.cs.kieler.spviz.spviz.sPViz.SPViz#getName <em>Name</em>}</li>
  *   <li>{@link de.cau.cs.kieler.spviz.spviz.sPViz.SPViz#getViews <em>Views</em>}</li>
  * </ul>
@@ -66,26 +66,26 @@ public interface SPViz extends EObject
   void setPackage(String value);
 
   /**
-   * Returns the value of the '<em><b>Imported Namespace</b></em>' attribute.
+   * Returns the value of the '<em><b>Import URI</b></em>' attribute.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return the value of the '<em>Imported Namespace</em>' attribute.
-   * @see #setImportedNamespace(String)
-   * @see de.cau.cs.kieler.spviz.spviz.sPViz.SPVizPackage#getSPViz_ImportedNamespace()
+   * @return the value of the '<em>Import URI</em>' attribute.
+   * @see #setImportURI(String)
+   * @see de.cau.cs.kieler.spviz.spviz.sPViz.SPVizPackage#getSPViz_ImportURI()
    * @model
    * @generated
    */
-  String getImportedNamespace();
+  String getImportURI();
 
   /**
-   * Sets the value of the '{@link de.cau.cs.kieler.spviz.spviz.sPViz.SPViz#getImportedNamespace <em>Imported Namespace</em>}' attribute.
+   * Sets the value of the '{@link de.cau.cs.kieler.spviz.spviz.sPViz.SPViz#getImportURI <em>Import URI</em>}' attribute.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @param value the new value of the '<em>Imported Namespace</em>' attribute.
-   * @see #getImportedNamespace()
+   * @param value the new value of the '<em>Import URI</em>' attribute.
+   * @see #getImportURI()
    * @generated
    */
-  void setImportedNamespace(String value);
+  void setImportURI(String value);
 
   /**
    * Returns the value of the '<em><b>Name</b></em>' attribute.

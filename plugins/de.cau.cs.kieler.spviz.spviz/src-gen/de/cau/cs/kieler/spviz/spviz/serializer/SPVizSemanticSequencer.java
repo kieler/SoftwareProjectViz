@@ -70,7 +70,7 @@ public class SPVizSemanticSequencer extends AbstractDelegatingSemanticSequencer 
 	 *     SPViz returns SPViz
 	 *
 	 * Constraint:
-	 *     (package=QualifiedName importedNamespace=QualifiedName name=ID views+=View*)
+	 *     (package=QualifiedName importURI=STRING name=ID views+=View*)
 	 */
 	protected void sequence_SPViz(ISerializationContext context, SPViz semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);

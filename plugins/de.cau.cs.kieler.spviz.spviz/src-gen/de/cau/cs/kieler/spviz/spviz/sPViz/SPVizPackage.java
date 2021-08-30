@@ -92,13 +92,13 @@ public interface SPVizPackage extends EPackage
   int SP_VIZ__PACKAGE = 0;
 
   /**
-   * The feature id for the '<em><b>Imported Namespace</b></em>' attribute.
+   * The feature id for the '<em><b>Import URI</b></em>' attribute.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int SP_VIZ__IMPORTED_NAMESPACE = 1;
+  int SP_VIZ__IMPORT_URI = 1;
 
   /**
    * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -270,15 +270,15 @@ public interface SPVizPackage extends EPackage
   EAttribute getSPViz_Package();
 
   /**
-   * Returns the meta object for the attribute '{@link de.cau.cs.kieler.spviz.spviz.sPViz.SPViz#getImportedNamespace <em>Imported Namespace</em>}'.
+   * Returns the meta object for the attribute '{@link de.cau.cs.kieler.spviz.spviz.sPViz.SPViz#getImportURI <em>Import URI</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return the meta object for the attribute '<em>Imported Namespace</em>'.
-   * @see de.cau.cs.kieler.spviz.spviz.sPViz.SPViz#getImportedNamespace()
+   * @return the meta object for the attribute '<em>Import URI</em>'.
+   * @see de.cau.cs.kieler.spviz.spviz.sPViz.SPViz#getImportURI()
    * @see #getSPViz()
    * @generated
    */
-  EAttribute getSPViz_ImportedNamespace();
+  EAttribute getSPViz_ImportURI();
 
   /**
    * Returns the meta object for the attribute '{@link de.cau.cs.kieler.spviz.spviz.sPViz.SPViz#getName <em>Name</em>}'.
@@ -451,12 +451,12 @@ public interface SPVizPackage extends EPackage
     EAttribute SP_VIZ__PACKAGE = eINSTANCE.getSPViz_Package();
 
     /**
-     * The meta object literal for the '<em><b>Imported Namespace</b></em>' attribute feature.
+     * The meta object literal for the '<em><b>Import URI</b></em>' attribute feature.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
-    EAttribute SP_VIZ__IMPORTED_NAMESPACE = eINSTANCE.getSPViz_ImportedNamespace();
+    EAttribute SP_VIZ__IMPORT_URI = eINSTANCE.getSPViz_ImportURI();
 
     /**
      * The meta object literal for the '<em><b>Name</b></em>' attribute feature.

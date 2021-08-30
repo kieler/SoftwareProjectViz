@@ -114,26 +114,25 @@ ruleSPViz returns [EObject current=null]
 				}
 			)
 		)
-		otherlv_2='use'
+		otherlv_2='import'
 		{
-			newLeafNode(otherlv_2, grammarAccess.getSPVizAccess().getUseKeyword_2());
+			newLeafNode(otherlv_2, grammarAccess.getSPVizAccess().getImportKeyword_2());
 		}
 		(
 			(
+				lv_importURI_3_0=RULE_STRING
 				{
-					newCompositeNode(grammarAccess.getSPVizAccess().getImportedNamespaceQualifiedNameParserRuleCall_3_0());
+					newLeafNode(lv_importURI_3_0, grammarAccess.getSPVizAccess().getImportURISTRINGTerminalRuleCall_3_0());
 				}
-				lv_importedNamespace_3_0=ruleQualifiedName
 				{
 					if ($current==null) {
-						$current = createModelElementForParent(grammarAccess.getSPVizRule());
+						$current = createModelElement(grammarAccess.getSPVizRule());
 					}
-					set(
+					setWithLastConsumed(
 						$current,
-						"importedNamespace",
-						lv_importedNamespace_3_0,
-						"de.cau.cs.kieler.spviz.spviz.SPViz.QualifiedName");
-					afterParserOrEnumRuleCall();
+						"importURI",
+						lv_importURI_3_0,
+						"org.eclipse.xtext.common.Terminals.STRING");
 				}
 			)
 		)

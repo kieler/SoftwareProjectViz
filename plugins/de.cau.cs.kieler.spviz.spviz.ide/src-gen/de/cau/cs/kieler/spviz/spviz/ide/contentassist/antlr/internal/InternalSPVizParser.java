@@ -22,9 +22,9 @@ import java.util.ArrayList;
 @SuppressWarnings("all")
 public class InternalSPVizParser extends AbstractInternalContentAssistParser {
     public static final String[] tokenNames = new String[] {
-        "<invalid>", "<EOR>", "<DOWN>", "<UP>", "RULE_ID", "RULE_INT", "RULE_STRING", "RULE_ML_COMMENT", "RULE_SL_COMMENT", "RULE_WS", "RULE_ANY_OTHER", "'package'", "'use'", "'SPViz'", "'{'", "'}'", "'show'", "'in'", "'connect'", "'via'", "'.'"
+        "<invalid>", "<EOR>", "<DOWN>", "<UP>", "RULE_ID", "RULE_STRING", "RULE_INT", "RULE_ML_COMMENT", "RULE_SL_COMMENT", "RULE_WS", "RULE_ANY_OTHER", "'package'", "'import'", "'SPViz'", "'{'", "'}'", "'show'", "'in'", "'connect'", "'via'", "'.'"
     };
-    public static final int RULE_STRING=6;
+    public static final int RULE_STRING=5;
     public static final int RULE_SL_COMMENT=8;
     public static final int T__19=19;
     public static final int T__15=15;
@@ -39,7 +39,7 @@ public class InternalSPVizParser extends AbstractInternalContentAssistParser {
     public static final int RULE_ID=4;
     public static final int RULE_WS=9;
     public static final int RULE_ANY_OTHER=10;
-    public static final int RULE_INT=5;
+    public static final int RULE_INT=6;
     public static final int RULE_ML_COMMENT=7;
     public static final int T__20=20;
 
@@ -633,7 +633,7 @@ public class InternalSPVizParser extends AbstractInternalContentAssistParser {
             // InternalSPViz.g:250:1: ( rule__SPViz__Group__2__Impl rule__SPViz__Group__3 )
             // InternalSPViz.g:251:2: rule__SPViz__Group__2__Impl rule__SPViz__Group__3
             {
-            pushFollow(FOLLOW_3);
+            pushFollow(FOLLOW_5);
             rule__SPViz__Group__2__Impl();
 
             state._fsp--;
@@ -662,21 +662,21 @@ public class InternalSPVizParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__SPViz__Group__2__Impl"
-    // InternalSPViz.g:258:1: rule__SPViz__Group__2__Impl : ( 'use' ) ;
+    // InternalSPViz.g:258:1: rule__SPViz__Group__2__Impl : ( 'import' ) ;
     public final void rule__SPViz__Group__2__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPViz.g:262:1: ( ( 'use' ) )
-            // InternalSPViz.g:263:1: ( 'use' )
+            // InternalSPViz.g:262:1: ( ( 'import' ) )
+            // InternalSPViz.g:263:1: ( 'import' )
             {
-            // InternalSPViz.g:263:1: ( 'use' )
-            // InternalSPViz.g:264:2: 'use'
+            // InternalSPViz.g:263:1: ( 'import' )
+            // InternalSPViz.g:264:2: 'import'
             {
-             before(grammarAccess.getSPVizAccess().getUseKeyword_2()); 
+             before(grammarAccess.getSPVizAccess().getImportKeyword_2()); 
             match(input,12,FOLLOW_2); 
-             after(grammarAccess.getSPVizAccess().getUseKeyword_2()); 
+             after(grammarAccess.getSPVizAccess().getImportKeyword_2()); 
 
             }
 
@@ -708,7 +708,7 @@ public class InternalSPVizParser extends AbstractInternalContentAssistParser {
             // InternalSPViz.g:277:1: ( rule__SPViz__Group__3__Impl rule__SPViz__Group__4 )
             // InternalSPViz.g:278:2: rule__SPViz__Group__3__Impl rule__SPViz__Group__4
             {
-            pushFollow(FOLLOW_5);
+            pushFollow(FOLLOW_6);
             rule__SPViz__Group__3__Impl();
 
             state._fsp--;
@@ -737,31 +737,31 @@ public class InternalSPVizParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__SPViz__Group__3__Impl"
-    // InternalSPViz.g:285:1: rule__SPViz__Group__3__Impl : ( ( rule__SPViz__ImportedNamespaceAssignment_3 ) ) ;
+    // InternalSPViz.g:285:1: rule__SPViz__Group__3__Impl : ( ( rule__SPViz__ImportURIAssignment_3 ) ) ;
     public final void rule__SPViz__Group__3__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPViz.g:289:1: ( ( ( rule__SPViz__ImportedNamespaceAssignment_3 ) ) )
-            // InternalSPViz.g:290:1: ( ( rule__SPViz__ImportedNamespaceAssignment_3 ) )
+            // InternalSPViz.g:289:1: ( ( ( rule__SPViz__ImportURIAssignment_3 ) ) )
+            // InternalSPViz.g:290:1: ( ( rule__SPViz__ImportURIAssignment_3 ) )
             {
-            // InternalSPViz.g:290:1: ( ( rule__SPViz__ImportedNamespaceAssignment_3 ) )
-            // InternalSPViz.g:291:2: ( rule__SPViz__ImportedNamespaceAssignment_3 )
+            // InternalSPViz.g:290:1: ( ( rule__SPViz__ImportURIAssignment_3 ) )
+            // InternalSPViz.g:291:2: ( rule__SPViz__ImportURIAssignment_3 )
             {
-             before(grammarAccess.getSPVizAccess().getImportedNamespaceAssignment_3()); 
-            // InternalSPViz.g:292:2: ( rule__SPViz__ImportedNamespaceAssignment_3 )
-            // InternalSPViz.g:292:3: rule__SPViz__ImportedNamespaceAssignment_3
+             before(grammarAccess.getSPVizAccess().getImportURIAssignment_3()); 
+            // InternalSPViz.g:292:2: ( rule__SPViz__ImportURIAssignment_3 )
+            // InternalSPViz.g:292:3: rule__SPViz__ImportURIAssignment_3
             {
             pushFollow(FOLLOW_2);
-            rule__SPViz__ImportedNamespaceAssignment_3();
+            rule__SPViz__ImportURIAssignment_3();
 
             state._fsp--;
 
 
             }
 
-             after(grammarAccess.getSPVizAccess().getImportedNamespaceAssignment_3()); 
+             after(grammarAccess.getSPVizAccess().getImportURIAssignment_3()); 
 
             }
 
@@ -868,7 +868,7 @@ public class InternalSPVizParser extends AbstractInternalContentAssistParser {
             // InternalSPViz.g:331:1: ( rule__SPViz__Group__5__Impl rule__SPViz__Group__6 )
             // InternalSPViz.g:332:2: rule__SPViz__Group__5__Impl rule__SPViz__Group__6
             {
-            pushFollow(FOLLOW_6);
+            pushFollow(FOLLOW_7);
             rule__SPViz__Group__5__Impl();
 
             state._fsp--;
@@ -953,7 +953,7 @@ public class InternalSPVizParser extends AbstractInternalContentAssistParser {
             // InternalSPViz.g:358:1: ( rule__SPViz__Group__6__Impl rule__SPViz__Group__7 )
             // InternalSPViz.g:359:2: rule__SPViz__Group__6__Impl rule__SPViz__Group__7
             {
-            pushFollow(FOLLOW_7);
+            pushFollow(FOLLOW_8);
             rule__SPViz__Group__6__Impl();
 
             state._fsp--;
@@ -1028,7 +1028,7 @@ public class InternalSPVizParser extends AbstractInternalContentAssistParser {
             // InternalSPViz.g:385:1: ( rule__SPViz__Group__7__Impl rule__SPViz__Group__8 )
             // InternalSPViz.g:386:2: rule__SPViz__Group__7__Impl rule__SPViz__Group__8
             {
-            pushFollow(FOLLOW_7);
+            pushFollow(FOLLOW_8);
             rule__SPViz__Group__7__Impl();
 
             state._fsp--;
@@ -1085,7 +1085,7 @@ public class InternalSPVizParser extends AbstractInternalContentAssistParser {
             	case 1 :
             	    // InternalSPViz.g:400:3: rule__SPViz__ViewsAssignment_7
             	    {
-            	    pushFollow(FOLLOW_8);
+            	    pushFollow(FOLLOW_9);
             	    rule__SPViz__ViewsAssignment_7();
 
             	    state._fsp--;
@@ -1201,7 +1201,7 @@ public class InternalSPVizParser extends AbstractInternalContentAssistParser {
             // InternalSPViz.g:439:1: ( rule__View__Group__0__Impl rule__View__Group__1 )
             // InternalSPViz.g:440:2: rule__View__Group__0__Impl rule__View__Group__1
             {
-            pushFollow(FOLLOW_6);
+            pushFollow(FOLLOW_7);
             rule__View__Group__0__Impl();
 
             state._fsp--;
@@ -1286,7 +1286,7 @@ public class InternalSPVizParser extends AbstractInternalContentAssistParser {
             // InternalSPViz.g:466:1: ( rule__View__Group__1__Impl rule__View__Group__2 )
             // InternalSPViz.g:467:2: rule__View__Group__1__Impl rule__View__Group__2
             {
-            pushFollow(FOLLOW_9);
+            pushFollow(FOLLOW_10);
             rule__View__Group__1__Impl();
 
             state._fsp--;
@@ -1361,7 +1361,7 @@ public class InternalSPVizParser extends AbstractInternalContentAssistParser {
             // InternalSPViz.g:493:1: ( rule__View__Group__2__Impl rule__View__Group__3 )
             // InternalSPViz.g:494:2: rule__View__Group__2__Impl rule__View__Group__3
             {
-            pushFollow(FOLLOW_9);
+            pushFollow(FOLLOW_10);
             rule__View__Group__2__Impl();
 
             state._fsp--;
@@ -1418,7 +1418,7 @@ public class InternalSPVizParser extends AbstractInternalContentAssistParser {
             	case 1 :
             	    // InternalSPViz.g:508:3: rule__View__ShownElementsAssignment_2
             	    {
-            	    pushFollow(FOLLOW_10);
+            	    pushFollow(FOLLOW_11);
             	    rule__View__ShownElementsAssignment_2();
 
             	    state._fsp--;
@@ -1464,7 +1464,7 @@ public class InternalSPVizParser extends AbstractInternalContentAssistParser {
             // InternalSPViz.g:520:1: ( rule__View__Group__3__Impl rule__View__Group__4 )
             // InternalSPViz.g:521:2: rule__View__Group__3__Impl rule__View__Group__4
             {
-            pushFollow(FOLLOW_9);
+            pushFollow(FOLLOW_10);
             rule__View__Group__3__Impl();
 
             state._fsp--;
@@ -1521,7 +1521,7 @@ public class InternalSPVizParser extends AbstractInternalContentAssistParser {
             	case 1 :
             	    // InternalSPViz.g:535:3: rule__View__ShownConnectionsAssignment_3
             	    {
-            	    pushFollow(FOLLOW_11);
+            	    pushFollow(FOLLOW_12);
             	    rule__View__ShownConnectionsAssignment_3();
 
             	    state._fsp--;
@@ -1712,7 +1712,7 @@ public class InternalSPVizParser extends AbstractInternalContentAssistParser {
             // InternalSPViz.g:601:1: ( rule__ShownElement__Group__1__Impl rule__ShownElement__Group__2 )
             // InternalSPViz.g:602:2: rule__ShownElement__Group__1__Impl rule__ShownElement__Group__2
             {
-            pushFollow(FOLLOW_12);
+            pushFollow(FOLLOW_13);
             rule__ShownElement__Group__1__Impl();
 
             state._fsp--;
@@ -2118,7 +2118,7 @@ public class InternalSPVizParser extends AbstractInternalContentAssistParser {
             // InternalSPViz.g:736:1: ( rule__ShownConnection__Group__1__Impl rule__ShownConnection__Group__2 )
             // InternalSPViz.g:737:2: rule__ShownConnection__Group__1__Impl rule__ShownConnection__Group__2
             {
-            pushFollow(FOLLOW_13);
+            pushFollow(FOLLOW_14);
             rule__ShownConnection__Group__1__Impl();
 
             state._fsp--;
@@ -2449,7 +2449,7 @@ public class InternalSPVizParser extends AbstractInternalContentAssistParser {
             // InternalSPViz.g:844:1: ( rule__QualifiedName__Group__0__Impl rule__QualifiedName__Group__1 )
             // InternalSPViz.g:845:2: rule__QualifiedName__Group__0__Impl rule__QualifiedName__Group__1
             {
-            pushFollow(FOLLOW_14);
+            pushFollow(FOLLOW_15);
             rule__QualifiedName__Group__0__Impl();
 
             state._fsp--;
@@ -2576,7 +2576,7 @@ public class InternalSPVizParser extends AbstractInternalContentAssistParser {
             	case 1 :
             	    // InternalSPViz.g:885:3: rule__QualifiedName__Group_1__0
             	    {
-            	    pushFollow(FOLLOW_15);
+            	    pushFollow(FOLLOW_16);
             	    rule__QualifiedName__Group_1__0();
 
             	    state._fsp--;
@@ -2798,26 +2798,22 @@ public class InternalSPVizParser extends AbstractInternalContentAssistParser {
     // $ANTLR end "rule__SPViz__PackageAssignment_1"
 
 
-    // $ANTLR start "rule__SPViz__ImportedNamespaceAssignment_3"
-    // InternalSPViz.g:963:1: rule__SPViz__ImportedNamespaceAssignment_3 : ( ruleQualifiedName ) ;
-    public final void rule__SPViz__ImportedNamespaceAssignment_3() throws RecognitionException {
+    // $ANTLR start "rule__SPViz__ImportURIAssignment_3"
+    // InternalSPViz.g:963:1: rule__SPViz__ImportURIAssignment_3 : ( RULE_STRING ) ;
+    public final void rule__SPViz__ImportURIAssignment_3() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPViz.g:967:1: ( ( ruleQualifiedName ) )
-            // InternalSPViz.g:968:2: ( ruleQualifiedName )
+            // InternalSPViz.g:967:1: ( ( RULE_STRING ) )
+            // InternalSPViz.g:968:2: ( RULE_STRING )
             {
-            // InternalSPViz.g:968:2: ( ruleQualifiedName )
-            // InternalSPViz.g:969:3: ruleQualifiedName
+            // InternalSPViz.g:968:2: ( RULE_STRING )
+            // InternalSPViz.g:969:3: RULE_STRING
             {
-             before(grammarAccess.getSPVizAccess().getImportedNamespaceQualifiedNameParserRuleCall_3_0()); 
-            pushFollow(FOLLOW_2);
-            ruleQualifiedName();
-
-            state._fsp--;
-
-             after(grammarAccess.getSPVizAccess().getImportedNamespaceQualifiedNameParserRuleCall_3_0()); 
+             before(grammarAccess.getSPVizAccess().getImportURISTRINGTerminalRuleCall_3_0()); 
+            match(input,RULE_STRING,FOLLOW_2); 
+             after(grammarAccess.getSPVizAccess().getImportURISTRINGTerminalRuleCall_3_0()); 
 
             }
 
@@ -2836,7 +2832,7 @@ public class InternalSPVizParser extends AbstractInternalContentAssistParser {
         }
         return ;
     }
-    // $ANTLR end "rule__SPViz__ImportedNamespaceAssignment_3"
+    // $ANTLR end "rule__SPViz__ImportURIAssignment_3"
 
 
     // $ANTLR start "rule__SPViz__NameAssignment_5"
@@ -3240,16 +3236,17 @@ public class InternalSPVizParser extends AbstractInternalContentAssistParser {
     public static final BitSet FOLLOW_2 = new BitSet(new long[]{0x0000000000000002L});
     public static final BitSet FOLLOW_3 = new BitSet(new long[]{0x0000000000000010L});
     public static final BitSet FOLLOW_4 = new BitSet(new long[]{0x0000000000001000L});
-    public static final BitSet FOLLOW_5 = new BitSet(new long[]{0x0000000000002000L});
-    public static final BitSet FOLLOW_6 = new BitSet(new long[]{0x0000000000004000L});
-    public static final BitSet FOLLOW_7 = new BitSet(new long[]{0x0000000000008010L});
-    public static final BitSet FOLLOW_8 = new BitSet(new long[]{0x0000000000000012L});
-    public static final BitSet FOLLOW_9 = new BitSet(new long[]{0x0000000000058000L});
-    public static final BitSet FOLLOW_10 = new BitSet(new long[]{0x0000000000010002L});
-    public static final BitSet FOLLOW_11 = new BitSet(new long[]{0x0000000000040002L});
-    public static final BitSet FOLLOW_12 = new BitSet(new long[]{0x0000000000020000L});
-    public static final BitSet FOLLOW_13 = new BitSet(new long[]{0x0000000000080000L});
-    public static final BitSet FOLLOW_14 = new BitSet(new long[]{0x0000000000100000L});
-    public static final BitSet FOLLOW_15 = new BitSet(new long[]{0x0000000000100002L});
+    public static final BitSet FOLLOW_5 = new BitSet(new long[]{0x0000000000000020L});
+    public static final BitSet FOLLOW_6 = new BitSet(new long[]{0x0000000000002000L});
+    public static final BitSet FOLLOW_7 = new BitSet(new long[]{0x0000000000004000L});
+    public static final BitSet FOLLOW_8 = new BitSet(new long[]{0x0000000000008010L});
+    public static final BitSet FOLLOW_9 = new BitSet(new long[]{0x0000000000000012L});
+    public static final BitSet FOLLOW_10 = new BitSet(new long[]{0x0000000000058000L});
+    public static final BitSet FOLLOW_11 = new BitSet(new long[]{0x0000000000010002L});
+    public static final BitSet FOLLOW_12 = new BitSet(new long[]{0x0000000000040002L});
+    public static final BitSet FOLLOW_13 = new BitSet(new long[]{0x0000000000020000L});
+    public static final BitSet FOLLOW_14 = new BitSet(new long[]{0x0000000000080000L});
+    public static final BitSet FOLLOW_15 = new BitSet(new long[]{0x0000000000100000L});
+    public static final BitSet FOLLOW_16 = new BitSet(new long[]{0x0000000000100002L});
 
 }
