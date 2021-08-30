@@ -14,8 +14,10 @@ package de.cau.cs.kieler.spviz.spviz.generator
 
 import de.cau.cs.kieler.spviz.spviz.sPViz.SPViz
 import de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.Artifact
+import de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.SPVizModel
 import java.util.ArrayList
 import java.util.LinkedHashMap
+import org.eclipse.emf.ecore.resource.Resource
 
 /**
  * Simplifies access to the data in a SPViz representation.
@@ -47,12 +49,20 @@ class DataAccess {
 	/**
 	 * Constructor
 	 * 
-	 * @param spviz
-	 * 		a SPViz containing the required data
+	 * @param resource
+	 * 		The resource for the {@link SPViz} model loaded in the editor.
 	 */
-	new(SPViz spviz) {
+	new(Resource resource) {
+	    val spviz = resource.contents.head as SPViz
         bundleNamePrefix = spviz.package
-        modelBundleNamePrefix = spviz.importedNamespace
+        
+        val importedSpvizModel = resource.resourceSet.resources.findFirst[
+            it.contents.head instanceof SPVizModel
+        ]?.contents?.head as SPVizModel
+        if (importedSpvizModel === null) {
+            println("No SPVizModel found to import with the name " + spviz.importURI)
+        }
+        modelBundleNamePrefix = importedSpvizModel?.package
         visualizationName = spviz.name
         // FIXME: visualizations are not required to be named ...Viz, so this replacement may not work. What is this
 		// differentiation used for anyway?

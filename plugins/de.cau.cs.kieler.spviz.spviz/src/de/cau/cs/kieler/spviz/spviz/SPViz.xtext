@@ -18,7 +18,7 @@ import "http://www.cau.de/cs/kieler/spviz/spvizmodel/SPVizModel" as spvizmodel
 
 SPViz returns SPViz:
 	'package' package=QualifiedName
-	'use' importedNamespace=QualifiedName
+	'import' importURI=STRING
 	'SPViz' name=ID '{'
 		views += View*
 	'}'
