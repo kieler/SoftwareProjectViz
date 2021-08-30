@@ -43,9 +43,9 @@ public class SPVizGrammarAccess extends AbstractElementFinder.AbstractGrammarEle
 		private final Keyword cPackageKeyword_0 = (Keyword)cGroup.eContents().get(0);
 		private final Assignment cPackageAssignment_1 = (Assignment)cGroup.eContents().get(1);
 		private final RuleCall cPackageQualifiedNameParserRuleCall_1_0 = (RuleCall)cPackageAssignment_1.eContents().get(0);
-		private final Keyword cUseKeyword_2 = (Keyword)cGroup.eContents().get(2);
-		private final Assignment cImportedNamespaceAssignment_3 = (Assignment)cGroup.eContents().get(3);
-		private final RuleCall cImportedNamespaceQualifiedNameParserRuleCall_3_0 = (RuleCall)cImportedNamespaceAssignment_3.eContents().get(0);
+		private final Keyword cImportKeyword_2 = (Keyword)cGroup.eContents().get(2);
+		private final Assignment cImportURIAssignment_3 = (Assignment)cGroup.eContents().get(3);
+		private final RuleCall cImportURISTRINGTerminalRuleCall_3_0 = (RuleCall)cImportURIAssignment_3.eContents().get(0);
 		private final Keyword cSPVizKeyword_4 = (Keyword)cGroup.eContents().get(4);
 		private final Assignment cNameAssignment_5 = (Assignment)cGroup.eContents().get(5);
 		private final RuleCall cNameIDTerminalRuleCall_5_0 = (RuleCall)cNameAssignment_5.eContents().get(0);
@@ -56,18 +56,20 @@ public class SPVizGrammarAccess extends AbstractElementFinder.AbstractGrammarEle
 		
 		//SPViz returns SPViz:
 		//    'package' package=QualifiedName
-		//    'use' importedNamespace=QualifiedName
+		////    'use' importedNamespace=QualifiedName // TODO: This can instead be read from the imported SPVizModel.package
+		//    'import' importURI=STRING
 		//    'SPViz' name=ID '{'
 		//        views += View*
 		//    '}'
 		//;
 		@Override public ParserRule getRule() { return rule; }
 		
-		//'package' package=QualifiedName
-		//'use' importedNamespace=QualifiedName
-		//'SPViz' name=ID '{'
-		//    views += View*
-		//'}'
+		//    'package' package=QualifiedName
+		////    'use' importedNamespace=QualifiedName // TODO: This can instead be read from the imported SPVizModel.package
+		//    'import' importURI=STRING
+		//    'SPViz' name=ID '{'
+		//        views += View*
+		//    '}'
 		public Group getGroup() { return cGroup; }
 		
 		//'package'
@@ -79,14 +81,15 @@ public class SPVizGrammarAccess extends AbstractElementFinder.AbstractGrammarEle
 		//QualifiedName
 		public RuleCall getPackageQualifiedNameParserRuleCall_1_0() { return cPackageQualifiedNameParserRuleCall_1_0; }
 		
-		//'use'
-		public Keyword getUseKeyword_2() { return cUseKeyword_2; }
+		////    'use' importedNamespace=QualifiedName // TODO: This can instead be read from the imported SPVizModel.package
+		//    'import'
+		public Keyword getImportKeyword_2() { return cImportKeyword_2; }
 		
-		//importedNamespace=QualifiedName
-		public Assignment getImportedNamespaceAssignment_3() { return cImportedNamespaceAssignment_3; }
+		//importURI=STRING
+		public Assignment getImportURIAssignment_3() { return cImportURIAssignment_3; }
 		
-		//QualifiedName
-		public RuleCall getImportedNamespaceQualifiedNameParserRuleCall_3_0() { return cImportedNamespaceQualifiedNameParserRuleCall_3_0; }
+		//STRING
+		public RuleCall getImportURISTRINGTerminalRuleCall_3_0() { return cImportURISTRINGTerminalRuleCall_3_0; }
 		
 		//'SPViz'
 		public Keyword getSPVizKeyword_4() { return cSPVizKeyword_4; }
@@ -352,7 +355,8 @@ public class SPVizGrammarAccess extends AbstractElementFinder.AbstractGrammarEle
 	
 	//SPViz returns SPViz:
 	//    'package' package=QualifiedName
-	//    'use' importedNamespace=QualifiedName
+	////    'use' importedNamespace=QualifiedName // TODO: This can instead be read from the imported SPVizModel.package
+	//    'import' importURI=STRING
 	//    'SPViz' name=ID '{'
 	//        views += View*
 	//    '}'

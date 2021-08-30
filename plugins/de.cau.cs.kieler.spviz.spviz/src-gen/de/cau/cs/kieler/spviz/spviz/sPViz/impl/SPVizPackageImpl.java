@@ -164,7 +164,7 @@ public class SPVizPackageImpl extends EPackageImpl implements SPVizPackage
    * @generated
    */
   @Override
-  public EAttribute getSPViz_ImportedNamespace()
+  public EAttribute getSPViz_ImportURI()
   {
     return (EAttribute)spVizEClass.getEStructuralFeatures().get(1);
   }
@@ -334,7 +334,7 @@ public class SPVizPackageImpl extends EPackageImpl implements SPVizPackage
     // Create classes and their features
     spVizEClass = createEClass(SP_VIZ);
     createEAttribute(spVizEClass, SP_VIZ__PACKAGE);
-    createEAttribute(spVizEClass, SP_VIZ__IMPORTED_NAMESPACE);
+    createEAttribute(spVizEClass, SP_VIZ__IMPORT_URI);
     createEAttribute(spVizEClass, SP_VIZ__NAME);
     createEReference(spVizEClass, SP_VIZ__VIEWS);
 
@@ -388,7 +388,7 @@ public class SPVizPackageImpl extends EPackageImpl implements SPVizPackage
     // Initialize classes and features; add operations and parameters
     initEClass(spVizEClass, SPViz.class, "SPViz", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
     initEAttribute(getSPViz_Package(), ecorePackage.getEString(), "package", null, 0, 1, SPViz.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-    initEAttribute(getSPViz_ImportedNamespace(), ecorePackage.getEString(), "importedNamespace", null, 0, 1, SPViz.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEAttribute(getSPViz_ImportURI(), ecorePackage.getEString(), "importURI", null, 0, 1, SPViz.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEAttribute(getSPViz_Name(), ecorePackage.getEString(), "name", null, 0, 1, SPViz.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEReference(getSPViz_Views(), this.getView(), null, "views", null, 0, -1, SPViz.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
