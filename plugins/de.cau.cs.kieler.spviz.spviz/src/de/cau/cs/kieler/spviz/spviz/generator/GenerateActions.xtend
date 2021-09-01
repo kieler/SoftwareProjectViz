@@ -12,9 +12,13 @@
  */
 package de.cau.cs.kieler.spviz.spviz.generator
 
+import de.cau.cs.kieler.spviz.spviz.sPViz.View
 import de.cau.cs.kieler.spviz.spvizmodel.generator.FileGenerator
+import de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.Connection
 import org.eclipse.core.resources.IFolder
 import org.eclipse.core.runtime.IProgressMonitor
+
+import static extension de.cau.cs.kieler.spviz.spvizmodel.util.SPVizModelExtension.*
 
 /**
  * Generates action classes for the visualization.
@@ -22,45 +26,52 @@ import org.eclipse.core.runtime.IProgressMonitor
  * @author leo, nre
  */
 class GenerateActions {
-	def static void generate(IFolder sourceFolder, DataAccess spviz, IProgressMonitor progressMonitor) {
+    
+	def static void generate(IFolder sourceFolder, DataAccess data, IProgressMonitor progressMonitor) {
 		
-		val String bundleNamePrefix = spviz.getBundleNamePrefix
+		val String bundleNamePrefix = data.getBundleNamePrefix
 		val String folder = bundleNamePrefix.replace('.','/') + "/viz/actions/"
 		
-		var String content = generateAbstractVisualizationContextChangingAction(spviz)
+		var String content = generateAbstractVisualizationContextChangingAction(data)
 		FileGenerator.generateOrUpdateFile(sourceFolder, folder + "AbstractVisualizationContextChangingAction.xtend", content, progressMonitor)
-		content = generateContextCollapseExpandAction(spviz)
+		content = generateContextCollapseExpandAction(data)
 		FileGenerator.generateOrUpdateFile(sourceFolder, folder + "ContextCollapseExpandAction.xtend", content, progressMonitor)
-		content = generateOverviewContextCollapseExpandAction(spviz)
+		content = generateOverviewContextCollapseExpandAction(data)
 		FileGenerator.generateOrUpdateFile(sourceFolder, folder + "OverviewContextCollapseExpandAction.xtend", content, progressMonitor)
-		content = generateUndoAction(spviz)
+		content = generateUndoAction(data)
 		FileGenerator.generateOrUpdateFile(sourceFolder, folder + "UndoAction.xtend", content, progressMonitor)
-		content = generateRedoAction(spviz)
+		content = generateRedoAction(data)
 		FileGenerator.generateOrUpdateFile(sourceFolder, folder + "RedoAction.xtend", content, progressMonitor)
-		content = generateResetViewAction(spviz)
+		content = generateResetViewAction(data)
 		FileGenerator.generateOrUpdateFile(sourceFolder, folder + "ResetViewAction.xtend", content, progressMonitor)
-		content = generateContextExpandAllAction(spviz)
+		content = generateContextExpandAllAction(data)
 		FileGenerator.generateOrUpdateFile(sourceFolder, folder + "ContextExpandAllAction.xtend", content, progressMonitor)
 		
-		for (overview : spviz.overviews)
-		for (connection : spviz.getOverviewConnections(overview)) {
-			// reveal required artifacts	
-			content = generateRevealAction(spviz, overview, connection.get(0), connection.get(1), connection.get(2), true)
-			FileGenerator.generateOrUpdateFile(sourceFolder, folder + "RevealRequired" + connection.get(0) + connection.get(2) + "sAction.xtend", content, progressMonitor)
-			// reveal requiring artifacts
-			content = generateRevealAction(spviz, overview, connection.get(0), connection.get(2), connection.get(1), false)
-			FileGenerator.generateOrUpdateFile(sourceFolder, folder + "RevealRequiring" + connection.get(0) + connection.get(2) + "sAction.xtend", content, progressMonitor)
+		for (view : data.views) {
+    		for (shownConnection : view.shownConnections) {
+    		    val connection = shownConnection.shownConnection
+    			// reveal required artifacts
+    			content = generateRevealAction(data, view, connection, true)
+    			FileGenerator.generateOrUpdateFile(sourceFolder,
+    			    folder + "RevealRequired" + connection.name + connection.required.name + "sAction.xtend",
+    			    content, progressMonitor)
+    			// reveal requiring artifacts
+    			content = generateRevealAction(data, view, connection, false)
+    			FileGenerator.generateOrUpdateFile(sourceFolder,
+    			    folder + "RevealRequiring" + connection.name + connection.required.name + "sAction.xtend",
+    			    content, progressMonitor)
+    		}
 		}
 	}
 	
-	def static generateContextExpandAllAction(DataAccess spviz) {
+	def static generateContextExpandAllAction(DataAccess data) {
 		return '''
-		package «spviz.getBundleNamePrefix».viz.actions
+		package «data.getBundleNamePrefix».viz.actions
 		
-		import «spviz.getBundleNamePrefix».model.IOverviewVisualizationContext
-		import «spviz.getBundleNamePrefix».model.IVisualizationContext
+		import «data.getBundleNamePrefix».model.IOverviewVisualizationContext
+		import «data.getBundleNamePrefix».model.IVisualizationContext
 		
-		import static extension «spviz.getBundleNamePrefix».model.util.ContextExtensions.*
+		import static extension «data.getBundleNamePrefix».model.util.ContextExtensions.*
 		
 		/**
 		 * An action that expands all element by making them detailed in an {@link IOverviewVisualizationContext}.
@@ -95,7 +106,7 @@ class GenerateActions {
 	/**
 	 * Generates the contend for a reveal action class.
 	 * 
-	 * @param spviz
+	 * @param data
 	 * 		a DataAccess to easily get the information from
 	 * @param overview
 	 * 		an overview name as a string
@@ -110,26 +121,34 @@ class GenerateActions {
 	 * @return
 	 * 		the generated file content as a string
 	 */
-	def static generateRevealAction(DataAccess spviz, String overview, String connectionName, String artifactFrom, String artifactTo, boolean isRequired) {
-		val String requiringOrRequired = isRequired ? "Required" : "Requiring"  
-		val className = "Reveal" + requiringOrRequired + connectionName + (isRequired ? artifactTo : artifactFrom) + "sAction"
+	def static generateRevealAction(DataAccess data, View view, Connection connection, boolean isRequired) {
+		val String requiringOrRequired = isRequired ? "Required" : "Requiring"
+		val connectionName = connection.name
+        val artifactFrom = isRequired ? connection.requiring  : connection.required
+        val artifactTo   = isRequired ? connection.required : connection.requiring
+        val artifactFromName = artifactFrom.name
+        val artifactToName = artifactTo.name
+		val className = "Reveal" + requiringOrRequired + connectionName + (isRequired ? artifactToName : artifactFromName) + "sAction"
+		val viewName = view.name
+		// TODO: I think the view is irrelevant here, we could also just cast it to IOverviewVisualizationContext<?>
+		// and name the variable accordingly, no need to specify which overview this is in.
 		
 		return '''
-		package «spviz.getBundleNamePrefix».viz.actions
+		package «data.getBundleNamePrefix».viz.actions
 		
-		import «spviz.getBundleNamePrefix».model.«overview»OverviewContext
-		import «spviz.getBundleNamePrefix».model.«artifactFrom»Context
-		«IF artifactFrom != artifactTo»
-			import «spviz.getBundleNamePrefix».model.«artifactTo»Context
+		import «data.getBundleNamePrefix».model.«viewName»OverviewContext
+		import «data.getBundleNamePrefix».model.«artifactFromName»Context
+		«IF artifactFromName != artifactToName»
+			import «data.getBundleNamePrefix».model.«artifactToName»Context
 		«ENDIF»
-		import «spviz.getBundleNamePrefix».model.IVisualizationContext
+		import «data.getBundleNamePrefix».model.IVisualizationContext
 		
-		import static extension «spviz.getBundleNamePrefix».model.util.ContextExtensions.*
+		import static extension «data.getBundleNamePrefix».model.util.ContextExtensions.*
 		
 		/**
-		 * Expands the «requiringOrRequired.toFirstLower» «artifactTo.toFirstLower»s of any «artifactFrom.toFirstLower» and connects them with an edge from the new «artifactTo.toFirstLower»'s
-		 * 'usedBy«artifactFrom»s' port to this «artifactFrom.toFirstLower»'s '«requiringOrRequired.toFirstLower»«artifactTo»' port. 
-		 * If all «requiringOrRequired.toFirstLower» «artifactTo.toFirstLower»s are already shown, this action reverses its functionality and removes all «artifactTo.toFirstLower»s again.
+		 * Expands the «requiringOrRequired.toFirstLower» «artifactToName.toFirstLower»s of any «artifactFromName.toFirstLower» and connects them with an edge from the new «artifactToName.toFirstLower»'s
+		 * 'usedBy«artifactFromName»s' port to this «artifactFromName.toFirstLower»'s '«requiringOrRequired.toFirstLower»«artifactToName»' port. 
+		 * If all «requiringOrRequired.toFirstLower» «artifactToName.toFirstLower»s are already shown, this action reverses its functionality and removes all «artifactToName.toFirstLower»s again.
 		 * 
 		 * @author nre
 		 */
@@ -141,27 +160,27 @@ class GenerateActions {
 			public static val String ID = «className».name
 			
 			override <M> changeVisualization(IVisualizationContext<M> modelVisualizationContext, ActionContext actionContext) {
-				// The «artifactFrom»Context element for the element that was clicked on.
-				val «artifactFrom.toFirstLower»Context = modelVisualizationContext as «artifactFrom»Context
+				// The «artifactFromName»Context element for the element that was clicked on.
+				val «artifactFromName.toFirstLower»Context = modelVisualizationContext as «artifactFromName»Context
 				
-				// The «artifactFrom.toFirstLower» itself from the context.
-				val «artifactFrom.toFirstLower» = «artifactFrom.toFirstLower»Context.modelElement
+				// The «artifactFromName.toFirstLower» itself from the context.
+				val «artifactFromName.toFirstLower» = «artifactFromName.toFirstLower»Context.modelElement
 				
-				// The «overview.toFirstLower» overview context this «artifactFrom.toFirstLower» is shown in.
-				val «overview.toFirstLower»OverviewContext = «artifactFrom.toFirstLower»Context.parent as «overview»OverviewContext
+				// The «viewName.toFirstLower» overview context this «artifactFromName.toFirstLower» is shown in.
+				val «viewName.toFirstLower»OverviewContext = «artifactFromName.toFirstLower»Context.parent as «viewName»OverviewContext
 				
-				// The «requiringOrRequired.toFirstLower» «artifactTo.toFirstLower»s that are currently not yet in their detailed view need to be put in that state first.
-				val collapsed«requiringOrRequired»«artifactTo»Contexts = «overview.toFirstLower»OverviewContext.collapsedElements.filter [
-					«artifactFrom.toFirstLower».«requiringOrRequired.toFirstLower + connectionName + artifactTo»s.contains(it.modelElement)
+				// The «requiringOrRequired.toFirstLower» «artifactToName.toFirstLower»s that are currently not yet in their detailed view need to be put in that state first.
+				val collapsed«requiringOrRequired»«artifactToName»Contexts = «viewName.toFirstLower»OverviewContext.collapsedElements.filter [
+					«artifactFromName.toFirstLower».«requiringOrRequired.toFirstLower + connectionName + artifactToName»s.contains(it.modelElement)
 				].toList
-				collapsed«requiringOrRequired»«artifactTo»Contexts.forEach [
-					«overview.toFirstLower»OverviewContext.makeDetailed(it)
+				collapsed«requiringOrRequired»«artifactToName»Contexts.forEach [
+					«viewName.toFirstLower»OverviewContext.makeDetailed(it)
 				]
 				
-				// The «artifactTo.toFirstLower» contexts in the overview that the «connectionName.toFirstLower» connection can connect to.
-				// Use the detailed «artifactTo.toFirstLower» contexts only, as they are all made detailed above.
-				val «requiringOrRequired.toFirstLower»«artifactTo»Contexts = «overview.toFirstLower»OverviewContext.detailedElements.filter [
-					«artifactFrom.toFirstLower».«requiringOrRequired.toFirstLower + connectionName + artifactTo»s.contains(it.modelElement)
+				// The «artifactToName.toFirstLower» contexts in the overview that the «connectionName.toFirstLower» connection can connect to.
+				// Use the detailed «artifactToName.toFirstLower» contexts only, as they are all made detailed above.
+				val «requiringOrRequired.toFirstLower»«artifactToName»Contexts = «viewName.toFirstLower»OverviewContext.detailedElements.filter [
+					«artifactFromName.toFirstLower».«requiringOrRequired.toFirstLower + connectionName + artifactToName»s.contains(it.modelElement)
 				].toList
 				
 «««				// If all are already connected, remove them all. Otherwise, connect them all.
@@ -170,11 +189,11 @@ class GenerateActions {
 «««		//				ContextUtils.remove«connectionName»«artifactTo»Edge(«artifactFrom.toFirstLower»Context, «requiringOrRequired.toFirstLower»«artifactTo»Context as «artifactTo»Context)
 «««		//			]
 «««		//		} else {
-				«requiringOrRequired.toFirstLower»«artifactTo»Contexts.forEach [ «requiringOrRequired.toFirstLower»«artifactTo»Context |
+				«requiringOrRequired.toFirstLower»«artifactToName»Contexts.forEach [ «requiringOrRequired.toFirstLower»«artifactToName»Context |
 					«IF isRequired»
-						«artifactFrom.toFirstLower»Context.add«connectionName»«artifactTo»Edge(«requiringOrRequired.toFirstLower»«artifactTo»Context as «artifactTo»Context)
+						«artifactFromName.toFirstLower»Context.add«connectionName»«artifactToName»Edge(«requiringOrRequired.toFirstLower»«artifactToName»Context as «artifactToName»Context)
 					«ELSE»
-						(«requiringOrRequired.toFirstLower»«artifactTo»Context as «artifactTo»Context).add«connectionName»«artifactFrom»Edge(«artifactFrom.toFirstLower»Context)
+						(«requiringOrRequired.toFirstLower»«artifactToName»Context as «artifactToName»Context).add«connectionName»«artifactFromName»Edge(«artifactFromName.toFirstLower»Context)
 					«ENDIF»
 				]
 «««		//		}
@@ -187,26 +206,26 @@ class GenerateActions {
 	/**
 	 * Generates the contend for the AbstractVisualizationContextChangingAction class.
 	 * 
-	 * @param spviz
+	 * @param data
 	 * 		a DataAccess to easily get the information from
 	 * @return
 	 * 		the generated file content as a string
 	 */
-	def static String generateAbstractVisualizationContextChangingAction (DataAccess spviz) {
+	def static String generateAbstractVisualizationContextChangingAction (DataAccess data) {
 		return '''
-			package «spviz.getBundleNamePrefix».viz.actions
+			package «data.getBundleNamePrefix».viz.actions
 			
 			import de.cau.cs.kieler.klighd.IAction
 			import de.cau.cs.kieler.klighd.kgraph.util.KGraphUtil
-			import «spviz.getBundleNamePrefix».viz.SynthesisProperties
-			import «spviz.getBundleNamePrefix».viz.SynthesisUtils
-			import «spviz.getBundleNamePrefix».model.IVisualizationContext
-			import «spviz.getBundleNamePrefix».model.«spviz.vizName»
+			import «data.getBundleNamePrefix».viz.SynthesisProperties
+			import «data.getBundleNamePrefix».viz.SynthesisUtils
+			import «data.getBundleNamePrefix».model.IVisualizationContext
+			import «data.getBundleNamePrefix».model.«data.visualizationName»
 			import org.eclipse.core.runtime.Status
 			import org.eclipse.emf.ecore.util.EcoreUtil.Copier
 			import org.eclipse.ui.statushandlers.StatusManager
 			
-			import static extension «spviz.getBundleNamePrefix».model.util.ContextExtensions.*
+			import static extension «data.getBundleNamePrefix».model.util.ContextExtensions.*
 			
 			/**
 			 * An abstract action that allows to change the {@link IVisualizationContext} for a model so that the old one is still
@@ -232,7 +251,7 @@ class GenerateActions {
 					// Copy the root context and the currently shown one from the same Copier to guarantee a completely copied
 					// context with only the needed view on that.
 					val Copier copier = new Copier
-					val copiedVisualizationContext = copier.copy(currentVisualizationContext) as «spviz.vizName»
+					val copiedVisualizationContext = copier.copy(currentVisualizationContext) as «data.visualizationName»
 					copier.copyReferences
 					
 					// Remove this visualization context and all after that, a redo after an action is not possible anymore.
@@ -272,7 +291,7 @@ class GenerateActions {
 «««						e.printStackTrace
 «««						TODO: remove this eclipse ui dependency once this is possible via a service.
 						
-						StatusManager.getManager().handle(new Status(Status.ERROR, "«spviz.getBundleNamePrefix».viz",
+						StatusManager.getManager().handle(new Status(Status.ERROR, "«data.getBundleNamePrefix».viz",
 							"Something went wrong while executing the " + this.class.canonicalName + " action.\n" + 
 							"Please view the error log and send the stack trace and the way to " +
 							"reproduce this error to the developer.", e), 
@@ -306,19 +325,19 @@ class GenerateActions {
 	/**
 	 * Generates the contend for the ContextCollapseExpandAction class.
 	 * 
-	 * @param spviz
+	 * @param data
 	 * 		a DataAccess to easily get the information from
 	 * @return
 	 * 		the generated file content as a string
 	 */
-	def static String generateContextCollapseExpandAction (DataAccess spviz) {
+	def static String generateContextCollapseExpandAction (DataAccess data) {
 		return '''
-			package «spviz.getBundleNamePrefix».viz.actions
+			package «data.getBundleNamePrefix».viz.actions
 			
-			import «spviz.getBundleNamePrefix».model.IOverviewVisualizationContext
-			import «spviz.getBundleNamePrefix».model.IVisualizationContext
+			import «data.getBundleNamePrefix».model.IOverviewVisualizationContext
+			import «data.getBundleNamePrefix».model.IVisualizationContext
 			
-			import static extension «spviz.getBundleNamePrefix».model.util.ContextExtensions.*
+			import static extension «data.getBundleNamePrefix».model.util.ContextExtensions.*
 			
 			/**
 			 * An action that collapses or expands an element by making it detailed in an {@link IOverviewVisualizationContext}.
@@ -365,14 +384,12 @@ class GenerateActions {
 	 * @return
 	 * 		the generated file content as a string
 	 */
-	def static String generateOverviewContextCollapseExpandAction (DataAccess spviz) {
+	def static String generateOverviewContextCollapseExpandAction (DataAccess data) {
 		return '''
-			package «spviz.getBundleNamePrefix».viz.actions
+			package «data.getBundleNamePrefix».viz.actions
 			
-			import «spviz.getBundleNamePrefix».model.IOverviewVisualizationContext
-			import «spviz.getBundleNamePrefix».model.IVisualizationContext
-			
-			import static extension «spviz.getBundleNamePrefix».model.util.ContextExtensions.*
+			import «data.getBundleNamePrefix».model.IOverviewVisualizationContext
+			import «data.getBundleNamePrefix».model.IVisualizationContext
 			
 			/**
 			 * An action that collapses or expands an overview by setting its {@link IOverviewVisualizationContext} that way.
@@ -406,17 +423,17 @@ class GenerateActions {
 	/**
 	 * Generates the contend for the UndoAction class.
 	 * 
-	 * @param spviz
+	 * @param data
 	 * 		a DataAccess to easily get the information from
 	 * @return
 	 * 		the generated file content as a string
 	 */
-	def static String generateUndoAction (DataAccess spviz) {
+	def static String generateUndoAction (DataAccess data) {
 		return '''
-		package «spviz.getBundleNamePrefix».viz.actions
+		package «data.getBundleNamePrefix».viz.actions
 		
 		import de.cau.cs.kieler.klighd.IAction
-		import «spviz.getBundleNamePrefix».viz.SynthesisProperties
+		import «data.getBundleNamePrefix».viz.SynthesisProperties
 		
 		/**
 		 * Undoes the last action performed on the view model.
@@ -446,17 +463,17 @@ class GenerateActions {
 	/**
 	 * Generates the contend for the RedoAction class.
 	 * 
-	 * @param spviz
+	 * @param data
 	 * 		a DataAccess to easily get the information from
 	 * @return
 	 * 		the generated file content as a string
 	 */
-	def static String generateRedoAction (DataAccess spviz) {
+	def static String generateRedoAction (DataAccess data) {
 		return '''
-		package «spviz.getBundleNamePrefix».viz.actions
+		package «data.getBundleNamePrefix».viz.actions
 		
 		import de.cau.cs.kieler.klighd.IAction
-		import «spviz.getBundleNamePrefix».viz.SynthesisProperties
+		import «data.getBundleNamePrefix».viz.SynthesisProperties
 		
 		/**
 		 * Redoes the last action that was undone on the view model.
@@ -487,17 +504,17 @@ class GenerateActions {
 	/**
 	 * Generates the contend for the ResetViewAction class.
 	 * 
-	 * @param spviz
+	 * @param data
 	 * 		a DataAccess to easily get the information from
 	 * @return
 	 * 		the generated file content as a string
 	 */
-	def static String generateResetViewAction (DataAccess spviz) {
+	def static String generateResetViewAction (DataAccess data) {
 		return '''
-		package «spviz.getBundleNamePrefix».viz.actions
+		package «data.getBundleNamePrefix».viz.actions
 		
 		import de.cau.cs.kieler.klighd.IAction
-		import «spviz.getBundleNamePrefix».viz.SynthesisProperties
+		import «data.getBundleNamePrefix».viz.SynthesisProperties
 		
 		/**
 		 * Resets the view to its default overview state.

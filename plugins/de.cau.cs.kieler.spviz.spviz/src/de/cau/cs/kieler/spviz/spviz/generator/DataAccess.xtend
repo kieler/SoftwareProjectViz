@@ -13,11 +13,16 @@
 package de.cau.cs.kieler.spviz.spviz.generator
 
 import de.cau.cs.kieler.spviz.spviz.sPViz.SPViz
+import de.cau.cs.kieler.spviz.spviz.sPViz.View
 import de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.Artifact
+import de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.Connection
 import de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.SPVizModel
-import java.util.ArrayList
-import java.util.LinkedHashMap
+import java.util.List
+import java.util.Map
 import org.eclipse.emf.ecore.resource.Resource
+import org.eclipse.xtend.lib.annotations.Accessors
+
+import static extension de.cau.cs.kieler.spviz.spvizmodel.util.SPVizModelExtension.*
 
 /**
  * Simplifies access to the data in a SPViz representation.
@@ -26,25 +31,33 @@ import org.eclipse.emf.ecore.resource.Resource
  */
 class DataAccess {
     
+    /** Direct access to the spviz visualization. Contains all the views. */
+    @Accessors(PUBLIC_GETTER)
+    SPViz spviz
+    /** Direct access to the required spvizmodel. Contains all the artifacts. */
+    @Accessors(PUBLIC_GETTER)
+    SPVizModel spvizModel
+    
     /** The bundle and package prefix for the generated visualization bundles. */
+    @Accessors(PUBLIC_GETTER)
 	String bundleNamePrefix
-	/** The imported model bundle and package prefix of the required model. */
+	/** The imported model bundle and package prefix of the required {@link SPVizModel}. */
+    @Accessors(PUBLIC_GETTER)
 	String modelBundleNamePrefix
 	/** The name of the visualization */
+    @Accessors(PUBLIC_GETTER)
 	String visualizationName
-	/** TODO: ? */
+	/** The name of the root object of the required {@link SPVizModel} instance, usually its name + 'Project' */
+    @Accessors(PUBLIC_GETTER)
 	String projectName
-	// TODO: it is probably best to use the artifacts themselves, requires real import mechanic of other model
-	String[] artifacts
-	// TODO: all of these should probably also be the overviews directly, not only their names.
-	String[] overviews
-	// TODO: especially these, I think a Map<Artifact, List<Artifact>> would be the wanted interface.
-	// Also, this string array seems to be a static length array of (connectionName, requiredName), maybe this
-	// should rather be a Map<Artifact, List<Connection>> instead? That would contain every necessary information.
-	LinkedHashMap<String, ArrayList<String[]>> requiredArtifacts
-	LinkedHashMap<String, ArrayList<String[]>> requiringArtifacts
-	LinkedHashMap<String, String[]> artifactsInOverviews
-	LinkedHashMap<String, ArrayList<String[]>> overviewContentConnections
+	/** 
+	 * A convenient map to show all {@link Connection}s with the key of the map as the requiring {@link Artifact}.
+	 */
+	Map<Artifact, List<Connection>> requiredArtifacts
+    /**
+     * A convenient map to show all {@link Connection}s with the key of the map as the required {@link Artifact}.
+     */
+	Map<Artifact, List<Connection>> requiringArtifacts
 	
 	/**
 	 * Constructor
@@ -53,106 +66,68 @@ class DataAccess {
 	 * 		The resource for the {@link SPViz} model loaded in the editor.
 	 */
 	new(Resource resource) {
-	    val spviz = resource.contents.head as SPViz
+	    spviz = resource.contents.head as SPViz
         bundleNamePrefix = spviz.package
         
-        val importedSpvizModel = resource.resourceSet.resources.findFirst[
+        spvizModel = resource.resourceSet.resources.findFirst[
             it.contents.head instanceof SPVizModel
         ]?.contents?.head as SPVizModel
-        if (importedSpvizModel === null) {
+        if (spvizModel === null) {
             println("No SPVizModel found to import with the name " + spviz.importURI)
         }
-        modelBundleNamePrefix = importedSpvizModel?.package
+        modelBundleNamePrefix = spvizModel.package
         visualizationName = spviz.name
-        // FIXME: visualizations are not required to be named ...Viz, so this replacement may not work. What is this
-		// differentiation used for anyway?
-		projectName = visualizationName.replace("Viz", "Project")
-		requiredArtifacts = newLinkedHashMap
-		requiringArtifacts = newLinkedHashMap
-		artifactsInOverviews = newLinkedHashMap
-		overviewContentConnections = newLinkedHashMap
+		projectName = spvizModel.name + "Project"
+		requiredArtifacts = newHashMap
+		requiringArtifacts = newHashMap
 		
-		val ArrayList<String> artifactList = newArrayList()
-		overviews = newArrayOfSize(spviz.views.size);
-		
-		for (var i = 0; i < spviz.views.size; i++) {
-            val view = spviz.views.get(i)
-            overviews.set(i, view.name)
-            val String[] shownElements = newArrayOfSize(view.shownElements.size)
-
-            // find all artifacts shown in an overview
-            for (var j = 0; j < view.shownElements.size; j++) {
-                val artifactName = view.shownElements.get(j).shownElement.name
-                shownElements.set(j, artifactName)
-                if (!artifactList.contains(artifactName)) artifactList.add(artifactName)
-            }
-            artifactsInOverviews.put(view.name, shownElements)
-
+		for (view : spviz.views) {
             // find all connections between artifacts
-            for (var j = 0; j < view.shownConnections.size; j++) {
-                val connection = view.shownConnections.get(j).shownConnection
-                val connectionName = connection.name
-                val requiring = (connection.eContainer as Artifact).name
-                val required = connection.dependsOn.name
+            for (shownConnection : view.shownConnections) {
+                val connection = shownConnection.shownConnection
+                val requiring = connection.requiring
+                val required = connection.required
 
-                if (requiredArtifacts.containsKey(requiring)) {
-                    requiredArtifacts.get(requiring).add(#[connectionName, required])
-                } else {
-                    val ArrayList<String[]> requiredConnections = newArrayList
-                    requiredConnections.add(#[connectionName, required])
-                    requiredArtifacts.put(requiring, requiredConnections)
+                if (!requiredArtifacts.containsKey(requiring)) {
+                    requiredArtifacts.put(requiring, newArrayList)
                 }
-
-                if (requiringArtifacts.containsKey(required)) {
-                    requiringArtifacts.get(required).add(#[connectionName, requiring])
-                } else {
-                    val ArrayList<String[]> requiredConnections = newArrayList
-                    requiredConnections.add(#[connectionName, requiring])
-                    requiringArtifacts.put(required, requiredConnections)
+                requiredArtifacts.get(requiring).add(connection)
+                
+                if (!requiringArtifacts.containsKey(required)) {
+                    requiringArtifacts.put(required, newArrayList)
                 }
-
-                if (overviewContentConnections.containsKey(view.name)) {
-                    overviewContentConnections.get(view.name).add(#[connectionName, requiring, required])
-                } else {
-                    val ArrayList<String[]> contentConnections = newArrayList
-                    contentConnections.add(#[connectionName, requiring, required])
-                    overviewContentConnections.put(view.name, contentConnections)
-                }
-
-                // catch artifacts, which are only stated in the SPVizModel or inside a connection
-                if (!artifactList.contains(requiring)) artifactList.add(requiring)
-                if (!artifactList.contains(required)) artifactList.add(required)
+                requiringArtifacts.get(required).add(connection)
             }
-        }
-
-        artifacts = newArrayOfSize(artifactList.size)
-        for (var i = 0; i < artifactList.size; i++) {
-            artifacts.set(i, artifactList.get(i))
         }
     }
 	
-	/** @return The prefix of the bundle and package names of the generated bundles. */
-	def String getBundleNamePrefix() { return bundleNamePrefix }
-	/** @return The prefix of the required model bundle and package names. */
-	def String getModelBundleNamePrefix() { return modelBundleNamePrefix }
-	/** @return name of the visualization */
-	def String getVizName() { return visualizationName }
-	/** @return name of the project */
-	def String getProjectName() { return projectName }
-	/** @return all overview names as a string array */
-	def String[] getOverviews() { return overviews }
-	/** @return all artifact names as a string array */
-	def String[] getArtifacts() { return artifacts }
+	/** 
+	 * All views displayable in this SPViz.
+	 * 
+	 * @return The views
+	 */
+	def List<View> getViews() {
+	    return this.spviz.views
+	}
 	
 	/** 
-	 * Returns all required artifacts for a given artifact. 
+	 * All artifacts displayable in this SPViz.
+	 * 
+	 * @return all artifact names as a string array
+	 */
+	def List<Artifact> getArtifacts() {
+	    return this.spvizModel.artifacts
+	}
+	
+	/** 
+	 * Returns all connections with the required artifacts for a given requiring artifact. 
 	 * 
 	 * @param requiring
 	 * 		the artifact which requires other artifacts
 	 * @return
-	 * 		List of the required artifact names
+	 * 		List of the connections
 	 */
-	def ArrayList<String[]> getRequiredArtifacts(String requiring) { 
+	def List<Connection> getRequiredArtifacts(Artifact requiring) { 
 		if (!requiredArtifacts.containsKey(requiring)) {
 			return newArrayList
 		}
@@ -160,14 +135,14 @@ class DataAccess {
 	}
 	
 	/** 
-	 * Returns all requiring artifacts for a given artifact. 
+	 * Returns all connections with the requiring artifacts for a given required artifact. 
 	 * 
 	 * @param required
 	 * 		the artifact which is required by other artifacts
 	 * @return
-	 * 		List of the requiring artifact names
+	 * 		List of the connections
 	 */
-	def ArrayList<String[]> getRequiringArtifacts(String required) {
+	def List<Connection>getRequiringArtifacts(Artifact required) {
 		if (!requiringArtifacts.containsKey(required)) {
 			return newArrayList
 		}
@@ -175,118 +150,79 @@ class DataAccess {
 	}
 	
 	/** 
-	 * Returns all required artifacts for a given artifact, if the connection
-	 * is displayed. 
+	 * Returns all connections with the required artifacts for a given requiring artifact, if displayed in the view.
 	 * 
 	 * @param requiring
 	 * 		the artifact which requires other artifacts
+	 * @param view
+	 *      the view showing this connection
 	 * @return
-	 * 		List of the required artifact names
+	 * 		List of the connections.
 	 */
-	def ArrayList<String[]> getRequiredArtifactsInOverview(String requiring, String overview) { 
-		val ArrayList<String[]> requiredPairs = newArrayList
-		if (!requiredArtifacts.containsKey(requiring))  {
-			return requiredPairs
-		}
-		for (requiredConnectionNameAndArtifact : requiredArtifacts.get(requiring)){
-			val String[] connection = newArrayOfSize(3)
-			connection.set(0, requiredConnectionNameAndArtifact.get(0))
-			connection.set(1, requiring)
-			connection.set(2, requiredConnectionNameAndArtifact.get(1))
-			if (isConnectionDisplayedInOverview(overview, connection)) {
-				requiredPairs.add(requiredConnectionNameAndArtifact)
+	def List<Connection> getRequiredArtifactsInOverview(Artifact requiring, View view) {
+		val List<Connection> connections = newArrayList
+		for (requiredConnection : requiredArtifacts.get(requiring) ?: #[]) {
+			if (isConnectionDisplayedInOverview(requiredConnection, view)) {
+				connections.add(requiredConnection)
 			}
 		}
-		return requiredPairs
+		return connections
 	}
 	
 	/** 
-	 * Returns all requiring artifacts for a given artifact, if the connection
-	 * is displayed. 
+     * Returns all connections with the requiring artifacts for a given required artifact, if displayed in the view.
 	 * 
 	 * @param required
 	 * 		the artifact which is required by other artifacts
+     * @param view
+     *      the view showing this connection
 	 * @return
-	 * 		List of the requiring artifact names
+	 * 		List of the connections.
 	 */
-	def ArrayList<String[]> getRequiringArtifactsInOverview(String required, String overview) {
-        val ArrayList<String[]> requiringPairs = newArrayList
-        if (!requiringArtifacts.containsKey(required)) {
-            return requiringPairs
-        }
-        for (requiringConnectionNameAndArtifact : requiringArtifacts.get(required)) {
-            val String[] connection = newArrayOfSize(3)
-            connection.set(0, requiringConnectionNameAndArtifact.get(0))
-            connection.set(1, requiringConnectionNameAndArtifact.get(1))
-            connection.set(2, required)
-            if (isConnectionDisplayedInOverview(overview, connection)) {
-                requiringPairs.add(requiringConnectionNameAndArtifact)
+	def List<Connection> getRequiringArtifactsInOverview(Artifact required, View view) {
+        val List<Connection> connections = newArrayList
+        for (requiringConnection : requiringArtifacts.get(required ?: #[])) {
+            if (isConnectionDisplayedInOverview(requiringConnection, view)) {
+                connections.add(requiringConnection)
             }
         }
-        return requiringPairs
+        return connections
     }
 	
 	/** 
-	 * Returns all shown artifacts for an overview. 
-	 * 
-	 * @param overviewName
-	 * 		overview name as a string
-	 * @return
-	 * 		List of the artifacts shown in an overview
-	 */
-    def String[] getDisplayedArtifacts(String overviewName) {
-        if (!artifactsInOverviews.containsKey(overviewName)) {
-            return #[]
-        }
-        return artifactsInOverviews.get(overviewName)
-    }
-	
-	/** 
-	 * Returns all connection shown in an overview. 
-	 * 
-	 * @param overviewName
-	 * 		overview name as a string
-	 * @return
-	 * 		List of connections shown in an overview.
-	 * 		A connection is a tupel of strings:
-	 * 			[connection name, requiring artifact name, required artifact name]
-	 */
-    def ArrayList<String[]> getOverviewConnections(String overviewName) {
-        if (!overviewContentConnections.containsKey(overviewName)) {
-            return newArrayList
-        }
-        return overviewContentConnections.get(overviewName)
-    }
-	
-	/** 
-	 * Finds for a given artifact the overview, it is contained in. 
+	 * For a given artifact, finds the overviews, it can be contained in.
 	 * 
 	 * @param artifact
-	 * 		artifact name as a string
+	 * 		The artifact to find all possible views for.
 	 * @return
-	 * 		an overview as a string
+	 * 		A list of all views that may contain the artifact.
 	 */
-    def String getOverview(String artifact) {
-        for (overview : overviews)
-            for (overviewArtifact : getDisplayedArtifacts(overview)) {
-                if (overviewArtifact == artifact) {
-                    return overview
+    def List<View> getViews(Artifact artifact) {
+        val possibleViews = newArrayList
+        for (view : views) {
+            for (shownElement : view.shownElements) {
+                if (shownElement.shownElement === artifact) {
+                    possibleViews.add(view)
                 }
             }
-        System.out.println("artifact " + artifact + " not found in any overview")
-        return ""
+        }
+        return possibleViews 
     }
 
-    def boolean isConnectionDisplayedInOverview(String overview, String[] connection) {
-        for (overviewConnection : getOverviewConnections(overview)) {
-            if (overviewConnection.get(0) == connection.get(0) 
-                && overviewConnection.get(1) == connection.get(1) 
-                && overviewConnection.get(2) == connection.get(2)) {
+    /**
+     * Determines if the given connection is shown in the provided view.
+     * 
+     * @param connection The connection to check for containment
+     * @param view The view to check if the connection is part of it.
+     * @return if this connection is in the view.
+     */
+    def boolean isConnectionDisplayedInOverview(Connection connection, View view) {
+        for (overviewConnection : view.shownConnections) {
+            if (overviewConnection.shownConnection === connection) {
                 return true
             }
         }
         return false
     }
-	
 	
 }

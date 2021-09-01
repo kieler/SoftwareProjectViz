@@ -12,7 +12,6 @@
  */
 package de.cau.cs.kieler.spviz.spviz.generator
 
-import de.cau.cs.kieler.spviz.spviz.sPViz.SPViz
 import de.cau.cs.kieler.spviz.spvizmodel.generator.FileGenerator
 import de.cau.cs.kieler.spviz.spvizmodel.generator.XCoreProjectGenerator
 import java.util.Collections
@@ -29,6 +28,8 @@ import org.eclipse.xtext.generator.AbstractGenerator
 import org.eclipse.xtext.generator.IFileSystemAccess2
 import org.eclipse.xtext.generator.IGeneratorContext
 
+import static extension de.cau.cs.kieler.spviz.spvizmodel.util.SPVizModelExtension.*
+
 /**
  * Generates code from your model files on save.
  * 
@@ -43,23 +44,23 @@ class SPVizGenerator extends AbstractGenerator {
 	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
 		println("Generate visualization for " + resource.contents.head?.class)
 		
-		val DataAccess spviz = new DataAccess(resource)
+		val DataAccess data = new DataAccess(resource)
 		
 		// Generate the -viz.model XCore project
-		val String xcoreContent = xcoreContent(spviz)
+		val String xcoreContent = xcoreContent(data)
 		val progressMonitor = new NullProgressMonitor
-		val project = new XCoreProjectGenerator(spviz.getBundleNamePrefix + ".model")
-		  .configureXCoreFile(spviz.vizName + 'Model.xcore', xcoreContent)
-		  .configureRequiredBundles(#[spviz.modelBundleNamePrefix + ".model"])
+		val project = new XCoreProjectGenerator(data.getBundleNamePrefix + ".model")
+		  .configureXCoreFile(data.visualizationName + 'Model.xcore', xcoreContent)
+		  .configureRequiredBundles(#[data.modelBundleNamePrefix + ".model"])
 		  .generate(progressMonitor)
         val sourceFolder = project.getFolder("src");
 		
 		// Generate further source files for the project
-		GenerateVizModelUtils.generate(sourceFolder, spviz, progressMonitor)
+		GenerateVizModelUtils.generate(sourceFolder, data, progressMonitor)
 		
 		
 		// Generate the -viz.viz model Plug-In Java project
-		val projectPath = new Path("/" + spviz.getBundleNamePrefix + ".viz/src")
+		val projectPath = new Path("/" + data.getBundleNamePrefix + ".viz/src")
         val vizProject = Generator.createEMFProject(projectPath, null as IPath,
             Collections.<IProject>emptyList(), progressMonitor,
             Generator.EMF_MODEL_PROJECT_STYLE.bitwiseOr(Generator.EMF_PLUGIN_PROJECT_STYLE))
@@ -69,14 +70,14 @@ class SPVizGenerator extends AbstractGenerator {
         
         // Generate the manifest
         FileGenerator.generateOrUpdateFile(vizProject, "/META-INF/MANIFEST.MF",
-            FileGenerator.manifestContent(spviz.getBundleNamePrefix + '.viz', requiredVizBundles(spviz)), progressMonitor)
+            FileGenerator.manifestContent(data.getBundleNamePrefix + '.viz', requiredVizBundles(data)), progressMonitor)
         
         // Generate the services file
         FileGenerator.generateOrUpdateFile(vizProject,
-            "/META-INF/services/de.cau.cs.kieler.klighd.IKlighdStartupHook", serviceFileContent(spviz), progressMonitor)
+            "/META-INF/services/de.cau.cs.kieler.klighd.IKlighdStartupHook", serviceFileContent(data), progressMonitor)
         
         // Generate the plugin.xml file
-        FileGenerator.generateOrUpdateFile(vizProject, "/plugin.xml", pluginXmlContent(spviz), progressMonitor)
+        FileGenerator.generateOrUpdateFile(vizProject, "/plugin.xml", pluginXmlContent(data), progressMonitor)
 
         // Add the Xtext nature to the project
         val IProjectDescription projectDescription = vizProject.getDescription();
@@ -89,9 +90,9 @@ class SPVizGenerator extends AbstractGenerator {
         vizProject.build(IncrementalProjectBuilder.INCREMENTAL_BUILD, progressMonitor)        
 		
 		// Generate further source files for the project
-		GenerateSyntheses.generate(sourceVizFolder, spviz, progressMonitor)
-		GenerateSubSyntheses.generate(sourceVizFolder, spviz, progressMonitor)
-		GenerateActions.generate(sourceVizFolder, spviz, progressMonitor)
+		GenerateSyntheses.generate(sourceVizFolder, data, progressMonitor)
+		GenerateSubSyntheses.generate(sourceVizFolder, data, progressMonitor)
+		GenerateActions.generate(sourceVizFolder, data, progressMonitor)
 	}
 	
 	protected def List<String> requiredVizBundles(DataAccess spviz) {
@@ -113,12 +114,12 @@ class SPVizGenerator extends AbstractGenerator {
     /**
      * Generates the content for the plugin.xml file
      * 
-     * @param spviz
+     * @param data
      *      a DataAccess instance for the Spviz data
      * @return
      *      the generated content for the plugin configuration as a String.
      */
-    private def String pluginXmlContent(DataAccess spviz) {
+    private def String pluginXmlContent(DataAccess data) {
         return '''
         <?xml version="1.0" encoding="UTF-8"?>
         <?eclipse version=\"3.4\"?>
@@ -126,7 +127,7 @@ class SPVizGenerator extends AbstractGenerator {
             <extension
                 point="de.cau.cs.kieler.klighd.extensions">
                 <startupHook
-                    class="«spviz.getBundleNamePrefix».viz.KlighdSetup">
+                    class="«data.getBundleNamePrefix».viz.KlighdSetup">
                 </startupHook>
             </extension>
         </plugin>
@@ -136,36 +137,36 @@ class SPVizGenerator extends AbstractGenerator {
     /**
      * Generates the content for the IKLighdStartupHook service file
      * 
-     * @param spviz
+     * @param data
      *      a DataAccess instance for the Spviz data
      * @return
      *      the generated content for the service configuration as a String.
      */
-    private def String serviceFileContent(DataAccess spviz) {
+    private def String serviceFileContent(DataAccess data) {
         return '''
-        «spviz.getBundleNamePrefix».viz.KlighdSetup
+        «data.getBundleNamePrefix».viz.KlighdSetup
         '''
     }
 	
 	/**
 	 * Generates the content for the Model.xcore file
 	 * 
-	 * @param spviz
+	 * @param data
 	 *  	a DataAccess to easily get the information from
 	 * @return 
 	 * 		the generated content for the visualization model XCore file as a String
 	 */
-	private def String xcoreContent(DataAccess spviz) {
+	private def String xcoreContent(DataAccess data) {
 		return '''
-			@GenModel(modelDirectory="«spviz.getBundleNamePrefix».model/src")
+			@GenModel(modelDirectory="«data.getBundleNamePrefix».model/src")
 			
-			package «spviz.getBundleNamePrefix».model
+			package «data.getBundleNamePrefix».model
 			
 			import org.eclipse.emf.ecore.EEList
-			«FOR artifact : spviz.artifacts»
-				import «spviz.modelBundleNamePrefix».model.«artifact»
+			«FOR artifact : data.artifacts»
+				import «data.modelBundleNamePrefix».model.«artifact.name»
 			«ENDFOR»
-			import «spviz.modelBundleNamePrefix».model.«spviz.projectName»
+			import «data.modelBundleNamePrefix».model.«data.projectName»
 			
 			
 			///////////////////////////////////////////////////////////////////////////////////////
@@ -239,28 +240,28 @@ class SPVizGenerator extends AbstractGenerator {
 			// ------------------------------- Context Classes ----------------------------------//
 			///////////////////////////////////////////////////////////////////////////////////////
 			
-			«FOR artifact : spviz.artifacts»
-				class «artifact»Context extends IVisualizationContext<«artifact»> {
-					«FOR required : spviz.getRequiredArtifacts(artifact)»
-						boolean allRequired«required.get(0)»«required.get(1)»sShown
+			«FOR artifact : data.artifacts»
+				class «artifact.name»Context extends IVisualizationContext<«artifact.name»> {
+					«FOR required : data.getRequiredArtifacts(artifact)»
+						boolean allRequired«required.name»«required.required.name»sShown
 					«ENDFOR»
-					«FOR requiring : spviz.getRequiringArtifacts(artifact)»
-						boolean allRequiring«requiring.get(0)»«requiring.get(1)»sShown
+					«FOR requiring : data.getRequiringArtifacts(artifact)»
+						boolean allRequiring«requiring.name»«requiring.requiring.name»sShown
 					«ENDFOR»
 				}
 				
 			«ENDFOR»
 
-			«FOR overview : spviz.overviews»
-				class «overview»OverviewContext extends IOverviewVisualizationContext<Object> {
-					«FOR connection : spviz.getOverviewConnections(overview)»
-						contains Pair <«connection.get(1)»Context,«connection.get(2)»Context>[] required«connection.get(0)»«connection.get(2)»Edges
-						contains Pair <«connection.get(2)»Context,«connection.get(1)»Context>[] requiring«connection.get(0)»«connection.get(1)»Edges
+			«FOR view : data.views»
+				class «view.name»OverviewContext extends IOverviewVisualizationContext<Object> {
+					«FOR connection : view.shownConnections»
+						contains Pair <«connection.shownConnection.requiring.name»Context,«connection.shownConnection.required.name»Context>[] required«connection.shownConnection.name»«connection.shownConnection.required.name»Edges
+						contains Pair <«connection.shownConnection.required.name»Context,«connection.shownConnection.requiring.name»Context>[] requiring«connection.shownConnection.name»«connection.shownConnection.requiring.name»Edges
 					«ENDFOR»
-					«FOR artifact : spviz.getDisplayedArtifacts(overview)»
-						refers «artifact»Context[] collapsed«artifact»Contexts
-						refers «artifact»Context[] detailed«artifact»Contexts
-						refers «artifact»[] «artifact.toFirstLower»s
+					«FOR shownElement : view.shownElements»
+						refers «shownElement.shownElement.name»Context[] collapsed«shownElement.shownElement.name»Contexts
+						refers «shownElement.shownElement.name»Context[] detailed«shownElement.shownElement.name»Contexts
+						refers «shownElement.shownElement.name»[] «shownElement.shownElement.name.toFirstLower»s
 					«ENDFOR»
 				}
 				
@@ -274,13 +275,13 @@ class SPVizGenerator extends AbstractGenerator {
 			/*
 			 * Context for the synthesis that contains information about the root project overview.
 			 */
-			class «spviz.vizName» extends IVisualizationContext<«spviz.projectName»> {
+			class «data.visualizationName» extends IVisualizationContext<«data.projectName»> {
 			
-				«FOR overview : spviz.overviews»
+				«FOR view : data.views»
 					/*
-					 * The context for the «overview.toFirstLower» overview.
+					 * The context for the «view.name.toFirstLower» overview.
 					 */
-					refers «overview»OverviewContext «overview.toFirstLower»OverviewContext
+					refers «view.name»OverviewContext «view.name.toFirstLower»OverviewContext
 				«ENDFOR»
 				
 				/*

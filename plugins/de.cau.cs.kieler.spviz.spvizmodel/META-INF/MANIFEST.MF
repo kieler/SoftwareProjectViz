@@ -19,15 +19,16 @@ Require-Bundle: org.antlr.runtime;bundle-version="[3.2.0,3.2.1)",
  org.eclipse.xtext.xbase,
  org.eclipse.xtext.xbase.lib;bundle-version="2.14.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Export-Package: de.cau.cs.kieler.spviz.spvizmodel.scoping,
- de.cau.cs.kieler.spviz.spvizmodel.services,
- de.cau.cs.kieler.spviz.spvizmodel.serializer,
+Export-Package: de.cau.cs.kieler.spviz.spvizmodel,
  de.cau.cs.kieler.spviz.spvizmodel.generator,
+ de.cau.cs.kieler.spviz.spvizmodel.parser.antlr,
  de.cau.cs.kieler.spviz.spvizmodel.parser.antlr.internal,
- de.cau.cs.kieler.spviz.spvizmodel,
+ de.cau.cs.kieler.spviz.spvizmodel.sPVizModel,
  de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.impl,
  de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.util,
- de.cau.cs.kieler.spviz.spvizmodel.validation,
- de.cau.cs.kieler.spviz.spvizmodel.parser.antlr,
- de.cau.cs.kieler.spviz.spvizmodel.sPVizModel
+ de.cau.cs.kieler.spviz.spvizmodel.scoping,
+ de.cau.cs.kieler.spviz.spvizmodel.serializer,
+ de.cau.cs.kieler.spviz.spvizmodel.services,
+ de.cau.cs.kieler.spviz.spvizmodel.util,
+ de.cau.cs.kieler.spviz.spvizmodel.validation
 Import-Package: org.apache.log4j
