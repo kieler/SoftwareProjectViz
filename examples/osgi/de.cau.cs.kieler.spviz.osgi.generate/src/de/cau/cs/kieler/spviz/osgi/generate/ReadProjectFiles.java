@@ -238,7 +238,7 @@ public class ReadProjectFiles {
 				bundle.getServiceComponents().add(serviceComponent);
 				project.getServiceComponents().add(serviceComponent);
 				
-				final File serviceComponentFile = new File(bundleRoot + "\\" + service);
+				final File serviceComponentFile = new File(bundleRoot + File.separator + service);
 				extractServiceInterfaces(bundle, serviceComponent, serviceComponentFile);
 			}
 		}
