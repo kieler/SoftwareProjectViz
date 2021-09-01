@@ -13,9 +13,12 @@
 package de.cau.cs.kieler.spviz.spviz.generator
 
 import de.cau.cs.kieler.spviz.spvizmodel.generator.FileGenerator
+import de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.Artifact
 import java.util.LinkedHashMap
 import org.eclipse.core.resources.IFolder
 import org.eclipse.core.runtime.IProgressMonitor
+
+import static extension de.cau.cs.kieler.spviz.spvizmodel.util.SPVizModelExtension.*
 
 /**
  * Generates classes for the syntheses of the visualization.
@@ -23,33 +26,33 @@ import org.eclipse.core.runtime.IProgressMonitor
  * @author leo, nre
  */
 class GenerateSyntheses {
-	def static void generate(IFolder sourceFolder, DataAccess spviz, IProgressMonitor progressMonitor) {
-		val folder = spviz.getBundleNamePrefix.replace('.','/') + "/viz/"
+	def static void generate(IFolder sourceFolder, DataAccess data, IProgressMonitor progressMonitor) {
+		val folder = data.getBundleNamePrefix.replace('.','/') + "/viz/"
 		
-		FileGenerator.generateOrUpdateFile(sourceFolder, folder + "DiagramSynthesis.xtend", generateDiagramSynthesis(spviz),
+		FileGenerator.generateOrUpdateFile(sourceFolder, folder + "DiagramSynthesis.xtend", generateDiagramSynthesis(data),
             progressMonitor)
-        FileGenerator.generateOrUpdateFile(sourceFolder, folder + "KlighdSetup.xtend", generateKlighdSetup(spviz),
+        FileGenerator.generateOrUpdateFile(sourceFolder, folder + "KlighdSetup.xtend", generateKlighdSetup(data),
             progressMonitor)
-        FileGenerator.generateOrUpdateFile(sourceFolder, folder + "Styles.xtend", generateStyles(spviz),
+        FileGenerator.generateOrUpdateFile(sourceFolder, folder + "Styles.xtend", generateStyles(data),
             progressMonitor)
-        FileGenerator.generateOrUpdateFile(sourceFolder, folder + "SynthesisUtils.xtend", generateSynthesisUtils(spviz),
+        FileGenerator.generateOrUpdateFile(sourceFolder, folder + "SynthesisUtils.xtend", generateSynthesisUtils(data),
             progressMonitor)
         FileGenerator.generateOrUpdateFile(sourceFolder, folder + "SynthesisProperties.xtend",
-            generateSynthesisProperties(spviz), progressMonitor)
-        FileGenerator.generateOrUpdateFile(sourceFolder, folder + "Options.xtend", generateOptions(spviz), progressMonitor)
+            generateSynthesisProperties(data), progressMonitor)
+        FileGenerator.generateOrUpdateFile(sourceFolder, folder + "Options.xtend", generateOptions(data), progressMonitor)
 	}
 	
 	/**
-	 * Generates the contend for the diagram synthesis.
+	 * Generates the content for the diagram synthesis.
 	 * 
-	 * @param spviz
+	 * @param data
 	 * 		a DataAccess to easily get the information from
 	 * @return 
 	 * 		the generated file content as a string
 	 */
-	def static String generateDiagramSynthesis(DataAccess spviz){
+	def static String generateDiagramSynthesis(DataAccess data) {
 		return '''
-			package «spviz.getBundleNamePrefix».viz
+			package «data.getBundleNamePrefix».viz
 			
 			import com.google.common.collect.ImmutableList
 			import com.google.inject.Inject
@@ -58,20 +61,20 @@ class GenerateSyntheses {
 			import de.cau.cs.kieler.klighd.krendering.ViewSynthesisShared
 			import de.cau.cs.kieler.klighd.krendering.extensions.KNodeExtensions
 			import de.cau.cs.kieler.klighd.syntheses.AbstractDiagramSynthesis
-			import «spviz.getBundleNamePrefix».viz.actions.RedoAction
-			import «spviz.getBundleNamePrefix».viz.actions.ResetViewAction
+			import «data.getBundleNamePrefix».viz.actions.RedoAction
+			import «data.getBundleNamePrefix».viz.actions.ResetViewAction
 «««			import «spviz.packageName».viz.actions.StoreModelAction
-			import «spviz.getBundleNamePrefix».viz.actions.UndoAction
-			import «spviz.getBundleNamePrefix».model.IVisualizationContext
-			import «spviz.getBundleNamePrefix».model.«spviz.vizName»
-			«FOR overview : spviz.overviews»
-				import «spviz.getBundleNamePrefix».model.«overview»OverviewContext
+			import «data.getBundleNamePrefix».viz.actions.UndoAction
+			import «data.getBundleNamePrefix».model.IVisualizationContext
+			import «data.getBundleNamePrefix».model.«data.visualizationName»
+			«FOR view : data.views»
+				import «data.getBundleNamePrefix».model.«view.name»OverviewContext
 			«ENDFOR»
-			import «spviz.getBundleNamePrefix».model.util.VizModelUtil
-			«FOR overview : spviz.overviews»
-				import «spviz.getBundleNamePrefix».viz.subsyntheses.«overview»OverviewSynthesis
+			import «data.getBundleNamePrefix».model.util.VizModelUtil
+			«FOR view : data.views»
+				import «data.getBundleNamePrefix».viz.subsyntheses.«view.name»OverviewSynthesis
 			«ENDFOR»
-			import «spviz.modelBundleNamePrefix».model.«spviz.projectName»
+			import «data.modelBundleNamePrefix».model.«data.projectName»
 			import java.util.LinkedHashSet
 			import org.eclipse.elk.alg.layered.options.CrossingMinimizationStrategy
 			import org.eclipse.elk.alg.layered.options.LayeredMetaDataProvider
@@ -80,23 +83,23 @@ class GenerateSyntheses {
 			import org.eclipse.elk.core.util.BoxLayoutProvider.PackingMode
 			
 «««			import static «spviz.packageName».viz.Options.*
-			import static extension «spviz.getBundleNamePrefix».model.util.ContextExtensions.*
+			import static extension «data.getBundleNamePrefix».model.util.ContextExtensions.*
 			
 			/**
-			 * Main diagram synthesis for {@link «spviz.projectName»} models.
+			 * Main diagram synthesis for {@link «data.projectName»} models.
 			 */
 			@ViewSynthesisShared
-			class DiagramSynthesis extends AbstractDiagramSynthesis<«spviz.projectName»> {
+			class DiagramSynthesis extends AbstractDiagramSynthesis<«data.projectName»> {
 				@Inject extension KNodeExtensions
 				@Inject extension Styles
-				«FOR overview : spviz.overviews»
-					@Inject «overview»OverviewSynthesis «overview.toFirstLower»OverviewSynthesis
+				«FOR view : data.views»
+					@Inject «view.name»OverviewSynthesis «view.name.toFirstLower»OverviewSynthesis
 				«ENDFOR»
 				
 				extension KGraphFactory = KGraphFactory.eINSTANCE
 				
 				override getInputDataType() {
-					«spviz.projectName»
+					«data.projectName»
 				}
 				
 				override getDisplayedActions() {
@@ -144,14 +147,14 @@ class GenerateSyntheses {
 					return options.toList
 				}
 				
-				override transform(«spviz.projectName» model) {
+				override transform(«data.projectName» model) {
 					val modelNode = createNode.associateWith(model)
 					
 					// Create a view with the currently stored visualization context in mind. If there is no current context, create
 					// a new one for the general model overview and store that for later use.
 					val visualizationContexts = usedContext.getProperty(SynthesisProperties.VISUALIZATION_CONTEXTS)
 					var index = usedContext.getProperty(SynthesisProperties.CURRENT_VISUALIZATION_CONTEXT_INDEX)
-					var «spviz.vizName» visualizationContext = null
+					var «data.visualizationName» visualizationContext = null
 					
 					if (!visualizationContexts.empty && index !== null) {
 						visualizationContext = visualizationContexts.get(index)
@@ -162,7 +165,7 @@ class GenerateSyntheses {
 						visualizationContexts.removeIf [ true ]
 						index = 0
 						usedContext.setProperty(SynthesisProperties.CURRENT_VISUALIZATION_CONTEXT_INDEX, index)
-						visualizationContext = VizModelUtil.create«spviz.vizName»(model)
+						visualizationContext = VizModelUtil.create«data.visualizationName»(model)
 						visualizationContexts.add(visualizationContext)
 					}
 			
@@ -178,10 +181,10 @@ class GenerateSyntheses {
 							SynthesisUtils.configureBoxLayout(it)
 							setLayoutOption(BoxLayouterOptions.BOX_PACKING_MODE, PackingMode.GROUP_MIXED)
 							addProjectRendering
-							«FOR overview : spviz.overviews»
+							«FOR view : data.views»
 								
-								val overview«overview»Nodes = «overview.toFirstLower»OverviewSynthesis.transform(visContext.«overview.toFirstLower»OverviewContext)
-								children += overview«overview»Nodes
+								val overview«view.name»Nodes = «view.name.toFirstLower»OverviewSynthesis.transform(visContext.«view.name.toFirstLower»OverviewContext)
+								children += overview«view.name»Nodes
 							«ENDFOR»
 						]
 						
@@ -199,9 +202,9 @@ class GenerateSyntheses {
 				
 				private def transformSubModel(IVisualizationContext<?> context) {
 					switch (context) {
-						«FOR overview : spviz.overviews»
-							«overview»OverviewContext: {
-								return «overview.toFirstLower»OverviewSynthesis.transform(context)
+						«FOR view : data.views»
+							«view.name»OverviewContext: {
+								return «view.name.toFirstLower»OverviewSynthesis.transform(context)
 							}
 						«ENDFOR»
 						default: {
@@ -215,35 +218,35 @@ class GenerateSyntheses {
 	}
 	
 	/**
-	 * Generates the contend for the klighd setup.
+	 * Generates the content for the klighd setup.
 	 * 
-	 * @param spviz
+	 * @param data
 	 * 		a DataAccess to easily get the information from
 	 * @return 
 	 * 		the generated file content as a string
 	 */
-	def static String generateKlighdSetup(DataAccess spviz){
+	def static String generateKlighdSetup(DataAccess data) {
 		return '''
-			package «spviz.getBundleNamePrefix».viz
+			package «data.getBundleNamePrefix».viz
 			
 			import de.cau.cs.kieler.klighd.IKlighdStartupHook
 			import de.cau.cs.kieler.klighd.KlighdDataManager
 «««			import «spviz.packageName».viz.actions.ConnectAllAction
-			import «spviz.getBundleNamePrefix».viz.actions.ContextCollapseExpandAction
-			import «spviz.getBundleNamePrefix».viz.actions.ContextExpandAllAction
+			import «data.getBundleNamePrefix».viz.actions.ContextCollapseExpandAction
+			import «data.getBundleNamePrefix».viz.actions.ContextExpandAllAction
 «««			import «spviz.packageName».viz.actions.ContextRemoveAction
 «««			import «spviz.packageName».viz.actions.FocusAction
-			import «spviz.getBundleNamePrefix».viz.actions.OverviewContextCollapseExpandAction
-			«FOR overview : spviz.overviews»
-			«FOR connection : spviz.getOverviewConnections(overview)»
-				import «spviz.getBundleNamePrefix».viz.actions.RevealRequired«connection.get(0)»«connection.get(2)»sAction
-				import «spviz.getBundleNamePrefix».viz.actions.RevealRequiring«connection.get(0)»«connection.get(1)»sAction
-			«ENDFOR»
+			import «data.getBundleNamePrefix».viz.actions.OverviewContextCollapseExpandAction
+			«FOR view : data.views»
+				«FOR connection : view.shownConnections»
+					import «data.getBundleNamePrefix».viz.actions.RevealRequired«connection.shownConnection.name»«connection.shownConnection.required.name»sAction
+					import «data.getBundleNamePrefix».viz.actions.RevealRequiring«connection.shownConnection.name»«connection.shownConnection.requiring.name»sAction
+				«ENDFOR»
 			«ENDFOR»
 «««			import «spviz.packageName».viz.actions.SelectRelatedAction
-			import «spviz.getBundleNamePrefix».viz.actions.UndoAction
-			import «spviz.getBundleNamePrefix».viz.actions.RedoAction
-			import «spviz.getBundleNamePrefix».viz.actions.ResetViewAction
+			import «data.getBundleNamePrefix».viz.actions.UndoAction
+			import «data.getBundleNamePrefix».viz.actions.RedoAction
+			import «data.getBundleNamePrefix».viz.actions.ResetViewAction
 			
 			/**
 			 * Setup registering all KLighD extensions required to run this bundle.
@@ -262,11 +265,11 @@ class GenerateSyntheses {
 «««					.registerAction(ContextRemoveAction.ID, new ContextRemoveAction)
 					.registerAction(OverviewContextCollapseExpandAction.ID, new OverviewContextCollapseExpandAction)
 «««					.registerAction(ConnectAllAction.ID, new ConnectAllAction)
-					«FOR overview : spviz.overviews»
-					«FOR connection : spviz.getOverviewConnections(overview)»
-						.registerAction(RevealRequired«connection.get(0)»«connection.get(2)»sAction.ID, new RevealRequired«connection.get(0)»«connection.get(2)»sAction)
-						.registerAction(RevealRequiring«connection.get(0)»«connection.get(1)»sAction.ID, new RevealRequiring«connection.get(0)»«connection.get(1)»sAction)
-					«ENDFOR»
+					«FOR view : data.views»
+						«FOR connection : view.shownConnections»
+							.registerAction(RevealRequired«connection.shownConnection.name»«connection.shownConnection.required.name»sAction.ID, new RevealRequired«connection.shownConnection.name»«connection.shownConnection.required.name»sAction)
+							.registerAction(RevealRequiring«connection.shownConnection.name»«connection.shownConnection.requiring.name»sAction.ID, new RevealRequiring«connection.shownConnection.name»«connection.shownConnection.requiring.name»sAction)
+						«ENDFOR»
 					«ENDFOR»
 					.registerDiagramSynthesisClass(DiagramSynthesis.name, DiagramSynthesis)
 «««					.registerDiagramSynthesisClass(OsgiVizSynthesis.name, OsgiVizSynthesis)
@@ -280,23 +283,25 @@ class GenerateSyntheses {
 	// TODO: dynamic coloring
 	// TODO: add connections specific renderings
 	/**
-	 * Generates the contend for the synthesis styles class.
+	 * Generates the content for the synthesis styles class.
 	 * 
-	 * @param spviz
+	 * @param data
 	 * 		a DataAccess to easily get the information from
 	 * @return 
 	 * 		the generated file content as a string
 	 */
-	def static String generateStyles(DataAccess spviz){
-		
-		// unschoener hack
-		val LinkedHashMap<String, Integer> artifactNumberMap = newLinkedHashMap()
-		for (var i = 0; i < spviz.artifacts.length; i++){
-			artifactNumberMap.put(spviz.artifacts.get(i), i % 10)
+	def static String generateStyles(DataAccess data) {
+		// We predefine 8 different colors in the generated code that the different artifacts use for their
+		// visualization. If there are more than 8 artifacts, the colors currently loop back.
+		// TODO: find a way to generate and use new colors on the fly instead. Something such as a hue of
+		// golden ratio * artifactIndex 
+		val LinkedHashMap<Artifact, Integer> artifactColorNumbers = newLinkedHashMap()
+		for (var i = 0; i < data.artifacts.length; i++) {
+			artifactColorNumbers.put(data.artifacts.get(i), i % 8)
 		}
 			
 		return '''
-			package «spviz.getBundleNamePrefix».viz
+			package «data.getBundleNamePrefix».viz
 			
 			import com.google.inject.Inject
 			import de.cau.cs.kieler.klighd.ViewContext
@@ -317,24 +322,24 @@ class GenerateSyntheses {
 			import de.cau.cs.kieler.klighd.krendering.extensions.KColorExtensions
 			import de.cau.cs.kieler.klighd.krendering.extensions.KContainerRenderingExtensions
 			import de.cau.cs.kieler.klighd.krendering.extensions.KEdgeExtensions
-			import de.cau.cs.kieler.klighd.krendering.extensions.KLabelExtensions
+«««			import de.cau.cs.kieler.klighd.krendering.extensions.KLabelExtensions
 			import de.cau.cs.kieler.klighd.krendering.extensions.KPolylineExtensions
 			import de.cau.cs.kieler.klighd.krendering.extensions.KRenderingExtensions
 «««			import «spviz.packageName».viz.actions.ConnectAllAction
-			import «spviz.getBundleNamePrefix».viz.actions.ContextCollapseExpandAction
-			import «spviz.getBundleNamePrefix».viz.actions.ContextExpandAllAction
+			import «data.getBundleNamePrefix».viz.actions.ContextCollapseExpandAction
+			import «data.getBundleNamePrefix».viz.actions.ContextExpandAllAction
 «««			import «spviz.packageName».viz.actions.ContextRemoveAction
 «««			import «spviz.packageName».viz.actions.FocusAction
-			import «spviz.getBundleNamePrefix».viz.actions.OverviewContextCollapseExpandAction
+			import «data.getBundleNamePrefix».viz.actions.OverviewContextCollapseExpandAction
 «««			import «spviz.packageName».viz.actions.SelectRelatedAction
-			«FOR overview : spviz.overviews»
-				«FOR connection : spviz.getOverviewConnections(overview)»
-					import «spviz.getBundleNamePrefix».viz.actions.RevealRequired«connection.get(0)»«connection.get(2)»sAction
-					import «spviz.getBundleNamePrefix».viz.actions.RevealRequiring«connection.get(0)»«connection.get(1)»sAction
+			«FOR view : data.views»
+				«FOR connection : view.shownConnections»
+					import «data.getBundleNamePrefix».viz.actions.RevealRequired«connection.shownConnection.name»«connection.shownConnection.required.name»sAction
+					import «data.getBundleNamePrefix».viz.actions.RevealRequiring«connection.shownConnection.name»«connection.shownConnection.requiring.name»sAction
 				«ENDFOR»
 			«ENDFOR»
-			«FOR artifact : spviz.artifacts»
-				import «spviz.modelBundleNamePrefix».model.«artifact»
+			«FOR artifact : data.artifacts»
+				import «data.modelBundleNamePrefix».model.«artifact.name»
 			«ENDFOR»
 «««			import java.util.List
 			
@@ -349,7 +354,7 @@ class GenerateSyntheses {
 				@Inject extension KColorExtensions
 				@Inject extension KContainerRenderingExtensions
 				@Inject extension KEdgeExtensions
-				@Inject extension KLabelExtensions
+«««				@Inject extension KLabelExtensions
 				@Inject extension KPolylineExtensions
 				@Inject extension KRenderingExtensions
 				
@@ -359,22 +364,18 @@ class GenerateSyntheses {
 				public static final String SECONDARY_COLOR_0 = "#C2F0FF" // HSV 195 24 100
 				public static final String COLOR_1			 = "#E0EBFF" // HSV 220 12 100
 				public static final String SECONDARY_COLOR_1 = "#C2D6FF" // HSV 220 24 100
-				public static final String COLOR_2			 = "#F7FDFF" // HSV 195 3 100
-				public static final String SECONDARY_COLOR_2 = "#F0FBFF" // HSV 195 6 100
-				public static final String COLOR_3			 = "#F5FFE0" // HSV 79 12 100
-				public static final String SECONDARY_COLOR_3 = "#ECFFC2" // HSV 79 24 100
-				public static final String COLOR_4			 = "#E0FFE9" // HSV 137 12 100
-				public static final String SECONDARY_COLOR_4 = "#C2FFD3" // HSV 137 24 100
-				public static final String COLOR_5			 = "#F7FFFA" // HSV 137 3 100
-				public static final String SECONDARY_COLOR_5 = "#F0FFF4" // HSV 137 6 100
-				public static final String COLOR_6			 = "#E7E0FF" // HSV 253 12 100
-				public static final String SECONDARY_COLOR_6 = "#CFC2FF" // HSV 253 24 100
-				public static final String COLOR_7			 = "#FFEAE0" // HSV 19 12 100
-				public static final String SECONDARY_COLOR_7 = "#FFD5C2" // HSV 19 24 100
-				public static final String COLOR_8			 = "#FFE0F5" // HSV 319 12 100
-				public static final String SECONDARY_COLOR_8 = "#FFC2EC" // HSV 319 24 100
-				public static final String COLOR_9			 = "#FFE0E0" // HSV 0 12 100
-				public static final String SECONDARY_COLOR_9 = "#FFC2C2" // HSV 0 24 100
+				public static final String COLOR_2			 = "#F5FFE0" // HSV 79 12 100
+				public static final String SECONDARY_COLOR_2 = "#ECFFC2" // HSV 79 24 100
+				public static final String COLOR_3			 = "#E0FFE9" // HSV 137 12 100
+				public static final String SECONDARY_COLOR_3 = "#C2FFD3" // HSV 137 24 100
+				public static final String COLOR_4			 = "#E7E0FF" // HSV 253 12 100
+				public static final String SECONDARY_COLOR_4 = "#CFC2FF" // HSV 253 24 100
+				public static final String COLOR_5			 = "#FFEAE0" // HSV 19 12 100
+				public static final String SECONDARY_COLOR_5 = "#FFD5C2" // HSV 19 24 100
+				public static final String COLOR_6			 = "#FFE0F5" // HSV 319 12 100
+				public static final String SECONDARY_COLOR_6 = "#FFC2EC" // HSV 319 24 100
+				public static final String COLOR_7			 = "#FFE0E0" // HSV 0 12 100
+				public static final String SECONDARY_COLOR_7 = "#FFC2C2" // HSV 0 24 100
 				
 				// Port colors.
 				public static final String ALL_SHOWN_COLOR = "white"
@@ -724,19 +725,19 @@ class GenerateSyntheses {
 					]
 				}
 				
-				«FOR artifact : spviz.artifacts»
-					// ------------------------------------- «artifact» renderings -------------------------------------
+				«FOR artifact : data.artifacts»
+					// ------------------------------------- «artifact.name» renderings -------------------------------------
 					
 					/**
-					 * Adds a simple rendering for a {@link «artifact»} to the given node that can be expanded to call the
+					 * Adds a simple rendering for a {@link «artifact.name»} to the given node that can be expanded to call the
 					 * {link ReferencedSynthesisExpandAction} to dynamically call the feature synthesis for the given feature.
 					 * 
 					 * @param node The KNode to add this rendering to.
-					 * @param aritfact The «artifact.toFirstLower» this rendering should represent.
+					 * @param aritfact The «artifact.name.toFirstLower» this rendering should represent.
 					 * @param label The representing name of this feature that should be shown.
 					 * @param context The used ViewContext.
 					 */
-					def add«artifact»InOverviewRendering(KNode node, «artifact» artifact, String name, ViewContext context) {
+					def add«artifact.name»InOverviewRendering(KNode node, «artifact.name» artifact, String name, ViewContext context) {
 						node.addRoundedRectangle(ROUNDNESS, ROUNDNESS) => [
 «««							val interactiveButtons = context.getOptionValue(INTERACTIVE_BUTTONS) as Boolean
 							var columns = 3
@@ -752,7 +753,7 @@ class GenerateSyntheses {
 								addVerticalLine
 								addCollapseExpandButton(true, context)
 «««							}
-							setBackgroundGradient(COLOR_«artifactNumberMap.get(artifact)».color, SECONDARY_COLOR_«artifactNumberMap.get(artifact)».color, 90)
+							setBackgroundGradient(COLOR_«artifactColorNumbers.get(artifact)».color, SECONDARY_COLOR_«artifactColorNumbers.get(artifact)».color, 90)
 							addDoubleClickAction(ContextCollapseExpandAction::ID)
 «««							addSingleClickAction(SelectRelatedAction::ID, ModifierState.NOT_PRESSED, ModifierState.NOT_PRESSED,
 «««								ModifierState.NOT_PRESSED)
@@ -763,21 +764,21 @@ class GenerateSyntheses {
 					}
 					
 					/**
-					 * Adds a rendering for a {@link «artifact»} to the given node.
-					 * Contains the name of the «artifact.toFirstLower», a button to focus this product and text for the ID and description of this product.
+					 * Adds a rendering for a {@link «artifact.name»} to the given node.
+					 * Contains the name of the «artifact.name.toFirstLower», a button to focus this product and text for the ID and description of this product.
 					 * 
 					 * @param node The KNode this rendering should be attached to.
-					 * @param artifact The «artifact.toFirstLower» this rendering represents.
-					 * @param inOverview If this product is shown in a «artifact.toFirstLower» overview.
+					 * @param artifact The «artifact.name.toFirstLower» this rendering represents.
+					 * @param inOverview If this product is shown in a «artifact.name.toFirstLower» overview.
 					 * @param hasChildren If this rendering should leave space for a child area.
 					 * @param context The view context used in the synthesis.
 					 * 
-					 * @return The entire rendering for a «artifact.toFirstLower».
+					 * @return The entire rendering for a «artifact.name.toFirstLower».
 					 */
-					def KRoundedRectangle add«artifact»Rendering(KNode node, «artifact» artifact, boolean inOverview, boolean hasChildren,
+					def KRoundedRectangle add«artifact.name»Rendering(KNode node, «artifact.name» artifact, boolean inOverview, boolean hasChildren,
 						ViewContext context) {
 						node.addRoundedRectangle(ROUNDNESS, ROUNDNESS) => [
-							setBackgroundGradient(COLOR_«artifactNumberMap.get(artifact)».color, SECONDARY_COLOR_«artifactNumberMap.get(artifact)».color, 90)
+							setBackgroundGradient(COLOR_«artifactColorNumbers.get(artifact)».color, SECONDARY_COLOR_«artifactColorNumbers.get(artifact)».color, 90)
 							setGridPlacement(1)
 							addRectangle => [
 «««								val interactiveButtons = context.getOptionValue(INTERACTIVE_BUTTONS) as Boolean
@@ -837,24 +838,24 @@ class GenerateSyntheses {
 						]
 					}
 					
-					«FOR required : spviz.getRequiredArtifacts(artifact)»
+					«FOR required : data.getRequiredArtifacts(artifact)»
 						/**
-						 * The rendering of a port that connects a «artifact.toFirstLower» with the required «required.get(1)». Issues the
-						 * {@link RevealRequired«required.get(0)»«required.get(1)»sAction} if clicked.
+						 * The rendering of a port that connects a «artifact.name.toFirstLower» with the required «required.required.name». Issues the
+						 * {@link RevealRequired«required.name»«required.required.name»sAction} if clicked.
 						 */
-						def KRectangle addRequired«required.get(0)»«required.get(1)»sActionPortRendering(KPort port, int numReferences, boolean allShown) {
+						def KRectangle addRequired«required.name»«required.required.name»sActionPortRendering(KPort port, int numReferences, boolean allShown) {
 							return port.addRectangle => [
 								background = if (allShown) ALL_SHOWN_COLOR.color else NOT_ALL_SHOWN_COLOR.color
-								val tooltipText = "Show required «required.get(1).toFirstLower»s  (" + numReferences + " total)."
+								val tooltipText = "Show required «required.required.name.toFirstLower»s  (" + numReferences + " total)."
 								tooltip = tooltipText
-								addSingleClickAction(RevealRequired«required.get(0)»«required.get(1)»sAction::ID)
+								addSingleClickAction(RevealRequired«required.name»«required.required.name»sAction::ID)
 							]
 						}
 						
 						/**
-						 * Adds the rendering for an edge showing a «required.get(1).toFirstLower» requirement.
+						 * Adds the rendering for an edge showing a «required.required.name.toFirstLower» requirement.
 						 */
-						def addRequired«required.get(0)»«required.get(1)»EdgeRendering(KEdge edge) {
+						def addRequired«required.name»«required.required.name»EdgeRendering(KEdge edge) {
 							edge.addPolyline => [
 								lineWidth = 2
 								addHeadArrowDecorator => [
@@ -877,17 +878,17 @@ class GenerateSyntheses {
 						}
 					
 					«ENDFOR»
-					«FOR requiring : spviz.getRequiringArtifacts(artifact)»	
+					«FOR requiring : data.getRequiringArtifacts(artifact)»	
 						/**
-						 * The rendering of a port that connects a «artifact.toFirstLower» with the «requiring.get(1)»s that require it. Issues the
-						 * {@link RevealRequiring«requiring.get(0)»»«requiring.get(1)»sAction} if clicked.
+						 * The rendering of a port that connects a «artifact.name.toFirstLower» with the «requiring.requiring.name»s that require it. Issues the
+						 * {@link RevealRequiring«requiring.name»»«requiring.requiring.name»sAction} if clicked.
 						 */
-						def KRectangle addRequiring«requiring.get(0)»«requiring.get(1)»sActionPortRendering(KPort port, int numReferences, boolean allShown) {
+						def KRectangle addRequiring«requiring.name»«requiring.requiring.name»sActionPortRendering(KPort port, int numReferences, boolean allShown) {
 							return port.addRectangle => [
 								background = if (allShown) ALL_SHOWN_COLOR.color else NOT_ALL_SHOWN_COLOR.color
-								val tooltipText = "Show «requiring.get(1).toFirstLower»s that require this «artifact.toFirstLower» (" + numReferences + " total)."
+								val tooltipText = "Show «requiring.requiring.name.toFirstLower»s that require this «artifact.name.toFirstLower» (" + numReferences + " total)."
 								tooltip = tooltipText
-								addSingleClickAction(RevealRequiring«requiring.get(0)»«requiring.get(1)»sAction::ID)
+								addSingleClickAction(RevealRequiring«requiring.name»«requiring.requiring.name»sAction::ID)
 							]
 						}
 				
@@ -900,16 +901,16 @@ class GenerateSyntheses {
 	}
 	
 	/**
-	 * Generates the contend for SynthesisUtils class.
+	 * Generates the content for SynthesisUtils class.
 	 * 
-	 * @param spviz
+	 * @param data
 	 * 		a DataAccess to easily get the information from
 	 * @return 
 	 * 		the generated file content as a string
 	 */
-	def static String generateSynthesisUtils(DataAccess spviz){
+	def static String generateSynthesisUtils(DataAccess data) {
 		return '''
-			package «spviz.getBundleNamePrefix».viz
+			package «data.getBundleNamePrefix».viz
 			
 			import de.cau.cs.kieler.klighd.IAction.ActionContext
 			import de.cau.cs.kieler.klighd.SynthesisOption
@@ -918,15 +919,15 @@ class GenerateSyntheses {
 			import de.cau.cs.kieler.klighd.kgraph.KGraphElement
 			import de.cau.cs.kieler.klighd.kgraph.KNode
 			import de.cau.cs.kieler.klighd.syntheses.DiagramSyntheses
-			import «spviz.getBundleNamePrefix».model.IOverviewVisualizationContext
-			import «spviz.getBundleNamePrefix».model.IVisualizationContext
+			import «data.getBundleNamePrefix».model.IOverviewVisualizationContext
+«««			import «data.getBundleNamePrefix».model.IVisualizationContext
 			import java.util.List
 			import org.eclipse.elk.core.options.CoreOptions
 			import org.eclipse.elk.core.options.Direction
 			import org.eclipse.elk.core.options.EdgeRouting
 			
 			import static extension de.cau.cs.kieler.klighd.syntheses.DiagramSyntheses.*
-			import static extension «spviz.getBundleNamePrefix».model.util.ContextExtensions.*
+			import static extension «data.getBundleNamePrefix».model.util.ContextExtensions.*
 			
 			/**
 			 * Util class that contains some static methods commonly used for the Osgi synthesis.
@@ -1119,20 +1120,19 @@ class GenerateSyntheses {
 	}
 	
 	/**
-	 * Generates the contend for SynthesisProperties class.
+	 * Generates the content for SynthesisProperties class.
 	 * 
-	 * @param spviz
+	 * @param data
 	 * 		a DataAccess to easily get the information from
 	 * @return 
 	 * 		the generated file content as a string
 	 */
-	def static String generateSynthesisProperties(DataAccess spviz){
+	def static String generateSynthesisProperties(DataAccess data) {
 		return '''
-			package «spviz.getBundleNamePrefix».viz
+			package «data.getBundleNamePrefix».viz
 			
 			import de.cau.cs.kieler.klighd.ViewContext
-			import «spviz.getBundleNamePrefix».model.IVisualizationContext
-			import «spviz.getBundleNamePrefix».model.«spviz.vizName»
+			import «data.getBundleNamePrefix».model.«data.visualizationName»
 			import java.util.LinkedList
 			import java.util.List
 			import org.eclipse.elk.graph.properties.IProperty
@@ -1143,12 +1143,12 @@ class GenerateSyntheses {
 			 */
 			class SynthesisProperties {
 				/** 
-				 * Property pointing towards the list of saved {@link «spviz.vizName»}s that are used to model the currently
+				 * Property pointing towards the list of saved {@link «data.visualizationName»}s that are used to model the currently
 				 * displayed view and all previously used contexts for undo/redo functionality.
 				 * Currently does not store a delta between the contexts, but a hard copy of every state used since the beginning
 				 * default view.
 				 */
-				public static final IProperty<List<«spviz.vizName»>> VISUALIZATION_CONTEXTS = new Property<List<«spviz.vizName»>>("osgimodel.visualizationContexts", new LinkedList<«spviz.vizName»>)
+				public static final IProperty<List<«data.visualizationName»>> VISUALIZATION_CONTEXTS = new Property<List<«data.visualizationName»>>("osgimodel.visualizationContexts", new LinkedList<«data.visualizationName»>)
 				
 				/**
 				 * Property pointing towards which index points towards the currently used visualization context in the
@@ -1163,7 +1163,7 @@ class GenerateSyntheses {
 				 * change of the visualization model.
 				 * May be null if the model visualization context has not been set yet for the view context.
 				 */
-				public static final IProperty<«spviz.vizName»> MODEL_VISUALIZATION_CONTEXT = new Property<«spviz.vizName»>("model.modelVisualizationContext", null)
+				public static final IProperty<«data.visualizationName»> MODEL_VISUALIZATION_CONTEXT = new Property<«data.visualizationName»>("model.modelVisualizationContext", null)
 				
 			}
 			
@@ -1171,16 +1171,16 @@ class GenerateSyntheses {
 	}
 	
 	/**
-	 * Generates the contend for Options class.
+	 * Generates the content for Options class.
 	 * 
-	 * @param spviz
+	 * @param data
 	 * 		a DataAccess to easily get the information from
 	 * @return 
 	 * 		the generated file content as a string
 	 */
-	def static String generateOptions(DataAccess spviz){
+	def static String generateOptions(DataAccess data) {
 		return '''
-			package «spviz.getBundleNamePrefix».viz
+			package «data.getBundleNamePrefix».viz
 			
 			import de.cau.cs.kieler.klighd.SynthesisOption
 			
@@ -1235,6 +1235,5 @@ class GenerateSyntheses {
 			
 		'''
 	}
-
 	
 }
