@@ -181,7 +181,7 @@ class DataAccess {
 	 */
 	def List<Connection> getRequiringArtifactsInOverview(Artifact required, View view) {
         val List<Connection> connections = newArrayList
-        for (requiringConnection : requiringArtifacts.get(required ?: #[])) {
+        for (requiringConnection : requiringArtifacts.get(required) ?: #[]) {
             if (isConnectionDisplayedInOverview(requiringConnection, view)) {
                 connections.add(requiringConnection)
             }

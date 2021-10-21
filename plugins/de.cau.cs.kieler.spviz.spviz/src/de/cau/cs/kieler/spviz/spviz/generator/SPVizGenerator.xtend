@@ -41,7 +41,15 @@ class SPVizGenerator extends AbstractGenerator {
 	
 //	TODO: add flags and a class for each 'via' connection (look at 'UsedPackagesOfBundleEdgeConnection' for reference) 
 	
-	override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
+    val String[] CLASHING_NAMES = #[
+        "Appendable", "AutoCloseable", "CharSequence", "Cloneable", "Comparable", "Iterable", "ProcessHandle", "ProcessHandle.Info", "Readable", "Runnable", "StackWalker.StackFrame", "System.Logger", "Thread.UncaughtExceptionHandler",
+        "Boolean", "Byte", "Character", "Character.Subset", "Character.UnicodeBlock", "Class", "ClassLoader", "ClassValue", "Compiler", "Double", "Enum", "Float", "InheritableThreadLocal", "Integer", "Long", "Math", "Module", "ModuleLayer", "ModuleLayer.Controller", "Number", "Object", "Package", "Process", "ProcessBuilder", "ProcessBuilder.Redirect", "Runtime", "Runtime.Version", "RuntimePermission", "SecurityManager", "Short", "StackTraceElement", "StrictMath", "String", "StringBuffer", "StringBuilder", "System", "System.LoggerFinder", "Thread", "ThreadGroup", "ThreadLocal", "Throwable", "Void",
+        "Character.UnicodeScript", "ProcessBuilder.Redirect.Type", "StackWalker.Option", "System.Logger.Level", "Thread.State",
+        "ArithmeticException", "ArrayIndexOutOfBoundsException", "ArrayStoreException", "ClassCastException", "ClassNotFoundException", "CloneNotSupportedException", "EnumConstantNotPresentException", "Exception", "IllegalAccessException", "IllegalArgumentException", "IllegalCallerException", "IllegalMonitorStateException", "IllegalStateException", "IllegalThreadStateException", "IndexOutOfBoundsException", "InstantiationException", "InterruptedException", "NegativeArraySizeException", "NoSuchFieldException", "NoSuchMethodException", "NullPointerException", "NumberFormatException", "ReflectiveOperationException", "RuntimeException", "SecurityException", "StringIndexOutOfBoundsException", "TypeNotPresentException", "UnsupportedOperationException",
+        "AbstractMethodError", "AssertionError", "BootstrapMethodError", "ClassCircularityError", "ClassFormatError", "Error", "ExceptionInInitializerError", "IllegalAccessError", "IncompatibleClassChangeError", "InstantiationError", "InternalError", "LinkageError", "NoClassDefFoundError", "NoSuchFieldError", "NoSuchMethodError", "OutOfMemoryError", "StackOverflowError", "ThreadDeath", "UnknownError", "UnsatisfiedLinkError", "UnsupportedClassVersionError", "VerifyError", "VirtualMachineError"
+    ]
+    
+    override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
 		println("Generate visualization for " + resource.contents.head?.class)
 		
 		val DataAccess data = new DataAccess(resource)
@@ -49,6 +57,8 @@ class SPVizGenerator extends AbstractGenerator {
 		// Generate the -viz.model XCore project
 		val String xcoreContent = xcoreContent(data)
 		val progressMonitor = new NullProgressMonitor
+		// TODO: remove all the .model suffixes for the model packages to be more in line with other emf projects and
+		// have a more "speaking" automatically generated name for ...Package, ...Switch, etc. classes
 		val project = new XCoreProjectGenerator(data.getBundleNamePrefix + ".model")
 		  .configureXCoreFile(data.visualizationName + 'Model.xcore', xcoreContent)
 		  .configureRequiredBundles(#[data.modelBundleNamePrefix + ".model"])
@@ -241,12 +251,12 @@ class SPVizGenerator extends AbstractGenerator {
 			///////////////////////////////////////////////////////////////////////////////////////
 			
 			«FOR artifact : data.artifacts»
-				class «artifact.name»Context extends IVisualizationContext<«artifact.name»> {
+				class «artifact.name»Context extends IVisualizationContext<«correctArtifactName(artifact.name, data)»> {
 					«FOR required : data.getRequiredArtifacts(artifact)»
-						boolean allRequired«required.name»«required.required.name»sShown
+						boolean allRequired«required.requiring.name»Requires«required.required.name»Named«required.name»Shown
 					«ENDFOR»
 					«FOR requiring : data.getRequiringArtifacts(artifact)»
-						boolean allRequiring«requiring.name»«requiring.requiring.name»sShown
+						boolean allRequiring«requiring.requiring.name»Requires«requiring.required.name»Named«requiring.name»Shown
 					«ENDFOR»
 				}
 				
@@ -255,13 +265,13 @@ class SPVizGenerator extends AbstractGenerator {
 			«FOR view : data.views»
 				class «view.name»OverviewContext extends IOverviewVisualizationContext<Object> {
 					«FOR connection : view.shownConnections»
-						contains Pair <«connection.shownConnection.requiring.name»Context,«connection.shownConnection.required.name»Context>[] required«connection.shownConnection.name»«connection.shownConnection.required.name»Edges
-						contains Pair <«connection.shownConnection.required.name»Context,«connection.shownConnection.requiring.name»Context>[] requiring«connection.shownConnection.name»«connection.shownConnection.requiring.name»Edges
+						contains Pair<«connection.shownConnection.requiring.name»Context, «connection.shownConnection.required.name»Context>[] required«connection.shownConnection.requiring.name»Requires«connection.shownConnection.required.name»Named«connection.shownConnection.name»Edges
+						contains Pair<«connection.shownConnection.requiring.name»Context, «connection.shownConnection.required.name»Context>[] requiring«connection.shownConnection.requiring.name»Requires«connection.shownConnection.required.name»Named«connection.shownConnection.name»Edges
 					«ENDFOR»
 					«FOR shownElement : view.shownElements»
 						refers «shownElement.shownElement.name»Context[] collapsed«shownElement.shownElement.name»Contexts
 						refers «shownElement.shownElement.name»Context[] detailed«shownElement.shownElement.name»Contexts
-						refers «shownElement.shownElement.name»[] «shownElement.shownElement.name.toFirstLower»s
+						refers «correctArtifactName(shownElement.shownElement.name, data)»[] «shownElement.shownElement.name.toFirstLower»s
 					«ENDFOR»
 				}
 				
@@ -293,4 +303,15 @@ class SPVizGenerator extends AbstractGenerator {
 			
 		'''
 	}
+    
+    /**
+     * Corrects the artifact name if it clashes with the auto-imported public java.lang classes.
+     */
+    def correctArtifactName(String string, DataAccess data) {
+        if (!CLASHING_NAMES.contains(string)) {
+            return string
+        }
+        return data.modelBundleNamePrefix + ".model." + string
+    }
+    
 }
