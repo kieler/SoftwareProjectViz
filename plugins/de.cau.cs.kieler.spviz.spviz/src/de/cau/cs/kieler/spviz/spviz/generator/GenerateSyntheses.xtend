@@ -239,8 +239,8 @@ class GenerateSyntheses {
 			import «data.getBundleNamePrefix».viz.actions.OverviewContextCollapseExpandAction
 			«FOR view : data.views»
 				«FOR connection : view.shownConnections»
-					import «data.getBundleNamePrefix».viz.actions.RevealRequired«connection.shownConnection.name»«connection.shownConnection.required.name»sAction
-					import «data.getBundleNamePrefix».viz.actions.RevealRequiring«connection.shownConnection.name»«connection.shownConnection.requiring.name»sAction
+					import «data.getBundleNamePrefix».viz.actions.RevealRequired«connection.shownConnection.requiring.name»Requires«connection.shownConnection.required.name»Named«connection.shownConnection.name»Action
+					import «data.getBundleNamePrefix».viz.actions.RevealRequiring«connection.shownConnection.requiring.name»Requires«connection.shownConnection.required.name»Named«connection.shownConnection.name»Action
 				«ENDFOR»
 			«ENDFOR»
 «««			import «spviz.packageName».viz.actions.SelectRelatedAction
@@ -267,8 +267,8 @@ class GenerateSyntheses {
 «««					.registerAction(ConnectAllAction.ID, new ConnectAllAction)
 					«FOR view : data.views»
 						«FOR connection : view.shownConnections»
-							.registerAction(RevealRequired«connection.shownConnection.name»«connection.shownConnection.required.name»sAction.ID, new RevealRequired«connection.shownConnection.name»«connection.shownConnection.required.name»sAction)
-							.registerAction(RevealRequiring«connection.shownConnection.name»«connection.shownConnection.requiring.name»sAction.ID, new RevealRequiring«connection.shownConnection.name»«connection.shownConnection.requiring.name»sAction)
+							.registerAction(RevealRequired«connection.shownConnection.requiring.name»Requires«connection.shownConnection.required.name»Named«connection.shownConnection.name»Action.ID, new RevealRequired«connection.shownConnection.requiring.name»Requires«connection.shownConnection.required.name»Named«connection.shownConnection.name»Action)
+							.registerAction(RevealRequiring«connection.shownConnection.requiring.name»Requires«connection.shownConnection.required.name»Named«connection.shownConnection.name»Action.ID, new RevealRequiring«connection.shownConnection.requiring.name»Requires«connection.shownConnection.required.name»Named«connection.shownConnection.name»Action)
 						«ENDFOR»
 					«ENDFOR»
 					.registerDiagramSynthesisClass(DiagramSynthesis.name, DiagramSynthesis)
@@ -334,8 +334,8 @@ class GenerateSyntheses {
 «««			import «spviz.packageName».viz.actions.SelectRelatedAction
 			«FOR view : data.views»
 				«FOR connection : view.shownConnections»
-					import «data.getBundleNamePrefix».viz.actions.RevealRequired«connection.shownConnection.name»«connection.shownConnection.required.name»sAction
-					import «data.getBundleNamePrefix».viz.actions.RevealRequiring«connection.shownConnection.name»«connection.shownConnection.requiring.name»sAction
+					import «data.getBundleNamePrefix».viz.actions.RevealRequired«connection.shownConnection.requiring.name»Requires«connection.shownConnection.required.name»Named«connection.shownConnection.name»Action
+					import «data.getBundleNamePrefix».viz.actions.RevealRequiring«connection.shownConnection.requiring.name»Requires«connection.shownConnection.required.name»Named«connection.shownConnection.name»Action
 				«ENDFOR»
 			«ENDFOR»
 			«FOR artifact : data.artifacts»
@@ -840,22 +840,22 @@ class GenerateSyntheses {
 					
 					«FOR required : data.getRequiredArtifacts(artifact)»
 						/**
-						 * The rendering of a port that connects a «artifact.name.toFirstLower» with the required «required.required.name». Issues the
-						 * {@link RevealRequired«required.name»«required.required.name»sAction} if clicked.
+						 * The rendering of a port that connects a «artifact.name» with the required «required.required.name». Issues the
+						 * {@link RevealRequired«required.requiring.name»Requires«required.required.name»Named«required.name»Action} if clicked.
 						 */
-						def KRectangle addRequired«required.name»«required.required.name»sActionPortRendering(KPort port, int numReferences, boolean allShown) {
+						def KRectangle addRequired«required.requiring.name»Requires«required.required.name»Named«required.name»ActionPortRendering(KPort port, int numReferences, boolean allShown) {
 							return port.addRectangle => [
 								background = if (allShown) ALL_SHOWN_COLOR.color else NOT_ALL_SHOWN_COLOR.color
 								val tooltipText = "Show required «required.required.name.toFirstLower»s  (" + numReferences + " total)."
 								tooltip = tooltipText
-								addSingleClickAction(RevealRequired«required.name»«required.required.name»sAction::ID)
+								addSingleClickAction(RevealRequired«required.requiring.name»Requires«required.required.name»Named«required.name»Action::ID)
 							]
 						}
 						
 						/**
 						 * Adds the rendering for an edge showing a «required.required.name.toFirstLower» requirement.
 						 */
-						def addRequired«required.name»«required.required.name»EdgeRendering(KEdge edge) {
+						def addRequired«required.requiring.name»Requires«required.required.name»Named«required.name»EdgeRendering(KEdge edge) {
 							edge.addPolyline => [
 								lineWidth = 2
 								addHeadArrowDecorator => [
@@ -881,14 +881,14 @@ class GenerateSyntheses {
 					«FOR requiring : data.getRequiringArtifacts(artifact)»	
 						/**
 						 * The rendering of a port that connects a «artifact.name.toFirstLower» with the «requiring.requiring.name»s that require it. Issues the
-						 * {@link RevealRequiring«requiring.name»»«requiring.requiring.name»sAction} if clicked.
+						 * {@link RevealRequiring«requiring.requiring.name»Requires«requiring.required.name»Named«requiring.name»Action} if clicked.
 						 */
-						def KRectangle addRequiring«requiring.name»«requiring.requiring.name»sActionPortRendering(KPort port, int numReferences, boolean allShown) {
+						def KRectangle addRequiring«requiring.requiring.name»Requires«requiring.required.name»Named«requiring.name»ActionPortRendering(KPort port, int numReferences, boolean allShown) {
 							return port.addRectangle => [
 								background = if (allShown) ALL_SHOWN_COLOR.color else NOT_ALL_SHOWN_COLOR.color
 								val tooltipText = "Show «requiring.requiring.name.toFirstLower»s that require this «artifact.name.toFirstLower» (" + numReferences + " total)."
 								tooltip = tooltipText
-								addSingleClickAction(RevealRequiring«requiring.name»«requiring.requiring.name»sAction::ID)
+								addSingleClickAction(RevealRequiring«requiring.requiring.name»Requires«requiring.required.name»Named«requiring.name»Action::ID)
 							]
 						}
 				

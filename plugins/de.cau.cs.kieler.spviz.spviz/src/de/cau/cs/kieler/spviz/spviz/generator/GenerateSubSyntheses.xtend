@@ -182,7 +182,7 @@ class GenerateSubSyntheses {
 «««                        TODO: correct way around?
                         «FOR shownConnection : view.shownConnections»
                             // Add all by «shownConnection.shownConnection.requiring.name.toFirstLower»s required «shownConnection.shownConnection.required.name.toFirstLower»s edges.
-                            «viewName.toFirstLower»OverviewContext.required«shownConnection.shownConnection.name»«shownConnection.shownConnection.required.name»Edges.forEach [
+                            «viewName.toFirstLower»OverviewContext.required«shownConnection.shownConnection.requiring.name»Requires«shownConnection.shownConnection.required.name»Named«shownConnection.shownConnection.name»Edges.forEach [
 «««                            // Connects the {@code sourceBundleNode} and the {@code usedByBundleNode} via an arrow in UML style,
 «««                            // so [usedByBundleNode] ----- uses -----> [sourceBundleNode]
                                 val requiring = key
@@ -201,7 +201,7 @@ class GenerateSubSyntheses {
                                 ]
                                 
                                 val edge = createEdge(requiring, required) => [
-                                    addRequired«shownConnection.shownConnection.name»«shownConnection.shownConnection.required.name»EdgeRendering
+                                    addRequired«shownConnection.shownConnection.requiring.name»Requires«shownConnection.shownConnection.required.name»Named«shownConnection.shownConnection.name»EdgeRendering
                                     sourcePort = requiringPort
                                     targetPort = requiredPort
                                     source = requiringNode
@@ -247,7 +247,7 @@ class GenerateSubSyntheses {
                     import «data.modelBundleNamePrefix».model.«required.required.name»
                 «ENDIF»
             «ENDFOR»
-            «FOR requiring : data.getRequiredArtifacts(artifact)»
+            «FOR requiring : data.getRequiringArtifacts(artifact)»
                 «IF requiring.requiring !== artifact»
                     import «data.modelBundleNamePrefix».model.«requiring.requiring.name»
                 «ENDIF»
@@ -291,7 +291,7 @@ class GenerateSubSyntheses {
                                     // Required «artifactName.toFirstLower»s are always shown and expanded to the east with the drawing direction.
                                     addLayoutParam(CoreOptions::PORT_SIDE, PortSide::EAST)
                                     addLayoutParam(CoreOptions::PORT_INDEX, 0)
-                                    addRequired«required.name»«required.required.name»sActionPortRendering(filteredRequired«required.required.name»s.size, context.allRequired«required.name»«required.required.name»sShown)
+                                    addRequired«required.requiring.name»Requires«required.required.name»Named«required.name»ActionPortRendering(filteredRequired«required.required.name»s.size, context.allRequired«required.requiring.name»Requires«required.required.name»Named«required.name»Shown)
                                     width = 12
                                     height = 12
                                 ]
@@ -308,7 +308,7 @@ class GenerateSubSyntheses {
                                     // Requiring «artifactName.toFirstLower»s are always shown and expanded to the west against the drawing direction.
                                     addLayoutParam(CoreOptions::PORT_SIDE, PortSide::WEST)
                                     addLayoutParam(CoreOptions::PORT_INDEX, 1)
-                                    addRequiring«requiring.name»«artifactName»sActionPortRendering(filteredRequiring«requiring.requiring.name»s.size, context.allRequiring«requiring.name»«requiring.requiring.name»sShown)
+                                    addRequiring«requiring.requiring.name»Requires«requiring.required.name»Named«requiring.name»ActionPortRendering(filteredRequiring«requiring.requiring.name»s.size, context.allRequiring«requiring.requiring.name»Requires«requiring.required.name»Named«requiring.name»Shown)
                                     width = 12
                                     height = 12
                                 ]

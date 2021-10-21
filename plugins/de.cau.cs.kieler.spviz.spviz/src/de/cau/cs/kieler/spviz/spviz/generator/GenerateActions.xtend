@@ -53,12 +53,12 @@ class GenerateActions {
     			// reveal required artifacts
     			content = generateRevealAction(data, view, connection, true)
     			FileGenerator.generateOrUpdateFile(sourceFolder,
-    			    folder + "RevealRequired" + connection.name + connection.required.name + "sAction.xtend",
+    			    folder + "RevealRequired" + connection.requiring.name + "Requires" + connection.required.name + "Named" + connection.name + "Action.xtend",
     			    content, progressMonitor)
     			// reveal requiring artifacts
     			content = generateRevealAction(data, view, connection, false)
     			FileGenerator.generateOrUpdateFile(sourceFolder,
-    			    folder + "RevealRequiring" + connection.name + connection.required.name + "sAction.xtend",
+    			    folder + "RevealRequiring" + connection.requiring.name + "Requires" + connection.required.name + "Named" + connection.name + "Action.xtend",
     			    content, progressMonitor)
     		}
 		}
@@ -104,7 +104,7 @@ class GenerateActions {
 	}
 	
 	/**
-	 * Generates the contend for a reveal action class.
+	 * Generates the content for a reveal action class.
 	 * 
 	 * @param data
 	 * 		a DataAccess to easily get the information from
@@ -128,7 +128,7 @@ class GenerateActions {
         val artifactTo   = isRequired ? connection.required : connection.requiring
         val artifactFromName = artifactFrom.name
         val artifactToName = artifactTo.name
-		val className = "Reveal" + requiringOrRequired + connectionName + (isRequired ? artifactToName : artifactFromName) + "sAction"
+		val className = "Reveal" + requiringOrRequired + connection.requiring.name + "Requires" + connection.required.name + "Named" + connection.name + "Action"
 		val viewName = view.name
 		// TODO: I think the view is irrelevant here, we could also just cast it to IOverviewVisualizationContext<?>
 		// and name the variable accordingly, no need to specify which overview this is in.
@@ -204,7 +204,7 @@ class GenerateActions {
 	}
 	
 	/**
-	 * Generates the contend for the AbstractVisualizationContextChangingAction class.
+	 * Generates the content for the AbstractVisualizationContextChangingAction class.
 	 * 
 	 * @param data
 	 * 		a DataAccess to easily get the information from
@@ -323,7 +323,7 @@ class GenerateActions {
 	}
 	
 	/**
-	 * Generates the contend for the ContextCollapseExpandAction class.
+	 * Generates the content for the ContextCollapseExpandAction class.
 	 * 
 	 * @param data
 	 * 		a DataAccess to easily get the information from
@@ -377,7 +377,7 @@ class GenerateActions {
 	}
 	
 	/**
-	 * Generates the contend for the OverviewContextCollapseExpandAction class.
+	 * Generates the content for the OverviewContextCollapseExpandAction class.
 	 * 
 	 * @param spviz
 	 * 		a DataAccess to easily get the information from
@@ -421,7 +421,7 @@ class GenerateActions {
 	}
 	
 	/**
-	 * Generates the contend for the UndoAction class.
+	 * Generates the content for the UndoAction class.
 	 * 
 	 * @param data
 	 * 		a DataAccess to easily get the information from
@@ -461,7 +461,7 @@ class GenerateActions {
 	}
 	
 	/**
-	 * Generates the contend for the RedoAction class.
+	 * Generates the content for the RedoAction class.
 	 * 
 	 * @param data
 	 * 		a DataAccess to easily get the information from
@@ -502,7 +502,7 @@ class GenerateActions {
 	}
 	
 	/**
-	 * Generates the contend for the ResetViewAction class.
+	 * Generates the content for the ResetViewAction class.
 	 * 
 	 * @param data
 	 * 		a DataAccess to easily get the information from

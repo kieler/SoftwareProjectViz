@@ -319,21 +319,21 @@ class GenerateVizModelUtils {
 						«FOR shownElement : view.shownElements»
 							def dispatch static void removeEdges(«view.name»OverviewContext overviewContext, «shownElement.shownElement.name»Context context) {
 								«FOR requiredConnection : data.getRequiredArtifactsInOverview(shownElement.shownElement, view)»
-									overviewContext.required«requiredConnection.name»«requiredConnection.required.name»Edges.clone.forEach[
+									overviewContext.required«requiredConnection.requiring.name»Requires«requiredConnection.required.name»Named«requiredConnection.name»Edges.clone.forEach[
 										if (key === context) {
-											overviewContext.required«requiredConnection.name»«requiredConnection.required.name»Edges.remove(it)
-											key.allRequired«requiredConnection.name»«requiredConnection.required.name»sShown = false
-											value.allRequiring«requiredConnection.name»«shownElement.shownElement.name»sShown = false
+											overviewContext.required«requiredConnection.requiring.name»Requires«requiredConnection.required.name»Named«requiredConnection.name»Edges.remove(it)
+											key.allRequired«requiredConnection.requiring.name»Requires«requiredConnection.required.name»Named«requiredConnection.name»Shown = false
+											value.allRequiring«requiredConnection.requiring.name»Requires«requiredConnection.required.name»Named«requiredConnection.name»Shown = false
 										}
 									]
 									
 								«ENDFOR»
 								«FOR requiringConnection : data.getRequiringArtifactsInOverview(shownElement.shownElement, view)»
-									overviewContext.required«requiringConnection.name»«shownElement.shownElement.name»Edges.clone.forEach[
+									overviewContext.requiring«requiringConnection.requiring.name»Requires«requiringConnection.required.name»Named«requiringConnection.name»Edges.clone.forEach[
 										if (value === context) {
-											overviewContext.required«requiringConnection.name»«shownElement.shownElement.name»Edges.remove(it)
-											key.allRequired«requiringConnection.name»«shownElement.shownElement.name»sShown = false
-											value.allRequiring«requiringConnection.name»«requiringConnection.requiring.name»sShown = false
+											overviewContext.requiring«requiringConnection.requiring.name»Requires«requiringConnection.required.name»Named«requiringConnection.name»Edges.remove(it)
+											key.allRequired«requiringConnection.requiring.name»Requires«requiringConnection.required.name»Named«requiringConnection.name»Shown = false
+											value.allRequiring«requiringConnection.requiring.name»Requires«requiringConnection.required.name»Named«requiringConnection.name»Shown = false
 										}
 									]
 									
@@ -560,24 +560,24 @@ class GenerateVizModelUtils {
 									"parent context!")
 							}
 							// Only if this edge does not exist yet, add it to the list of required «shownConnection.shownConnection.required.name.toFirstLower» edges.
-							if (!parentContext.required«shownConnection.shownConnection.name»«shownConnection.shownConnection.required.name»Edges.exists [ key === requiringContext && value === requiredContext ]) {
-								parentContext.required«shownConnection.shownConnection.name»«shownConnection.shownConnection.required.name»Edges += VizModelUtil.createPair(requiringContext, requiredContext)
+							if (!parentContext.required«shownConnection.shownConnection.requiring.name»Requires«shownConnection.shownConnection.required.name»Named«shownConnection.shownConnection.name»Edges.exists [ key === requiringContext && value === requiredContext ]) {
+								parentContext.required«shownConnection.shownConnection.requiring.name»Requires«shownConnection.shownConnection.required.name»Named«shownConnection.shownConnection.name»Edges += VizModelUtil.createPair(requiringContext, requiredContext)
 								
 								// Check for both the requiring «shownConnection.shownConnection.requiring.name.toFirstLower» and the required «shownConnection.shownConnection.required.name.toFirstLower» if all connections are now shown in the 
 								// parent context. If they are, remember it in the corresponding «shownConnection.shownConnection.requiring.name.toFirstLower» context.
 								// Requiring context:
 								if (requiringContext.modelElement.required«shownConnection.shownConnection.name»«shownConnection.shownConnection.required.name»s.forall [ required |
 									!parentContext.modelElements.contains(required) ||
-									parentContext.required«shownConnection.shownConnection.name»«shownConnection.shownConnection.required.name»Edges.exists [ key === requiringContext && value.modelElement === required ]
+									parentContext.required«shownConnection.shownConnection.requiring.name»Requires«shownConnection.shownConnection.required.name»Named«shownConnection.shownConnection.name»Edges.exists [ key === requiringContext && value.modelElement === required ]
 								]) {
-									requiringContext.allRequired«shownConnection.shownConnection.name»«shownConnection.shownConnection.required.name»sShown = true
+									requiringContext.allRequired«shownConnection.shownConnection.requiring.name»Requires«shownConnection.shownConnection.required.name»Named«shownConnection.shownConnection.name»Shown = true
 								}
 								// Required context:
 								if (requiredContext.modelElement.requiring«shownConnection.shownConnection.name»«shownConnection.shownConnection.requiring.name»s.forall [ requiring |
 									!parentContext.modelElements.contains(requiring) ||
-									parentContext.requiring«shownConnection.shownConnection.name»«shownConnection.shownConnection.requiring.name»Edges.exists [ key === requiredContext && value.modelElement === requiring ]
+									parentContext.requiring«shownConnection.shownConnection.requiring.name»Requires«shownConnection.shownConnection.required.name»Named«shownConnection.shownConnection.name»Edges.exists [ value === requiredContext && value.modelElement === requiring ]
 								]) {
-									requiredContext.allRequiring«shownConnection.shownConnection.name»«shownConnection.shownConnection.requiring.name»sShown = true
+									requiredContext.allRequiring«shownConnection.shownConnection.requiring.name»Requires«shownConnection.shownConnection.required.name»Named«shownConnection.shownConnection.name»Shown = true
 								}
 							}
 						}
