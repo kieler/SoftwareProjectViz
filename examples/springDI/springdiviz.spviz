@@ -1,0 +1,18 @@
+package de.cau.cs.kieler.spviz.springdiviz
+import "springdi.spvizmodel"
+
+SPViz SpringDIViz {
+	Components {
+		show SpringDI.ComponentInterface
+		show SpringDI.ComponentImplementation
+		show SpringDI.Class
+		connect SpringDI.ComponentInterface.Required
+		connect SpringDI.ComponentInterface.Provided
+		connect SpringDI.ComponentImplementation.Required
+		connect SpringDI.Class.Required
+	}
+	Modules { 
+		show SpringDI.Module
+		connect SpringDI.Module.Dependency
+	}
+}

@@ -1,0 +1,23 @@
+package de.cau.cs.kieler.spviz.springdi
+
+SPVizModel SpringDI {
+	Artifact {
+		contains Module
+	}
+	Module {
+		Dependency depends Module
+		contains ComponentInterface
+		contains ComponentImplementation
+		contains Class
+	}
+	ComponentInterface {
+		Required depends ComponentInterface
+		Provided depends ComponentImplementation
+	}
+	ComponentImplementation {
+		Required depends ComponentInterface
+	}
+	Class {
+		Required depends ComponentInterface
+	}
+}
