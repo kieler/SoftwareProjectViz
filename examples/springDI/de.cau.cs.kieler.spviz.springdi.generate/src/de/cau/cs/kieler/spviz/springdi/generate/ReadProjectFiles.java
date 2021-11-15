@@ -25,7 +25,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Stream;
+import java.util.Map;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -38,13 +38,11 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.MarkerAnnotation;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.Name;
 import org.eclipse.jdt.core.dom.PackageDeclaration;
 import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
-import org.eclipse.jdt.core.dom.VariableDeclaration;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -52,12 +50,12 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import de.cau.cs.kieler.spviz.springdi.model.Artifact;
+import de.cau.cs.kieler.spviz.springdi.model.Class;
 import de.cau.cs.kieler.spviz.springdi.model.ComponentImplementation;
 import de.cau.cs.kieler.spviz.springdi.model.ComponentInterface;
 import de.cau.cs.kieler.spviz.springdi.model.ModelFactory;
 import de.cau.cs.kieler.spviz.springdi.model.Module;
 import de.cau.cs.kieler.spviz.springdi.model.SpringDIProject;
-import de.cau.cs.kieler.spviz.springdi.model.Class;
 
 /**
  * This class reads all the data for Spring DI artifacts from the artifact files. It
@@ -117,7 +115,7 @@ public class ReadProjectFiles {
 				final String name = groupId + "." + findChildByTagName(projectNodeChildren, StaticVariables.ARTIFACT_ID).getTextContent().strip();
 				
 				artifact.setName(name);
-				artifact.setEcoreId(StaticVariables.ARTIFACT_PREFIX + name);
+				artifact.setEcoreId(StaticVariables.ARTIFACT_PREFIX + toAscii(name));
 				
 				// Extract the modules and module paths defined in this artifact
 				final NodeList pomModules = findChildByTagName(projectNodeChildren, StaticVariables.MODULES).getChildNodes();
@@ -200,7 +198,7 @@ public class ReadProjectFiles {
 		}
 		final Module module = ModelFactory.eINSTANCE.createModule();
 		module.setName(modulePath.toString());
-		module.setEcoreId(StaticVariables.MODULE_PREFIX + modulePath.toString());
+		module.setEcoreId(StaticVariables.MODULE_PREFIX + toAscii(modulePath.toString()));
 		project.getModules().add(module);
 		return module;
 	}
@@ -219,7 +217,7 @@ public class ReadProjectFiles {
 			// Create a new model and set it up
 			final Module module = ModelFactory.eINSTANCE.createModule();
 			module.setName(name);
-			module.setEcoreId(StaticVariables.MODULE_PREFIX + name);
+			module.setEcoreId(StaticVariables.MODULE_PREFIX + toAscii(name));
 			modules.put(name, module);
 			project.getModules().add(module);
 			return module;
@@ -261,7 +259,7 @@ public class ReadProjectFiles {
 			// Create a new model and set it up
 			final ComponentImplementation componentImplementation= ModelFactory.eINSTANCE.createComponentImplementation();
 			componentImplementation.setName(name);
-			componentImplementation.setEcoreId(StaticVariables.COMPONENT_IMPLEMENTATION_PREFIX + name);
+			componentImplementation.setEcoreId(StaticVariables.COMPONENT_IMPLEMENTATION_PREFIX + toAscii(name));
 			implementations.put(name, componentImplementation);
 			project.getComponentImplementations().add(componentImplementation);
 			return componentImplementation;
@@ -282,7 +280,7 @@ public class ReadProjectFiles {
 			// Create a new model and set it up
 			final Class clazz = ModelFactory.eINSTANCE.createClass();
 			clazz.setName(name);
-			clazz.setEcoreId(StaticVariables.CLASS_PREFIX + name);
+			clazz.setEcoreId(StaticVariables.CLASS_PREFIX + toAscii(name));
 			classes.put(name, clazz);
 			project.getClasss().add(clazz);
 			return clazz;
@@ -477,6 +475,42 @@ public class ReadProjectFiles {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Converts the given name to an ACII string save for using in an Ecore ID.
+	 * German umlauts are converted to their long form counterparts (e.g., ä->ae)
+	 * and special characters not in the alphabet are replaced by underscores (_).
+	 * 
+	 * @param name The name to convert to an ASCII string
+	 * @return An ASCII-only version of the string.
+	 */
+	private String toAscii(String name) {
+		Map<Character, String> mappings = new HashMap<>();
+		mappings.put('Ä', "Ae");
+		mappings.put('ä', "ae");
+		mappings.put('Ö', "Oe");
+		mappings.put('ö', "oe");
+		mappings.put('Ü', "Ue");
+		mappings.put('ü', "ue");
+		mappings.put('ẞ', "Ss");
+		mappings.put('ß', "ss");
+		
+		StringBuilder sb = new StringBuilder();
+		name.chars().forEachOrdered((int character) -> {
+			// Replace all known mappings to readable allowable ID substrings
+			if (mappings.containsKey((char) character)) {
+				sb.append(mappings.get((char) character));
+			// Keep all A-Z,a-z and .- the same.
+			} else if (character >= 'A' && character <= 'Z' || character >= 'a' && character <= 'z' || character == '.' || character == '-') {
+				sb.append((char) character);
+			// Replace all other characters by _
+			} else {
+				sb.append('_');
+			}
+		});
+		
+		return sb.toString();
 	}
 
 }
