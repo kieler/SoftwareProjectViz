@@ -14,7 +14,9 @@ package de.cau.cs.kieler.spviz.spviz.generator
 
 import de.cau.cs.kieler.spviz.spvizmodel.generator.FileGenerator
 import de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.Artifact
-import java.util.LinkedHashMap
+import java.awt.Color
+import java.util.HashMap
+import java.util.Map
 import org.eclipse.core.resources.IFolder
 import org.eclipse.core.runtime.IProgressMonitor
 
@@ -279,8 +281,6 @@ class GenerateSyntheses {
 		'''
 	}
 	
-	
-	// TODO: dynamic coloring
 	// TODO: add connections specific renderings
 	/**
 	 * Generates the content for the synthesis styles class.
@@ -291,13 +291,25 @@ class GenerateSyntheses {
 	 * 		the generated file content as a string
 	 */
 	def static String generateStyles(DataAccess data) {
-		// We predefine 8 different colors in the generated code that the different artifacts use for their
-		// visualization. If there are more than 8 artifacts, the colors currently loop back.
-		// TODO: find a way to generate and use new colors on the fly instead. Something such as a hue of
-		// golden ratio * artifactIndex 
-		val LinkedHashMap<Artifact, Integer> artifactColorNumbers = newLinkedHashMap()
+	    // Generate colors for the artifacts as needed, distributed by means of the golden ratio around hue to generate
+	    // consistent and far spaced colors, no matter the number of artifacts.
+		val float GOLDEN_RATIO = ((1 + Math.sqrt(5)) / 2) as float
+        val Map<Artifact, String> colors = new HashMap
+        val Map<Artifact, String> secondaryColors = new HashMap 
+	    val float s = 0.12f
+	    val secondary_s = 0.24f
+	    val b = 1.0f
 		for (var i = 0; i < data.artifacts.length; i++) {
-			artifactColorNumbers.put(data.artifacts.get(i), i % 8)
+		    // Distribute the color
+		    val float h = GOLDEN_RATIO * i
+		    
+		    // Create a color in HSB color space
+            val color = Color.getHSBColor(h, s, b)
+            val secondaryColor = Color.getHSBColor(h, secondary_s, b)
+            
+            // And convert it to RGB
+            colors.put(data.artifacts.get(i), "#" + Integer.toHexString(color.RGB.bitwiseAnd(0xFFFFFF)))
+            secondaryColors.put(data.artifacts.get(i), "#" + Integer.toHexString(secondaryColor.RGB.bitwiseAnd(0xFFFFFF)))
 		}
 			
 		return '''
@@ -360,23 +372,11 @@ class GenerateSyntheses {
 				
 				// The colors used for the visualization.
 				public static final String DEFAULT_BACKGROUND_COLOR  = "white"
-				public static final String COLOR_0			 = "#E0F7FF" // HSV 195 12 100
-				public static final String SECONDARY_COLOR_0 = "#C2F0FF" // HSV 195 24 100
-				public static final String COLOR_1			 = "#E0EBFF" // HSV 220 12 100
-				public static final String SECONDARY_COLOR_1 = "#C2D6FF" // HSV 220 24 100
-				public static final String COLOR_2			 = "#F5FFE0" // HSV 79 12 100
-				public static final String SECONDARY_COLOR_2 = "#ECFFC2" // HSV 79 24 100
-				public static final String COLOR_3			 = "#E0FFE9" // HSV 137 12 100
-				public static final String SECONDARY_COLOR_3 = "#C2FFD3" // HSV 137 24 100
-				public static final String COLOR_4			 = "#E7E0FF" // HSV 253 12 100
-				public static final String SECONDARY_COLOR_4 = "#CFC2FF" // HSV 253 24 100
-				public static final String COLOR_5			 = "#FFEAE0" // HSV 19 12 100
-				public static final String SECONDARY_COLOR_5 = "#FFD5C2" // HSV 19 24 100
-				public static final String COLOR_6			 = "#FFE0F5" // HSV 319 12 100
-				public static final String SECONDARY_COLOR_6 = "#FFC2EC" // HSV 319 24 100
-				public static final String COLOR_7			 = "#FFE0E0" // HSV 0 12 100
-				public static final String SECONDARY_COLOR_7 = "#FFC2C2" // HSV 0 24 100
-				
+				«FOR artifact : data.artifacts»
+					public static final String COLOR_«artifact.name» = "«colors.get(artifact)»"
+					public static final String SECONDARY_COLOR_«artifact.name» = "«secondaryColors.get(artifact)»"
+				«ENDFOR»
+			
 				// Port colors.
 				public static final String ALL_SHOWN_COLOR = "white"
 				public static final String NOT_ALL_SHOWN_COLOR = "black"
@@ -753,7 +753,7 @@ class GenerateSyntheses {
 								addVerticalLine
 								addCollapseExpandButton(true, context)
 «««							}
-							setBackgroundGradient(COLOR_«artifactColorNumbers.get(artifact)».color, SECONDARY_COLOR_«artifactColorNumbers.get(artifact)».color, 90)
+							setBackgroundGradient(COLOR_«artifact.name».color, SECONDARY_COLOR_«artifact.name».color, 90)
 							addDoubleClickAction(ContextCollapseExpandAction::ID)
 «««							addSingleClickAction(SelectRelatedAction::ID, ModifierState.NOT_PRESSED, ModifierState.NOT_PRESSED,
 «««								ModifierState.NOT_PRESSED)
@@ -778,7 +778,7 @@ class GenerateSyntheses {
 					def KRoundedRectangle add«artifact.name»Rendering(KNode node, «artifact.name» artifact, boolean inOverview, boolean hasChildren,
 						ViewContext context) {
 						node.addRoundedRectangle(ROUNDNESS, ROUNDNESS) => [
-							setBackgroundGradient(COLOR_«artifactColorNumbers.get(artifact)».color, SECONDARY_COLOR_«artifactColorNumbers.get(artifact)».color, 90)
+							setBackgroundGradient(COLOR_«artifact.name».color, SECONDARY_COLOR_«artifact.name».color, 90)
 							setGridPlacement(1)
 							addRectangle => [
 «««								val interactiveButtons = context.getOptionValue(INTERACTIVE_BUTTONS) as Boolean
