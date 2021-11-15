@@ -20,7 +20,9 @@ import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
@@ -169,7 +171,7 @@ public class ReadProjectFiles {
 				if (importOrExport.equals(StaticVariables.EXPORT_PACKAGE)) {
 					final Package newExportedPackage = ModelFactory.eINSTANCE.createPackage();
 					newExportedPackage.setName(packageName);
-					newExportedPackage.setEcoreId(StaticVariables.PACKAGE_PREFIX + packageName);
+					newExportedPackage.setEcoreId(StaticVariables.PACKAGE_PREFIX + toAscii(packageName));
 					newExportedPackage.getBundles().add(bundle);
 					bundle.getPackages().add(newExportedPackage);
 					project.getPackages().add(newExportedPackage);
@@ -190,7 +192,7 @@ public class ReadProjectFiles {
 					} else {
 						final Package newImportedPackage = ModelFactory.eINSTANCE.createPackage();
 						newImportedPackage.setName(packageName);
-						newImportedPackage.setEcoreId(StaticVariables.PACKAGE_PREFIX + packageName);
+						newImportedPackage.setEcoreId(StaticVariables.PACKAGE_PREFIX + toAscii(packageName));
 						newImportedPackage.getRequiringPackageDependencyBundles().add(bundle);
 						bundle.getRequiredPackageDependencyPackages().add(newImportedPackage);
 //						packageDependencies.add(newImportedPackage);
@@ -219,7 +221,7 @@ public class ReadProjectFiles {
 					String componentName = serviceComponentFile.getName()
 							.replace(".xml", StaticVariables.EMPTY_STRING);
 					serviceComponent.setName(componentName);
-					serviceComponent.setEcoreId(StaticVariables.SERVICE_COMPONENT_PREFIX + componentName);
+					serviceComponent.setEcoreId(StaticVariables.SERVICE_COMPONENT_PREFIX + toAscii(componentName));
 					serviceComponent.getBundles().add(bundle);
 					bundle.getServiceComponents().add(serviceComponent);
 					project.getServiceComponents().add(serviceComponent);
@@ -233,7 +235,7 @@ public class ReadProjectFiles {
 						"OSGI-INF/", StaticVariables.EMPTY_STRING);
 				final ServiceComponent serviceComponent = ModelFactory.eINSTANCE.createServiceComponent();
 				serviceComponent.setName(serviceName);
-				serviceComponent.setEcoreId(StaticVariables.SERVICE_COMPONENT_PREFIX + serviceName);
+				serviceComponent.setEcoreId(StaticVariables.SERVICE_COMPONENT_PREFIX + toAscii(serviceName));
 				serviceComponent.getBundles().add(bundle);
 				bundle.getServiceComponents().add(serviceComponent);
 				project.getServiceComponents().add(serviceComponent);
@@ -268,7 +270,7 @@ public class ReadProjectFiles {
 					} else {
 						final ServiceInterface serviceInterface = ModelFactory.eINSTANCE.createServiceInterface();
 						serviceInterface.setName(interfaceName);
-						serviceInterface.setEcoreId(StaticVariables.SERVICE_INTERFACE_PREFIX + interfaceName);
+						serviceInterface.setEcoreId(StaticVariables.SERVICE_INTERFACE_PREFIX + toAscii(interfaceName));
 						serviceInterface.getRequiringRequiredServiceComponents().add(serviceComponent);
 						serviceComponent.getRequiredRequiredServiceInterfaces().add(serviceInterface);
 						bundle.getServiceInterfaces().add(serviceInterface);
@@ -315,7 +317,7 @@ public class ReadProjectFiles {
 			}
 			String featureName = doc.getDocumentElement().getAttribute(StaticVariables.ID);
 			feature.setName(featureName);
-			feature.setEcoreId(StaticVariables.FEATURE_PREFIX + featureName);
+			feature.setEcoreId(StaticVariables.FEATURE_PREFIX + toAscii(featureName));
 			
 		} catch (ParserConfigurationException | SAXException | IOException e) {
 			LOGGER.log(System.Logger.Level.ERROR, "There was an error with reading the feature.xml file " + e); //$NON-NLS-1$
@@ -339,7 +341,7 @@ public class ReadProjectFiles {
 			
 			final Product product = ModelFactory.eINSTANCE.createProduct();
 			product.setName(productName);
-			product.setEcoreId(StaticVariables.PRODUCT_PREFIX + productName);
+			product.setEcoreId(StaticVariables.PRODUCT_PREFIX + toAscii(productName));
 			
 			project.getProducts().add(product);
 			
@@ -359,7 +361,7 @@ public class ReadProjectFiles {
 				} else {
 					final Feature feature = ModelFactory.eINSTANCE.createFeature();
 					feature.setName(featureName);
-					feature.setEcoreId(StaticVariables.FEATURE_PREFIX + featureName);
+					feature.setEcoreId(StaticVariables.FEATURE_PREFIX + toAscii(featureName));
 					feature.getProducts().add(product);
 					product.getFeatures().add(feature);
 					project.getFeatures().add(feature);
@@ -381,7 +383,7 @@ public class ReadProjectFiles {
 				} else {
 					final Bundle bundle = ModelFactory.eINSTANCE.createBundle();
 					bundle.setName(bundleName);
-					bundle.setEcoreId(StaticVariables.BUNDLE_PREFIX + bundleName);
+					bundle.setEcoreId(StaticVariables.BUNDLE_PREFIX + toAscii(bundleName));
 					bundle.getProducts().add(product);
 					product.getBundles().add(bundle);
 					project.getBundles().add(bundle);
@@ -402,14 +404,14 @@ public class ReadProjectFiles {
 	private Bundle getOrCreateBundle(final String name) {
 		final Optional<Bundle> bundleAlreadyPresent = project.getBundles()//
 				.stream()//
-				.filter(elem -> elem.getEcoreId().equals(StaticVariables.BUNDLE_PREFIX + name))//
+				.filter(elem -> elem.getEcoreId().equals(StaticVariables.BUNDLE_PREFIX + toAscii(name)))//
 				.findFirst();
 		if (bundleAlreadyPresent.isPresent()) {
 			return bundleAlreadyPresent.get();
 		} else {
 			final Bundle bundle = ModelFactory.eINSTANCE.createBundle();
 			bundle.setName(name);
-			bundle.setEcoreId(StaticVariables.BUNDLE_PREFIX + name);
+			bundle.setEcoreId(StaticVariables.BUNDLE_PREFIX + toAscii(name));
 			project.getBundles().add(bundle);
 			return bundle;
 		}
@@ -483,6 +485,42 @@ public class ReadProjectFiles {
 			result.add(b.split(";")[0]); //$NON-NLS-1$
 		}
 		return result;
+	}
+
+	/**
+	 * Converts the given name to an ACII string save for using in an Ecore ID.
+	 * German umlauts are converted to their long form counterparts (e.g., ä->ae)
+	 * and special characters not in the alphabet are replaced by underscores (_).
+	 * 
+	 * @param name The name to convert to an ASCII string
+	 * @return An ASCII-only version of the string.
+	 */
+	private String toAscii(String name) {
+		Map<Character, String> mappings = new HashMap<>();
+		mappings.put('Ä', "Ae");
+		mappings.put('ä', "ae");
+		mappings.put('Ö', "Oe");
+		mappings.put('ö', "oe");
+		mappings.put('Ü', "Ue");
+		mappings.put('ü', "ue");
+		mappings.put('ẞ', "Ss");
+		mappings.put('ß', "ss");
+		
+		StringBuilder sb = new StringBuilder();
+		name.chars().forEachOrdered((int character) -> {
+			// Replace all known mappings to readable allowable ID substrings
+			if (mappings.containsKey((char) character)) {
+				sb.append(mappings.get((char) character));
+			// Keep all A-Z,a-z and .- the same.
+			} else if (character >= 'A' && character <= 'Z' || character >= 'a' && character <= 'z' || character == '.' || character == '-') {
+				sb.append((char) character);
+			// Replace all other characters by _
+			} else {
+				sb.append('_');
+			}
+		});
+		
+		return sb.toString();
 	}
 
 }
