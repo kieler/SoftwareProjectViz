@@ -231,7 +231,7 @@ class GenerateSyntheses {
 			
 			import de.cau.cs.kieler.klighd.IKlighdStartupHook
 			import de.cau.cs.kieler.klighd.KlighdDataManager
-«««			import «spviz.packageName».viz.actions.ConnectAllAction
+			import «data.bundleNamePrefix».viz.actions.ConnectAllAction
 			import «data.getBundleNamePrefix».viz.actions.ContextCollapseExpandAction
 			import «data.getBundleNamePrefix».viz.actions.ContextExpandAllAction
 «««			import «spviz.packageName».viz.actions.ContextRemoveAction
@@ -264,7 +264,7 @@ class GenerateSyntheses {
 					.registerAction(ContextExpandAllAction.ID, new ContextExpandAllAction)
 «««					.registerAction(ContextRemoveAction.ID, new ContextRemoveAction)
 					.registerAction(OverviewContextCollapseExpandAction.ID, new OverviewContextCollapseExpandAction)
-«««					.registerAction(ConnectAllAction.ID, new ConnectAllAction)
+					.registerAction(ConnectAllAction.ID, new ConnectAllAction)
 					«FOR view : data.views»
 						«FOR connection : view.shownConnections»
 							.registerAction(RevealRequired«connection.shownConnection.requiring.name»Requires«connection.shownConnection.required.name»Named«connection.shownConnection.name»Action.ID, new RevealRequired«connection.shownConnection.requiring.name»Requires«connection.shownConnection.required.name»Named«connection.shownConnection.name»Action)
@@ -325,7 +325,7 @@ class GenerateSyntheses {
 «««			import de.cau.cs.kieler.klighd.krendering.extensions.KLabelExtensions
 			import de.cau.cs.kieler.klighd.krendering.extensions.KPolylineExtensions
 			import de.cau.cs.kieler.klighd.krendering.extensions.KRenderingExtensions
-«««			import «spviz.packageName».viz.actions.ConnectAllAction
+			import «data.bundleNamePrefix».viz.actions.ConnectAllAction
 			import «data.getBundleNamePrefix».viz.actions.ContextCollapseExpandAction
 			import «data.getBundleNamePrefix».viz.actions.ContextExpandAllAction
 «««			import «spviz.packageName».viz.actions.ContextRemoveAction
@@ -433,9 +433,9 @@ class GenerateSyntheses {
 «««							val interactiveButtons = context.getOptionValue(INTERACTIVE_BUTTONS) as Boolean
 «««							if (interactiveButtons) {
 «««								columns += 4
-«««								if (isConnectable) {
-«««									columns += 1
-«««								}
+								if (isConnectable) {
+									columns += 1
+								}
 «««							} 
 							setGridPlacement(columns)
 							invisible = true
@@ -450,9 +450,9 @@ class GenerateSyntheses {
 								addVerticalLine
 «««								addFocusButton(context)
 								addExpandAllButton(context)
-«««								if (isConnectable) {
-«««									addConnectAllButton(context)
-«««								}
+								if (isConnectable) {
+									addConnectAllButton(context)
+								}
 								addOverviewContextCollapseExpandButton(false, context)
 «««							}
 						]
@@ -592,32 +592,32 @@ class GenerateSyntheses {
 					]
 				}
 				
-«««				/**
-«««				 * Adds a button in a grid placement rendering that causes the {@link ConnectAllAction} to be called.
-«««				 * 
-«««				 * @param container The parent rendering this button should be added to.
-«««				 * @param context The used ViewContext.
-«««				 */
-«««				def KRectangle addConnectAllButton(KContainerRendering container, ViewContext context) {
-«««					val action = ConnectAllAction::ID
-«««					return container.addRectangle => [
-«««						setGridPlacementData => [
-«««							flexibleWidth = false
-«««						]
-«««						addSingleOrMultiClickAction(action)
-«««						lineWidth = 0
-«««						tooltip = "Connects all elements in this overview."
+				/**
+				 * Adds a button in a grid placement rendering that causes the {@link ConnectAllAction} to be called.
+				 * 
+				 * @param container The parent rendering this button should be added to.
+				 * @param context The used ViewContext.
+				 */
+				def KRectangle addConnectAllButton(KContainerRendering container, ViewContext context) {
+					val action = ConnectAllAction::ID
+					return container.addRectangle => [
+						setGridPlacementData => [
+							flexibleWidth = false
+						]
+						addSingleOrMultiClickAction(action)
+						lineWidth = 0
+						tooltip = "Connects all elements in this overview."
 «««						if (context.getOptionValue(SHOW_ICONS) as Boolean) {
-«««							addImage("«spviz.packageName».viz", "icons/connect128.png") => [
+«««							addImage("«data.bundleNamePrefix».viz", "icons/connect128.png") => [
 «««								setPointPlacementData(RIGHT, 0, 0.5f, TOP, 0, 0.5f, H_CENTRAL, V_CENTRAL, 4f, 4f, 12, 12)
 «««								addSingleOrMultiClickAction(action)
 «««							]
 «««						} else {
-«««							val label = "Connect all"
-«««							addButton(label, action)
+						val label = "Connect all"
+						addButton(label, action)
 «««						}
-«««					]
-«««				}
+					]
+				}
 «««				
 «««				/**
 «««				 * Adds a button in a grid placement rendering that causes the {@link ContextRemoveAction} to be called.
