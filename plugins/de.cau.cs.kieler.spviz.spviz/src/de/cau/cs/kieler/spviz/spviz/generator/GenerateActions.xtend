@@ -14,7 +14,12 @@ package de.cau.cs.kieler.spviz.spviz.generator
 
 import de.cau.cs.kieler.spviz.spviz.sPViz.View
 import de.cau.cs.kieler.spviz.spvizmodel.generator.FileGenerator
+import de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.Artifact
 import de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.Connection
+import java.util.ArrayList
+import java.util.HashMap
+import java.util.List
+import java.util.Map
 import org.eclipse.core.resources.IFolder
 import org.eclipse.core.runtime.IProgressMonitor
 
@@ -46,6 +51,8 @@ class GenerateActions {
 		FileGenerator.generateOrUpdateFile(sourceFolder, folder + "ResetViewAction.xtend", content, progressMonitor)
 		content = generateContextExpandAllAction(data)
 		FileGenerator.generateOrUpdateFile(sourceFolder, folder + "ContextExpandAllAction.xtend", content, progressMonitor)
+		content = generateConnectAllAction(data)
+		FileGenerator.generateOrUpdateFile(sourceFolder, folder + "ConnectAllAction.xtend", content, progressMonitor)
 		
 		for (view : data.views) {
     		for (shownConnection : view.shownConnections) {
@@ -538,4 +545,104 @@ class GenerateActions {
 		
 		'''
 	}
+    
+    /**
+     * Generates the content for the ConnectAllAction class.
+     * 
+     * @param data
+     *      a DataAccess to easily get the information from
+     * @return
+     *      the generated file content as a string
+     */
+    def static generateConnectAllAction(DataAccess data) {
+        val Map<Artifact, List<String>> revealActions = new HashMap
+        for (view : data.views) {
+            for (shownConnection : view.shownConnections) {
+                val connection = shownConnection.shownConnection
+                // Reveal required actions
+                var List<String> actionNames = revealActions.get(connection.requiring)
+                if (actionNames === null) {
+                    actionNames = new ArrayList
+                    revealActions.put(connection.requiring, actionNames)
+                }
+                actionNames.add("RevealRequired"  + connection.requiring.name + "Requires" + connection.required.name + "Named" + connection.name + "Action")
+                
+                // Reveal requiring actions
+                actionNames = revealActions.get(connection.required)
+                if (actionNames === null) {
+                    actionNames = new ArrayList
+                    revealActions.put(connection.required, actionNames)
+                }
+                actionNames.add("RevealRequiring" + connection.requiring.name + "Requires" + connection.required.name + "Named" + connection.name + "Action")
+            }
+        }
+        
+        
+        return '''
+            package «data.getBundleNamePrefix».viz.actions
+            
+            import de.cau.cs.kieler.klighd.KlighdDataManager
+
+            import «data.getBundleNamePrefix».model.IOverviewVisualizationContext
+            import «data.getBundleNamePrefix».model.IVisualizationContext
+            «FOR artifact : revealActions.keySet»
+                import «data.bundleNamePrefix».model.«artifact.name»Context
+            «ENDFOR»
+            
+            import static extension «data.bundleNamePrefix».model.util.ContextExtensions.*
+            
+            /**
+             * Calls the corresponding reveal*Actions for all elements visualized in this overview.
+             * 
+             * @author nre
+             */
+            class ConnectAllAction extends AbstractVisualizationContextChangingAction {
+                
+                /**
+                 * This action's ID.
+                 */
+                public static val String ID = ConnectAllAction.name
+                
+                override <M> changeVisualization(IVisualizationContext<M> modelVisualizationContext, ActionContext actionContext) {
+                    val kdm = KlighdDataManager.instance
+                    «FOR actionNames : revealActions.values»
+                        «FOR actionName : actionNames»
+                            val «actionName.toFirstLower» = kdm.getActionById(«actionName».ID) as «actionName»
+                        «ENDFOR»
+                    «ENDFOR»
+                    
+                    if (!(modelVisualizationContext instanceof IOverviewVisualizationContext)) {
+                        throw new IllegalStateException("The ConnectAllAction is only callable on IOverviewVisualizationContexts,"
+                            + " but was called on a " + modelVisualizationContext.class)
+                    }
+                    val ovc = modelVisualizationContext as IOverviewVisualizationContext<?>
+                    
+                    // Expand all contexts that are not yet in their detailed form.
+                    val collapsedContexts = ovc.collapsedElements.clone
+                    collapsedContexts.forEach [ collapsed |
+                        (ovc as IOverviewVisualizationContext<Object>).makeDetailed(collapsed as IVisualizationContext<Object>)
+                    ]
+                    
+                    // For each child context, call actions on all their connections.
+                    ovc.childContexts.clone.forEach [ childContext |
+                        switch (childContext) {
+                            «FOR artifact : revealActions.keySet»
+                                «artifact.name»Context: {
+                                    // Connect all artifacts that may connect to this one.
+                                    «FOR actionName : revealActions.get(artifact)»
+                                        «actionName.toFirstLower».changeVisualization(childContext, actionContext)
+                                    «ENDFOR»
+                                }
+                            «ENDFOR»
+                            default: {
+                                throw new IllegalStateException("Unknown child context. " + childContext.class)
+                            }
+                        }
+                    ]
+                }
+            }
+            
+        '''
+    }
+    
 }
