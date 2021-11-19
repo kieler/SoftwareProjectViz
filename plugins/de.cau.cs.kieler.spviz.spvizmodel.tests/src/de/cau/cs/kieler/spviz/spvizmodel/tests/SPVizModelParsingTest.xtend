@@ -30,23 +30,28 @@ class SPVizModelParsingTest {
 	@Test
 	def void loadModel() {
 		val result = parseHelper.parse('''
-			package de.cau.cs.kieler.osgi
-			SPVizModel OSGi { 
+			package de.cau.cs.kieler.spviz.osgi
+			
+			SPVizModel OSGi {
 			    Product {
 			        contains Feature
 			        contains Bundle
 			    }
-			    Feature
+			    Feature {
+			        contains Bundle
+			    }
 			    Bundle {
-			        Dependency connects Bundle
-			        PackageDependency connects Package
+			        Dependency depends Bundle
+			        PackageDependency depends Package
 			        contains ServiceInterface
 			        contains ServiceComponent
+			        contains Package
 			    }
-			    ServiceInterface
+			    ServiceInterface {
+			        Required depends ServiceComponent
+			    }
 			    ServiceComponent {
-			        Required connects ServiceInterface
-			        Provided connects ServiceInterface
+			        Required depends ServiceInterface
 			    }
 			    Package
 			}
