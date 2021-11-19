@@ -19,7 +19,7 @@
     <update.site.name>Kieler Software Project Visualization</update.site.name>
     <update.site.description>Nightly Build</update.site.description>
     <update.site.version>${project.version}</update.site.version>
-    <target.eclipse.version>2020-06</target.eclipse.version>
+    <target.eclipse.version>2021-06</target.eclipse.version>
   </properties>
 
   <build>
@@ -27,7 +27,7 @@
       <plugin>
         <groupId>org.jboss.tools.tycho-plugins</groupId>
         <artifactId>repository-utils</artifactId>
-        <version>1.1.1-SNAPSHOT</version>
+        <version>2.5.0</version>
         <executions>
         
           <!-- creates index.html and other artifacts -->
@@ -49,15 +49,15 @@
               <!-- this adds repository references to the update site's content.xml -->
               <associateSites>
                 <!-- Eclipse -->
-                <associateSite>https://download.eclipse.org/releases/2020-06/</associateSite>
+                <associateSite>https://download.eclipse.org/releases/2021-06/</associateSite>
                 <!-- Eclipse Orbit -->
-                <associateSite>https://download.eclipse.org/tools/orbit/downloads/drops/R20200529191137/repository/</associateSite>
+                <associateSite>https://download.eclipse.org/tools/orbit/downloads/drops/R20210602031627/repository/</associateSite>
                 <!-- Eclipse Layout Kernel -->
-                <associateSite>https://download.eclipse.org/elk/updates/releases/0.7.0/</associateSite>>
+                <associateSite>https://download.eclipse.org/elk/updates/releases/0.7.1/</associateSite>>
                 <!-- KLighD -->
-                <associateSite>https://kieler.github.io/KLighD/v2.0.0/</associateSite>>
+                <associateSite>https://kieler.github.io/KLighD/v2.1.0/</associateSite>>
                 <!-- Xtext -->
-                <associateSite>https://download.eclipse.org/modeling/tmf/xtext/updates/releases/2.22.0/</associateSite>>
+                <associateSite>https://download.eclipse.org/modeling/tmf/xtext/updates/releases/2.25.0/</associateSite>>
               </associateSites>
             </configuration>
           </execution>
