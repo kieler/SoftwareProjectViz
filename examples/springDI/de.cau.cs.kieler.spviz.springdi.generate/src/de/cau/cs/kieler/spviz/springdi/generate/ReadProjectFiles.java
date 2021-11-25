@@ -53,6 +53,7 @@ import de.cau.cs.kieler.spviz.springdi.model.Artifact;
 import de.cau.cs.kieler.spviz.springdi.model.Class;
 import de.cau.cs.kieler.spviz.springdi.model.ComponentImplementation;
 import de.cau.cs.kieler.spviz.springdi.model.ComponentInterface;
+import de.cau.cs.kieler.spviz.springdi.model.Identifiable;
 import de.cau.cs.kieler.spviz.springdi.model.ModelFactory;
 import de.cau.cs.kieler.spviz.springdi.model.Module;
 import de.cau.cs.kieler.spviz.springdi.model.SpringDIProject;
@@ -151,7 +152,7 @@ public class ReadProjectFiles {
 	}
 
 	/**
-	 * Create the module on found on the given path or use the module already created by some dependency of another module.
+	 * Create the module found on the given path or use the module already created by some dependency of another module.
 	 * Add the dependencies to that module and return it.
 	 * 
 	 * @param modulePath The path on disc where to find the pom.xml defining this module.
@@ -172,6 +173,8 @@ public class ReadProjectFiles {
 			final Node artifactIdNode = findChildByTagName(projectNodeChildren, StaticVariables.ARTIFACT_ID);
 			final String name = groupId + "." + artifactIdNode.getTextContent().strip();
 			final Module module = createOrFindModule(name);
+			
+			module.setExternal(false);
 			
 			// Add all dependencies to the module
 			final Node dependenciesNode = findChildByTagName(projectNodeChildren, StaticVariables.DEPENDENCIES);
@@ -199,6 +202,7 @@ public class ReadProjectFiles {
 		final Module module = ModelFactory.eINSTANCE.createModule();
 		module.setName(modulePath.toString());
 		module.setEcoreId(StaticVariables.MODULE_PREFIX + toAscii(modulePath.toString()));
+		module.setExternal(false);
 		project.getModules().add(module);
 		return module;
 	}
@@ -218,6 +222,7 @@ public class ReadProjectFiles {
 			final Module module = ModelFactory.eINSTANCE.createModule();
 			module.setName(name);
 			module.setEcoreId(StaticVariables.MODULE_PREFIX + toAscii(name));
+			module.setExternal(true);
 			modules.put(name, module);
 			project.getModules().add(module);
 			return module;
@@ -239,6 +244,7 @@ public class ReadProjectFiles {
 			final ComponentInterface componentInterface = ModelFactory.eINSTANCE.createComponentInterface();
 			componentInterface.setName(name);
 			componentInterface.setEcoreId(StaticVariables.COMPONENT_INTERFACE_PREFIX + name);
+			componentInterface.setExternal(true);
 			interfaces.put(name, componentInterface);
 			project.getComponentInterfaces().add(componentInterface);
 			return componentInterface;
@@ -260,6 +266,7 @@ public class ReadProjectFiles {
 			final ComponentImplementation componentImplementation= ModelFactory.eINSTANCE.createComponentImplementation();
 			componentImplementation.setName(name);
 			componentImplementation.setEcoreId(StaticVariables.COMPONENT_IMPLEMENTATION_PREFIX + toAscii(name));
+			componentImplementation.setExternal(true);
 			implementations.put(name, componentImplementation);
 			project.getComponentImplementations().add(componentImplementation);
 			return componentImplementation;
@@ -281,6 +288,7 @@ public class ReadProjectFiles {
 			final Class clazz = ModelFactory.eINSTANCE.createClass();
 			clazz.setName(name);
 			clazz.setEcoreId(StaticVariables.CLASS_PREFIX + toAscii(name));
+			clazz.setExternal(true);
 			classes.put(name, clazz);
 			project.getClasss().add(clazz);
 			return clazz;
@@ -328,6 +336,7 @@ public class ReadProjectFiles {
 					String interfaceName = /*packageName + "." + */node.getName().getFullyQualifiedName();
 					
 					final ComponentInterface componentInterface = createOrFindComponentInterface(interfaceName);
+					componentInterface.setExternal(false);
 					parentModule.getComponentInterfaces().add(componentInterface);
 				}
 				return true;
@@ -349,6 +358,7 @@ public class ReadProjectFiles {
 					String componentName = ((TypeDeclaration) parent).getName().getFullyQualifiedName();
 					
 					final ComponentImplementation componentImplementation = createOrFindComponentImplementation(componentName);
+					componentImplementation.setExternal(false);
 					parentModule.getComponentImplementations().add(componentImplementation);
 					
 					// Link this implementation to its interface
@@ -377,7 +387,7 @@ public class ReadProjectFiles {
 					}
 					final TypeDeclaration parentDeclaration = (TypeDeclaration) parent;
 					final String parentName = parentDeclaration.getName().getFullyQualifiedName();
-					EObject requiring ;
+					Identifiable requiring;
 					if (parentDeclaration.isInterface()) {
 						// This is an interface requiring another interface via injection.
 						requiring = createOrFindComponentInterface(parentName);
@@ -388,6 +398,7 @@ public class ReadProjectFiles {
 						// This is some regular class (i.e., not a component), yet requiring an interface via injection.
 						requiring = createOrFindClass(parentName);
 					}
+					requiring.setExternal(false);
 
 					switch (node.getParent().getNodeType()) {
 					case ASTNode.METHOD_DECLARATION:
@@ -404,6 +415,7 @@ public class ReadProjectFiles {
 						// Find the type of the Variable, that gets injected.
 						final FieldDeclaration fieldDeclaration = (FieldDeclaration) node.getParent();
 						final Type injectedInterfaceType = fieldDeclaration.getType();
+						// FIXME: the @Injected artifact is not necessarily an interface, it may as well be a component directly.
 						addInjectedInterfaceConnection(injectedInterfaceType, requiring);
 						break;
 					default:
@@ -454,10 +466,11 @@ public class ReadProjectFiles {
 
 	/**
 	 * Finds all files in a directory and all its sub-directories. Adds the path to
-	 * the files to List <em>filePaths</em>
+	 * the files to the <em>accumulator</em>
 	 *
-	 * @param name Filename you search for
-	 * @param file Path you search in
+	 * @param name Filename extension/ending to search for
+	 * @param file Path to search in
+	 * @param accumulator The list to accumulate the found paths in.
 	 */
 	private void findFiles(final String name, final File file, final List<Path> accumulator) {
 		final File[] list = file.listFiles();

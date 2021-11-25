@@ -128,7 +128,7 @@ public class ReadProjectFiles {
 			
 			// check, if bundle is already existing
 			final Bundle bundle = getOrCreateBundle(symbolicName);
-			
+			bundle.setExternal(false);
 			extractPackages(bundle, attributes);
 			
 			// check all required bundles and create them, if not existing
@@ -318,6 +318,7 @@ public class ReadProjectFiles {
 			String featureName = doc.getDocumentElement().getAttribute(StaticVariables.ID);
 			feature.setName(featureName);
 			feature.setEcoreId(StaticVariables.FEATURE_PREFIX + toAscii(featureName));
+			feature.setExternal(false);
 			
 		} catch (ParserConfigurationException | SAXException | IOException e) {
 			LOGGER.log(System.Logger.Level.ERROR, "There was an error with reading the feature.xml file " + e); //$NON-NLS-1$
@@ -362,6 +363,7 @@ public class ReadProjectFiles {
 					final Feature feature = ModelFactory.eINSTANCE.createFeature();
 					feature.setName(featureName);
 					feature.setEcoreId(StaticVariables.FEATURE_PREFIX + toAscii(featureName));
+					feature.setExternal(true);
 					feature.getProducts().add(product);
 					product.getFeatures().add(feature);
 					project.getFeatures().add(feature);
@@ -412,6 +414,7 @@ public class ReadProjectFiles {
 			final Bundle bundle = ModelFactory.eINSTANCE.createBundle();
 			bundle.setName(name);
 			bundle.setEcoreId(StaticVariables.BUNDLE_PREFIX + toAscii(name));
+			bundle.setExternal(true);
 			project.getBundles().add(bundle);
 			return bundle;
 		}

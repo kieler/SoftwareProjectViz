@@ -108,6 +108,7 @@ class SPVizModelGenerator extends AbstractGenerator {
 		abstract class Identifiable {
 			unique id String ecoreId
 			String name
+			boolean external
 		}
 		
 		«FOR artifact : model.artifacts»

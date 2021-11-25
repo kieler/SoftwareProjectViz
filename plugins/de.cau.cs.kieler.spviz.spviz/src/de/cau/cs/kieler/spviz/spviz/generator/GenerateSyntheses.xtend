@@ -84,7 +84,7 @@ class GenerateSyntheses {
 			import org.eclipse.elk.core.options.BoxLayouterOptions
 			import org.eclipse.elk.core.util.BoxLayoutProvider.PackingMode
 			
-«««			import static «spviz.packageName».viz.Options.*
+			import static «data.bundleNamePrefix».viz.Options.*
 			import static extension «data.getBundleNamePrefix».model.util.ContextExtensions.*
 			
 			/**
@@ -124,7 +124,7 @@ class GenerateSyntheses {
 							#[CrossingMinimizationStrategy.INTERACTIVE, CrossingMinimizationStrategy.LAYER_SWEEP])
 					)
 				}
-				   
+				
 				override getDisplayedSynthesisOptions() {
 					val options = new LinkedHashSet()
 					
@@ -139,8 +139,9 @@ class GenerateSyntheses {
 «««						FILTER_PACKAGE_OBJECTS, FILTER_PRODUCTS, FILTER_SERVICE_COMPONENTS, FILTER_SERVICE_INTERFACES,
 «««						FILTER_CLASSES)
 «««					
-«««					// Add all view filter options.
-«««					options.addAll(SHOW_EXTERNAL, BUNDLE_SHOW_SERVICES, FILTER_CARDINALITY_LABEL, FILTER_DESCRIPTIONS,
+					// Add all view filter options.
+					options.addAll(SHOW_EXTERNAL)
+«««					    , BUNDLE_SHOW_SERVICES, FILTER_CARDINALITY_LABEL, FILTER_DESCRIPTIONS,
 «««						DESCRIPTION_LENGTH, SHORTEN_BY, INTERACTIVE_BUTTONS)
 «««					
 «««					// Add all performance options.
@@ -296,20 +297,28 @@ class GenerateSyntheses {
 		val float GOLDEN_RATIO = ((1 + Math.sqrt(5)) / 2) as float
         val Map<Artifact, String> colors = new HashMap
         val Map<Artifact, String> secondaryColors = new HashMap 
-	    val float s = 0.12f
-	    val secondary_s = 0.24f
+        val Map<Artifact, String> externalColors = new HashMap
+        val Map<Artifact, String> externalSecondaryColors = new HashMap 
+	    val float s                   = 0.12f
+	    val float secondary_s         = 0.24f
+	    val float external_s          = 0.03f
+	    val float externalSecondary_s = 0.06f
 	    val b = 1.0f
 		for (var i = 0; i < data.artifacts.length; i++) {
 		    // Distribute the color
 		    val float h = GOLDEN_RATIO * i
 		    
 		    // Create a color in HSB color space
-            val color = Color.getHSBColor(h, s, b)
-            val secondaryColor = Color.getHSBColor(h, secondary_s, b)
+            val color                  = Color.getHSBColor(h, s, b)
+            val secondaryColor         = Color.getHSBColor(h, secondary_s, b)
+            val externalColor          = Color.getHSBColor(h, external_s, b)
+            val externalSecondaryColor = Color.getHSBColor(h, externalSecondary_s, b)
             
             // And convert it to RGB
-            colors.put(data.artifacts.get(i), "#" + Integer.toHexString(color.RGB.bitwiseAnd(0xFFFFFF)))
-            secondaryColors.put(data.artifacts.get(i), "#" + Integer.toHexString(secondaryColor.RGB.bitwiseAnd(0xFFFFFF)))
+            colors                 .put(data.artifacts.get(i), "#" + Integer.toHexString(color                 .RGB.bitwiseAnd(0xFFFFFF)))
+            secondaryColors        .put(data.artifacts.get(i), "#" + Integer.toHexString(secondaryColor        .RGB.bitwiseAnd(0xFFFFFF)))
+            externalColors         .put(data.artifacts.get(i), "#" + Integer.toHexString(externalColor         .RGB.bitwiseAnd(0xFFFFFF)))
+            externalSecondaryColors.put(data.artifacts.get(i), "#" + Integer.toHexString(externalSecondaryColor.RGB.bitwiseAnd(0xFFFFFF)))
 		}
 			
 		return '''
@@ -371,10 +380,12 @@ class GenerateSyntheses {
 				@Inject extension KRenderingExtensions
 				
 				// The colors used for the visualization.
-				public static final String DEFAULT_BACKGROUND_COLOR  = "white"
+				public static final String DEFAULT_BACKGROUND_COLOR = "white"
 				«FOR artifact : data.artifacts»
 					public static final String COLOR_«artifact.name» = "«colors.get(artifact)»"
 					public static final String SECONDARY_COLOR_«artifact.name» = "«secondaryColors.get(artifact)»"
+					public static final String EXTERNAL_COLOR_«artifact.name» = "«externalColors.get(artifact)»"
+					public static final String EXTERNAL_SECONDARY_COLOR_«artifact.name» = "«externalSecondaryColors.get(artifact)»"
 				«ENDFOR»
 			
 				// Port colors.
@@ -753,7 +764,11 @@ class GenerateSyntheses {
 								addVerticalLine
 								addCollapseExpandButton(true, context)
 «««							}
-							setBackgroundGradient(COLOR_«artifact.name».color, SECONDARY_COLOR_«artifact.name».color, 90)
+							if (artifact.isExternal) {
+								setBackgroundGradient(EXTERNAL_COLOR_«artifact.name».color, EXTERNAL_SECONDARY_COLOR_«artifact.name».color, 90)
+							} else {
+								setBackgroundGradient(COLOR_«artifact.name».color, SECONDARY_COLOR_«artifact.name».color, 90)
+							}
 							addDoubleClickAction(ContextCollapseExpandAction::ID)
 «««							addSingleClickAction(SelectRelatedAction::ID, ModifierState.NOT_PRESSED, ModifierState.NOT_PRESSED,
 «««								ModifierState.NOT_PRESSED)
@@ -778,7 +793,11 @@ class GenerateSyntheses {
 					def KRoundedRectangle add«artifact.name»Rendering(KNode node, «artifact.name» artifact, boolean inOverview, boolean hasChildren,
 						ViewContext context) {
 						node.addRoundedRectangle(ROUNDNESS, ROUNDNESS) => [
-							setBackgroundGradient(COLOR_«artifact.name».color, SECONDARY_COLOR_«artifact.name».color, 90)
+							if (artifact.isExternal) {
+								setBackgroundGradient(EXTERNAL_COLOR_«artifact.name».color, EXTERNAL_SECONDARY_COLOR_«artifact.name».color, 90)
+							} else {
+								setBackgroundGradient(COLOR_«artifact.name».color, SECONDARY_COLOR_«artifact.name».color, 90)
+							}
 							setGridPlacement(1)
 							addRectangle => [
 «««								val interactiveButtons = context.getOptionValue(INTERACTIVE_BUTTONS) as Boolean
@@ -846,7 +865,7 @@ class GenerateSyntheses {
 						def KRectangle addRequired«required.requiring.name»Requires«required.required.name»Named«required.name»ActionPortRendering(KPort port, int numReferences, boolean allShown) {
 							return port.addRectangle => [
 								background = if (allShown) ALL_SHOWN_COLOR.color else NOT_ALL_SHOWN_COLOR.color
-								val tooltipText = "Show required «required.required.name.toFirstLower»s  (" + numReferences + " total)."
+								val tooltipText = "Show required «required.required.name.toFirstLower»s (" + numReferences + " total)."
 								tooltip = tooltipText
 								addSingleClickAction(RevealRequired«required.requiring.name»Requires«required.required.name»Named«required.name»Action::ID)
 							]
@@ -920,11 +939,15 @@ class GenerateSyntheses {
 			import de.cau.cs.kieler.klighd.kgraph.KNode
 			import de.cau.cs.kieler.klighd.syntheses.DiagramSyntheses
 			import «data.getBundleNamePrefix».model.IOverviewVisualizationContext
-«««			import «data.getBundleNamePrefix».model.IVisualizationContext
+			import «data.getBundleNamePrefix».model.IVisualizationContext
 			import java.util.List
 			import org.eclipse.elk.core.options.CoreOptions
 			import org.eclipse.elk.core.options.Direction
 			import org.eclipse.elk.core.options.EdgeRouting
+			
+			«FOR artifact : data.artifacts»
+				import «data.modelBundleNamePrefix».model.«artifact.name»
+			«ENDFOR»
 			
 			import static extension de.cau.cs.kieler.klighd.syntheses.DiagramSyntheses.*
 			import static extension «data.getBundleNamePrefix».model.util.ContextExtensions.*
@@ -982,6 +1005,94 @@ class GenerateSyntheses {
 «««						return "..." + id.substring(prefix.length)
 «««					}
 					return id
+				}
+				
+				def static <M> Iterable<M> filteredElements(List<M> elements, IOverviewVisualizationContext<M> oc,
+					ViewContext usedContext) {
+					val elementsInContext = elements.filter [
+						oc.modelElements.contains(it)
+					]
+					
+«««				 val regex = ".*" + usedContext.getOptionValue(FILTER_BY) as String + ".*"
+«««				 if (!regex.empty && !elementsInContext.empty) {
+«««					 val (M) => boolean filter = switch (elementsInContext.head) {
+«««						 Bundle		 case usedContext.getOptionValue(FILTER_BUNDLES)		  === true: {
+«««							 [ (it as Bundle)		  .uniqueId	.matches(regex) ]
+«««						 }
+«««						 Feature	   case usedContext.getOptionValue(FILTER_FEATURES)		 === true: {
+«««							 [ (it as Feature)		.uniqueId	 .matches(regex) ]
+«««						 }
+«««						 Product	   case usedContext.getOptionValue(FILTER_PRODUCTS)		 === true: {
+«««							 [ (it as Product)		.uniqueId	 .matches(regex) ]
+«««						 }
+«««						 BundleCategory   case usedContext.getOptionValue(FILTER_BUNDLE_CATEGORIES)  === true: {
+«««							 [ (it as BundleCategory)  .categoryName   .matches(regex) ]
+«««						 }
+«««						 PackageObject   case usedContext.getOptionValue(FILTER_PACKAGE_OBJECTS) === true: {
+«««							 [ (it as PackageObject)   .uniqueId	.matches(regex) ]
+«««						 }
+«««						 ServiceComponent case usedContext.getOptionValue(FILTER_SERVICE_COMPONENTS) === true: {
+«««							 [ (it as ServiceComponent).name		.matches(regex) ]
+«««						 }
+«««						 ServiceInterface case usedContext.getOptionValue(FILTER_SERVICE_INTERFACES) === true: {
+«««							 [ (it as ServiceInterface).name		.matches(regex) ]
+«««						 }
+«««						 Class		   case usedContext.getOptionValue(FILTER_CLASSES)		 === true: {
+«««							 [ (it as Class).displayedString		.matches(regex) ]
+«««						 }
+«««						 default: {
+«««							 // In case the option for the filter is turned off, just return the given list.
+«««							 null
+«««						 }
+«««					 }
+«««					 if (filter === null) {
+«««						 return elementsInContext
+«««					 } else {
+«««						 return elementsInContext.filter(filter)
+«««					 }
+«««				 } else {
+					return elementsInContext
+«««				 }
+				}
+				
+				/**
+					 * Filters the list of given visualization contexts by the filter options of the diagram options.
+					 * 
+					 * @param visualizationContexts The unfiltered list of all visualization contexts.
+					 * @param usedContext The ViewContext used to display the diagram these visualizations are shown in.
+					 * @return An Iterable of the visualization contexts filtered by the diagram options.
+					 */
+					def static <M> Iterable<? extends IVisualizationContext<M>> filteredElementContexts(
+						List<? extends IVisualizationContext<M>> visualizationContexts, ViewContext usedContext) {
+«««						val regex = ".*" + usedContext.getOptionValue(FILTER_BY) as String + ".*"
+«««						if (!regex.empty && !visualizationContexts.empty) {
+					if (!visualizationContexts.empty) {
+						val (IVisualizationContext<M>) => boolean filter = switch (visualizationContexts.head.modelElement) {
+							// The filter functions for the different artifacts, returns false if any filter does not match.
+							«FOR artifact : data.artifacts»
+								«artifact.name»: {
+									[
+										// Filter out external elements if they should not be shown
+										if ((usedContext.getOptionValue(Options.SHOW_EXTERNAL)) === false
+											&& (modelElement as «artifact.name»).isExternal) {
+											return false
+										}
+										return true
+									]
+								}
+							«ENDFOR»
+							default: {
+								null
+							}
+						}
+						if (filter === null) {
+							return visualizationContexts
+						} else {
+							return visualizationContexts.filter(filter)
+						}
+					} else {
+						return visualizationContexts
+					}
 				}
 			
 				/**
@@ -1065,55 +1176,6 @@ class GenerateSyntheses {
 						// Do nothing, separators cannot be configured.
 					}
 				}
-				
-				def static <M> Iterable<M> filteredElements(List<M> elements, IOverviewVisualizationContext<M> oc,
-					ViewContext usedContext) {
-					val elementsInContext = elements.filter [
-						oc.modelElements.contains(it)
-					]
-					
-«««					val regex = ".*" + usedContext.getOptionValue(FILTER_BY) as String + ".*"
-«««					if (!regex.empty && !elementsInContext.empty) {
-«««						val (M) => boolean filter = switch (elementsInContext.head) {
-«««							Bundle		   case usedContext.getOptionValue(FILTER_BUNDLES)			=== true: {
-«««								[ (it as Bundle)		  .uniqueId	   .matches(regex) ]
-«««							}
-«««							Feature		  case usedContext.getOptionValue(FILTER_FEATURES)		   === true: {
-«««								[ (it as Feature)		 .uniqueId	   .matches(regex) ]
-«««							}
-«««							Product		  case usedContext.getOptionValue(FILTER_PRODUCTS)		   === true: {
-«««								[ (it as Product)		 .uniqueId	   .matches(regex) ]
-«««							}
-«««							BundleCategory   case usedContext.getOptionValue(FILTER_BUNDLE_CATEGORIES)  === true: {
-«««								[ (it as BundleCategory)  .categoryName   .matches(regex) ]
-«««							}
-«««							PackageObject	case usedContext.getOptionValue(FILTER_PACKAGE_OBJECTS)	=== true: {
-«««								[ (it as PackageObject)   .uniqueId	   .matches(regex) ]
-«««							}
-«««							ServiceComponent case usedContext.getOptionValue(FILTER_SERVICE_COMPONENTS) === true: {
-«««								[ (it as ServiceComponent).name		   .matches(regex) ]
-«««							}
-«««							ServiceInterface case usedContext.getOptionValue(FILTER_SERVICE_INTERFACES) === true: {
-«««								[ (it as ServiceInterface).name		   .matches(regex) ]
-«««							}
-«««							Class			case usedContext.getOptionValue(FILTER_CLASSES)			=== true: {
-«««								[ (it as Class).displayedString		   .matches(regex) ]
-«««							}
-«««							default: {
-«««								// In case the option for the filter is turned off, just return the given list.
-«««								null
-«««							}
-«««						}
-«««						if (filter === null) {
-«««							return elementsInContext
-«««						} else {
-«««							return elementsInContext.filter(filter)
-«««						}
-«««					} else {
-					return elementsInContext
-«««					}
-				}
-				
 			}
 			
 		'''

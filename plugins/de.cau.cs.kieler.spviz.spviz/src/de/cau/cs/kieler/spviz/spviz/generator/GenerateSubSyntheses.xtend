@@ -69,16 +69,17 @@ class GenerateSubSyntheses {
             import de.cau.cs.kieler.klighd.krendering.extensions.KRenderingExtensions
             import de.cau.cs.kieler.klighd.syntheses.AbstractSubSynthesis
             import de.cau.cs.kieler.klighd.kgraph.KIdentifier
-            import «data.getBundleNamePrefix».viz.Styles
-            «FOR shownElement : view.shownElements»
-                import «data.getBundleNamePrefix».model.«shownElement.shownElement.name»Context
-            «ENDFOR»
-            import «data.getBundleNamePrefix».model.«viewName»OverviewContext
             import java.util.EnumSet
+            import java.util.List
             import org.eclipse.elk.core.math.ElkPadding
             import org.eclipse.elk.core.options.CoreOptions
             import org.eclipse.elk.core.options.Direction
             import org.eclipse.elk.core.options.SizeConstraint
+            import «data.getBundleNamePrefix».model.«viewName»OverviewContext
+            «FOR shownElement : view.shownElements»
+                import «data.getBundleNamePrefix».model.«shownElement.shownElement.name»Context
+            «ENDFOR»
+            import «data.getBundleNamePrefix».viz.Styles
 
             
             import static extension de.cau.cs.kieler.klighd.syntheses.DiagramSyntheses.*
@@ -143,6 +144,10 @@ class GenerateSubSyntheses {
                  * @param «viewName.toFirstLower»OverviewContext The overview context for all «viewName.toFirstLower»s in this subsynthesis.
                  */
                 private def KNode transformCollapsed«viewName»Overview(«viewName»OverviewContext «viewName.toFirstLower»OverviewContext) {
+                    «FOR shownElement : view.shownElements»
+                        val filteredCollapsed«shownElement.shownElement.name»Contexts = filteredElementContexts(
+                            «viewName.toFirstLower»OverviewContext.collapsed«shownElement.shownElement.name»Contexts as List<«shownElement.shownElement.name»Context>, usedContext).toList
+                    «ENDFOR»
                     createNode => [
                         associateWith(«viewName.toFirstLower»OverviewContext)
                         configureBoxLayout
@@ -151,7 +156,7 @@ class GenerateSubSyntheses {
                         
                         «FOR shownElement : view.shownElements»
                             // all «shownElement.shownElement.name»s
-                            «viewName.toFirstLower»OverviewContext.collapsed«shownElement.shownElement.name»Contexts.sortBy [
+                            filteredCollapsed«shownElement.shownElement.name»Contexts.sortBy [
                                 modelElement.getName].forEach [ collapsed«shownElement.shownElement.name»Context, index |
                                 children += simple«shownElement.shownElement.name»Synthesis.transform(
                                     collapsed«shownElement.shownElement.name»Context as «shownElement.shownElement.name»Context, -index)
@@ -167,6 +172,10 @@ class GenerateSubSyntheses {
                  * @param «viewName.toFirstLower»OverviewContext The overview context for all «viewName.toFirstLower»s in this subsynthesis.
                  */
                 private def KNode transformDetailed«viewName»Overview(«viewName»OverviewContext «viewName.toFirstLower»OverviewContext) {
+                    «FOR shownElement : view.shownElements»
+                        val filteredDetailed«shownElement.shownElement.name»Contexts = filteredElementContexts(
+                            «viewName.toFirstLower»OverviewContext.detailed«shownElement.shownElement.name»Contexts, usedContext)
+                    «ENDFOR»
                     createNode => [
                         associateWith(«viewName.toFirstLower»OverviewContext)
                         configureOverviewLayout
@@ -174,7 +183,7 @@ class GenerateSubSyntheses {
                         tooltip = «viewName.toFirstLower»OverviewContext.overviewText
                         
                         «FOR shownElement : view.shownElements»
-                            children += «viewName.toFirstLower»OverviewContext.detailed«shownElement.shownElement.name»Contexts.flatMap [
+                            children += filteredDetailed«shownElement.shownElement.name»Contexts.flatMap [
                                 return «shownElement.shownElement.name.toFirstLower»Synthesis.transform(it as «shownElement.shownElement.name»Context)
                             ]
                         «ENDFOR»
