@@ -31,7 +31,7 @@ class GenerateSyntheses {
 	def static void generate(IFolder sourceFolder, DataAccess data, IProgressMonitor progressMonitor) {
 		val folder = data.getBundleNamePrefix.replace('.','/') + "/viz/"
 		
-		FileGenerator.generateOrUpdateFile(sourceFolder, folder + "DiagramSynthesis.xtend", generateDiagramSynthesis(data),
+		FileGenerator.generateOrUpdateFile(sourceFolder, folder + data.projectName.toFirstUpper + "DiagramSynthesis.xtend", generateDiagramSynthesis(data),
             progressMonitor)
         FileGenerator.generateOrUpdateFile(sourceFolder, folder + "KlighdSetup.xtend", generateKlighdSetup(data),
             progressMonitor)
@@ -91,7 +91,7 @@ class GenerateSyntheses {
 			 * Main diagram synthesis for {@link «data.projectName»} models.
 			 */
 			@ViewSynthesisShared
-			class DiagramSynthesis extends AbstractDiagramSynthesis<«data.projectName»> {
+			class «data.projectName.toFirstUpper»DiagramSynthesis extends AbstractDiagramSynthesis<«data.projectName»> {
 				@Inject extension KNodeExtensions
 				@Inject extension Styles
 				«FOR view : data.views»
@@ -274,8 +274,7 @@ class GenerateSyntheses {
 							.registerAction(RevealRequiring«connection.shownConnection.requiring.name»Requires«connection.shownConnection.required.name»Named«connection.shownConnection.name»Action.ID, new RevealRequiring«connection.shownConnection.requiring.name»Requires«connection.shownConnection.required.name»Named«connection.shownConnection.name»Action)
 						«ENDFOR»
 					«ENDFOR»
-					.registerDiagramSynthesisClass(DiagramSynthesis.name, DiagramSynthesis)
-«««					.registerDiagramSynthesisClass(OsgiVizSynthesis.name, OsgiVizSynthesis)
+					.registerDiagramSynthesisClass(«data.projectName.toFirstUpper»DiagramSynthesis.name, «data.projectName.toFirstUpper»DiagramSynthesis)
 				}
 			}
 			
