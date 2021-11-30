@@ -329,9 +329,9 @@ class GenerateVizModelUtils {
 									
 								«ENDFOR»
 								«FOR requiringConnection : data.getRequiringArtifactsInOverview(shownElement.shownElement, view)»
-									overviewContext.requiring«requiringConnection.requiring.name»Requires«requiringConnection.required.name»Named«requiringConnection.name»Edges.clone.forEach[
+									overviewContext.required«requiringConnection.requiring.name»Requires«requiringConnection.required.name»Named«requiringConnection.name»Edges.clone.forEach[
 										if (value === context) {
-											overviewContext.requiring«requiringConnection.requiring.name»Requires«requiringConnection.required.name»Named«requiringConnection.name»Edges.remove(it)
+											overviewContext.required«requiringConnection.requiring.name»Requires«requiringConnection.required.name»Named«requiringConnection.name»Edges.remove(it)
 											key.allRequired«requiringConnection.requiring.name»Requires«requiringConnection.required.name»Named«requiringConnection.name»Shown = false
 											value.allRequiring«requiringConnection.requiring.name»Requires«requiringConnection.required.name»Named«requiringConnection.name»Shown = false
 										}
