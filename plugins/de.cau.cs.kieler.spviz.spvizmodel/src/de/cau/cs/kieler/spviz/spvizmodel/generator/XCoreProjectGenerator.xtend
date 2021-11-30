@@ -36,8 +36,8 @@ import org.eclipse.jdt.core.JavaCore
  */
 class XCoreProjectGenerator {
     
-    /** ID of the project to be generated */
-    val String projectName
+    /** path of the project to be generated */
+    val String projectPath
     
     /** Name of the to-be-generated Xcore file */
     var String xCoreFileName = null
@@ -52,7 +52,7 @@ class XCoreProjectGenerator {
      * Create a new generator.
      */
     new(String projectName) {
-        this.projectName = projectName
+        this.projectPath = projectName
         configureRequiredBundles(#["org.eclipse.emf.ecore", "org.eclipse.xtext.xbase.lib",
             "org.eclipse.emf.ecore.xcore.lib"])
     }
@@ -94,7 +94,7 @@ class XCoreProjectGenerator {
      * @returns The new XCore project that was generated on the file system.
      */
     def IProject generate(IProgressMonitor progressMonitor) {
-        val genModelContainerPath = new Path("/" + projectName + "/src")
+        val genModelContainerPath = new Path("/" + projectPath + "/src")
         val IPath genModelProjectLocation = null
 
         // Code taken and adapted from the org.eclipse.emf.ecore.xcore.ui.EmptyXcoreProjectWizard and

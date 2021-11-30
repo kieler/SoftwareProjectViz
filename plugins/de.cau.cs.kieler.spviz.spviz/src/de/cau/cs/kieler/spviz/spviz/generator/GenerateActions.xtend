@@ -53,6 +53,8 @@ class GenerateActions {
 		FileGenerator.generateOrUpdateFile(sourceFolder, folder + "ContextExpandAllAction.xtend", content, progressMonitor)
 		content = generateConnectAllAction(data)
 		FileGenerator.generateOrUpdateFile(sourceFolder, folder + "ConnectAllAction.xtend", content, progressMonitor)
+		content = generateStoreModelAction(data)
+		FileGenerator.generateOrUpdateFile(sourceFolder, folder + "StoreModelAction.xtend", content, progressMonitor)
 		
 		for (view : data.views) {
     		for (shownConnection : view.shownConnections) {
@@ -639,6 +641,49 @@ class GenerateActions {
                             }
                         }
                     ]
+                }
+            }
+            
+        '''
+    }
+    
+    /**
+     * Generates the content for the StoreModelAction class.
+     * 
+     * @param data
+     *      a DataAccess to easily get the information from
+     * @return
+     *      the generated file content as a string
+     */
+    def static generateStoreModelAction(DataAccess data) {
+        return '''
+            package «data.getBundleNamePrefix».viz.actions
+            
+            import de.cau.cs.kieler.klighd.IAction
+            import «data.getBundleNamePrefix».viz.FileHandler
+            import «data.getBundleNamePrefix».model.IVisualizationContext
+            
+            /*
+             * Persists the currently viewed {@link IVisualizationContext} and the model it belongs to to disk.
+             * Uses the path relative to the execution of this model
+             * "models/[projectName]-visualization-[yyyyMMddHHmmss].«data.spviz.name.toLowerCase»".
+             * The .«data.spviz.name.toLowerCase» file can then be opened and viewed and will generate the exact view on the underlying .«data.spvizModel.name.toLowerCase» file as
+             * visualized when saved.
+             * Note that the .«data.spvizModel.name.toLowerCase» file needs to be located next to the .«data.spvizModel.name.toLowerCase» file when opening.
+             * 
+             * @author nre, ldi
+             */
+            class StoreModelAction implements IAction {
+                
+                
+                /**
+                 * This action's ID.
+                 */
+                public static val String ID = StoreModelAction.name
+                
+                override execute(ActionContext context) {
+                    FileHandler.writeCurrentModelToFile(context.viewContext, false)
+                    return ActionResult.createResult(false)
                 }
             }
             

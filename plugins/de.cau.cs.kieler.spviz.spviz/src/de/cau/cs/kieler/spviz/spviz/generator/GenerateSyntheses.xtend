@@ -31,8 +31,10 @@ class GenerateSyntheses {
 	def static void generate(IFolder sourceFolder, DataAccess data, IProgressMonitor progressMonitor) {
 		val folder = data.getBundleNamePrefix.replace('.','/') + "/viz/"
 		
-		FileGenerator.generateOrUpdateFile(sourceFolder, folder + data.projectName.toFirstUpper + "DiagramSynthesis.xtend", generateDiagramSynthesis(data),
-            progressMonitor)
+		FileGenerator.generateOrUpdateFile(sourceFolder, folder + data.projectName.toFirstUpper + "DiagramSynthesis.xtend",
+		    generateDiagramSynthesis(data), progressMonitor)
+        FileGenerator.generateOrUpdateFile(sourceFolder, folder + data.visualizationName.toFirstUpper + "DiagramSynthesis.xtend",
+            generateVizDiagramSynthesis(data), progressMonitor)
         FileGenerator.generateOrUpdateFile(sourceFolder, folder + "KlighdSetup.xtend", generateKlighdSetup(data),
             progressMonitor)
         FileGenerator.generateOrUpdateFile(sourceFolder, folder + "Styles.xtend", generateStyles(data),
@@ -42,6 +44,9 @@ class GenerateSyntheses {
         FileGenerator.generateOrUpdateFile(sourceFolder, folder + "SynthesisProperties.xtend",
             generateSynthesisProperties(data), progressMonitor)
         FileGenerator.generateOrUpdateFile(sourceFolder, folder + "Options.xtend", generateOptions(data), progressMonitor)
+        FileGenerator.generateOrUpdateFile(sourceFolder, folder + "FileHandler.xtend", generateFileHandler(data), progressMonitor)
+        FileGenerator.generateOrUpdateFile(sourceFolder, folder + "VisualizationReInitializer.xtend",
+            generateVisualizationReInitializer(data), progressMonitor)
 	}
 	
 	/**
@@ -65,7 +70,7 @@ class GenerateSyntheses {
 			import de.cau.cs.kieler.klighd.syntheses.AbstractDiagramSynthesis
 			import «data.getBundleNamePrefix».viz.actions.RedoAction
 			import «data.getBundleNamePrefix».viz.actions.ResetViewAction
-«««			import «spviz.packageName».viz.actions.StoreModelAction
+			import «data.getBundleNamePrefix».viz.actions.StoreModelAction
 			import «data.getBundleNamePrefix».viz.actions.UndoAction
 			import «data.getBundleNamePrefix».model.IVisualizationContext
 			import «data.getBundleNamePrefix».model.«data.visualizationName»
@@ -111,9 +116,9 @@ class GenerateSyntheses {
 						DisplayedActionData.create(RedoAction.ID, "Redo",
 							"Redoes the last action that was undone on the view model."),
 						DisplayedActionData.create(ResetViewAction.ID, "Reset View",
-							"Resets the view to its default overview state.")
-«««						DisplayedActionData.create(StoreModelAction.ID, "Store View Model",
-«««							"Stores the current view configuration and model to disk.")
+							"Resets the view to its default overview state."),
+						DisplayedActionData.create(StoreModelAction.ID, "Store View Model",
+							"Stores the current view configuration and model to disk.")
 					]
 				}
 				
@@ -221,6 +226,129 @@ class GenerateSyntheses {
 	}
 	
 	/**
+     * Generates the content for the diagram synthesis for predefined visualization models.
+     * 
+     * @param data
+     *      a DataAccess to easily get the information from
+     * @return 
+     *      the generated file content as a string
+     */
+	def static String generateVizDiagramSynthesis(DataAccess data) {
+	    return '''
+	       package «data.bundleNamePrefix».viz
+	       
+	       import com.google.inject.Inject
+	       import com.google.inject.Injector
+	       import de.cau.cs.kieler.klighd.krendering.ViewSynthesisShared
+	       import de.cau.cs.kieler.klighd.syntheses.AbstractDiagramSynthesis
+	       import org.eclipse.elk.core.service.ILayoutConfigurationStore
+	       import org.eclipse.elk.core.service.LayoutConnectorsService
+	       import «data.bundleNamePrefix».model.Option
+	       import «data.bundleNamePrefix».model.«data.visualizationName»
+	       import «data.bundleNamePrefix».model.impl.«data.visualizationName»Impl
+	       
+	       /**
+	        * Diagram synthesis for predefined visualization models.
+	        * 
+	        * @author nre
+	        */
+	       @ViewSynthesisShared
+	       class «data.visualizationName»DiagramSynthesis extends AbstractDiagramSynthesis<«data.visualizationName»Impl> {
+	           
+	           @Inject «data.projectName»DiagramSynthesis diagramSynthesisDelegate
+	           
+	           override getInputDataType() {
+	               «data.visualizationName»Impl
+	           }
+	           
+	           override getDisplayedActions() {
+	               diagramSynthesisDelegate.displayedActions
+	           }
+	           
+	           override getDisplayedLayoutOptions() {
+	               diagramSynthesisDelegate.displayedLayoutOptions
+	           }
+	              
+	           override getDisplayedSynthesisOptions() {
+	               diagramSynthesisDelegate.displayedSynthesisOptions
+	           }
+	           
+	           override transform(«data.visualizationName»Impl model) {
+	               val visualizationContexts = usedContext.getProperty(SynthesisProperties.VISUALIZATION_CONTEXTS)
+	               var index = usedContext.getProperty(SynthesisProperties.CURRENT_VISUALIZATION_CONTEXT_INDEX)
+	               val rootVisualization = usedContext.getProperty(SynthesisProperties.MODEL_VISUALIZATION_CONTEXT)
+	               var «data.visualizationName» visualizationContext = null
+	               
+	               if (!visualizationContexts.empty && index !== null) {
+	                   visualizationContext = visualizationContexts.get(index)
+	               }
+	               // If the visualization context is for another model than the model this method was called for or does not exist
+	               // yet, reset the contexts.
+	               if (visualizationContext === null || rootVisualization !== model) {
+	                   visualizationContexts.removeIf [ true ]
+	                   index = 0
+	                   usedContext.setProperty(SynthesisProperties.CURRENT_VISUALIZATION_CONTEXT_INDEX, index)
+	                   
+	                   // As we use a different model, the root model may differ from what is shown in the visualization
+	                   // context. So create a new visualization context and initialize and connect it with everything the old model
+	                   // had as well.
+	                   visualizationContext = VisualizationReInitializer.reInitialize(model)
+	                   visualizationContexts.add(visualizationContext)
+	                   usedContext.setProperty(SynthesisProperties.MODEL_VISUALIZATION_CONTEXT, model)
+	                   
+	                   // Set synthesis and layout options according to the stored options.
+	                   setSynthesisOptions(model.getSynthesisOptions)
+	                   setLayoutOptions(model.getLayoutOptions)
+	                   
+	               }
+	               
+	               diagramSynthesisDelegate.transform(visualizationContext.getModelElement, usedContext)
+	           }
+	           
+	           /**
+	            * Configures the new synthesis options to be used during this synthesis.
+	            * 
+	            * @param newSynthesisOptions The new synthesis options to set.
+	            */
+	           protected def void setSynthesisOptions(Iterable<Option> newSynthesisOptions) {
+	               val allSynthesisOptions = usedContext.displayedSynthesisOptions
+	               for (storedOption : newSynthesisOptions) {
+	                   val option = allSynthesisOptions.findFirst [ id.equals(storedOption.id) ]
+	                   // Only configure options which are available.
+	                   if (option !== null) {
+	                       SynthesisUtils.configureSynthesisOption(option, storedOption.value, usedContext)
+	                   }
+	               }
+	           }
+	           
+	           /**
+	            * Configures the new layout options to be used for layout runs on this model.
+	            * 
+	            * @param newLayoutOptions The new layout options to set.
+	            */
+	           protected def void setLayoutOptions(Iterable<Option> newLayoutOptions) {
+	               try {
+	                   val Injector injector = LayoutConnectorsService.instance.getInjector(null, usedContext)
+	                   val ILayoutConfigurationStore.Provider layoutConfigStoreProvider =
+	                       injector.getInstance(ILayoutConfigurationStore.Provider)
+	                   val ILayoutConfigurationStore layoutConfigStore =
+	                       layoutConfigStoreProvider.get(usedContext.diagramWorkbenchPart, usedContext.viewModel)
+	                   for (storedOptions : newLayoutOptions) {
+	                       layoutConfigStore.setOptionValue(storedOptions.id, storedOptions.value)
+	                   }
+	               } catch (Throwable t) {
+	                   // Continue without loading the layout options, but log it on the console for now.
+	                   println("Cannot load the layout options for this model:")
+	                   t.printStackTrace
+	               }
+	           }
+	           
+	       }
+	       
+	    '''
+	}
+	
+	/**
 	 * Generates the content for the klighd setup.
 	 * 
 	 * @param data
@@ -250,6 +378,7 @@ class GenerateSyntheses {
 			import «data.getBundleNamePrefix».viz.actions.UndoAction
 			import «data.getBundleNamePrefix».viz.actions.RedoAction
 			import «data.getBundleNamePrefix».viz.actions.ResetViewAction
+			import «data.getBundleNamePrefix».viz.actions.StoreModelAction
 			
 			/**
 			 * Setup registering all KLighD extensions required to run this bundle.
@@ -262,7 +391,7 @@ class GenerateSyntheses {
 					.registerAction(UndoAction.ID, new UndoAction)
 					.registerAction(RedoAction.ID, new RedoAction)
 					.registerAction(ResetViewAction.ID, new ResetViewAction)
-«««					.registerAction(StoreModelAction.ID, new StoreModelAction)
+					.registerAction(StoreModelAction.ID, new StoreModelAction)
 					.registerAction(ContextCollapseExpandAction.ID, new ContextCollapseExpandAction)
 					.registerAction(ContextExpandAllAction.ID, new ContextExpandAllAction)
 «««					.registerAction(ContextRemoveAction.ID, new ContextRemoveAction)
@@ -275,6 +404,7 @@ class GenerateSyntheses {
 						«ENDFOR»
 					«ENDFOR»
 					.registerDiagramSynthesisClass(«data.projectName.toFirstUpper»DiagramSynthesis.name, «data.projectName.toFirstUpper»DiagramSynthesis)
+					.registerDiagramSynthesisClass(«data.visualizationName.toFirstUpper»DiagramSynthesis.name, «data.visualizationName.toFirstUpper»DiagramSynthesis)
 				}
 			}
 			
@@ -1295,6 +1425,460 @@ class GenerateSyntheses {
 			}
 			
 		'''
+	}
+	
+	/**
+     * Generates the content for the FileHandler class.
+     * 
+     * @param data
+     *      a DataAccess to easily get the information from
+     * @return 
+     *      the generated file content as a string
+     */
+	def static String generateFileHandler(DataAccess data) {
+	    return '''
+	       package «data.getBundleNamePrefix».viz
+	       
+	       import com.google.inject.Injector
+	       import de.cau.cs.kieler.klighd.Klighd
+	       import de.cau.cs.kieler.klighd.ViewContext
+	       import java.io.File
+	       import java.nio.file.Files
+	       import java.nio.file.Paths
+	       import java.text.SimpleDateFormat
+	       import java.util.Collections
+	       import java.util.Date
+	       import java.util.List
+	       import org.eclipse.core.runtime.IStatus
+	       import org.eclipse.core.runtime.Status
+	       import org.eclipse.elk.core.data.LayoutMetaDataService
+	       import org.eclipse.elk.core.service.ILayoutConfigurationStore
+	       import org.eclipse.elk.core.service.LayoutConfigurationManager
+	       import org.eclipse.elk.core.service.LayoutConnectorsService
+	       import org.eclipse.emf.common.util.URI
+	       import org.eclipse.emf.ecore.EObject
+	       import org.eclipse.emf.ecore.resource.Resource
+	       import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl
+	       import org.eclipse.emf.ecore.util.EcoreUtil.Copier
+	       import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl
+	       import «data.getBundleNamePrefix».model.«data.visualizationName»
+	       import «data.getBundleNamePrefix».model.«data.visualizationName»Factory
+	       import «data.getBundleNamePrefix».model.«data.visualizationName»Package
+	       import «data.modelBundleNamePrefix».model.«data.projectName»
+	       import «data.modelBundleNamePrefix».model.«data.spvizModel.name»Package
+	       
+	       import static extension «data.getBundleNamePrefix».model.util.ContextExtensions.*
+	       
+	       /**
+	        * Writes to and reads from a temporary file, which contains the current {@link «data.visualizationName»}.
+	        * It is used to keep the visualization contexts state as long as the virtual machine is running.
+	        * 
+	        * @author ldi, nre
+	        */
+	       class FileHandler {
+	           
+	           /** No instanciation of this class, only static use. */
+	           private new() {}
+	       
+	           static URI tempDirURI = null;
+	       
+	           /**
+	            * Create a temporary folder for this session.
+	            */
+	           def static void createTempFolder() {
+	               val systempTempPath = Paths.get(System.getProperty("java.io.tmpdir"))
+	               val tempPath = Files.createTempDirectory(systempTempPath, "spviz");
+	               tempPath.toFile().deleteOnExit();
+	               tempDirURI = URI.createURI(tempPath.toUri().toString())
+	           }
+	       
+	           /**
+	            * @param viewContext
+	            *  a {@link ViewContext} to read the input file URI from
+	            * @return the temporary file name
+	            */
+	           def static String getSourceFileName(ViewContext viewContext) {
+	               val obj = viewContext.getInputModel() as EObject
+	               val URI uri = obj.eResource.URI
+	               var fileName = uri.lastSegment()
+	               val stripFileEnding = "«data.spvizModel.name.toLowerCase»"
+	               if (fileName.endsWith(stripFileEnding)) {
+	                   fileName = fileName.substring(0, fileName.lastIndexOf(stripFileEnding)) + "«data.spviz.name.toLowerCase»"
+	               }
+	               return fileName
+	           }
+	       
+	           /**
+	            * Reads and returns a «data.visualizationName» from the related temp file, if it exists.
+	            * 
+	            * @param name
+	            *      for constructing the URI to load
+	            * @return a {@link «data.visualizationName»} or null, if no file exists for the given name
+	            */
+	           def static «data.visualizationName» getFromTempFile(String name) {
+	               if(tempDirURI === null) return null
+	               val emfURI = tempDirURI.appendSegment(name)
+	       
+	               val resSet = new ResourceSetImpl
+	               // check if a file at that URI exists
+	               if (resSet.getURIConverter().exists(emfURI, null)) {
+	                   val res = resSet.createResource(emfURI)
+	                   res.load(Collections.EMPTY_MAP)
+	       
+	                   val iterator = res.getContents().iterator()
+	                   while (iterator.hasNext()) {
+	                       val checkViz = iterator.next() as «data.visualizationName»
+	                       if(checkViz !== null) return checkViz
+	                   }
+	               }
+	               return null
+	           }
+	       
+	           /**
+	            * (over)writes the current «data.visualizationName» into the (temp) file.
+	            * 
+	            * @param viewContext
+	            *      The ViewContext for which its model should be saved.
+	            * @param isTemp
+	            *      If {@code true}, the file is saved in a temporary directory (always the same file), or
+	            *      next to original (always a new file) otherwise.
+	            */
+	           def static void writeCurrentModelToFile(ViewContext viewContext, boolean isTemp) {
+	               if (isTemp && tempDirURI === null) createTempFolder()
+	       
+	               try {
+	                   // Get the currently viewed model from the context.
+	                   val int index = viewContext.getProperty(SynthesisProperties.CURRENT_VISUALIZATION_CONTEXT_INDEX)
+	                   val List<«data.visualizationName»> contexts = viewContext.getProperty(SynthesisProperties.VISUALIZATION_CONTEXTS)
+	                   val «data.visualizationName» currentContext = contexts.get(index)
+	       
+	                   // Also get the model referred by the viz and store that as well.
+	                   val «data.visualizationName» rootContext = currentContext.rootVisualization
+	                   val «data.projectName» rootModel = rootContext?.modelElement
+	       
+	                   // Take a copy of the context and model first to not mess up the current resource they might be stored in.
+	                   val Copier copier = new Copier(true, true)
+	                   val «data.projectName» copiedModel = copier.copy(rootModel) as «data.projectName»
+	                   val «data.visualizationName» copiedRoot = copier.copy(rootContext) as «data.visualizationName»
+	                   val copiedContext = if (currentContext === rootContext) {
+	                           copiedRoot
+	                       } else {
+	                           copier.copy(currentContext) as «data.visualizationName»
+	                       }
+	                   copier.copyReferences
+	       
+	                   // Persist the current state of KLighD's synthesis options in the model...
+	                   // ...the synthesis options
+	                   storeSynthesisOptions(copiedRoot, viewContext)
+	                   // ...and the layout options
+	                   storeLayoutOptions(copiedRoot, viewContext)
+	       
+	                   // Store the model.
+	                   val r = Resource.Factory.Registry.INSTANCE
+	                   val extensionFactories = r.getExtensionToFactoryMap
+	                   val vizFileEnding = "«data.spviz.name.toLowerCase»"
+	                   val modelFileEnding = "«data.spvizModel.name.toLowerCase»"
+	                   extensionFactories.put(vizFileEnding, new XMIResourceFactoryImpl)
+	                   extensionFactories.put(modelFileEnding, new XMIResourceFactoryImpl)
+	                   val resSet = new ResourceSetImpl
+	                   resSet.packageRegistry.put(«data.visualizationName»Package.eNS_URI, «data.visualizationName»Package.eINSTANCE)
+	                   resSet.packageRegistry.put(«data.spvizModel.name»Package.eNS_URI, «data.spvizModel.name»Package.eINSTANCE)
+	       
+	                   // build URI for viz file
+	                   var URI writeURI
+	                   if (isTemp) {
+	                       val sourceName = getSourceFileName(viewContext)
+	                       writeURI = tempDirURI
+	                       writeURI = writeURI.appendSegment(sourceName)
+	                       // Clear up the temp files during shutdown.
+	                       new File(writeURI.toFileString).deleteOnExit
+	                   } else {
+	                       writeURI = rootModel.eResource().getURI().trimSegments(1)
+	                       val projectName = rootModel.projectName
+	                       val timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date)
+	                       val fileName = projectName + "-visualization-" + timeStamp + "." + vizFileEnding
+	                       writeURI = writeURI.appendSegment(fileName)
+	                   }
+	                   // prepare Resource
+	                   val res = resSet.createResource(writeURI)
+	                   res.getContents().add(copiedContext)
+	       
+	                   // A resource to hold the original model to reference to while saving
+	                   val modelRes = resSet.createResource(rootModel.eResource().getURI())
+	                   modelRes.getContents().add(copiedModel)
+	       
+	                   // Save the content.
+	                   res.save(Collections.EMPTY_MAP)
+	               } catch (Throwable t) {
+	                   Klighd.log(
+	                       new Status(IStatus.ERROR, "«data.getBundleNamePrefix».viz",
+	                           "Something went wrong while saving the current model in a temp file:", t));
+	               }
+	           }
+	       
+	           /**
+	            * Stores the currently used synthesis options in the visualization context.
+	            * 
+	            * @param visualizationContext The context to save the current options to.
+	            * @param viewContext The view context used to display the current diagram.
+	            */
+	           protected def static void storeSynthesisOptions(«data.visualizationName» visualizationContext, ViewContext viewContext) {
+	               val synthesisOptions = viewContext.displayedSynthesisOptions
+	               visualizationContext.synthesisOptions.clear
+	               for (option : synthesisOptions) {
+	                   val storedOption = «data.visualizationName»Factory.eINSTANCE.createOption => [
+	                       id = option.id
+	                       value = viewContext.getOptionValue(option).toString
+	                   ]
+	                   visualizationContext.synthesisOptions.add(storedOption)
+	               }
+	           }
+	       
+	           /**
+	            * Stores the currently used layout options in the visualization context.
+	            * 
+	            * @param visualizationContext The context to save the current options to.
+	            * @param viewContext The view context used to display the current diagram.
+	            */
+	           protected def static void storeLayoutOptions(«data.visualizationName» visualizationContext, ViewContext viewContext) {
+	               val layoutOptions = viewContext.displayedLayoutOptions
+	               visualizationContext.layoutOptions.clear
+	               // We need to obtain the LayoutConfigurationManager responsible for the view context to get
+	               // the current options.
+	               // This works in Eclipse-mode, but not in standalone-mode, as the returned injector is null
+	               // This is because no org.eclipse.elk.core.service.layoutConnectors can be registered without a running 
+	               // platform and Eclipse extension points (or so it seems).
+	               // I probably need to find a way to correctly register everything from ELK in non-Eclipse-mode and also use that
+	               // to configure the options in the LSP; currently that stores the layout config itself and does not use any ELK
+	               // stuff for that.
+	               // See ELK Issue #719 for details https://github.com/eclipse/elk/issues/719
+	               try {
+	                   val Injector injector = LayoutConnectorsService.instance.getInjector(null, viewContext)
+	                   val LayoutConfigurationManager layoutConfigManager = injector.getInstance(LayoutConfigurationManager)
+	                   val ILayoutConfigurationStore.Provider layoutConfigStoreProvider = injector.getInstance(
+	                       ILayoutConfigurationStore.Provider)
+	                   for (option : layoutOptions) {
+	                       val optionData = LayoutMetaDataService.instance.getOptionData(option.first.id)
+	                       val layoutConfigStore = layoutConfigStoreProvider.get(viewContext.diagramWorkbenchPart,
+	                           viewContext.viewModel)
+	                       val optionValue = layoutConfigManager.getOptionValue(optionData, layoutConfigStore)
+	                       val storedOption = «data.visualizationName»Factory.eINSTANCE.createOption => [
+	                           id = option.first.id
+	                           value = optionValue.toString
+	                       ]
+	                       visualizationContext.layoutOptions.add(storedOption)
+	                   }
+	               } catch (Throwable t) {
+	                   // Continue without storing the layout options, but log it on the console for now.
+	                   println("Cannot store the layout options for this model:")
+	                   t.printStackTrace
+	               }
+	           }
+	       }
+	       
+	    '''
+	}
+	
+	/**
+     * Generates the content for the VisualizationReInitializer class.
+     * 
+     * @param data
+     *      a DataAccess to easily get the information from
+     * @return 
+     *      the generated file content as a string
+     */
+	def static String generateVisualizationReInitializer(DataAccess data) {
+	    return '''
+            package «data.bundleNamePrefix».viz
+            
+            import «data.bundleNamePrefix».model.IOverviewVisualizationContext
+            import «data.bundleNamePrefix».model.IVisualizationContext
+            import «data.bundleNamePrefix».model.«data.visualizationName»
+            import «data.bundleNamePrefix».model.util.VizModelUtil
+            import «data.modelBundleNamePrefix».model.util.ModelUtil
+            
+            «FOR artifact : data.artifacts»
+                import «data.bundleNamePrefix».model.«artifact.name»Context
+            «ENDFOR»
+            «FOR view : data.views»
+                import «data.getBundleNamePrefix».model.«view.name»OverviewContext
+            «ENDFOR»
+            
+            import static extension «data.bundleNamePrefix».model.util.ContextExtensions.*
+            
+            /**
+             * Helper class for the {@link «data.visualizationName»Synthesis} that re-initializes a {@link «data.visualizationName»} loaded from a file for that the
+             * connected {@link «data.projectName»} has changed. The main helper method {@link #reInitialize(«data.visualizationName»)} handles this
+             * possible mismatch between the visualization context and its model by creating a new visualization context that
+             * connects to everything still matched in the «data.projectName» while omitting and not connecting parts that are removed from
+             * the model.
+             * 
+             * @author nre
+             */
+            class VisualizationReInitializer {
+                
+                /**
+                 * Re-initializes a new visualization context to be as close as possible to the given old visualization context
+                 * while respecting the data given in the model element of the visualization.
+                 * To be executed if a loaded visualization context is to be displayed for that the underlying model may have
+                 * updated and references in the visualization context therefore may not be correct anymore.
+                 * 
+                 * @param oldViz The loaded visualization context to be replicated as best as possible with its contained model.
+                 * @returns A new visualization context matching the old one.
+                 */
+                static def «data.visualizationName» reInitialize(«data.visualizationName» oldViz) {
+                    val newViz = VizModelUtil.create«data.visualizationName»(oldViz.modelElement)
+                    // If the children of the old context have been initialized, initialize the new context as well and check
+                    // all children.
+                    if (oldViz.childrenInitialized) {
+                        newViz.initializeChildVisualizationContexts
+                        // First, reinitialize all child contexts to be the same as before.
+                        «FOR view : data.views»
+                            reInitialize(oldViz.«view.name.toFirstLower»OverviewContext, newViz.«view.name.toFirstLower»OverviewContext)
+                            if (oldViz.focus === oldViz.«view.name.toFirstLower»OverviewContext) {
+                                newViz.focus = newViz.«view.name.toFirstLower»OverviewContext
+                            }
+                        «ENDFOR»
+                        // Only after all child contexts are as before, reconnect them as before.
+                        «FOR view : data.views»
+                            reConnect(oldViz.«view.name.toFirstLower»OverviewContext, newViz.«view.name.toFirstLower»OverviewContext)
+                        «ENDFOR»
+                    }
+                    
+                    if (oldViz.focus !== null && newViz.focus === null) {
+                        // TODO: let the user know that the focus got lost due to the model having changed.
+                        System.out.println("SPViz: Focus reset, as the underlying model does not allow for that view anymore.")
+                    }
+                    return newViz
+                }
+                
+                «FOR view : data.views»
+                    /**
+                     * Dispatch method to Re-initialize a given {@code newContext} with the state of detailed, expanded and revealed
+                     * elements from the {@code oldContext}. Every method re-initializes the given context and all children recursively.
+                     */
+                    private static dispatch def void reInitialize(«view.name.toFirstUpper»OverviewContext oldContext,
+                        «view.name.toFirstUpper»OverviewContext newContext) {
+                        reInitializeChildContexts(oldContext, newContext)
+                        // Restore the state of every element from the old context that also exists in the new model.
+                        «FOR shownElement : view.shownElements»
+                            for (detailed : oldContext.detailed«shownElement.shownElement.name»Contexts) {
+                                val artifact = detailed.modelElement
+                                val newArtifact = newContext.collapsed«shownElement.shownElement.name»Contexts.findFirst [ artifact === it.modelElement ]
+                                if (newArtifact !== null) {
+                                    newContext.makeDetailed(newArtifact)
+                                }
+                            }
+                        «ENDFOR»
+                        // Restore the expanded state.
+                        newContext.expanded = oldContext.expanded
+                        
+                        // Re-initialize all child contexts.
+                        reInitializeOverviewChildContexts(newContext, oldContext)
+                    }
+                «ENDFOR»
+                
+                private static def void reInitializeOverviewChildContexts(IOverviewVisualizationContext<?> newOverview,
+                    IOverviewVisualizationContext<?> oldOverview) {
+                    if (newOverview.childrenInitialized) {
+                        for (childContext : oldOverview.childContexts) {
+                            val childElement = childContext.modelElement
+                            val newChildContext = newOverview.childContexts.findFirst [ childElement === it.modelElement ]
+                            if (newChildContext !== null) {
+                                reInitialize(childContext, newChildContext)
+                            }
+                        }
+                    }
+                    val rootContext = oldOverview.rootVisualization
+                    if (rootContext.focus === oldOverview) {
+                        newOverview.rootVisualization.focus = newOverview
+                    }
+                }
+                
+                «FOR artifact : data.artifacts»
+                    private static dispatch def void reInitialize(«artifact.name.toFirstUpper»Context oldContext, «artifact.name.toFirstUpper»Context newContext) {
+                        reInitializeChildContexts(oldContext, newContext)
+«««                        if (newContext.childrenInitialized) {
+«««                            // Restore the contained artifact overview contexts.
+«««                            «FOR overviewContext : TODO: when this is implemented, this should be all overviews that may be visualized within this artifact (e.g., bundles, features and services within a product in OSGi»
+«««                                reInitialize(oldContext.«overviewContext.name.toFirstLower», newContext.«overviewContext.toFirstLower»)
+«««                            «ENDFOR»
+«««                        }
+                    }
+                «ENDFOR»
+                
+                private static dispatch def void reInitialize(Void oldContext, Void newContext) {
+                    // nothing to do if we get nothing.
+                }
+                
+                private static def <M> void reInitializeChildContexts(IVisualizationContext<M> oldContext,
+                    IVisualizationContext<M> newContext) {
+                    if (oldContext.childrenInitialized && !newContext.childrenInitialized) {
+                        newContext.initializeChildVisualizationContexts
+                    }
+                }
+                
+                «FOR view : data.views»
+                    /**
+                     * Dispatch method to re-connect a given {@code newContext} with the connections from the {@code oldContext}. Every
+                     * method re-connects the given context and all children recursively.
+                     * Assumes, that the new contexts are already initialized as from the old context with just the connections missing.
+                     */
+                    private static dispatch def void reConnect(«view.name.toFirstUpper»OverviewContext oldContext,
+                        «view.name.toFirstUpper»OverviewContext newContext) {
+                        «FOR connection : view.shownConnections»
+                            for (oldEdge : oldContext.required«connection.shownConnection.requiring.name»Requires«connection.shownConnection.required.name»Named«connection.shownConnection.name»Edges) {
+                                // check if the source and target of the connection still exist and if they are still in a requirement relation.
+                                val requiring = oldEdge.key.modelElement
+                                val required = oldEdge.value.modelElement
+                                if (newContext.«connection.shownConnection.requiring.name.toFirstLower»s.contains(requiring)
+                                    && newContext.«connection.shownConnection.required.name.toFirstLower»s.contains(required)
+                                    && requiring.required«connection.shownConnection.name»«connection.shownConnection.required.name»s.contains(required)) {
+                                    val requiringContext = newContext.childContexts.findFirst [ requiring === it.modelElement ] as «connection.shownConnection.requiring.name»Context
+                                    val requiredContext  = newContext.childContexts.findFirst [ required  === it.modelElement ] as «connection.shownConnection.required.name»Context
+                                    requiringContext.add«connection.shownConnection.name»«connection.shownConnection.required.name»Edge(requiredContext)
+                                }
+                            }
+«««                            TODO :something like this for the other edges?
+«««                            for (oldEdge : oldContext.requiring«connection.shownConnection.requiring.name»Requires«connection.shownConnection.required.name»Named«connection.shownConnection.name»Edges) {
+«««                                // check if the source and target of the connection still exist and if they are still in a requirement relation.
+«««                                val requiring = oldEdge.key.modelElement
+«««                                val required = oldEdge.value.modelElement
+«««                                if (newContext.«connection.shownConnection.requiring.name.toFirstLower»s.contains(requiring)
+«««                                    && newContext.«connection.shownConnection.required.name.toFirstLower»s.contains(required)
+«««                                    && requiring.required«connection.shownConnection.name»«connection.shownConnection.required.name»s.contains(required)) {
+«««                                    val requiringContext = newContext.childContexts.findFirst [ requiring === it.modelElement ] as «connection.shownConnection.requiring.name»Context
+«««                                    val requiredContext  = newContext.childContexts.findFirst [ required  === it.modelElement ] as «connection.shownConnection.required.name»Context
+«««                                    requiredContext.add«connection.shownConnection.name»«connection.shownConnection.required.name»Edge(requiringContext)
+«««                                }
+«««                            }
+                        «ENDFOR»
+                        reConnectOverviewChildContexts(oldContext, newContext)
+                    }
+                «ENDFOR»
+
+                private static def void reConnectOverviewChildContexts(IOverviewVisualizationContext<?> oldOverview,
+                    IOverviewVisualizationContext<?> newOverview) {
+                    // re-connect everything in the child contexts
+                    for (childContext : oldOverview.childContexts) {
+                        val element = childContext.modelElement
+                        val newChildContext = newOverview.childContexts.findFirst [ element === it.modelElement ]
+                        if (newChildContext !== null) {
+                            reConnect(childContext, newChildContext)
+                        }
+                    }
+                }
+                
+                «FOR artifact : data.artifacts»
+                    private static dispatch def void reConnect(«artifact.name.toFirstUpper»Context oldContext, «artifact.name.toFirstUpper»Context newContext) {
+«««                        «FOR overviewContext : TODO: when this is implemented, this should be all overviews that may be visualized within this artifact (e.g., bundles, features and services within a product in OSGi»
+«««                            reConnect(oldContext.«overviewContext.name.toFirstLower»OverviewContext, newContext.«overviewContext.name.toFirstLower»OverviewContext)
+«««                        «ENDFOR»
+                    }
+                «ENDFOR»
+                private static dispatch def void reConnect(Void oldContext, Void newContext) {}
+            }
+        '''
 	}
 	
 }

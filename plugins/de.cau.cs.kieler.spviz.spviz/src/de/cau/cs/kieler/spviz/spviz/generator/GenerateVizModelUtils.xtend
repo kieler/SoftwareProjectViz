@@ -60,7 +60,7 @@ class GenerateVizModelUtils {
 			import «data.getBundleNamePrefix».model.Pair
 			import «data.getBundleNamePrefix».model.IVisualizationContext
 			import «data.getBundleNamePrefix».model.IOverviewVisualizationContext
-			import «data.getBundleNamePrefix».model.ModelFactory
+			import «data.getBundleNamePrefix».model.«data.visualizationName»Factory
 			import java.util.List
 			
 			import static extension «data.getBundleNamePrefix».model.util.ContextExtensions.*
@@ -68,7 +68,7 @@ class GenerateVizModelUtils {
 			final class VizModelUtil {
 				
 				/** The factory to create visualization model element instances */
-				static val ModelFactory FACTORY = ModelFactory.eINSTANCE
+				static val «data.visualizationName»Factory FACTORY = «data.visualizationName»Factory.eINSTANCE
 				
 				/** Utility classes are not meant to be instantiated. */
 				private new() {

@@ -47,7 +47,7 @@ public class SpringDIModelSaveAndLoadUtility {
 	public static void saveData(final String fileName, final SpringDIProject data, String modelSaveFilePath) throws IOException {
 		final Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
 		final Map<String, Object> m = reg.getExtensionToFactoryMap();
-		m.put("model", new XMIResourceFactoryImpl());
+		m.put("springdi", new XMIResourceFactoryImpl());
 
 		final ResourceSet resSet = new ResourceSetImpl();
 		modelSaveFilePath= modelSaveFilePath.replace("\\", "/");

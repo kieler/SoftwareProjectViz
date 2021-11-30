@@ -95,11 +95,17 @@ class SPVizModelGenerator extends AbstractGenerator {
 		
 		// String building
 		return '''
-		@GenModel(modelDirectory="«model.package».model/src")
+		@GenModel(
+		    fileExtensions="«model.name.toLowerCase»",
+		    modelDirectory="«model.package».model/src",
+		    modelName="«model.name»",
+		    prefix="«model.name»"
+		)
 		
 		package «model.package».model
 		
 		class «model.name»Project {
+		    String projectName
 			«FOR artifact : model.artifacts»
 				contains «artifact.name»[] «artifact.name.toFirstLower»s
 			«ENDFOR»

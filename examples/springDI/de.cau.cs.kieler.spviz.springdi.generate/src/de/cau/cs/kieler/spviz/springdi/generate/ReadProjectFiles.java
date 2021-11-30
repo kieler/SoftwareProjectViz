@@ -54,7 +54,7 @@ import de.cau.cs.kieler.spviz.springdi.model.Class;
 import de.cau.cs.kieler.spviz.springdi.model.ComponentImplementation;
 import de.cau.cs.kieler.spviz.springdi.model.ComponentInterface;
 import de.cau.cs.kieler.spviz.springdi.model.Identifiable;
-import de.cau.cs.kieler.spviz.springdi.model.ModelFactory;
+import de.cau.cs.kieler.spviz.springdi.model.SpringDIFactory;
 import de.cau.cs.kieler.spviz.springdi.model.Module;
 import de.cau.cs.kieler.spviz.springdi.model.SpringDIProject;
 
@@ -73,7 +73,7 @@ public class ReadProjectFiles {
 
 	static final java.lang.System.Logger LOGGER = System.getLogger(SpringDIModelDataGenerator.class.getName());
 
-	final SpringDIProject project = ModelFactory.eINSTANCE.createSpringDIProject();
+	final SpringDIProject project = SpringDIFactory.eINSTANCE.createSpringDIProject();
 
 	private final HashMap<String, Module> modules = new HashMap<>();
 	private final HashMap<String, ComponentInterface> interfaces = new HashMap<>();
@@ -85,11 +85,11 @@ public class ReadProjectFiles {
 	 * Generates the HashMaps with Data for bundles, features, services and
 	 * products.
 	 *
-	 * @param projectPath to extract osgi data from
-	 * @return SpringDIProject with all OSGI objects (bundles, features, services,
-	 *         products, service interfaces)
+	 * @param projectPath to extract project data from
+	 * @return SpringDIProject with all project artifacts
 	 */
 	public SpringDIProject generateData(final File projectPath, final String projectName) {
+		project.setProjectName(projectName);
 		
 		// Parsing of pom.xml files for artifacts and modules data
 		final List<Path> pomFilePaths = new ArrayList<Path>();
@@ -107,7 +107,7 @@ public class ReadProjectFiles {
 			final Document pom = ReadProjectFilesUtility.readFileToDocument(pomPath);
 			if (isArtifact(pom)) {
 				// Create an artifact for this pom.xml file
-				final Artifact artifact = ModelFactory.eINSTANCE.createArtifact();
+				final Artifact artifact = SpringDIFactory.eINSTANCE.createArtifact();
 				project.getArtifacts().add(artifact);
 				
 				// Extract model data for this artifact
@@ -199,7 +199,7 @@ public class ReadProjectFiles {
 		} catch (ParserConfigurationException | SAXException | IOException e) {
 			LOGGER.log(Level.ERROR, "Could not parse pom.xml: " + modulePath.toString());
 		}
-		final Module module = ModelFactory.eINSTANCE.createModule();
+		final Module module = SpringDIFactory.eINSTANCE.createModule();
 		module.setName(modulePath.toString());
 		module.setEcoreId(StaticVariables.MODULE_PREFIX + toAscii(modulePath.toString()));
 		module.setExternal(false);
@@ -219,7 +219,7 @@ public class ReadProjectFiles {
 			return modules.get(name);
 		} else {
 			// Create a new model and set it up
-			final Module module = ModelFactory.eINSTANCE.createModule();
+			final Module module = SpringDIFactory.eINSTANCE.createModule();
 			module.setName(name);
 			module.setEcoreId(StaticVariables.MODULE_PREFIX + toAscii(name));
 			module.setExternal(true);
@@ -241,7 +241,7 @@ public class ReadProjectFiles {
 			return interfaces.get(name);
 		} else {
 			// Create a new model and set it up
-			final ComponentInterface componentInterface = ModelFactory.eINSTANCE.createComponentInterface();
+			final ComponentInterface componentInterface = SpringDIFactory.eINSTANCE.createComponentInterface();
 			componentInterface.setName(name);
 			componentInterface.setEcoreId(StaticVariables.COMPONENT_INTERFACE_PREFIX + name);
 			componentInterface.setExternal(true);
@@ -263,7 +263,7 @@ public class ReadProjectFiles {
 			return implementations.get(name);
 		} else {
 			// Create a new model and set it up
-			final ComponentImplementation componentImplementation= ModelFactory.eINSTANCE.createComponentImplementation();
+			final ComponentImplementation componentImplementation= SpringDIFactory.eINSTANCE.createComponentImplementation();
 			componentImplementation.setName(name);
 			componentImplementation.setEcoreId(StaticVariables.COMPONENT_IMPLEMENTATION_PREFIX + toAscii(name));
 			componentImplementation.setExternal(true);
@@ -285,7 +285,7 @@ public class ReadProjectFiles {
 			return classes.get(name);
 		} else {
 			// Create a new model and set it up
-			final Class clazz = ModelFactory.eINSTANCE.createClass();
+			final Class clazz = SpringDIFactory.eINSTANCE.createClass();
 			clazz.setName(name);
 			clazz.setEcoreId(StaticVariables.CLASS_PREFIX + toAscii(name));
 			clazz.setExternal(true);

@@ -41,7 +41,7 @@ public final class SpringDIModelDataGenerator {
 	 * 
 	 * @param projectFilePath The path to the project root folder
 	 * @param projectName     Descriptive name of the project
-	 * @param save    if true, model file will be saved under target/projectName.model
+	 * @param save    if true, model file will be saved under target/projectName.springdi
 	 * @return The generated OSGI project data.
 	 */
 	public static SpringDIProject generateData(final String projectFilePath, final String projectName, Optional<String> modelSaveFilePath) {
@@ -53,7 +53,7 @@ public final class SpringDIModelDataGenerator {
 		if (modelSaveFilePath.isPresent()) {
 
 			LOGGER.log(System.Logger.Level.INFO, "Saving data for " + projectName);
-			final String fileName = projectName + ".model";
+			final String fileName = projectName + ".springdi";
 			try {
 				SpringDIModelSaveAndLoadUtility.saveData(fileName, project, modelSaveFilePath.get());
 			} catch (final IOException e) {

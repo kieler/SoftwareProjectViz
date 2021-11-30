@@ -168,7 +168,12 @@ class SPVizGenerator extends AbstractGenerator {
 	 */
 	private def String xcoreContent(DataAccess data) {
 		return '''
-			@GenModel(modelDirectory="«data.getBundleNamePrefix».model/src")
+			@GenModel(
+			    fileExtensions="«data.visualizationName.toLowerCase»",
+			    modelDirectory="«data.getBundleNamePrefix».model/src",
+			    modelName="«data.visualizationName»",
+			    prefix="«data.visualizationName»"
+			)
 			
 			package «data.getBundleNamePrefix».model
 			
@@ -286,6 +291,16 @@ class SPVizGenerator extends AbstractGenerator {
 			 * Context for the synthesis that contains information about the root project overview.
 			 */
 			class «data.visualizationName» extends IVisualizationContext<«data.projectName»> {
+			    
+			/**
+			 * KLighD's synthesis options for storing/restoring an equal view. 
+			 */
+			contains Option[] synthesisOptions
+			
+			/**
+			 * KLighD's layout options for storing/restoring an equal view.
+			 */
+			contains Option[] layoutOptions
 			
 				«FOR view : data.views»
 					/*

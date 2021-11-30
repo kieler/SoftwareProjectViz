@@ -37,7 +37,7 @@ import org.xml.sax.SAXException;
 
 import de.cau.cs.kieler.spviz.osgi.model.Bundle;
 import de.cau.cs.kieler.spviz.osgi.model.Feature;
-import de.cau.cs.kieler.spviz.osgi.model.ModelFactory;
+import de.cau.cs.kieler.spviz.osgi.model.OSGiFactory;
 import de.cau.cs.kieler.spviz.osgi.model.OSGiProject;
 import de.cau.cs.kieler.spviz.osgi.model.Package;
 import de.cau.cs.kieler.spviz.osgi.model.Product;
@@ -65,7 +65,7 @@ public class ReadProjectFiles {
 
 	static final java.lang.System.Logger LOGGER = System.getLogger(OsgiModelDataGenerator.class.getName());
 
-	final OSGiProject project = ModelFactory.eINSTANCE.createOSGiProject();
+	final OSGiProject project = OSGiFactory.eINSTANCE.createOSGiProject();
 //	private final List<Package> packageDependencies = new ArrayList<Package>();
 	private final List<Path> filePaths = new ArrayList<Path>();
 
@@ -79,6 +79,7 @@ public class ReadProjectFiles {
 	 *         products, service interfaces)
 	 */
 	public OSGiProject generateData(final File projectPath, final String projectName) {
+		project.setProjectName(projectName);
 		
 		// Parsing of manifest data
 		filePaths.clear();
@@ -169,7 +170,7 @@ public class ReadProjectFiles {
 				final String packageName = b.split(";")[0]; //$NON-NLS-1$			
 				
 				if (importOrExport.equals(StaticVariables.EXPORT_PACKAGE)) {
-					final Package newExportedPackage = ModelFactory.eINSTANCE.createPackage();
+					final Package newExportedPackage = OSGiFactory.eINSTANCE.createPackage();
 					newExportedPackage.setName(packageName);
 					newExportedPackage.setEcoreId(StaticVariables.PACKAGE_PREFIX + toAscii(packageName));
 					newExportedPackage.getBundles().add(bundle);
@@ -190,7 +191,7 @@ public class ReadProjectFiles {
 //					} else if (knownImportedPackage.isPresent()) {
 //						bundle.getPackageDependency().add(knownImportedPackage.get());
 					} else {
-						final Package newImportedPackage = ModelFactory.eINSTANCE.createPackage();
+						final Package newImportedPackage = OSGiFactory.eINSTANCE.createPackage();
 						newImportedPackage.setName(packageName);
 						newImportedPackage.setEcoreId(StaticVariables.PACKAGE_PREFIX + toAscii(packageName));
 						newImportedPackage.getRequiringPackageDependencyBundles().add(bundle);
@@ -217,7 +218,7 @@ public class ReadProjectFiles {
 			if (serviceComponentFiles != null) {
 				for (final File serviceComponentFile : serviceComponentFiles) {
 
-					final ServiceComponent serviceComponent = ModelFactory.eINSTANCE.createServiceComponent();
+					final ServiceComponent serviceComponent = OSGiFactory.eINSTANCE.createServiceComponent();
 					String componentName = serviceComponentFile.getName()
 							.replace(".xml", StaticVariables.EMPTY_STRING);
 					serviceComponent.setName(componentName);
@@ -233,7 +234,7 @@ public class ReadProjectFiles {
 			for (final String service : serviceComponents) {
 				final String serviceName = service.replace(".xml", StaticVariables.EMPTY_STRING).replace( //$NON-NLS-1$
 						"OSGI-INF/", StaticVariables.EMPTY_STRING);
-				final ServiceComponent serviceComponent = ModelFactory.eINSTANCE.createServiceComponent();
+				final ServiceComponent serviceComponent = OSGiFactory.eINSTANCE.createServiceComponent();
 				serviceComponent.setName(serviceName);
 				serviceComponent.setEcoreId(StaticVariables.SERVICE_COMPONENT_PREFIX + toAscii(serviceName));
 				serviceComponent.getBundles().add(bundle);
@@ -268,7 +269,7 @@ public class ReadProjectFiles {
 						serviceInterfaceOptional.get().getRequiringRequiredServiceComponents().add(serviceComponent);
 						serviceComponent.getRequiredRequiredServiceInterfaces().add(serviceInterfaceOptional.get());
 					} else {
-						final ServiceInterface serviceInterface = ModelFactory.eINSTANCE.createServiceInterface();
+						final ServiceInterface serviceInterface = OSGiFactory.eINSTANCE.createServiceInterface();
 						serviceInterface.setName(interfaceName);
 						serviceInterface.setEcoreId(StaticVariables.SERVICE_INTERFACE_PREFIX + toAscii(interfaceName));
 						serviceInterface.getRequiringRequiredServiceComponents().add(serviceComponent);
@@ -305,7 +306,7 @@ public class ReadProjectFiles {
 			final Document doc = dBuilder.parse(xmlFile);
 			final NodeList pluginNodeList = doc.getElementsByTagName(StaticVariables.PLUGIN);
 			
-			final Feature feature = ModelFactory.eINSTANCE.createFeature();
+			final Feature feature = OSGiFactory.eINSTANCE.createFeature();
 			project.getFeatures().add(feature);
 			
 			for (int x = 0, size = pluginNodeList.getLength(); x < size; x++) {
@@ -340,7 +341,7 @@ public class ReadProjectFiles {
 //			final String productName = doc.getDocumentElement().getAttribute(StaticVariables.NAME);
 			final String productName = doc.getDocumentElement().getAttribute(StaticVariables.UNIQUE_ID);
 			
-			final Product product = ModelFactory.eINSTANCE.createProduct();
+			final Product product = OSGiFactory.eINSTANCE.createProduct();
 			product.setName(productName);
 			product.setEcoreId(StaticVariables.PRODUCT_PREFIX + toAscii(productName));
 			
@@ -360,7 +361,7 @@ public class ReadProjectFiles {
 					feature.getProducts().add(product);
 					product.getFeatures().add(feature);
 				} else {
-					final Feature feature = ModelFactory.eINSTANCE.createFeature();
+					final Feature feature = OSGiFactory.eINSTANCE.createFeature();
 					feature.setName(featureName);
 					feature.setEcoreId(StaticVariables.FEATURE_PREFIX + toAscii(featureName));
 					feature.setExternal(true);
@@ -383,7 +384,7 @@ public class ReadProjectFiles {
 					bundle.getProducts().add(product);
 					product.getBundles().add(bundle);
 				} else {
-					final Bundle bundle = ModelFactory.eINSTANCE.createBundle();
+					final Bundle bundle = OSGiFactory.eINSTANCE.createBundle();
 					bundle.setName(bundleName);
 					bundle.setEcoreId(StaticVariables.BUNDLE_PREFIX + toAscii(bundleName));
 					bundle.getProducts().add(product);
@@ -411,7 +412,7 @@ public class ReadProjectFiles {
 		if (bundleAlreadyPresent.isPresent()) {
 			return bundleAlreadyPresent.get();
 		} else {
-			final Bundle bundle = ModelFactory.eINSTANCE.createBundle();
+			final Bundle bundle = OSGiFactory.eINSTANCE.createBundle();
 			bundle.setName(name);
 			bundle.setEcoreId(StaticVariables.BUNDLE_PREFIX + toAscii(name));
 			bundle.setExternal(true);

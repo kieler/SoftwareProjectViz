@@ -42,7 +42,7 @@ public class OsgiModelSaveAndLoadUtility {
 	public static void saveData(final String fileName, final OSGiProject data, String modelSaveFilePath) throws IOException {
 		final Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
 		final Map<String, Object> m = reg.getExtensionToFactoryMap();
-		m.put("model", new XMIResourceFactoryImpl());
+		m.put("osgi", new XMIResourceFactoryImpl());
 
 		final ResourceSet resSet = new ResourceSetImpl();
 		modelSaveFilePath= modelSaveFilePath.replace("\\", "/");
