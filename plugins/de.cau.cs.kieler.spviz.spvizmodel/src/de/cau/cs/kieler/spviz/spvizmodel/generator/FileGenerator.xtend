@@ -13,11 +13,16 @@
 package de.cau.cs.kieler.spviz.spvizmodel.generator
 
 import java.io.ByteArrayInputStream
+import java.io.File
+import java.io.InputStream
+import java.nio.file.Files
 import org.eclipse.core.resources.IFile
 import org.eclipse.core.resources.IFolder
 import org.eclipse.core.resources.IProject
 import org.eclipse.core.resources.IResource
+import org.eclipse.core.runtime.FileLocator
 import org.eclipse.core.runtime.IProgressMonitor
+import org.eclipse.core.runtime.Platform
 import org.eclipse.emf.codegen.util.CodeGenUtil
 
 /**
@@ -42,6 +47,54 @@ class FileGenerator {
             create(file, progressMonitor)
         } 
         file.setContents(inputStream, IResource.NONE, progressMonitor)
+    }
+    
+    /**
+     * Copies the files at the source location to the target folder.
+     * 
+     * @param sourceBundle The bundle containing the folder to copy the files from.
+     * @param sourceFolder The sub-folder ini the bundle to copy from.
+     * @param targetFolder The folder to copy the files to.
+     */
+    def static void copyFiles(String sourceBundle, String sourceFolder, IFolder targetFolder,
+        IProgressMonitor progressMonitor) {
+        if (!targetFolder.exists) {
+            targetFolder.create(progressMonitor)
+        }
+        if (Platform.isRunning()) {
+            // If the platform is running, the folder can be found in the bundle under the resource path.
+            val url = Platform.getBundle(sourceBundle)
+                ?.getEntry(sourceFolder)
+            val folder = new File(FileLocator.toFileURL(url).toURI.path)
+            for (file : folder.listFiles) {
+                val fileName = file.name
+                val newFile = new File(targetFolder.rawLocation.toString + "/" + fileName)
+                if (!newFile.exists) {
+                    Files.copy(file.toPath, newFile.toPath)
+                }
+            }
+            
+            
+        } else {
+            // In the jar or plain Java application case, the bundle is ignored and the file path
+            // is searched on the classpath directly
+            val fileNames = #["icons/connect.svg", "icons/connect128.png",
+                "icons/expand.svg", "icons/expand128.png",
+                "icons/loupe.svg", "icons/loupe128.png",
+                "icons/minimize.svg", "icons/minimize128.png",
+                "icons/restore.svg", "icons/restore128.png"]
+            // TODO: this has to be tested from a built jar.
+            for (fileName : fileNames) {
+                val InputStream source = FileGenerator.getResourceAsStream("/" + sourceFolder + "/" + fileName)
+                val newFile = new File(targetFolder.rawLocation.toString + "/" + fileName)
+                if (!newFile.exists) {
+                    Files.copy(source, newFile.toPath)
+                }
+            }
+        }
+        
+        
+        
     }
     
     /**

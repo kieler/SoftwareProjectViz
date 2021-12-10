@@ -149,8 +149,8 @@ class GenerateSyntheses {
 «««					    , BUNDLE_SHOW_SERVICES, FILTER_CARDINALITY_LABEL, FILTER_DESCRIPTIONS,
 «««						DESCRIPTION_LENGTH, SHORTEN_BY, INTERACTIVE_BUTTONS)
 «««					
-«««					// Add all performance options.
-«««					options.addAll(SHOW_ICONS)
+					// Add all performance options.
+					options.addAll(SHOW_ICONS)
 					
 					return options.toList
 				}
@@ -492,6 +492,7 @@ class GenerateSyntheses {
 				import «data.modelBundleNamePrefix».model.«artifact.name»
 			«ENDFOR»
 «««			import java.util.List
+            import static «data.getBundleNamePrefix».viz.Options.*
 			
 			import static extension de.cau.cs.kieler.klighd.microlayout.PlacementUtil.*
 			import static extension de.cau.cs.kieler.klighd.syntheses.DiagramSyntheses.*
@@ -691,16 +692,16 @@ class GenerateSyntheses {
 						addSingleOrMultiClickAction(action)
 						lineWidth = 0
 						tooltip = doWhat + " this element."
-«««						if (context.getOptionValue(SHOW_ICONS) as Boolean) {
-«««							val imagePath = if (expand) "icons/restore128.png" else "icons/minimize128.png"
-«««							addImage("«spviz.packageName».viz", imagePath) => [
-«««								setPointPlacementData(RIGHT, 0, 0.5f, TOP, 0, 0.5f, H_CENTRAL, V_CENTRAL, 4f, 4f, 12, 12)
-«««								addSingleOrMultiClickAction(action)
-«««							]
-«««						} else {
-						val label = if (expand) "+" else "-"
-						addButton(label, action)
-«««						}
+						if (context.getOptionValue(SHOW_ICONS) as Boolean) {
+							val imagePath = if (expand) "icons/restore128.png" else "icons/minimize128.png"
+							addImage("«data.bundleNamePrefix».viz", imagePath) => [
+								setPointPlacementData(RIGHT, 0, 0.5f, TOP, 0, 0.5f, H_CENTRAL, V_CENTRAL, 4f, 4f, 12, 12)
+								addSingleOrMultiClickAction(action)
+							]
+						} else {
+							val label = if (expand) "+" else "-"
+							addButton(label, action)
+						}
 					]
 				}
 				
@@ -719,16 +720,15 @@ class GenerateSyntheses {
 						addSingleOrMultiClickAction(action)
 						lineWidth = 0
 						tooltip = "Expand all elements in this overview."
-«««						if (context.getOptionValue(SHOW_ICONS) as Boolean) {
-«««							addImage("«spviz.packageName».viz", "icons/expand128.png") => [
-«««								setPointPlacementData(RIGHT, 0, 0.5f, TOP, 0, 0.5f, H_CENTRAL, V_CENTRAL, 4f, 4f, 12, 12)
-«««								addSingleOrMultiClickAction(action)
-«««							]
-«««						} else {
-«««						placeholder label
-						val label = "⭱" 
-						addButton(label, action)
-«««						}
+						if (context.getOptionValue(SHOW_ICONS) as Boolean) {
+							addImage("«data.bundleNamePrefix».viz", "icons/expand128.png") => [
+								setPointPlacementData(RIGHT, 0, 0.5f, TOP, 0, 0.5f, H_CENTRAL, V_CENTRAL, 4f, 4f, 12, 12)
+								addSingleOrMultiClickAction(action)
+							]
+						} else {
+							val label = "Expand all"
+							addButton(label, action)
+						}
 					]
 				}
 				
@@ -747,15 +747,15 @@ class GenerateSyntheses {
 						addSingleOrMultiClickAction(action)
 						lineWidth = 0
 						tooltip = "Connects all elements in this overview."
-«««						if (context.getOptionValue(SHOW_ICONS) as Boolean) {
-«««							addImage("«data.bundleNamePrefix».viz", "icons/connect128.png") => [
-«««								setPointPlacementData(RIGHT, 0, 0.5f, TOP, 0, 0.5f, H_CENTRAL, V_CENTRAL, 4f, 4f, 12, 12)
-«««								addSingleOrMultiClickAction(action)
-«««							]
-«««						} else {
-						val label = "Connect all"
-						addButton(label, action)
-«««						}
+						if (context.getOptionValue(SHOW_ICONS) as Boolean) {
+							addImage("«data.bundleNamePrefix».viz", "icons/connect128.png") => [
+								setPointPlacementData(RIGHT, 0, 0.5f, TOP, 0, 0.5f, H_CENTRAL, V_CENTRAL, 4f, 4f, 12, 12)
+								addSingleOrMultiClickAction(action)
+							]
+						} else {
+							val label = "Connect all"
+							addButton(label, action)
+						}
 					]
 				}
 «««				
@@ -789,16 +789,16 @@ class GenerateSyntheses {
 						addSingleOrMultiClickAction(action)
 						lineWidth = 0
 						tooltip = doWhat + " this overview."
-«««						if (context.getOptionValue(SHOW_ICONS) as Boolean) {
-«««							val imagePath = if (expand) "icons/restore128.png" else "icons/minimize128.png"
-«««							addImage("«spviz.packageName».viz", imagePath) => [
-«««								setPointPlacementData(RIGHT, 0, 0.5f, TOP, 0, 0.5f, H_CENTRAL, V_CENTRAL, 4f, 4f, 12, 12)
-«««								addSingleOrMultiClickAction(action)
-«««							]
-«««						} else {
-						val label = if (expand) "+" else "-"
-						addButton(label, action)
-«««						}
+						if (context.getOptionValue(SHOW_ICONS) as Boolean) {
+							val imagePath = if (expand) "icons/restore128.png" else "icons/minimize128.png"
+							addImage("«data.bundleNamePrefix».viz", imagePath) => [
+								setPointPlacementData(RIGHT, 0, 0.5f, TOP, 0, 0.5f, H_CENTRAL, V_CENTRAL, 4f, 4f, 12, 12)
+								addSingleOrMultiClickAction(action)
+							]
+						} else {
+							val label = if (expand) "+" else "-"
+							addButton(label, action)
+						}
 					]
 				}
 «««				
@@ -818,7 +818,7 @@ class GenerateSyntheses {
 «««						lineWidth = 0
 «««						tooltip = "Focus the view to this overview alone."
 «««						if (context.getOptionValue(SHOW_ICONS) as Boolean) {
-«««							addImage("«spviz.packageName».viz", "icons/loupe128.png") => [
+«««							addImage("«data.bundleNamePrefix».viz", "icons/loupe128.png") => [
 «««								setPointPlacementData(RIGHT, 0, 0.5f, TOP, 0, 0.5f, H_CENTRAL, V_CENTRAL, 4f, 4f, 12, 12)
 «««								addSingleOrMultiClickAction(action)
 «««							]

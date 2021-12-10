@@ -103,6 +103,13 @@ class SPVizGenerator extends AbstractGenerator {
 		GenerateSyntheses.generate(sourceVizFolder, data, progressMonitor)
 		GenerateSubSyntheses.generate(sourceVizFolder, data, progressMonitor)
 		GenerateActions.generate(sourceVizFolder, data, progressMonitor)
+		
+		// Copy icons over into the project
+		FileGenerator.copyFiles("de.cau.cs.kieler.spviz.spviz",
+		    "/icons/",
+		    vizProject.getFolder("icons"),
+		    progressMonitor
+	    )
 	}
 	
 	protected def List<String> requiredVizBundles(DataAccess spviz) {
