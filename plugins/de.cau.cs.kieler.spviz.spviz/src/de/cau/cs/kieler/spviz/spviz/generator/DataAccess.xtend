@@ -70,7 +70,7 @@ class DataAccess {
         bundleNamePrefix = spviz.package
         
         spvizModel = resource.resourceSet.resources.findFirst[
-            it.contents.head instanceof SPVizModel
+            it.contents.head instanceof SPVizModel && it.URI.toString.endsWith(spviz.importURI)
         ]?.contents?.head as SPVizModel
         if (spvizModel === null) {
             println("No SPVizModel found to import with the name " + spviz.importURI)
