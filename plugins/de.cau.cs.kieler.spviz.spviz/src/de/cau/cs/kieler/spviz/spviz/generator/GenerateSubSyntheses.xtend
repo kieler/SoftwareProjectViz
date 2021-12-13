@@ -76,6 +76,7 @@ class GenerateSubSyntheses {
             import org.eclipse.elk.core.options.Direction
             import org.eclipse.elk.core.options.SizeConstraint
             import «data.getBundleNamePrefix».model.«viewName»OverviewContext
+            import «data.getBundleNamePrefix».viz.SynthesisUtils
             «FOR shownElement : view.shownElements»
                 import «data.getBundleNamePrefix».model.«shownElement.shownElement.name»Context
             «ENDFOR»
@@ -157,7 +158,8 @@ class GenerateSubSyntheses {
                         «FOR shownElement : view.shownElements»
                             // all «shownElement.shownElement.name»s
                             filteredCollapsed«shownElement.shownElement.name»Contexts.sortBy [
-                                modelElement.getName].forEach [ collapsed«shownElement.shownElement.name»Context, index |
+                                SynthesisUtils.getId(modelElement.name, usedContext)
+                            ].forEach [ collapsed«shownElement.shownElement.name»Context, index |
                                 children += simple«shownElement.shownElement.name»Synthesis.transform(
                                     collapsed«shownElement.shownElement.name»Context as «shownElement.shownElement.name»Context, -index)
                             ]
@@ -362,7 +364,7 @@ class GenerateSubSyntheses {
             import de.cau.cs.kieler.klighd.krendering.extensions.KNodeExtensions
             import de.cau.cs.kieler.klighd.syntheses.AbstractSubSynthesis
             import org.eclipse.elk.core.options.CoreOptions
-«««            import «packageName».viz.SynthesisUtils
+            import «packageName».viz.SynthesisUtils
             import «packageName».viz.Styles
             import «packageName».model.«artifactName»Context
             
@@ -387,7 +389,7 @@ class GenerateSubSyntheses {
                         context.createNode() => [
                             associateWith(context)
                             data += createKIdentifier => [ it.id = context.hashCode.toString ]
-                            val label = «artifactName.toFirstLower».getName ?: ""
+                            val label = SynthesisUtils.getId(«artifactName.toFirstLower».name, usedContext) ?: ""
                             setLayoutOption(CoreOptions::PRIORITY, priority)
                             add«artifactName»InOverviewRendering(«artifactName.toFirstLower», label, usedContext)
                         ]

@@ -146,9 +146,8 @@ class GenerateSyntheses {
 					«ENDFOR»
 					
 					// Add all view filter options.
-					options.addAll(SHOW_EXTERNAL)
-«««					    , BUNDLE_SHOW_SERVICES, FILTER_CARDINALITY_LABEL, FILTER_DESCRIPTIONS,
-«««						DESCRIPTION_LENGTH, SHORTEN_BY, INTERACTIVE_BUTTONS)
+					options.addAll(SHOW_EXTERNAL, SHORTEN_BY)
+«««					    , INTERACTIVE_BUTTONS)
 «««					
 					// Add all performance options.
 					options.addAll(SHOW_ICONS)
@@ -1132,10 +1131,10 @@ class GenerateSyntheses {
 				 * @return The possibly truncated id.
 				 */
 				def static String getId(String id, ViewContext usedContext) {
-«««					val prefix = usedContext.getOptionValue(SHORTEN_BY) as String
-«««					if (!prefix.empty && id.startsWith(prefix)) {
-«««						return "..." + id.substring(prefix.length)
-«««					}
+					val prefix = usedContext.getOptionValue(SHORTEN_BY) as String
+					if (!prefix.empty && id.startsWith(prefix)) {
+						return "..." + id.substring(prefix.length)
+					}
 					return id
 				}
 				
@@ -1211,23 +1210,6 @@ class GenerateSyntheses {
 						return visualizationContexts
 					}
 				}
-			
-				/**
-				 * Returns the descriptive text of a label shortened by the {@link OsgiOptions#DESCRIPTION_LENGTH} option.
-				 * @param text The text that should be shortened.
-				 * @param context The view context used to display the diagram.
-				 * @return The given string shortened by the description length option.
-				 */
-				def static String descriptionLabel(String text, ViewContext context) {
-«««					val threshold = context.getOptionValue(DESCRIPTION_LENGTH) as Number
-					if (text === null) {
-						return ""
-					}
-«««					if (text.length <= threshold.intValue) {
-					return text
-«««					}
-«««					return text.substring(0, threshold.intValue) + " ..."
-				}
 				
 				/**
 				 * Configures the layout of any overview node. Configures the box layout algorithm of elk.
@@ -1235,7 +1217,7 @@ class GenerateSyntheses {
 				def static void configureBoxLayout(KNode node) {
 					node => [
 						DiagramSyntheses.setLayoutOption(node, CoreOptions::ALGORITHM, "org.eclipse.elk.box")
-«««						setLayoutOption(CoreOptions::EXPAND_NODES, true)
+«««						// setLayoutOption(CoreOptions::EXPAND_NODES, true)
 					]
 				}
 				
