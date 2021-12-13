@@ -373,7 +373,7 @@ class GenerateSyntheses {
 					import «data.getBundleNamePrefix».viz.actions.RevealRequiring«connection.shownConnection.requiring.name»Requires«connection.shownConnection.required.name»Named«connection.shownConnection.name»Action
 				«ENDFOR»
 			«ENDFOR»
-«««			import «spviz.packageName».viz.actions.SelectRelatedAction
+			import «data.getBundleNamePrefix».viz.actions.SelectRelatedAction
 			import «data.getBundleNamePrefix».viz.actions.UndoAction
 			import «data.getBundleNamePrefix».viz.actions.RedoAction
 			import «data.getBundleNamePrefix».viz.actions.ResetViewAction
@@ -385,7 +385,7 @@ class GenerateSyntheses {
 			class KlighdSetup implements IKlighdStartupHook {
 				override execute() {
 					KlighdDataManager.instance
-«««					.registerAction(SelectRelatedAction.ID, new SelectRelatedAction)
+					.registerAction(SelectRelatedAction.ID, new SelectRelatedAction)
 «««					.registerAction(FocusAction.ID, new FocusAction)
 					.registerAction(UndoAction.ID, new UndoAction)
 					.registerAction(RedoAction.ID, new RedoAction)
@@ -466,7 +466,7 @@ class GenerateSyntheses {
 			import de.cau.cs.kieler.klighd.krendering.KRoundedRectangle
 			import de.cau.cs.kieler.klighd.krendering.KText
 			import de.cau.cs.kieler.klighd.krendering.LineStyle
-«««			import de.cau.cs.kieler.klighd.krendering.ModifierState
+			import de.cau.cs.kieler.klighd.krendering.ModifierState
 			import de.cau.cs.kieler.klighd.krendering.ViewSynthesisShared
 			import de.cau.cs.kieler.klighd.krendering.extensions.KColorExtensions
 			import de.cau.cs.kieler.klighd.krendering.extensions.KContainerRenderingExtensions
@@ -480,7 +480,7 @@ class GenerateSyntheses {
 «««			import «spviz.packageName».viz.actions.ContextRemoveAction
 «««			import «spviz.packageName».viz.actions.FocusAction
 			import «data.getBundleNamePrefix».viz.actions.OverviewContextCollapseExpandAction
-«««			import «spviz.packageName».viz.actions.SelectRelatedAction
+			import «data.getBundleNamePrefix».viz.actions.SelectRelatedAction
 			«FOR view : data.views»
 				«FOR connection : view.shownConnections»
 					import «data.getBundleNamePrefix».viz.actions.RevealRequired«connection.shownConnection.requiring.name»Requires«connection.shownConnection.required.name»Named«connection.shownConnection.name»Action
@@ -898,8 +898,8 @@ class GenerateSyntheses {
 								setBackgroundGradient(COLOR_«artifact.name».color, SECONDARY_COLOR_«artifact.name».color, 90)
 							}
 							addDoubleClickAction(ContextCollapseExpandAction::ID)
-«««							addSingleClickAction(SelectRelatedAction::ID, ModifierState.NOT_PRESSED, ModifierState.NOT_PRESSED,
-«««								ModifierState.NOT_PRESSED)
+							addSingleClickAction(SelectRelatedAction::ID, ModifierState.NOT_PRESSED, ModifierState.NOT_PRESSED,
+								ModifierState.NOT_PRESSED)
 							setShadow(SHADOW_COLOR.color, 4, 4)
 							tooltip = artifact.getName
 							setSelectionStyle
@@ -956,8 +956,8 @@ class GenerateSyntheses {
 								invisible = true
 								addSimpleLabel("ID: " + SynthesisUtils.getId(artifact.getName, context)) => [
 									tooltip = artifact.getName
-«««									addSingleClickAction(SelectRelatedAction::ID, ModifierState.NOT_PRESSED, ModifierState.NOT_PRESSED,
-«««										ModifierState.NOT_PRESSED)
+									addSingleClickAction(SelectRelatedAction::ID, ModifierState.NOT_PRESSED, ModifierState.NOT_PRESSED,
+										ModifierState.NOT_PRESSED)
 								]
 							]
 «««							if (context.getOptionValue(FILTER_DESCRIPTIONS) as Boolean) {
@@ -978,8 +978,8 @@ class GenerateSyntheses {
 								addChildArea
 							}
 							setShadow(SHADOW_COLOR.color, 4, 4)
-«««							addSingleClickAction(SelectRelatedAction::ID, ModifierState.NOT_PRESSED, ModifierState.NOT_PRESSED,
-«««								ModifierState.NOT_PRESSED)
+							addSingleClickAction(SelectRelatedAction::ID, ModifierState.NOT_PRESSED, ModifierState.NOT_PRESSED,
+								ModifierState.NOT_PRESSED)
 							setSelectionStyle
 						]
 					}
@@ -1011,15 +1011,15 @@ class GenerateSyntheses {
 									selectionLineWidth = 1.5f
 									selectionForeground = SELECTION_COLOR.color
 									selectionBackground = SELECTION_COLOR.color
-«««									addSingleClickAction(SelectRelatedAction::ID, ModifierState.NOT_PRESSED, ModifierState.NOT_PRESSED,
-«««										ModifierState.NOT_PRESSED)
+									addSingleClickAction(SelectRelatedAction::ID, ModifierState.NOT_PRESSED, ModifierState.NOT_PRESSED,
+										ModifierState.NOT_PRESSED)
 									suppressSelectablility
 								]
 								lineStyle = LineStyle.DASH
 								selectionLineWidth = 3
 								selectionForeground = SELECTION_COLOR.color
-«««								addSingleClickAction(SelectRelatedAction::ID, ModifierState.NOT_PRESSED, ModifierState.NOT_PRESSED,
-«««									ModifierState.NOT_PRESSED)
+								addSingleClickAction(SelectRelatedAction::ID, ModifierState.NOT_PRESSED, ModifierState.NOT_PRESSED,
+									ModifierState.NOT_PRESSED)
 							]
 						}
 					
