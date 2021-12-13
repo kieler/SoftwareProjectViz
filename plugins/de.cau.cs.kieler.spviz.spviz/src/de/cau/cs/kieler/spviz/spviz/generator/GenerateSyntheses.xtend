@@ -135,7 +135,7 @@ class GenerateSyntheses {
 					val options = new LinkedHashSet()
 					
 «««					// Add general options.
-«««					options.addAll(SIMPLE_TEXT, SERVICE_CONNECTION_VISUALIZATION_IN_BUNDLES)
+«««					options.addAll(SERVICE_CONNECTION_VISUALIZATION_IN_BUNDLES)
 «««					
 					// Add category options.
 					options.addAll(FILTER_CATEGORY, TEXT_FILTER_CATEGORY, VIEW_FILTER_CATEGORY, PERFORMANCE)
@@ -146,9 +146,8 @@ class GenerateSyntheses {
 					«ENDFOR»
 					
 					// Add all view filter options.
-					options.addAll(SHOW_EXTERNAL, SHORTEN_BY)
-«««					    , INTERACTIVE_BUTTONS)
-«««					
+					options.addAll(SHOW_EXTERNAL, SHORTEN_BY, INTERACTIVE_BUTTONS)
+					
 					// Add all performance options.
 					options.addAll(SHOW_ICONS)
 					
@@ -570,14 +569,14 @@ class GenerateSyntheses {
 						setGridPlacement(1)
 						addDoubleClickAction(OverviewContextCollapseExpandAction.ID)
 						addRectangle => [
-							var columns = 4
-«««							val interactiveButtons = context.getOptionValue(INTERACTIVE_BUTTONS) as Boolean
-«««							if (interactiveButtons) {
-«««								columns += 4
+							var columns = 1
+							val interactiveButtons = context.getOptionValue(INTERACTIVE_BUTTONS) as Boolean
+							if (interactiveButtons) {
+								columns += 3
 								if (isConnectable) {
 									columns += 1
 								}
-«««							} 
+							} 
 							setGridPlacement(columns)
 							invisible = true
 							addRectangle => [
@@ -587,7 +586,7 @@ class GenerateSyntheses {
 									selectionFontBold = true
 								]
 							]
-«««							if (interactiveButtons) {
+							if (interactiveButtons) {
 								addVerticalLine
 «««								addFocusButton(context)
 								addExpandAllButton(context)
@@ -595,7 +594,7 @@ class GenerateSyntheses {
 									addConnectAllButton(context)
 								}
 								addOverviewContextCollapseExpandButton(false, context)
-«««							}
+							}
 						]
 						addHorizontalSeperatorLine(1, 0)
 						addChildArea
@@ -611,21 +610,21 @@ class GenerateSyntheses {
 						setGridPlacement(1)
 						addDoubleClickAction(OverviewContextCollapseExpandAction.ID)
 						addRectangle => [
-«««							val interactiveButtons = context.getOptionValue(INTERACTIVE_BUTTONS) as Boolean
-							var columns = 3
-«««							if (interactiveButtons) {
-«««								columns += 2
-«««							}
+							val interactiveButtons = context.getOptionValue(INTERACTIVE_BUTTONS) as Boolean
+							var columns = 1
+							if (interactiveButtons) {
+								columns += 2
+							}
 							setGridPlacement(columns)
 							invisible = true
 							addRectangle => [
 								invisible = true
 								addSimpleLabel(headlineText)
 							]
-«««							if (interactiveButtons) {
+							if (interactiveButtons) {
 								addVerticalLine
 								addOverviewContextCollapseExpandButton(true, context)
-«««							}
+							}
 						]
 						setShadow(SHADOW_COLOR.color, 4, 4)
 						background = DEFAULT_BACKGROUND_COLOR.color
@@ -879,20 +878,20 @@ class GenerateSyntheses {
 					 */
 					def add«artifact.name»InOverviewRendering(KNode node, «artifact.name» artifact, String name, ViewContext context) {
 						node.addRoundedRectangle(ROUNDNESS, ROUNDNESS) => [
-«««							val interactiveButtons = context.getOptionValue(INTERACTIVE_BUTTONS) as Boolean
-							var columns = 3
-«««							if (interactiveButtons) {
-«««								columns += 2
-«««							}
+							val interactiveButtons = context.getOptionValue(INTERACTIVE_BUTTONS) as Boolean
+							var columns = 1
+							if (interactiveButtons) {
+								columns += 2
+							}
 							setGridPlacement(columns)
 							addRectangle => [
 								invisible = true
 								addSimpleLabel(name)
 							]
-«««							if (interactiveButtons) {
+							if (interactiveButtons) {
 								addVerticalLine
 								addCollapseExpandButton(true, context)
-«««							}
+							}
 							if (artifact.isExternal) {
 								setBackgroundGradient(EXTERNAL_COLOR_«artifact.name».color, EXTERNAL_SECONDARY_COLOR_«artifact.name».color, 90)
 							} else {
@@ -929,29 +928,28 @@ class GenerateSyntheses {
 							}
 							setGridPlacement(1)
 							addRectangle => [
-«««								val interactiveButtons = context.getOptionValue(INTERACTIVE_BUTTONS) as Boolean
-								var columns = 3
-«««								if (interactiveButtons) {
-«««									columns += 2
-«««								}
+								val interactiveButtons = context.getOptionValue(INTERACTIVE_BUTTONS) as Boolean
+								var columns = 1
+								if (interactiveButtons) {
+									columns += 2
+								}
 								setGridPlacement(columns)
 								invisible = true
 								addRectangle => [
 									invisible = true
-«««									addSimpleLabel(artifact.descriptiveName) => [
 									addSimpleLabel(artifact.getName) => [
 										fontBold = true
 										selectionFontBold = true
 									]
 								]
-«««								if (interactiveButtons) {
+								if (interactiveButtons) {
 									addVerticalLine
 									if (inOverview) {
 										addCollapseExpandButton(false, context)
 									} else {
 «««										addRemoveButton
 									}
-«««								}
+								}
 							]
 							addHorizontalSeperatorLine(1, 0)
 							addRectangle => [
