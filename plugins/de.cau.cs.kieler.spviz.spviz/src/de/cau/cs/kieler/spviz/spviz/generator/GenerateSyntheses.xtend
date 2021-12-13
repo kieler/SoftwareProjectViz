@@ -1022,7 +1022,7 @@ class GenerateSyntheses {
 									ModifierState.NOT_PRESSED)
 							]
 						}
-					
+
 					«ENDFOR»
 					«FOR requiring : data.getRequiringArtifacts(artifact)»	
 						/**
@@ -1037,9 +1037,8 @@ class GenerateSyntheses {
 								addSingleClickAction(RevealRequiring«requiring.requiring.name»Requires«requiring.required.name»Named«requiring.name»Action::ID)
 							]
 						}
-				
 					«ENDFOR»
-					
+
 				«ENDFOR»
 			}
 			
@@ -1183,7 +1182,7 @@ class GenerateSyntheses {
 									[
 										// The «artifact.name.toFirstLower»'s ID needs to match the FILTER_BY regex,
 										if (usedContext.getOptionValue(FILTER_«artifact.name.toUpperCase(Locale.ROOT)»S) === true
-										    && !(modelElement as «artifact.name.toFirstUpper»).name.matches(regex)) {
+											&& !(modelElement as «artifact.name.toFirstUpper»).name.matches(regex)) {
 											return false
 										}
 										// Filter out external elements if they should not be shown

@@ -517,7 +517,6 @@ class GenerateVizModelUtils {
 				
 				«FOR view : data.views»
 					«detailedOrCollapsedMethods(view.name, "collapsed", view.shownElements.map[shownElement.name])»
-				
 				«ENDFOR»
 				
 				/**

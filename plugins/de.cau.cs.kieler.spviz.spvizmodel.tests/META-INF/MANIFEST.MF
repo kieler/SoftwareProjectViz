@@ -11,5 +11,5 @@ Require-Bundle: de.cau.cs.kieler.spviz.spvizmodel,
  org.eclipse.xtext.xbase.lib;bundle-version="2.14.0",
  org.eclipse.xtext.xbase.testing,
  org.junit.jupiter.api;bundle-version="[5.0.0,6.0.0)"
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Export-Package: de.cau.cs.kieler.spviz.spvizmodel.tests;x-internal=true
