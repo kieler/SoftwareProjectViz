@@ -16,6 +16,7 @@ import de.cau.cs.kieler.spviz.spvizmodel.generator.FileGenerator
 import de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.Artifact
 import java.awt.Color
 import java.util.HashMap
+import java.util.Locale
 import java.util.Map
 import org.eclipse.core.resources.IFolder
 import org.eclipse.core.runtime.IProgressMonitor
@@ -136,14 +137,14 @@ class GenerateSyntheses {
 «««					// Add general options.
 «««					options.addAll(SIMPLE_TEXT, SERVICE_CONNECTION_VISUALIZATION_IN_BUNDLES)
 «««					
-«««					// Add category options.
-«««					options.addAll(FILTER_CATEGORY, TEXT_FILTER_CATEGORY, VIEW_FILTER_CATEGORY, PERFORMANCE)
-«««					
-«««					// Add all text filter options.
-«««					options.addAll(FILTER_BY_BUNDLE_CATEGORY, FILTER_BY, FILTER_BUNDLE_CATEGORIES, FILTER_BUNDLES, FILTER_FEATURES,
-«««						FILTER_PACKAGE_OBJECTS, FILTER_PRODUCTS, FILTER_SERVICE_COMPONENTS, FILTER_SERVICE_INTERFACES,
-«««						FILTER_CLASSES)
-«««					
+					// Add category options.
+					options.addAll(FILTER_CATEGORY, TEXT_FILTER_CATEGORY, VIEW_FILTER_CATEGORY, PERFORMANCE)
+					
+					// Add all text filter options.
+					«FOR artifact : data.artifacts BEFORE "options.addAll(FILTER_BY, " SEPARATOR "," AFTER ")"»
+					   FILTER_«artifact.name.toUpperCase(Locale.ROOT)»S
+					«ENDFOR»
+					
 					// Add all view filter options.
 					options.addAll(SHOW_EXTERNAL)
 «««					    , BUNDLE_SHOW_SERVICES, FILTER_CARDINALITY_LABEL, FILTER_DESCRIPTIONS,
@@ -492,7 +493,7 @@ class GenerateSyntheses {
 				import «data.modelBundleNamePrefix».model.«artifact.name»
 			«ENDFOR»
 «««			import java.util.List
-            import static «data.getBundleNamePrefix».viz.Options.*
+			import static «data.getBundleNamePrefix».viz.Options.*
 			
 			import static extension de.cau.cs.kieler.klighd.microlayout.PlacementUtil.*
 			import static extension de.cau.cs.kieler.klighd.syntheses.DiagramSyntheses.*
@@ -1078,6 +1079,8 @@ class GenerateSyntheses {
 				import «data.modelBundleNamePrefix».model.«artifact.name»
 			«ENDFOR»
 			
+			import static «data.bundleNamePrefix».viz.Options.*
+			
 			import static extension de.cau.cs.kieler.klighd.syntheses.DiagramSyntheses.*
 			import static extension «data.getBundleNamePrefix».model.util.ContextExtensions.*
 			
@@ -1142,65 +1145,50 @@ class GenerateSyntheses {
 						oc.modelElements.contains(it)
 					]
 					
-«««				 val regex = ".*" + usedContext.getOptionValue(FILTER_BY) as String + ".*"
-«««				 if (!regex.empty && !elementsInContext.empty) {
-«««					 val (M) => boolean filter = switch (elementsInContext.head) {
-«««						 Bundle		 case usedContext.getOptionValue(FILTER_BUNDLES)		  === true: {
-«««							 [ (it as Bundle)		  .uniqueId	.matches(regex) ]
-«««						 }
-«««						 Feature	   case usedContext.getOptionValue(FILTER_FEATURES)		 === true: {
-«««							 [ (it as Feature)		.uniqueId	 .matches(regex) ]
-«««						 }
-«««						 Product	   case usedContext.getOptionValue(FILTER_PRODUCTS)		 === true: {
-«««							 [ (it as Product)		.uniqueId	 .matches(regex) ]
-«««						 }
-«««						 BundleCategory   case usedContext.getOptionValue(FILTER_BUNDLE_CATEGORIES)  === true: {
-«««							 [ (it as BundleCategory)  .categoryName   .matches(regex) ]
-«««						 }
-«««						 PackageObject   case usedContext.getOptionValue(FILTER_PACKAGE_OBJECTS) === true: {
-«««							 [ (it as PackageObject)   .uniqueId	.matches(regex) ]
-«««						 }
-«««						 ServiceComponent case usedContext.getOptionValue(FILTER_SERVICE_COMPONENTS) === true: {
-«««							 [ (it as ServiceComponent).name		.matches(regex) ]
-«««						 }
-«««						 ServiceInterface case usedContext.getOptionValue(FILTER_SERVICE_INTERFACES) === true: {
-«««							 [ (it as ServiceInterface).name		.matches(regex) ]
-«««						 }
-«««						 Class		   case usedContext.getOptionValue(FILTER_CLASSES)		 === true: {
-«««							 [ (it as Class).displayedString		.matches(regex) ]
-«««						 }
-«««						 default: {
-«««							 // In case the option for the filter is turned off, just return the given list.
-«««							 null
-«««						 }
-«««					 }
-«««					 if (filter === null) {
-«««						 return elementsInContext
-«««					 } else {
-«««						 return elementsInContext.filter(filter)
-«««					 }
-«««				 } else {
-					return elementsInContext
-«««				 }
+					val regex = ".*" + usedContext.getOptionValue(FILTER_BY) as String + ".*"
+					if (!elementsInContext.empty) {
+						val (M) => boolean filter = switch (elementsInContext.head) {
+							«FOR artifact : data.artifacts» 
+								«artifact.name.toFirstUpper» case usedContext.getOptionValue(FILTER_«artifact.name.toUpperCase(Locale.ROOT)»S) === true: {
+									[ (it as «artifact.name.toFirstUpper»).name.matches(regex) ]
+								}
+							«ENDFOR»
+							default: {
+								// In case the option for the filter is turned off, just return the given list.
+								null
+							}
+						}
+						if (filter === null) {
+							return elementsInContext
+						} else {
+							return elementsInContext.filter(filter)
+						}
+					} else {
+						return elementsInContext
+					}
 				}
 				
 				/**
-					 * Filters the list of given visualization contexts by the filter options of the diagram options.
-					 * 
-					 * @param visualizationContexts The unfiltered list of all visualization contexts.
-					 * @param usedContext The ViewContext used to display the diagram these visualizations are shown in.
-					 * @return An Iterable of the visualization contexts filtered by the diagram options.
-					 */
-					def static <M> Iterable<? extends IVisualizationContext<M>> filteredElementContexts(
-						List<? extends IVisualizationContext<M>> visualizationContexts, ViewContext usedContext) {
-«««						val regex = ".*" + usedContext.getOptionValue(FILTER_BY) as String + ".*"
-«««						if (!regex.empty && !visualizationContexts.empty) {
+				 * Filters the list of given visualization contexts by the filter options of the diagram options.
+				 * 
+				 * @param visualizationContexts The unfiltered list of all visualization contexts.
+				 * @param usedContext The ViewContext used to display the diagram these visualizations are shown in.
+				 * @return An Iterable of the visualization contexts filtered by the diagram options.
+				 */
+				def static <M> Iterable<? extends IVisualizationContext<M>> filteredElementContexts(
+					List<? extends IVisualizationContext<M>> visualizationContexts, ViewContext usedContext) {
+					val regex = ".*" + usedContext.getOptionValue(FILTER_BY) as String + ".*"
 					if (!visualizationContexts.empty) {
 						val (IVisualizationContext<M>) => boolean filter = switch (visualizationContexts.head.modelElement) {
 							// The filter functions for the different artifacts, returns false if any filter does not match.
 							«FOR artifact : data.artifacts»
 								«artifact.name»: {
 									[
+										// The «artifact.name.toFirstLower»'s ID needs to match the FILTER_BY regex,
+										if (usedContext.getOptionValue(FILTER_«artifact.name.toUpperCase(Locale.ROOT)»S) === true
+										    && !(modelElement as «artifact.name.toFirstUpper»).name.matches(regex)) {
+											return false
+										}
 										// Filter out external elements if they should not be shown
 										if ((usedContext.getOptionValue(Options.SHOW_EXTERNAL)) === false
 											&& (modelElement as «artifact.name»).isExternal) {
@@ -1394,6 +1382,16 @@ class GenerateSyntheses {
 				/** Category option containing options for text filtering. */
 				public static final SynthesisOption TEXT_FILTER_CATEGORY = SynthesisOption.createCategory("Text filter", false)
 					.setCategory(FILTER_CATEGORY)
+				
+				/** Option for filtering an overview by only elements containing the regular expression in their identifier. */
+				public static final SynthesisOption FILTER_BY = SynthesisOption.createTextOption(
+					"Filter by IDs containing ... (Java regex)", "").setCategory(TEXT_FILTER_CATEGORY)
+				
+				«FOR artifact : data.artifacts»
+					/** Option that indicates if the {@link #FILTER_BY} option should be applied to shown «artifact.name»s. */
+					public static final SynthesisOption FILTER_«artifact.name.toUpperCase(Locale.ROOT)»S = SynthesisOption.createCheckOption(
+						"Apply to «artifact.name»s", true).setCategory(TEXT_FILTER_CATEGORY)
+				«ENDFOR»
 				
 				/** Category option containing options for view filtering. */
 				public static final SynthesisOption VIEW_FILTER_CATEGORY = SynthesisOption.createCategory("View filter", false)
