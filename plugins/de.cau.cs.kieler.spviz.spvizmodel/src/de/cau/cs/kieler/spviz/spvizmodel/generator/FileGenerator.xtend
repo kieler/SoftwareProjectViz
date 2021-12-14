@@ -151,6 +151,7 @@ class FileGenerator {
         return '''
         Manifest-Version: 1.0
         Bundle-ManifestVersion: 2
+        Automatic-Module-Name: «CodeGenUtil.validPluginID(identifier)»
         Bundle-Name: «identifier»
         Bundle-SymbolicName: «CodeGenUtil.validPluginID(identifier)»; singleton:=true
         Bundle-Version: 0.1.0.qualifier

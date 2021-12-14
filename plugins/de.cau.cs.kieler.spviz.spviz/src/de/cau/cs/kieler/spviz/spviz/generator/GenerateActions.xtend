@@ -229,7 +229,6 @@ class GenerateActions {
 			import de.cau.cs.kieler.klighd.IAction
 			import de.cau.cs.kieler.klighd.kgraph.util.KGraphUtil
 			import «data.getBundleNamePrefix».viz.SynthesisProperties
-			import «data.getBundleNamePrefix».viz.SynthesisUtils
 			import «data.getBundleNamePrefix».model.IVisualizationContext
 			import «data.getBundleNamePrefix».model.«data.visualizationName»
 			import org.eclipse.core.runtime.Status
@@ -273,7 +272,7 @@ class GenerateActions {
 					visualizationContexts.add(index, copiedVisualizationContext)
 					
 					// The visualization context of the element that this action is performed on.
-					val modelVisualizationContext = SynthesisUtils.getDomainElement(context) as IVisualizationContext<?>
+					val modelVisualizationContext = context.getDomainElement(context.KNode) as IVisualizationContext<?>
 					if (!currentVisualizationContext.isChildContextOrEqual(modelVisualizationContext)) {
 «««						TODO: visualisation becomes unresponsive from here sometimes. why?
 						throw new IllegalStateException("This action is performed on an element that is not currently in the " +
@@ -668,7 +667,6 @@ class GenerateActions {
             import java.util.ArrayList
             import java.util.List
             import org.eclipse.emf.ecore.EObject
-            import «data.bundleNamePrefix».viz.SynthesisUtils
             import «data.bundleNamePrefix».model.IVisualizationContext
             
             /**
@@ -707,7 +705,7 @@ class GenerateActions {
                             ]
                             
                             // Also select all nodes representing the same element.
-                            var clickedModelElement = SynthesisUtils.getDomainElement(context, clickedElement)
+                            var clickedModelElement = context.getDomainElement(clickedElement)
                             if (clickedModelElement instanceof IVisualizationContext<?>) {
                                 clickedModelElement = clickedModelElement.modelElement
                             }
@@ -742,7 +740,7 @@ class GenerateActions {
                  */
                 private def void sameDomainElement(KNode node, Object domainElement, List<KNode> returnList,
                     ActionContext context) {
-                    var nodeDomainElement = SynthesisUtils.getDomainElement(context, node)
+                    var nodeDomainElement = context.getDomainElement(node)
                     if (nodeDomainElement instanceof IVisualizationContext<?>) {
                        nodeDomainElement = nodeDomainElement.modelElement 
                     }

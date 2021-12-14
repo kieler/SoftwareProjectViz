@@ -15,6 +15,8 @@ package de.cau.cs.kieler.spviz.spviz.generator
 import de.cau.cs.kieler.spviz.spviz.sPViz.View
 import de.cau.cs.kieler.spviz.spvizmodel.generator.FileGenerator
 import de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.Artifact
+import java.util.HashSet
+import java.util.Set
 import org.eclipse.core.resources.IFolder
 import org.eclipse.core.runtime.IProgressMonitor
 
@@ -243,6 +245,15 @@ class GenerateSubSyntheses {
     def static String generateSynthesis(Artifact artifact, DataAccess data) {
         val artifactName = artifact.name
         val views = data.getViews(artifact)
+        val Set<String> importedArtifacts = new HashSet
+        importedArtifacts.add(artifact.name)
+        for (required : data.getRequiredArtifacts(artifact)) {
+            importedArtifacts.add(required.required.name)
+        }
+        for (requiring : data.getRequiringArtifacts(artifact)) {
+            importedArtifacts.add(requiring.requiring.name)
+        }
+        
         return '''
             package «data.getBundleNamePrefix».viz.subsyntheses
             
@@ -252,16 +263,8 @@ class GenerateSubSyntheses {
             import de.cau.cs.kieler.klighd.krendering.extensions.KNodeExtensions
             import de.cau.cs.kieler.klighd.krendering.extensions.KPortExtensions
             import de.cau.cs.kieler.klighd.syntheses.AbstractSubSynthesis
-            import «data.modelBundleNamePrefix».model.«artifactName»
-            «FOR required : data.getRequiredArtifacts(artifact)»
-                «IF required.required !== artifact»
-                    import «data.modelBundleNamePrefix».model.«required.required.name»
-                «ENDIF»
-            «ENDFOR»
-            «FOR requiring : data.getRequiringArtifacts(artifact)»
-                «IF requiring.requiring !== artifact»
-                    import «data.modelBundleNamePrefix».model.«requiring.requiring.name»
-                «ENDIF»
+            «FOR importedArtifact : importedArtifacts»
+                import «data.modelBundleNamePrefix».model.«importedArtifact»
             «ENDFOR»
             import «data.modelBundleNamePrefix».model.«data.projectName»
             import «data.getBundleNamePrefix».viz.SynthesisUtils
