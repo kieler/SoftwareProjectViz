@@ -26,7 +26,7 @@ jobs:
                 path: .m2
                 key: ${{ runner.os }}-m2-${{ hashFiles('.github/workflows/**/*.*', '**/pom.xml', '**/META-INF/MANIFEST.MF', 'build/de.cau.cs.kieler.spviz.targetplatform/de.cau.cs.kieler.spviz.targetplatform.target') }}
             - name: Set release version
-              run: mvn org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion="${GITHUB_REF##*/}"
+              run: mvn org.eclipse.tycho:tycho-versions-plugin:set-version -DnewVersion="${GITHUB_REF##*/}" -f build/pom.xml
             - name: Build with Maven
               run: mvn --batch-mode --update-snapshots -f build/pom.xml verify
 
