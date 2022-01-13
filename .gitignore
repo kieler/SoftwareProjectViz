@@ -39,3 +39,4 @@ buildNumber.properties
 # build folders
 bin/
 xtend-gen/
+test-bin/
