@@ -30,11 +30,14 @@ jobs:
             - name: Build with Maven
               run: mvn --batch-mode --update-snapshots -f build/pom.xml verify
 
+            - name: Release tag
+              run: echo "::set-output name=SHORTENED_GITHUB_REF::${GITHUB_REF##*/}"
+              id: release-tag
             # Upload update site zip to release
             # Github has no official action for this. Uses: https://github.com/JasonEtco/upload-to-release
             - name: Upload P2 Repository
-              uses: JasonEtco/upload-to-release@master
+              uses: JasonEtco/upload-to-release@d648f1babf776de9cad881320bd9e9818fc3b262
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               with:
-                  args: "build/de.cau.cs.kieler.spviz.repository/target/de.cau.cs.kieler.spviz.repository-${GITHUB_REF##*/}.zip"
+                  args: "build/de.cau.cs.kieler.spviz.repository/target/de.cau.cs.kieler.spviz.repository-${{ steps.release-tag.outputs.SHORTENED_GITHUB_REF }}.zip application/zip"
