@@ -242,6 +242,11 @@ class SPVizGenerator extends AbstractGenerator {
 				 */
 				boolean expanded = "false"
 				
+				/**
+				 * Indicates whether the collapsed elements in this overview should be shown
+				 */
+				boolean showCollapsedElements = "true"
+				
 			}
 			
 			///////////////////////////////////////////////////////////////////////////////////////

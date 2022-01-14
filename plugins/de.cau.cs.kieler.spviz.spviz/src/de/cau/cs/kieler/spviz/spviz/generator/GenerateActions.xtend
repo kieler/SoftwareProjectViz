@@ -55,6 +55,8 @@ class GenerateActions {
 		FileGenerator.generateOrUpdateFile(sourceFolder, folder + "ConnectAllAction.xtend", content, progressMonitor)
         content = generateSelectRelatedAction(data)
         FileGenerator.generateOrUpdateFile(sourceFolder, folder + "SelectRelatedAction.xtend", content, progressMonitor)
+        content = generateShowHideCollapsedAction(data)
+        FileGenerator.generateOrUpdateFile(sourceFolder, folder + "ShowHideCollapsedAction.xtend", content, progressMonitor)
 		content = generateStoreModelAction(data)
 		FileGenerator.generateOrUpdateFile(sourceFolder, folder + "StoreModelAction.xtend", content, progressMonitor)
 		
@@ -753,6 +755,46 @@ class GenerateActions {
                 }
                 
             }
+        '''
+    }
+    
+    /**
+     * Generates the content for the ShowHideCollapsedAction class.
+     * 
+     * @param data
+     *      a DataAccess to easily get the information from
+     * @return
+     *      the generated file content as a string
+     */
+    def static generateShowHideCollapsedAction(DataAccess data) {
+        return '''
+            package «data.getBundleNamePrefix».viz.actions
+            
+            import «data.getBundleNamePrefix».model.IOverviewVisualizationContext
+            import «data.getBundleNamePrefix».model.IVisualizationContext
+            
+            /**
+             * An action that shows or hides collapsed elements in an {@link IOverviewVisualizationContext}.
+             * 
+             * @author nre
+             */
+            class ShowHideCollapsedAction extends AbstractVisualizationContextChangingAction {
+                /**
+                 * This action's ID.
+                 */
+                public static val String ID = ShowHideCollapsedAction.name
+                
+                override <M> changeVisualization(IVisualizationContext<M> modelVisualizationContext, ActionContext actionContext) {
+                    if (!(modelVisualizationContext instanceof IOverviewVisualizationContext)) {
+                        throw new IllegalStateException("This action is not performed on an overview visualization!")
+                    }
+                    val ovc = (modelVisualizationContext as IOverviewVisualizationContext<M>)
+                    
+                    ovc.showCollapsedElements = !ovc.showCollapsedElements
+                }
+                
+            }
+            
         '''
     }
     

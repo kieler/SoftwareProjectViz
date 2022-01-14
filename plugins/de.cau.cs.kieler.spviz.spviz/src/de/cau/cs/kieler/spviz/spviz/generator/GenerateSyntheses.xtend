@@ -374,6 +374,7 @@ class GenerateSyntheses {
 				«ENDFOR»
 			«ENDFOR»
 			import «data.getBundleNamePrefix».viz.actions.SelectRelatedAction
+			import «data.getBundleNamePrefix».viz.actions.ShowHideCollapsedAction
 			import «data.getBundleNamePrefix».viz.actions.UndoAction
 			import «data.getBundleNamePrefix».viz.actions.RedoAction
 			import «data.getBundleNamePrefix».viz.actions.ResetViewAction
@@ -396,6 +397,7 @@ class GenerateSyntheses {
 «««					.registerAction(ContextRemoveAction.ID, new ContextRemoveAction)
 					.registerAction(OverviewContextCollapseExpandAction.ID, new OverviewContextCollapseExpandAction)
 					.registerAction(ConnectAllAction.ID, new ConnectAllAction)
+					.registerAction(ShowHideCollapsedAction.ID, new ShowHideCollapsedAction)
 					«FOR view : data.views»
 						«FOR connection : view.shownConnections»
 							.registerAction(RevealRequired«connection.shownConnection.requiring.name»Requires«connection.shownConnection.required.name»Named«connection.shownConnection.name»Action.ID, new RevealRequired«connection.shownConnection.requiring.name»Requires«connection.shownConnection.required.name»Named«connection.shownConnection.name»Action)
@@ -481,6 +483,7 @@ class GenerateSyntheses {
 «««			import «spviz.packageName».viz.actions.FocusAction
 			import «data.getBundleNamePrefix».viz.actions.OverviewContextCollapseExpandAction
 			import «data.getBundleNamePrefix».viz.actions.SelectRelatedAction
+			import «data.getBundleNamePrefix».viz.actions.ShowHideCollapsedAction
 			«FOR view : data.views»
 				«FOR connection : view.shownConnections»
 					import «data.getBundleNamePrefix».viz.actions.RevealRequired«connection.shownConnection.requiring.name»Requires«connection.shownConnection.required.name»Named«connection.shownConnection.name»Action
@@ -634,11 +637,52 @@ class GenerateSyntheses {
 				}
 				
 				/**
+				 * Adds the rendering in the overview, for the collapsed elements. May be hidden.
+				 * 
+				 * @param node The node representing and containing all collapsed elements in an overview.
+				 * @param shown If the collapsed elements are currently shown
+				 * @param context The used ViewContext.
+				 */
+				def KContainerRendering addOverviewOfCollapsedRendering(KNode node, boolean shown, ViewContext context) {
+					val actionId = ShowHideCollapsedAction::ID
+					val doWhat = shown ? "Hide" : "Show"
+					node.addInvisibleContainerRendering => [
+						// Button to show/hide this overview
+						val interactiveButtons = context.getOptionValue(INTERACTIVE_BUTTONS) as Boolean
+						if (interactiveButtons) {
+							addRoundedRectangle(2, 2) => [
+								tooltip = doWhat + " the collapsed elements"
+								setPointPlacementData(RIGHT, 2f, 0f, TOP, 2f, 0f, H_RIGHT, V_TOP, 4f, 4f, 0f, 0f)
+								
+								// Either add an icon button or a text button, depending on its option.
+								val showIcons = context.getOptionValue(SHOW_ICONS) as Boolean
+								if (showIcons) {
+									val imagePath = if (shown) "icons/minimize128.png" else "icons/restore128.png"
+									addImage("«data.bundleNamePrefix».viz", imagePath) => [
+										setPointPlacementData(RIGHT, 0, 0.5f, TOP, 0, 0.5f, H_CENTRAL, V_CENTRAL, 4f, 4f, 12, 12)
+										addSingleOrMultiClickAction(actionId)
+									]
+								} else {
+									addText(doWhat) => [
+										suppressSelectability
+										fontSize = 8
+										fontBold = true
+										selectionFontBold = true
+										val size = estimateTextSize
+										setPointPlacementData(RIGHT, 0, 0.5f, TOP, 0, 0.5f, H_CENTRAL, V_CENTRAL, 4f, 4f, size.width, size.height)
+										addSingleOrMultiClickAction(actionId)
+									]
+								}
+							]
+						}
+					]
+				}
+				
+				/**
 				 * Adds a vertical line without flexible width into a grid placement.
 				 * 
 				 * @param container The parent rendering this button should be added to.
 				 */
-				
 				def KPolyline addVerticalLine(KContainerRendering container) {
 					container.addVerticalLine(RIGHT, 0, 1) => [
 						setGridPlacementData => [
@@ -1716,6 +1760,7 @@ class GenerateSyntheses {
                         «ENDFOR»
                         // Restore the expanded state.
                         newContext.expanded = oldContext.expanded
+                        newContext.showCollapsedElements = oldContext.showCollapsedElements
                         
                         // Re-initialize all child contexts.
                         reInitializeOverviewChildContexts(newContext, oldContext)

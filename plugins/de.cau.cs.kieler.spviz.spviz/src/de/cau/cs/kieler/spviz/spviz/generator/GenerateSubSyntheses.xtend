@@ -147,14 +147,19 @@ class GenerateSubSyntheses {
                  * @param «viewName.toFirstLower»OverviewContext The overview context for all «viewName.toFirstLower»s in this subsynthesis.
                  */
                 private def KNode transformCollapsed«viewName»Overview(«viewName»OverviewContext «viewName.toFirstLower»OverviewContext) {
+                    val shown = «viewName.toFirstLower»OverviewContext.showCollapsedElements
                     «FOR shownElement : view.shownElements»
-                        val filteredCollapsed«shownElement.shownElement.name»Contexts = filteredElementContexts(
-                            «viewName.toFirstLower»OverviewContext.collapsed«shownElement.shownElement.name»Contexts as List<«shownElement.shownElement.name»Context>, usedContext).toList
+                        val filteredCollapsed«shownElement.shownElement.name»Contexts = if (shown) {
+                            filteredElementContexts(
+                                «viewName.toFirstLower»OverviewContext.collapsed«shownElement.shownElement.name»Contexts as List<«shownElement.shownElement.name»Context>, usedContext).toList
+                        } else {
+                            #[]
+                        }
                     «ENDFOR»
                     createNode => [
                         associateWith(«viewName.toFirstLower»OverviewContext)
                         configureBoxLayout
-                        addInvisibleContainerRendering
+                        addOverviewOfCollapsedRendering(shown, usedContext)
                         tooltip = «viewName.toFirstLower»OverviewContext.overviewText
                         
                         «FOR shownElement : view.shownElements»
