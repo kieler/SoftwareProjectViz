@@ -13,6 +13,7 @@
 package de.cau.cs.kieler.spviz.spviz.generator
 
 import de.cau.cs.kieler.spviz.spvizmodel.generator.FileGenerator
+import de.cau.cs.kieler.spviz.spvizmodel.generator.JavaProjectGenerator
 import de.cau.cs.kieler.spviz.spvizmodel.generator.XCoreProjectGenerator
 import java.util.Collections
 import java.util.List
@@ -57,8 +58,6 @@ class SPVizGenerator extends AbstractGenerator {
 		// Generate the -viz.model XCore project
 		val String xcoreContent = xcoreContent(data)
 		val progressMonitor = new NullProgressMonitor
-		// TODO: remove all the .model suffixes for the model packages to be more in line with other emf projects and
-		// have a more "speaking" automatically generated name for ...Package, ...Switch, etc. classes
 		val project = new XCoreProjectGenerator(data.getBundleNamePrefix + ".model")
 		  .configureXCoreFile(data.visualizationName + 'Model.xcore', xcoreContent)
 		  .configureRequiredBundles(#[data.modelBundleNamePrefix + ".model"])
@@ -110,9 +109,52 @@ class SPVizGenerator extends AbstractGenerator {
 		    vizProject.getFolder("icons"),
 		    progressMonitor
 	    )
+	    
+	    
+	    // Generate the .language.server Java project
+	    val lsProject = new JavaProjectGenerator(data.getBundleNamePrefix + ".language.server")
+	       .configureRequiredBundles(requiredLSBundles(data))
+	       .generate(progressMonitor)
+        
+        // Generate further source files for the java project
+        val launchFolder = lsProject.getFolder("launch")
+        if (!launchFolder.exists) {
+            launchFolder.create(false, true, progressMonitor)
+        }
+        GenerateLanguageServer.generate(lsProject.getFolder("src"), launchFolder, data, progressMonitor)
 	}
 	
-	protected def List<String> requiredVizBundles(DataAccess spviz) {
+	protected def List<String> requiredLSBundles(DataAccess data) {
+	    return #[
+	       "com.google.gson",
+           "de.cau.cs.kieler.kgraph.text",
+           "de.cau.cs.kieler.kgraph.text.ide",
+           "de.cau.cs.kieler.klighd",
+           "de.cau.cs.kieler.klighd.ide",
+           "de.cau.cs.kieler.klighd.incremental",
+           "de.cau.cs.kieler.klighd.krendering.extensions",
+           "de.cau.cs.kieler.klighd.lsp",
+           "de.cau.cs.kieler.klighd.piccolo",
+           "de.cau.cs.kieler.klighd.standalone",
+           "org.aopalliance",
+           "org.apache.log4j",
+           "org.eclipse.elk.alg.common",
+           "org.eclipse.elk.alg.layered",
+           "org.eclipse.elk.alg.rectpacking",
+           "org.eclipse.elk.core",
+           "org.eclipse.elk.core.service",
+           "org.eclipse.lsp4j",
+           "org.eclipse.lsp4j.jsonrpc",
+           "org.eclipse.sprotty",
+           "org.eclipse.xtend.lib",
+           "org.eclipse.xtext.ide",
+           "org.eclipse.xtext.xbase.lib",
+           data.bundleNamePrefix + ".model",
+           data.modelBundleNamePrefix + ".model"
+	    ]
+	}
+	
+	protected def List<String> requiredVizBundles(DataAccess data) {
         return #[
             "de.cau.cs.kieler.klighd",
             "de.cau.cs.kieler.klighd.krendering.extensions",
@@ -123,8 +165,8 @@ class SPVizGenerator extends AbstractGenerator {
             "org.eclipse.xtend.lib",
             "org.eclipse.xtext.xbase.lib",
             "com.google.inject",
-            spviz.getBundleNamePrefix + ".model",
-            spviz.modelBundleNamePrefix + ".model"
+            data.getBundleNamePrefix + ".model",
+            data.modelBundleNamePrefix + ".model"
         ]
     }
     

@@ -3,7 +3,7 @@
  *
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2021 by
+ * Copyright 2021-2022 by
  * + Kiel University
  *   + Department of Computer Science
  *   + Real-Time and Embedded Systems Group
@@ -124,11 +124,16 @@ class XCoreProjectGenerator {
 
         // Add the Xtext nature to the project
         val IProjectDescription projectDescription = project.getDescription();
-        val String[] natureIds = projectDescription.getNatureIds();
-        val String[] newNatureIds = newArrayOfSize(natureIds.length + 1);
-        System.arraycopy(natureIds, 0, newNatureIds, 0, natureIds.length);
-        newNatureIds.set(natureIds.length, "org.eclipse.xtext.ui.shared.xtextNature");
-        projectDescription.setNatureIds(newNatureIds);
+        var String[] natureIds = projectDescription.getNatureIds();
+        if (natureIds === null) {
+            natureIds = #[ "org.eclipse.xtext.ui.shared.xtextNature" ]
+        } else if (!project.hasNature("org.eclipse.xtext.ui.shared.xtextNature")) {
+            val oldNatureIds = natureIds
+            natureIds = newArrayOfSize(oldNatureIds.length + 1)
+            System.arraycopy(oldNatureIds, 0, natureIds, 0, oldNatureIds.length)
+            natureIds.set(oldNatureIds.length, "org.eclipse.xtext.ui.shared.xtextNature")
+        }
+        projectDescription.setNatureIds(natureIds);
         project.setDescription(projectDescription, progressMonitor);
 
         // Configure as a Java project with src-gen folder
