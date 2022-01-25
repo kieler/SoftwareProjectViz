@@ -44,6 +44,12 @@ class SPVizModelGenerator extends AbstractGenerator {
         
         // Generate further source files for the project
         GenerateModelUtils.generate(sourceFolder, model, progressMonitor)
+        
+        // Generate the build artifacts for the project
+        val version = "0.1.0"
+        GenerateModelMavenBuild.addPluginPom(project, model, version, progressMonitor)
+        
+        GenerateModelMavenBuild.addSpvizBuildProjectPom(version, progressMonitor)
     }
 	
 	/**

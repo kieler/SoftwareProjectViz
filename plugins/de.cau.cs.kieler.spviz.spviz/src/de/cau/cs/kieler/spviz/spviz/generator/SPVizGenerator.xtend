@@ -19,7 +19,6 @@ import java.util.Collections
 import java.util.List
 import org.eclipse.core.resources.IProject
 import org.eclipse.core.resources.IProjectDescription
-import org.eclipse.core.resources.IncrementalProjectBuilder
 import org.eclipse.core.runtime.IPath
 import org.eclipse.core.runtime.NullProgressMonitor
 import org.eclipse.core.runtime.Path
@@ -67,6 +66,10 @@ class SPVizGenerator extends AbstractGenerator {
 		// Generate further source files for the project
 		GenerateVizModelUtils.generate(sourceFolder, data, progressMonitor)
 		
+		// Generate the build.properties file
+		FileGenerator.generateOrUpdateFile(project, "/build.properties",
+		    FileGenerator.modelBuildPropertiesContent(), progressMonitor)
+		
 		
 		// Generate the -viz.viz model Plug-In Java project
 		val projectPath = new Path("/" + data.getBundleNamePrefix + ".viz/src")
@@ -87,16 +90,11 @@ class SPVizGenerator extends AbstractGenerator {
         
         // Generate the plugin.xml file
         FileGenerator.generateOrUpdateFile(vizProject, "/plugin.xml", pluginXmlContent(data), progressMonitor)
-
-        // Add the Xtext nature to the project
-        val IProjectDescription projectDescription = vizProject.getDescription();
-        val String[] natureIds = projectDescription.getNatureIds();
-        val String[] newNatureIds = newArrayOfSize(natureIds.length + 1);
-        System.arraycopy(natureIds, 0, newNatureIds, 0, natureIds.length);
-        newNatureIds.set(natureIds.length, "org.eclipse.xtext.ui.shared.xtextNature");
-        projectDescription.setNatureIds(newNatureIds);
-        vizProject.setDescription(projectDescription, progressMonitor);
-        vizProject.build(IncrementalProjectBuilder.INCREMENTAL_BUILD, progressMonitor)        
+        
+        // Generate the build.properties file
+        FileGenerator.generateOrUpdateFile(vizProject, "/build.properties", 
+            FileGenerator.buildPropertiesContent(true), progressMonitor
+        )
 		
 		// Generate further source files for the project
 		GenerateSyntheses.generate(sourceVizFolder, data, progressMonitor)
@@ -110,6 +108,28 @@ class SPVizGenerator extends AbstractGenerator {
 		    progressMonitor
 	    )
 	    
+        // Add the Xtext and Plugin natures to the project
+        val IProjectDescription projectDescription = vizProject.getDescription();
+        var String[] natureIds = projectDescription.getNatureIds()
+        if (natureIds === null) {
+            natureIds = #[ "org.eclipse.xtext.ui.shared.xtextNature", "org.eclipse.pde.PluginNature" ]
+        } else {
+            if (!project.hasNature("org.eclipse.xtext.ui.shared.xtextNature")) {
+                val oldNatureIds = natureIds
+                natureIds = newArrayOfSize(oldNatureIds.length + 1)
+                System.arraycopy(oldNatureIds, 0, natureIds, 0, oldNatureIds.length)
+                natureIds.set(oldNatureIds.length, "org.eclipse.xtext.ui.shared.xtextNature")
+            }
+            if (!project.hasNature("org.eclipse.pde.PluginNature")) {
+                val oldNatureIds = natureIds
+                natureIds = newArrayOfSize(oldNatureIds.length + 1 )
+                System.arraycopy(oldNatureIds, 0, natureIds, 0, oldNatureIds.length)
+                natureIds.set(oldNatureIds.length, "org.eclipse.pde.PluginNature")
+            }
+        }
+        projectDescription.setNatureIds(natureIds);
+        vizProject.setDescription(projectDescription, progressMonitor);
+	    
 	    
 	    // Generate the .language.server Java project
 	    val lsProject = new JavaProjectGenerator(data.getBundleNamePrefix + ".language.server")
@@ -122,6 +142,9 @@ class SPVizGenerator extends AbstractGenerator {
             launchFolder.create(false, true, progressMonitor)
         }
         GenerateLanguageServer.generate(lsProject.getFolder("src"), launchFolder, data, progressMonitor)
+        
+        // Generate the Maven build framework for this visualization.
+        GenerateMavenBuild.generate(data.bundleNamePrefix, data.visualizationName.toFirstUpper ,data.modelBundleNamePrefix + ".model", "0.1.0", progressMonitor)
 	}
 	
 	protected def List<String> requiredLSBundles(DataAccess data) {
@@ -180,16 +203,16 @@ class SPVizGenerator extends AbstractGenerator {
      */
     private def String pluginXmlContent(DataAccess data) {
         return '''
-        <?xml version="1.0" encoding="UTF-8"?>
-        <?eclipse version=\"3.4\"?>
-        <plugin>
-            <extension
-                point="de.cau.cs.kieler.klighd.extensions">
-                <startupHook
-                    class="«data.getBundleNamePrefix».viz.KlighdSetup">
-                </startupHook>
-            </extension>
-        </plugin>
+            <?xml version="1.0" encoding="UTF-8"?>
+            <?eclipse version=\"3.4\"?>
+            <plugin>
+                <extension
+                    point="de.cau.cs.kieler.klighd.extensions">
+                    <startupHook
+                        class="«data.getBundleNamePrefix».viz.KlighdSetup">
+                    </startupHook>
+                </extension>
+            </plugin>
         '''
     }
     

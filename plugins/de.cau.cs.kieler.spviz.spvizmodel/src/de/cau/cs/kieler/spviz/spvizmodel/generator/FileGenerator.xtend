@@ -83,7 +83,7 @@ class FileGenerator {
                 "icons/loupe.svg", "icons/loupe128.png",
                 "icons/minimize.svg", "icons/minimize128.png",
                 "icons/restore.svg", "icons/restore128.png"]
-            // TODO: this has to be tested from a built jar.
+            // TODO: this has to be tested from a standalone application.
             for (fileName : fileNames) {
                 val InputStream source = FileGenerator.getResourceAsStream("/" + sourceFolder + "/" + fileName)
                 val newFile = new File(targetFolder.rawLocation.toString + "/" + fileName)
@@ -155,10 +155,42 @@ class FileGenerator {
         Bundle-Name: «identifier»
         Bundle-SymbolicName: «CodeGenUtil.validPluginID(identifier)»; singleton:=true
         Bundle-Version: 0.1.0.qualifier
+        Bundle-RequiredExecutionEnvironment: JavaSE-11
         Require-Bundle: 
         «FOR requiredBundle : requiredBundles SEPARATOR ','»
             «" " + requiredBundle»
         «ENDFOR»
+        '''
+    }
+    
+    def static String buildPropertiesContent(boolean isViz) {
+        return '''
+            source.. = src/,\
+                       xtend-gen/
+            bin.includes = META-INF/,\
+                           «IF isViz»
+                               .,\
+                               plugin.xml,\
+                               icons/
+                           «ELSE»
+                               .
+                           «ENDIF»
+            
+        '''
+    }
+    
+    def static modelBuildPropertiesContent() {
+        return '''
+            bin.includes = .,\
+                           model/,\
+                           META-INF/,\
+                           plugin.xml,\
+                           plugin.properties
+            jars.compile.order = .
+            source.. = src/,\
+                       xtend-gen/
+            output.. = bin/
+            
         '''
     }
     

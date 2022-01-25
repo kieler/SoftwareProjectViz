@@ -24,9 +24,6 @@ import org.eclipse.core.runtime.IProgressMonitor
 import org.eclipse.core.runtime.Path
 import org.eclipse.emf.codegen.ecore.Generator
 import org.eclipse.emf.codegen.util.CodeGenUtil
-import org.eclipse.jdt.core.IClasspathEntry
-import org.eclipse.jdt.core.IJavaProject
-import org.eclipse.jdt.core.JavaCore
 
 /**
  * Generator for Xcore projects. Configure it with chained configure[...] methods and start with
@@ -135,26 +132,6 @@ class XCoreProjectGenerator {
         }
         projectDescription.setNatureIds(natureIds);
         project.setDescription(projectDescription, progressMonitor);
-
-        // Configure as a Java project with src-gen folder
-        val IJavaProject javaProject = JavaCore.create(project);
-        val IClasspathEntry[] classpath = javaProject.getRawClasspath();
-        if (classpath.findFirst[it.path.lastSegment.toString.equals("src-gen")] === null) {
-            val IClasspathEntry[] newClasspath = newArrayOfSize(classpath.length + 1);
-            for (var int i = 0, var int index = 0, val int length = newClasspath.length; index < length; i++, index++) {
-                newClasspath.set(index, classpath.get(i));
-                if (classpath.get(i).getEntryKind() == IClasspathEntry.CPE_SOURCE) {
-                    val IPath path = classpath.get(i).getPath();
-                    val IPath srcGenPath = path.removeLastSegments(1).append(path.lastSegment() + "-gen");
-                    val IClasspathEntry srcGen = JavaCore.newSourceEntry(srcGenPath);
-                    CodeGenUtil.EclipseUtil.findOrCreateContainer(srcGenPath, true, genModelProjectLocation,
-                        progressMonitor);
-                    index++;
-                    newClasspath.set(index, srcGen);
-                }
-            }
-            javaProject.setRawClasspath(newClasspath, progressMonitor);
-        }
 
         return project
     }

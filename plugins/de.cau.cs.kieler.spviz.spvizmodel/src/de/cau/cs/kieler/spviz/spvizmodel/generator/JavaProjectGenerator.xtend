@@ -70,7 +70,7 @@ class JavaProjectGenerator {
     def IProject generate(IProgressMonitor progressMonitor) {
         val genModelContainerPath = new Path("/" + projectPath + "/src")
 
-        // Create the project project.
+        // Create the project.
         val IWorkspace workspace = ResourcesPlugin.getWorkspace()
         val IProject project = workspace.getRoot().getProject(projectPath)
         var IProjectDescription projectDescription = null
@@ -138,6 +138,10 @@ class JavaProjectGenerator {
         // Generate the manifest
         FileGenerator.generateOrUpdateFile(project, "/META-INF/MANIFEST.MF",
             FileGenerator.manifestContent(genModelContainerPath.segment(0), requiredBundles), progressMonitor)
+        
+        // Generate the build.properties file
+        FileGenerator.generateOrUpdateFile(project, "/build.properties",
+            FileGenerator.buildPropertiesContent(false), progressMonitor)
         
         return project
     }
