@@ -127,14 +127,9 @@ class GenerateModelMavenBuild {
               <!-- Additional plug-in repositories. -->
               <pluginRepositories>
                 <pluginRepository>
-                  <id>jboss-public-repository-group</id>
-                  <name>JBoss Public Repository Group</name>
-                  <url>http://repository.jboss.org/nexus/content/groups/public/</url>
-                </pluginRepository>
-                <pluginRepository>
-                  <id>jboss-snapshots-repository</id>
-                  <name>JBoss Snapshots Repository</name>
-                  <url>https://repository.jboss.org/nexus/content/repositories/snapshots/</url>
+                  <id>jboss-releases</id>
+                  <name>JBoss Releases Maven Repository</name>
+                  <url>https://repository.jboss.org/nexus/content/repositories/releases/</url>
                 </pluginRepository>
               </pluginRepositories>
             

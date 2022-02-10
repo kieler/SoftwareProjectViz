@@ -785,7 +785,7 @@ class GenerateMavenBuild {
                   <plugin>
                     <groupId>org.jboss.tools.tycho-plugins</groupId>
                     <artifactId>repository-utils</artifactId>
-                    <version>1.1.1-SNAPSHOT</version>
+                    <version>1.7.0</version>
                     <executions>
                     
                       <!-- creates index.html and other artifacts -->
