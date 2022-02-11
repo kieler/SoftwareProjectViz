@@ -401,7 +401,9 @@ class GenerateSyntheses {
 					«FOR view : data.views»
 						«FOR connection : view.shownConnections»
 							.registerAction(RevealRequired«connection.shownConnection.requiring.name»Requires«connection.shownConnection.required.name»Named«connection.shownConnection.name»Action.ID, new RevealRequired«connection.shownConnection.requiring.name»Requires«connection.shownConnection.required.name»Named«connection.shownConnection.name»Action)
+							.registerAction(RevealRequired«connection.shownConnection.requiring.name»Requires«connection.shownConnection.required.name»Named«connection.shownConnection.name»Action.Recursive.ID, new RevealRequired«connection.shownConnection.requiring.name»Requires«connection.shownConnection.required.name»Named«connection.shownConnection.name»Action.Recursive)
 							.registerAction(RevealRequiring«connection.shownConnection.requiring.name»Requires«connection.shownConnection.required.name»Named«connection.shownConnection.name»Action.ID, new RevealRequiring«connection.shownConnection.requiring.name»Requires«connection.shownConnection.required.name»Named«connection.shownConnection.name»Action)
+							.registerAction(RevealRequiring«connection.shownConnection.requiring.name»Requires«connection.shownConnection.required.name»Named«connection.shownConnection.name»Action.Recursive.ID, new RevealRequiring«connection.shownConnection.requiring.name»Requires«connection.shownConnection.required.name»Named«connection.shownConnection.name»Action.Recursive)
 						«ENDFOR»
 					«ENDFOR»
 					.registerDiagramSynthesisClass(«data.projectName.toFirstUpper»DiagramSynthesis.name, «data.projectName.toFirstUpper»DiagramSynthesis)
@@ -1031,14 +1033,15 @@ class GenerateSyntheses {
 					«FOR required : data.getRequiredArtifacts(artifact)»
 						/**
 						 * The rendering of a port that connects a «artifact.name» with the required «required.required.name». Issues the
-						 * {@link RevealRequired«required.requiring.name»Requires«required.required.name»Named«required.name»Action} if clicked.
+						 * {@link RevealRequired«required.requiring.name»Requires«required.required.name»Named«required.name»Action} or {@link RevealRequired«required.requiring.name»Requires«required.required.name»Named«required.name»Action.Recursive} if clicked.
 						 */
 						def KRectangle addRequired«required.requiring.name»Requires«required.required.name»Named«required.name»ActionPortRendering(KPort port, int numReferences, boolean allShown) {
 							return port.addRectangle => [
 								background = if (allShown) ALL_SHOWN_COLOR.color else NOT_ALL_SHOWN_COLOR.color
 								val tooltipText = "Show required «required.required.name.toFirstLower»s (" + numReferences + " total)."
 								tooltip = tooltipText
-								addSingleClickAction(RevealRequired«required.requiring.name»Requires«required.required.name»Named«required.name»Action::ID)
+								addSingleClickAction(RevealRequired«required.requiring.name»Requires«required.required.name»Named«required.name»Action::ID, ModifierState.DONT_CARE, ModifierState.NOT_PRESSED, ModifierState.DONT_CARE)
+								addSingleClickAction(RevealRequired«required.requiring.name»Requires«required.required.name»Named«required.name»Action.Recursive::ID, ModifierState.DONT_CARE, ModifierState.PRESSED, ModifierState.DONT_CARE)
 							]
 						}
 						
@@ -1071,14 +1074,15 @@ class GenerateSyntheses {
 					«FOR requiring : data.getRequiringArtifacts(artifact)»	
 						/**
 						 * The rendering of a port that connects a «artifact.name.toFirstLower» with the «requiring.requiring.name»s that require it. Issues the
-						 * {@link RevealRequiring«requiring.requiring.name»Requires«requiring.required.name»Named«requiring.name»Action} if clicked.
+						 * {@link RevealRequiring«requiring.requiring.name»Requires«requiring.required.name»Named«requiring.name»Action} or {@link RevealRequiring«requiring.requiring.name»Requires«requiring.required.name»Named«requiring.name»Action.Recursive} if clicked.
 						 */
 						def KRectangle addRequiring«requiring.requiring.name»Requires«requiring.required.name»Named«requiring.name»ActionPortRendering(KPort port, int numReferences, boolean allShown) {
 							return port.addRectangle => [
 								background = if (allShown) ALL_SHOWN_COLOR.color else NOT_ALL_SHOWN_COLOR.color
 								val tooltipText = "Show «requiring.requiring.name.toFirstLower»s that require this «artifact.name.toFirstLower» (" + numReferences + " total)."
 								tooltip = tooltipText
-								addSingleClickAction(RevealRequiring«requiring.requiring.name»Requires«requiring.required.name»Named«requiring.name»Action::ID)
+								addSingleClickAction(RevealRequiring«requiring.requiring.name»Requires«requiring.required.name»Named«requiring.name»Action::ID, ModifierState.DONT_CARE, ModifierState.NOT_PRESSED, ModifierState.DONT_CARE)
+								addSingleClickAction(RevealRequiring«requiring.requiring.name»Requires«requiring.required.name»Named«requiring.name»Action.Recursive::ID, ModifierState.DONT_CARE, ModifierState.PRESSED, ModifierState.DONT_CARE)
 							]
 						}
 					«ENDFOR»

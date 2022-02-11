@@ -60,6 +60,10 @@ class GenerateActions {
 		content = generateStoreModelAction(data)
 		FileGenerator.generateOrUpdateFile(sourceFolder, folder + "StoreModelAction.xtend", content, progressMonitor)
 		
+		content = generateRecursiveRevealAction(data)
+		FileGenerator.generateOrUpdateFile(sourceFolder, folder + "RecursiveRevealAction.xtend", content, progressMonitor)
+		content = generateRevealAction(data)
+		FileGenerator.generateOrUpdateFile(sourceFolder, folder + "RevealAction.xtend", content, progressMonitor)
 		for (view : data.views) {
     		for (shownConnection : view.shownConnections) {
     		    val connection = shownConnection.shownConnection
@@ -116,6 +120,112 @@ class GenerateActions {
 		'''
 	}
 	
+    /**
+     * Generates the content for the RecursiveRevealAction.
+     */
+    def static generateRecursiveRevealAction(DataAccess data) {
+        return '''
+            package «data.getBundleNamePrefix».viz.actions
+            
+            import de.cau.cs.kieler.klighd.KlighdDataManager
+            import java.util.HashSet
+            import java.util.LinkedList
+            import java.util.Queue
+            import java.util.Set
+            import «data.getBundleNamePrefix».model.IVisualizationContext
+            
+            /**
+             * Recursive version of a reveal action, revealing all elements using the same connection type connected.
+             * 
+             * @param <C> The visualization context's class to click on and recursively reveal.
+             * @param <R> The reveal action revealing all connections for a single source context, called recursively by this.
+             */
+            abstract class RecursiveRevealAction<C extends IVisualizationContext<?>, R extends RevealAction<C>> extends AbstractVisualizationContextChangingAction {
+                
+                override changeVisualization(IVisualizationContext<?> modelVisualizationContext, ActionContext actionContext) {
+                    val revealAction = KlighdDataManager.instance.getActionById(revealActionClass.name) as R
+                    
+                    // Go through all visualization contexts via BFS to execute the reveal action on.
+                    // Queue containing all revealed contexts for that the action has not been executed yet.
+                    val Queue<C> toVisit = new LinkedList
+                    // All contexts already visited that should not be pushed into the queue anymore.
+                    val Set<C> visited = new HashSet
+                    toVisit.add(modelVisualizationContext as C)
+                    // 'visit' the start context as we start with that directly. 
+                    visited.add(modelVisualizationContext as C)
+                    
+                    while (!toVisit.empty) {
+                        val current = toVisit.remove
+                        revealAction.changeVisualization(current, actionContext)
+                        
+                        // Fetch the newly connected bundles from the action.
+                        val newlyConnected = revealAction.newlyConnectedContextsOfSameType
+                        
+                        // Add the not yet visited contexts to our queue and visited set for the next iteration.
+                        for (n : newlyConnected) {
+                            if (!visited.contains(n)) {
+                                toVisit.add(n)
+                                visited.add(n)
+                            }
+                        }
+                    }
+                }
+                
+                /**
+                 * The reveal action that this action calls recursively. Duplicate of the type parameter, as Java cannot directly
+                 * read that during runtime.
+                 */
+                abstract def Class<R> revealActionClass()
+                
+            }
+            
+        '''
+    }
+    
+    /**
+     * Generates the content for the RevealAction
+     */
+    def static generateRevealAction(DataAccess data) {
+        return '''
+            package «data.getBundleNamePrefix».viz.actions
+            
+            import java.util.List
+            import «data.getBundleNamePrefix».model.IVisualizationContext
+            
+            /**
+             * Abstract action to reveal and connect any new contexts. Requires an extending action to write a new list to the
+             * {@link #newlyConnectedContexts} field with all contexts that got connected during its implementation of the
+             * {@link #changeVisualization} method.
+             * 
+             * @author nre
+             */
+            abstract class RevealAction<C extends IVisualizationContext<?>> extends AbstractVisualizationContextChangingAction {
+                
+                /**
+                 * All contexts that get connected. Only valid immediately after calling {@link #changeVisualization} on this action.
+                 */
+                protected List<? extends IVisualizationContext<?>> newlyConnectedContexts
+                
+                /**
+                 * The context this reveal action can be applied to. Duplicate of the type parameter, as Java cannot directly
+                 * read that during runtime.
+                 */
+                abstract def Class<C> applicableContext()
+                
+                /**
+                 * All contexts of the same type this action is defined for that get connected. Only valid immediately after calling
+                 * #changeVisualization on this action.
+                 */
+                def Iterable<C> newlyConnectedContextsOfSameType() {
+                    return newlyConnectedContexts.filter(applicableContext)
+                }
+                
+            }
+            
+        '''
+    }
+	
+	
 	/**
 	 * Generates the content for a reveal action class.
 	 * 
@@ -165,7 +275,7 @@ class GenerateActions {
 		 * 
 		 * @author nre
 		 */
-		class «className» extends AbstractVisualizationContextChangingAction {
+		class «className» extends RevealAction<«artifactFromName»Context> {
 			
 			/**
 			 * This action's ID.
@@ -192,7 +302,7 @@ class GenerateActions {
 				
 				// The «artifactToName.toFirstLower» contexts in the overview that the «connectionName.toFirstLower» connection can connect to.
 				// Use the detailed «artifactToName.toFirstLower» contexts only, as they are all made detailed above.
-				val «requiringOrRequired.toFirstLower»«artifactToName»Contexts = «viewName.toFirstLower»OverviewContext.detailedElements.filter [
+				newlyConnectedContexts = «viewName.toFirstLower»OverviewContext.detailedElements.filter [
 					«artifactFromName.toFirstLower».«requiringOrRequired.toFirstLower + connectionName + artifactToName»s.contains(it.modelElement)
 				].toList
 				
@@ -202,7 +312,7 @@ class GenerateActions {
 «««		//				ContextUtils.remove«connectionName»«artifactTo»Edge(«artifactFrom.toFirstLower»Context, «requiringOrRequired.toFirstLower»«artifactTo»Context as «artifactTo»Context)
 «««		//			]
 «««		//		} else {
-				«requiringOrRequired.toFirstLower»«artifactToName»Contexts.forEach [ «requiringOrRequired.toFirstLower»«artifactToName»Context |
+				newlyConnectedContexts.forEach [ «requiringOrRequired.toFirstLower»«artifactToName»Context |
 					«IF isRequired»
 						«artifactFromName.toFirstLower»Context.add«connectionName»«artifactToName»Edge(«requiringOrRequired.toFirstLower»«artifactToName»Context as «artifactToName»Context)
 					«ELSE»
@@ -211,6 +321,26 @@ class GenerateActions {
 				]
 «««		//		}
 			}
+			    
+		    override applicableContext() {
+		        return «artifactFromName»Context
+		    }
+		    
+		    /**
+		     * Recursive version of the parent class's action, revealing all elements using the same connection type connected.
+		     */
+		    static class Recursive extends RecursiveRevealAction<«artifactFromName»Context, «className»> {
+		        
+		        /**
+		         * This action's ID.
+		         */
+		        public static val String ID = Recursive.name
+		        
+		        override revealActionClass() {
+		            return «className»
+		        }
+		        
+		    }
 			
 		}
 		'''
