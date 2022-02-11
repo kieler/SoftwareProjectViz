@@ -3,7 +3,7 @@
  *
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2021 by
+ * Copyright 2021-2022 by
  * + Kiel University
  *   + Department of Computer Science
  *   + Real-Time and Embedded Systems Group
@@ -97,13 +97,13 @@ class GenerateActions {
 		     */
 		    public static val String ID = ContextExpandAllAction.name
 		    
-		    override <M> changeVisualization(IVisualizationContext<M> modelVisualizationContext, ActionContext actionContext) {
+		    override changeVisualization(IVisualizationContext<?> modelVisualizationContext, ActionContext actionContext) {
 		        // This action will always be performed on an IOverviewVisualizationContext.
 		        if (!(modelVisualizationContext instanceof IOverviewVisualizationContext)) {
 		            throw new IllegalStateException("This action is performed on an element that is not inside an overview " +
 		                "visualization!")
 		        }
-		        val ovc = (modelVisualizationContext as IOverviewVisualizationContext<M>)
+		        val ovc = (modelVisualizationContext as IOverviewVisualizationContext<?>)
 		        
 		        val collapsedElements = ovc.collapsedElements.clone
 		        collapsedElements.forEach [
@@ -172,7 +172,7 @@ class GenerateActions {
 			 */
 			public static val String ID = «className».name
 			
-			override <M> changeVisualization(IVisualizationContext<M> modelVisualizationContext, ActionContext actionContext) {
+			override changeVisualization(IVisualizationContext<?> modelVisualizationContext, ActionContext actionContext) {
 				// The «artifactFromName»Context element for the element that was clicked on.
 				val «artifactFromName.toFirstLower»Context = modelVisualizationContext as «artifactFromName»Context
 				
@@ -317,8 +317,8 @@ class GenerateActions {
 				 * 
 				 * @param modelVisualizationContext The visualization context of the element that this action is performed on.
 				 */
-				abstract def <M> void changeVisualization(
-					IVisualizationContext<M> modelVisualizationContext, ActionContext actionContext)
+				abstract def void changeVisualization(
+					IVisualizationContext<?> modelVisualizationContext, ActionContext actionContext)
 				
 				/**
 				 * Returns a new {@link ActionResult} this action will return when executed. Should be overriden by individual
@@ -362,14 +362,14 @@ class GenerateActions {
 				 */
 				public static val String ID = ContextCollapseExpandAction.name
 				
-				override <M> changeVisualization(IVisualizationContext<M> modelVisualizationContext, ActionContext actionContext) {
+				override changeVisualization(IVisualizationContext<?> modelVisualizationContext, ActionContext actionContext) {
 					// This action will always be performed on a child visualization context of a IOverviewVisualizationContext.
 					val overviewVisContext = modelVisualizationContext.parent
 					if (!(overviewVisContext instanceof IOverviewVisualizationContext)) {
 						throw new IllegalStateException("This action is performed on an element that is not inside an overview " +
 							"visualization!")
 					}
-					val ovc = (overviewVisContext as IOverviewVisualizationContext<M>)
+					val ovc = (overviewVisContext as IOverviewVisualizationContext<?>)
 					
 					if (ovc.collapsedElements.contains(modelVisualizationContext)) {
 						ovc.makeDetailed(modelVisualizationContext)
@@ -414,13 +414,13 @@ class GenerateActions {
 				 */
 				public static val String ID = OverviewContextCollapseExpandAction.name 
 				
-				override <M> changeVisualization(IVisualizationContext<M> modelVisualizationContext, ActionContext actionContext) {
+				override changeVisualization(IVisualizationContext<?> modelVisualizationContext, ActionContext actionContext) {
 					if (!(modelVisualizationContext instanceof IOverviewVisualizationContext)) {
 						throw new IllegalArgumentException("This action can only be called on a IOverviewVisualizationContext. "
 							+ "Was called on " + modelVisualizationContext.class)
 					}
 					// Just invert the expanded state.
-					val c = modelVisualizationContext as IOverviewVisualizationContext<M>
+					val c = modelVisualizationContext as IOverviewVisualizationContext<?>
 					c.expanded = !c.expanded
 					
 					// Also, toggle the expansion state in the viewer.
@@ -608,7 +608,7 @@ class GenerateActions {
                  */
                 public static val String ID = ConnectAllAction.name
                 
-                override <M> changeVisualization(IVisualizationContext<M> modelVisualizationContext, ActionContext actionContext) {
+                override changeVisualization(IVisualizationContext<?> modelVisualizationContext, ActionContext actionContext) {
                     val kdm = KlighdDataManager.instance
                     «FOR actionNames : revealActions.values»
                         «FOR actionName : actionNames»
@@ -784,11 +784,11 @@ class GenerateActions {
                  */
                 public static val String ID = ShowHideCollapsedAction.name
                 
-                override <M> changeVisualization(IVisualizationContext<M> modelVisualizationContext, ActionContext actionContext) {
+                override changeVisualization(IVisualizationContext<?> modelVisualizationContext, ActionContext actionContext) {
                     if (!(modelVisualizationContext instanceof IOverviewVisualizationContext)) {
                         throw new IllegalStateException("This action is not performed on an overview visualization!")
                     }
-                    val ovc = (modelVisualizationContext as IOverviewVisualizationContext<M>)
+                    val ovc = (modelVisualizationContext as IOverviewVisualizationContext<?>)
                     
                     ovc.showCollapsedElements = !ovc.showCollapsedElements
                 }
