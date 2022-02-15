@@ -1370,35 +1370,43 @@ class GenerateSyntheses {
 				/** Option for setting the main text to be shown in unexpanded objects. */
 				public static final SynthesisOption SIMPLE_TEXT = SynthesisOption.createChoiceOption("Descriptive text",
 					#[SimpleTextType.Id, SimpleTextType.Name], SimpleTextType.Id)
+			        .description = "Set the main text to be shown in unexpanded objects."
 				
 				/** Category option containing options for filtering. */
 				public static final SynthesisOption FILTER_CATEGORY = SynthesisOption.createCategory("Filter", true)
+				    .description = "Category containing options for filtering."
 				
 				/** Category option containing options for text filtering. */
 				public static final SynthesisOption TEXT_FILTER_CATEGORY = SynthesisOption.createCategory("Text filter", false)
 					.setCategory(FILTER_CATEGORY)
+					.description = "Category for filtering based on texts."
 				
 				/** Option for filtering an overview by only elements containing the regular expression in their identifier. */
 				public static final SynthesisOption FILTER_BY = SynthesisOption.createTextOption(
 					"Filter by IDs containing ... (Java regex)", "").setCategory(TEXT_FILTER_CATEGORY)
+					.description = "Filter an overview by only elements containing the regular expression in their identifier. You may use a Java regex to specify complex filters."
 				
 				«FOR artifact : data.artifacts»
 					/** Option that indicates if the {@link #FILTER_BY} option should be applied to shown «artifact.name»s. */
 					public static final SynthesisOption FILTER_«artifact.name.toUpperCase(Locale.ROOT)»S = SynthesisOption.createCheckOption(
 						"Apply to «artifact.name»s", true).setCategory(TEXT_FILTER_CATEGORY)
+						.description = "Indicates if the \"Filter by IDs containing ...\"-option should be applied to shown «artifact.name»s."
 				«ENDFOR»
 				
 				/** Category option containing options for view filtering. */
 				public static final SynthesisOption VIEW_FILTER_CATEGORY = SynthesisOption.createCategory("View filter", false)
 					.setCategory(FILTER_CATEGORY)
+					.description = "Category for filtering the view."
 				
 				/** Option indicating whether external elements should be shown. */
 				public static final SynthesisOption SHOW_EXTERNAL = SynthesisOption.createCheckOption(
 					"External elements", true).setCategory(VIEW_FILTER_CATEGORY)
+					.description = "Changes whether elements not directly defined in the model should be shown."
 				
 				/** Option for limiting the length of descriptive texts. */
 				public static final SynthesisOption DESCRIPTION_LENGTH = SynthesisOption.createRangeOption(
 					"Description text length", 0, 500, 1, 20).setCategory(VIEW_FILTER_CATEGORY)
+					.description = "Limit the length of descriptive texts to this maximum value."
 				
 				/** Option for shortening all IDs by the prefix in the option. */
 				public static final SynthesisOption SHORTEN_BY = SynthesisOption.createTextOption(
@@ -1407,14 +1415,17 @@ class GenerateSyntheses {
 				/** Option for showing interactive buttons. */
 				public static final SynthesisOption INTERACTIVE_BUTTONS = SynthesisOption.createCheckOption(
 					"Interactive Buttons", true).setCategory(VIEW_FILTER_CATEGORY)
+					.description = "Shows interactive buttons for navigating this view."
 				
 				
 				/** Category option containing options for graphical performance. */
 				public static final SynthesisOption PERFORMANCE = SynthesisOption.createCategory("Performance", false)
+				    .description = "Options for graphical performance."
 					
 				/** Option for using Icons or simpler texts. */
 				public static final SynthesisOption SHOW_ICONS = SynthesisOption.createCheckOption("Icons", true)
 					.setCategory(PERFORMANCE)
+					.description = "Use images as icons for the buttons. Inflates the view model and reduces performance for a cleaner view."
 			}
 			
 		'''
