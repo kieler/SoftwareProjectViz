@@ -41,17 +41,17 @@ class SPVizModelParsingTest {
 			        contains Bundle
 			    }
 			    Bundle {
-			        Dependency depends Bundle
-			        PackageDependency depends Package
+			        Dependency connects Bundle
+			        PackageDependency connects Package
 			        contains ServiceInterface
 			        contains ServiceComponent
 			        contains Package
 			    }
 			    ServiceInterface {
-			        Required depends ServiceComponent
+			        Required connects ServiceComponent
 			    }
 			    ServiceComponent {
-			        Required depends ServiceInterface
+			        Required connects ServiceInterface
 			    }
 			    Package
 			}
