@@ -61,7 +61,7 @@ public class SPVizModelParser extends AbstractContentAssistParser {
 			builder.put(grammarAccess.getArtifactAccess().getReferencesAssignment_1_1(), "rule__Artifact__ReferencesAssignment_1_1");
 			builder.put(grammarAccess.getContainmentAccess().getContainsAssignment_1(), "rule__Containment__ContainsAssignment_1");
 			builder.put(grammarAccess.getConnectionAccess().getNameAssignment_0(), "rule__Connection__NameAssignment_0");
-			builder.put(grammarAccess.getConnectionAccess().getDependsOnAssignment_2(), "rule__Connection__DependsOnAssignment_2");
+			builder.put(grammarAccess.getConnectionAccess().getConnectsAssignment_2(), "rule__Connection__ConnectsAssignment_2");
 		}
 	}
 	

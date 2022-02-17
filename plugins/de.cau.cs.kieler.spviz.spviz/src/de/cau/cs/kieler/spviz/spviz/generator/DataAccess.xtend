@@ -3,7 +3,7 @@
  *
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2021 by
+ * Copyright 2021-2022 by
  * + Kiel University
  *   + Department of Computer Science
  *   + Real-Time and Embedded Systems Group
@@ -51,13 +51,13 @@ class DataAccess {
     @Accessors(PUBLIC_GETTER)
 	String projectName
 	/** 
-	 * A convenient map to show all {@link Connection}s with the key of the map as the requiring {@link Artifact}.
+	 * A convenient map to show all {@link Connection}s with the key of the map as the connecting {@link Artifact}.
 	 */
-	Map<Artifact, List<Connection>> requiredArtifacts
+	Map<Artifact, List<Connection>> connectedArtifacts
     /**
-     * A convenient map to show all {@link Connection}s with the key of the map as the required {@link Artifact}.
+     * A convenient map to show all {@link Connection}s with the key of the map as the connected {@link Artifact}.
      */
-	Map<Artifact, List<Connection>> requiringArtifacts
+	Map<Artifact, List<Connection>> connectingArtifacts
 	
 	/**
 	 * Constructor
@@ -78,25 +78,25 @@ class DataAccess {
         modelBundleNamePrefix = spvizModel.package
         visualizationName = spviz.name
 		projectName = spvizModel.name + "Project"
-		requiredArtifacts = newHashMap
-		requiringArtifacts = newHashMap
+		connectedArtifacts = newHashMap
+		connectingArtifacts = newHashMap
 		
 		for (view : spviz.views) {
             // find all connections between artifacts
             for (shownConnection : view.shownConnections) {
                 val connection = shownConnection.shownConnection
-                val requiring = connection.requiring
-                val required = connection.required
+                val connecting = connection.connecting
+                val connected = connection.connected
 
-                if (!requiredArtifacts.containsKey(requiring)) {
-                    requiredArtifacts.put(requiring, newArrayList)
+                if (!connectedArtifacts.containsKey(connecting)) {
+                    connectedArtifacts.put(connecting, newArrayList)
                 }
-                requiredArtifacts.get(requiring).add(connection)
+                connectedArtifacts.get(connecting).add(connection)
                 
-                if (!requiringArtifacts.containsKey(required)) {
-                    requiringArtifacts.put(required, newArrayList)
+                if (!connectingArtifacts.containsKey(connected)) {
+                    connectingArtifacts.put(connected, newArrayList)
                 }
-                requiringArtifacts.get(required).add(connection)
+                connectingArtifacts.get(connected).add(connection)
             }
         }
     }
@@ -120,70 +120,70 @@ class DataAccess {
 	}
 	
 	/** 
-	 * Returns all connections with the required artifacts for a given requiring artifact. 
+	 * Returns all connections with the connected artifacts for a given connecting artifact. 
 	 * 
-	 * @param requiring
-	 * 		the artifact which requires other artifacts
+	 * @param connecting
+	 * 		the artifact which connects other artifacts
 	 * @return
 	 * 		List of the connections
 	 */
-	def List<Connection> getRequiredArtifacts(Artifact requiring) { 
-		if (!requiredArtifacts.containsKey(requiring)) {
+	def List<Connection> getConnectedArtifacts(Artifact connecting) { 
+		if (!connectedArtifacts.containsKey(connecting)) {
 			return newArrayList
 		}
-		return requiredArtifacts.get(requiring)
+		return connectedArtifacts.get(connecting)
 	}
 	
 	/** 
-	 * Returns all connections with the requiring artifacts for a given required artifact. 
+	 * Returns all connections with the connecting artifacts for a given connected artifact. 
 	 * 
-	 * @param required
-	 * 		the artifact which is required by other artifacts
+	 * @param connected
+	 * 		the artifact which is connected by other artifacts
 	 * @return
 	 * 		List of the connections
 	 */
-	def List<Connection>getRequiringArtifacts(Artifact required) {
-		if (!requiringArtifacts.containsKey(required)) {
+	def List<Connection>getConnectingArtifacts(Artifact connected) {
+		if (!connectingArtifacts.containsKey(connected)) {
 			return newArrayList
 		}
-		return requiringArtifacts.get(required)
+		return connectingArtifacts.get(connected)
 	}
 	
 	/** 
-	 * Returns all connections with the required artifacts for a given requiring artifact, if displayed in the view.
+	 * Returns all connections with the connected artifacts for a given connecting artifact, if displayed in the view.
 	 * 
-	 * @param requiring
-	 * 		the artifact which requires other artifacts
+	 * @param connecting
+	 * 		the artifact which connects other artifacts
 	 * @param view
 	 *      the view showing this connection
 	 * @return
 	 * 		List of the connections.
 	 */
-	def List<Connection> getRequiredArtifactsInOverview(Artifact requiring, View view) {
+	def List<Connection> getConnectedArtifactsInOverview(Artifact connecting, View view) {
 		val List<Connection> connections = newArrayList
-		for (requiredConnection : requiredArtifacts.get(requiring) ?: #[]) {
-			if (isConnectionDisplayedInOverview(requiredConnection, view)) {
-				connections.add(requiredConnection)
+		for (connectedConnection : connectedArtifacts.get(connecting) ?: #[]) {
+			if (isConnectionDisplayedInOverview(connectedConnection, view)) {
+				connections.add(connectedConnection)
 			}
 		}
 		return connections
 	}
 	
 	/** 
-     * Returns all connections with the requiring artifacts for a given required artifact, if displayed in the view.
+     * Returns all connections with the connecting artifacts for a given connected artifact, if displayed in the view.
 	 * 
-	 * @param required
-	 * 		the artifact which is required by other artifacts
+	 * @param connected
+	 * 		the artifact which is connected by other artifacts
      * @param view
      *      the view showing this connection
 	 * @return
 	 * 		List of the connections.
 	 */
-	def List<Connection> getRequiringArtifactsInOverview(Artifact required, View view) {
+	def List<Connection> getConnectingArtifactsInOverview(Artifact connected, View view) {
         val List<Connection> connections = newArrayList
-        for (requiringConnection : requiringArtifacts.get(required) ?: #[]) {
-            if (isConnectionDisplayedInOverview(requiringConnection, view)) {
-                connections.add(requiringConnection)
+        for (connectingConnection : connectingArtifacts.get(connected) ?: #[]) {
+            if (isConnectionDisplayedInOverview(connectingConnection, view)) {
+                connections.add(connectingConnection)
             }
         }
         return connections

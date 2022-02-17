@@ -3,7 +3,7 @@
  *
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2020-2021 by
+ * Copyright 2020-2022 by
  * + Kiel University
  *   + Department of Computer Science
  *	 + Real-Time and Embedded Systems Group
@@ -334,11 +334,11 @@ class SPVizGenerator extends AbstractGenerator {
 			
 			«FOR artifact : data.artifacts»
 				class «artifact.name»Context extends IVisualizationContext<«correctArtifactName(artifact.name, data)»> {
-					«FOR required : data.getRequiredArtifacts(artifact)»
-						boolean allRequired«required.requiring.name»Requires«required.required.name»Named«required.name»Shown
+					«FOR connected : data.getConnectedArtifacts(artifact)»
+						boolean allConnected«connected.connecting.name»Connects«connected.connected.name»Named«connected.name»Shown
 					«ENDFOR»
-					«FOR requiring : data.getRequiringArtifacts(artifact)»
-						boolean allRequiring«requiring.requiring.name»Requires«requiring.required.name»Named«requiring.name»Shown
+					«FOR connecting : data.getConnectingArtifacts(artifact)»
+						boolean allConnecting«connecting.connecting.name»Connects«connecting.connected.name»Named«connecting.name»Shown
 					«ENDFOR»
 				}
 				
@@ -347,8 +347,7 @@ class SPVizGenerator extends AbstractGenerator {
 			«FOR view : data.views»
 				class «view.name»OverviewContext extends IOverviewVisualizationContext<Object> {
 					«FOR connection : view.shownConnections»
-						contains Pair<«connection.shownConnection.requiring.name»Context, «connection.shownConnection.required.name»Context>[] required«connection.shownConnection.requiring.name»Requires«connection.shownConnection.required.name»Named«connection.shownConnection.name»Edges
-						contains Pair<«connection.shownConnection.requiring.name»Context, «connection.shownConnection.required.name»Context>[] requiring«connection.shownConnection.requiring.name»Requires«connection.shownConnection.required.name»Named«connection.shownConnection.name»Edges
+						contains Pair<«connection.shownConnection.connecting.name»Context, «connection.shownConnection.connected.name»Context>[] «connection.shownConnection.connecting.name.toFirstLower»Connects«connection.shownConnection.connected.name»Named«connection.shownConnection.name»Edges
 					«ENDFOR»
 					«FOR shownElement : view.shownElements»
 						refers «shownElement.shownElement.name»Context[] collapsed«shownElement.shownElement.name»Contexts

@@ -3,7 +3,7 @@
  * 
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2021 by
+ * Copyright 2021-2022 by
  * + Kiel University
  *   + Department of Computer Science
  *     + Real-Time and Embedded Systems Group
@@ -27,22 +27,22 @@ import de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.Connection
 class SPVizModelExtension {
     
     /**
-     * Returns the required artifact of a connection.
+     * Returns the connected artifact of a connection.
      * 
      * @param connection The connection
-     * @return the required artifact.
+     * @return the connected artifact.
      */
-    static def Artifact getRequired(Connection connection) {
-        return connection.dependsOn
+    static def Artifact getConnected(Connection connection) {
+        return connection.connects
     }
     
     /**
-     * Returns the requiring artifact of a connection.
+     * Returns the connecting artifact of a connection.
      * 
      * @param connection The connection
-     * @return the requiring artifact.
+     * @return the connecting artifact.
      */
-    static def Artifact getRequiring(Connection connection) {
+    static def Artifact getConnecting(Connection connection) {
         return connection.eContainer as Artifact
     }
     

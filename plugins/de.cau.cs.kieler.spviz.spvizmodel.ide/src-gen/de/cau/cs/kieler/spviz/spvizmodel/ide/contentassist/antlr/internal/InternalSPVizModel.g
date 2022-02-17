@@ -658,9 +658,9 @@ rule__Connection__Group__1__Impl
 	}
 :
 (
-	{ before(grammarAccess.getConnectionAccess().getDependsKeyword_1()); }
-	'depends'
-	{ after(grammarAccess.getConnectionAccess().getDependsKeyword_1()); }
+	{ before(grammarAccess.getConnectionAccess().getConnectsKeyword_1()); }
+	'connects'
+	{ after(grammarAccess.getConnectionAccess().getConnectsKeyword_1()); }
 )
 ;
 finally {
@@ -684,9 +684,9 @@ rule__Connection__Group__2__Impl
 	}
 :
 (
-	{ before(grammarAccess.getConnectionAccess().getDependsOnAssignment_2()); }
-	(rule__Connection__DependsOnAssignment_2)
-	{ after(grammarAccess.getConnectionAccess().getDependsOnAssignment_2()); }
+	{ before(grammarAccess.getConnectionAccess().getConnectsAssignment_2()); }
+	(rule__Connection__ConnectsAssignment_2)
+	{ after(grammarAccess.getConnectionAccess().getConnectsAssignment_2()); }
 )
 ;
 finally {
@@ -911,19 +911,19 @@ finally {
 	restoreStackSize(stackSize);
 }
 
-rule__Connection__DependsOnAssignment_2
+rule__Connection__ConnectsAssignment_2
 	@init {
 		int stackSize = keepStackSize();
 	}
 :
 	(
-		{ before(grammarAccess.getConnectionAccess().getDependsOnArtifactCrossReference_2_0()); }
+		{ before(grammarAccess.getConnectionAccess().getConnectsArtifactCrossReference_2_0()); }
 		(
-			{ before(grammarAccess.getConnectionAccess().getDependsOnArtifactIDTerminalRuleCall_2_0_1()); }
+			{ before(grammarAccess.getConnectionAccess().getConnectsArtifactIDTerminalRuleCall_2_0_1()); }
 			RULE_ID
-			{ after(grammarAccess.getConnectionAccess().getDependsOnArtifactIDTerminalRuleCall_2_0_1()); }
+			{ after(grammarAccess.getConnectionAccess().getConnectsArtifactIDTerminalRuleCall_2_0_1()); }
 		)
-		{ after(grammarAccess.getConnectionAccess().getDependsOnArtifactCrossReference_2_0()); }
+		{ after(grammarAccess.getConnectionAccess().getConnectsArtifactCrossReference_2_0()); }
 	)
 ;
 finally {

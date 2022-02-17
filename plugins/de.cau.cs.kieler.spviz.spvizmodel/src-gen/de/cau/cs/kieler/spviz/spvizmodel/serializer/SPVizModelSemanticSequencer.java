@@ -85,18 +85,18 @@ public class SPVizModelSemanticSequencer extends AbstractDelegatingSemanticSeque
 	 *     Connection returns Connection
 	 *
 	 * Constraint:
-	 *     (name=ID dependsOn=[Artifact|ID])
+	 *     (name=ID connects=[Artifact|ID])
 	 */
 	protected void sequence_Connection(ISerializationContext context, Connection semanticObject) {
 		if (errorAcceptor != null) {
 			if (transientValues.isValueTransient(semanticObject, SPVizModelPackage.Literals.CONNECTION__NAME) == ValueTransient.YES)
 				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, SPVizModelPackage.Literals.CONNECTION__NAME));
-			if (transientValues.isValueTransient(semanticObject, SPVizModelPackage.Literals.CONNECTION__DEPENDS_ON) == ValueTransient.YES)
-				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, SPVizModelPackage.Literals.CONNECTION__DEPENDS_ON));
+			if (transientValues.isValueTransient(semanticObject, SPVizModelPackage.Literals.CONNECTION__CONNECTS) == ValueTransient.YES)
+				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, SPVizModelPackage.Literals.CONNECTION__CONNECTS));
 		}
 		SequenceFeeder feeder = createSequencerFeeder(context, semanticObject);
 		feeder.accept(grammarAccess.getConnectionAccess().getNameIDTerminalRuleCall_0_0(), semanticObject.getName());
-		feeder.accept(grammarAccess.getConnectionAccess().getDependsOnArtifactIDTerminalRuleCall_2_0_1(), semanticObject.eGet(SPVizModelPackage.Literals.CONNECTION__DEPENDS_ON, false));
+		feeder.accept(grammarAccess.getConnectionAccess().getConnectsArtifactIDTerminalRuleCall_2_0_1(), semanticObject.eGet(SPVizModelPackage.Literals.CONNECTION__CONNECTS, false));
 		feeder.finish();
 	}
 	

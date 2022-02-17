@@ -3,7 +3,7 @@
  *
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2020 by
+ * Copyright 2020-2022 by
  * + Kiel University
  *   + Department of Computer Science
  *	 + Real-Time and Embedded Systems Group
@@ -83,17 +83,17 @@ class SPVizModelGenerator extends AbstractGenerator {
 			for(reference: artifact.references) {
 				if(reference instanceof Connection) {
 					val connectionName = reference.name
-					val required = reference.dependsOn.name
-					val requiring = artifact.name 
+					val connected = reference.connects.name
+					val connecting = artifact.name 
 					
-					val requiredList = "required" + connectionName + required + "s"
-					val requiringList = "requiring" + connectionName + requiring + "s"
+					val connectedList = "connected" + connectionName + connected + "s"
+					val connectingList = "connecting" + connectionName + connecting + "s"
 					
-					connections.get(requiring).add(
-						required + "[] "  + requiredList + " opposite " + requiringList
+					connections.get(connecting).add(
+						connected + "[] "  + connectedList + " opposite " + connectingList
 					)
-					connections.get(required).add(
-						requiring + "[] " + requiringList + " opposite " + requiredList
+					connections.get(connected).add(
+						connecting + "[] " + connectingList + " opposite " + connectedList
 					)
 				}
 			}

@@ -3,7 +3,7 @@
  *
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2021 by
+ * Copyright 2021-2022 by
  * + Kiel University
  *   + Department of Computer Science
  *   + Real-Time and Embedded Systems Group
@@ -369,8 +369,8 @@ class GenerateSyntheses {
 			import «data.getBundleNamePrefix».viz.actions.OverviewContextCollapseExpandAction
 			«FOR view : data.views»
 				«FOR connection : view.shownConnections»
-					import «data.getBundleNamePrefix».viz.actions.RevealRequired«connection.shownConnection.requiring.name»Requires«connection.shownConnection.required.name»Named«connection.shownConnection.name»Action
-					import «data.getBundleNamePrefix».viz.actions.RevealRequiring«connection.shownConnection.requiring.name»Requires«connection.shownConnection.required.name»Named«connection.shownConnection.name»Action
+					import «data.getBundleNamePrefix».viz.actions.RevealConnected«connection.shownConnection.connecting.name»Connects«connection.shownConnection.connected.name»Named«connection.shownConnection.name»Action
+					import «data.getBundleNamePrefix».viz.actions.RevealConnecting«connection.shownConnection.connecting.name»Connects«connection.shownConnection.connected.name»Named«connection.shownConnection.name»Action
 				«ENDFOR»
 			«ENDFOR»
 			import «data.getBundleNamePrefix».viz.actions.SelectRelatedAction
@@ -400,10 +400,10 @@ class GenerateSyntheses {
 					.registerAction(ShowHideCollapsedAction.ID, new ShowHideCollapsedAction)
 					«FOR view : data.views»
 						«FOR connection : view.shownConnections»
-							.registerAction(RevealRequired«connection.shownConnection.requiring.name»Requires«connection.shownConnection.required.name»Named«connection.shownConnection.name»Action.ID, new RevealRequired«connection.shownConnection.requiring.name»Requires«connection.shownConnection.required.name»Named«connection.shownConnection.name»Action)
-							.registerAction(RevealRequired«connection.shownConnection.requiring.name»Requires«connection.shownConnection.required.name»Named«connection.shownConnection.name»Action.Recursive.ID, new RevealRequired«connection.shownConnection.requiring.name»Requires«connection.shownConnection.required.name»Named«connection.shownConnection.name»Action.Recursive)
-							.registerAction(RevealRequiring«connection.shownConnection.requiring.name»Requires«connection.shownConnection.required.name»Named«connection.shownConnection.name»Action.ID, new RevealRequiring«connection.shownConnection.requiring.name»Requires«connection.shownConnection.required.name»Named«connection.shownConnection.name»Action)
-							.registerAction(RevealRequiring«connection.shownConnection.requiring.name»Requires«connection.shownConnection.required.name»Named«connection.shownConnection.name»Action.Recursive.ID, new RevealRequiring«connection.shownConnection.requiring.name»Requires«connection.shownConnection.required.name»Named«connection.shownConnection.name»Action.Recursive)
+							.registerAction(RevealConnected«connection.shownConnection.connecting.name»Connects«connection.shownConnection.connected.name»Named«connection.shownConnection.name»Action.ID, new RevealConnected«connection.shownConnection.connecting.name»Connects«connection.shownConnection.connected.name»Named«connection.shownConnection.name»Action)
+							.registerAction(RevealConnected«connection.shownConnection.connecting.name»Connects«connection.shownConnection.connected.name»Named«connection.shownConnection.name»Action.Recursive.ID, new RevealConnected«connection.shownConnection.connecting.name»Connects«connection.shownConnection.connected.name»Named«connection.shownConnection.name»Action.Recursive)
+							.registerAction(RevealConnecting«connection.shownConnection.connecting.name»Connects«connection.shownConnection.connected.name»Named«connection.shownConnection.name»Action.ID, new RevealConnecting«connection.shownConnection.connecting.name»Connects«connection.shownConnection.connected.name»Named«connection.shownConnection.name»Action)
+							.registerAction(RevealConnecting«connection.shownConnection.connecting.name»Connects«connection.shownConnection.connected.name»Named«connection.shownConnection.name»Action.Recursive.ID, new RevealConnecting«connection.shownConnection.connecting.name»Connects«connection.shownConnection.connected.name»Named«connection.shownConnection.name»Action.Recursive)
 						«ENDFOR»
 					«ENDFOR»
 					.registerDiagramSynthesisClass(«data.projectName.toFirstUpper»DiagramSynthesis.name, «data.projectName.toFirstUpper»DiagramSynthesis)
@@ -488,8 +488,8 @@ class GenerateSyntheses {
 			import «data.getBundleNamePrefix».viz.actions.ShowHideCollapsedAction
 			«FOR view : data.views»
 				«FOR connection : view.shownConnections»
-					import «data.getBundleNamePrefix».viz.actions.RevealRequired«connection.shownConnection.requiring.name»Requires«connection.shownConnection.required.name»Named«connection.shownConnection.name»Action
-					import «data.getBundleNamePrefix».viz.actions.RevealRequiring«connection.shownConnection.requiring.name»Requires«connection.shownConnection.required.name»Named«connection.shownConnection.name»Action
+					import «data.getBundleNamePrefix».viz.actions.RevealConnected«connection.shownConnection.connecting.name»Connects«connection.shownConnection.connected.name»Named«connection.shownConnection.name»Action
+					import «data.getBundleNamePrefix».viz.actions.RevealConnecting«connection.shownConnection.connecting.name»Connects«connection.shownConnection.connected.name»Named«connection.shownConnection.name»Action
 				«ENDFOR»
 			«ENDFOR»
 			«FOR artifact : data.artifacts»
@@ -1030,25 +1030,25 @@ class GenerateSyntheses {
 						]
 					}
 					
-					«FOR required : data.getRequiredArtifacts(artifact)»
+					«FOR connected : data.getConnectedArtifacts(artifact)»
 						/**
-						 * The rendering of a port that connects a «artifact.name» with the required «required.required.name». Issues the
-						 * {@link RevealRequired«required.requiring.name»Requires«required.required.name»Named«required.name»Action} or {@link RevealRequired«required.requiring.name»Requires«required.required.name»Named«required.name»Action.Recursive} if clicked.
+						 * The rendering of a port that connects a «artifact.name» with the connected «connected.connected.name». Issues the
+						 * {@link RevealConnected«connected.connecting.name»Connects«connected.connected.name»Named«connected.name»Action} or {@link RevealConnected«connected.connecting.name»Connects«connected.connected.name»Named«connected.name»Action.Recursive} if clicked.
 						 */
-						def KRectangle addRequired«required.requiring.name»Requires«required.required.name»Named«required.name»ActionPortRendering(KPort port, int numReferences, boolean allShown) {
+						def KRectangle addConnected«connected.connecting.name»Connects«connected.connected.name»Named«connected.name»ActionPortRendering(KPort port, int numReferences, boolean allShown) {
 							return port.addRectangle => [
 								background = if (allShown) ALL_SHOWN_COLOR.color else NOT_ALL_SHOWN_COLOR.color
-								val tooltipText = "Show required «required.required.name.toFirstLower»s (" + numReferences + " total)."
+								val tooltipText = "Show connected «connected.connected.name.toFirstLower»s via «connected.name» (" + numReferences + " total)."
 								tooltip = tooltipText
-								addSingleClickAction(RevealRequired«required.requiring.name»Requires«required.required.name»Named«required.name»Action::ID, ModifierState.DONT_CARE, ModifierState.NOT_PRESSED, ModifierState.DONT_CARE)
-								addSingleClickAction(RevealRequired«required.requiring.name»Requires«required.required.name»Named«required.name»Action.Recursive::ID, ModifierState.DONT_CARE, ModifierState.PRESSED, ModifierState.DONT_CARE)
+								addSingleClickAction(RevealConnected«connected.connecting.name»Connects«connected.connected.name»Named«connected.name»Action::ID, ModifierState.DONT_CARE, ModifierState.NOT_PRESSED, ModifierState.DONT_CARE)
+								addSingleClickAction(RevealConnected«connected.connecting.name»Connects«connected.connected.name»Named«connected.name»Action.Recursive::ID, ModifierState.DONT_CARE, ModifierState.PRESSED, ModifierState.DONT_CARE)
 							]
 						}
 						
 						/**
-						 * Adds the rendering for an edge showing a «required.required.name.toFirstLower» requirement.
+						 * Adds the rendering for an edge showing a «connected.connected.name.toFirstLower» connection.
 						 */
-						def addRequired«required.requiring.name»Requires«required.required.name»Named«required.name»EdgeRendering(KEdge edge) {
+						def addConnected«connected.connecting.name»Connects«connected.connected.name»Named«connected.name»EdgeRendering(KEdge edge) {
 							edge.addPolyline => [
 								lineWidth = 2
 								addHeadArrowDecorator => [
@@ -1071,18 +1071,18 @@ class GenerateSyntheses {
 						}
 
 					«ENDFOR»
-					«FOR requiring : data.getRequiringArtifacts(artifact)»	
+					«FOR connecting : data.getConnectingArtifacts(artifact)»
 						/**
-						 * The rendering of a port that connects a «artifact.name.toFirstLower» with the «requiring.requiring.name»s that require it. Issues the
-						 * {@link RevealRequiring«requiring.requiring.name»Requires«requiring.required.name»Named«requiring.name»Action} or {@link RevealRequiring«requiring.requiring.name»Requires«requiring.required.name»Named«requiring.name»Action.Recursive} if clicked.
+						 * The rendering of a port that connects a «artifact.name.toFirstLower» with the «connecting.connecting.name»s that connect it. Issues the
+						 * {@link RevealConnecting«connecting.connecting.name»Connects«connecting.connected.name»Named«connecting.name»Action} or {@link RevealConnecting«connecting.connecting.name»Connects«connecting.connected.name»Named«connecting.name»Action.Recursive} if clicked.
 						 */
-						def KRectangle addRequiring«requiring.requiring.name»Requires«requiring.required.name»Named«requiring.name»ActionPortRendering(KPort port, int numReferences, boolean allShown) {
+						def KRectangle addConnecting«connecting.connecting.name»Connects«connecting.connected.name»Named«connecting.name»ActionPortRendering(KPort port, int numReferences, boolean allShown) {
 							return port.addRectangle => [
 								background = if (allShown) ALL_SHOWN_COLOR.color else NOT_ALL_SHOWN_COLOR.color
-								val tooltipText = "Show «requiring.requiring.name.toFirstLower»s that require this «artifact.name.toFirstLower» (" + numReferences + " total)."
+								val tooltipText = "Show connecting «connecting.connecting.name.toFirstLower»s via «connecting.name» (" + numReferences + " total)."
 								tooltip = tooltipText
-								addSingleClickAction(RevealRequiring«requiring.requiring.name»Requires«requiring.required.name»Named«requiring.name»Action::ID, ModifierState.DONT_CARE, ModifierState.NOT_PRESSED, ModifierState.DONT_CARE)
-								addSingleClickAction(RevealRequiring«requiring.requiring.name»Requires«requiring.required.name»Named«requiring.name»Action.Recursive::ID, ModifierState.DONT_CARE, ModifierState.PRESSED, ModifierState.DONT_CARE)
+								addSingleClickAction(RevealConnecting«connecting.connecting.name»Connects«connecting.connected.name»Named«connecting.name»Action::ID, ModifierState.DONT_CARE, ModifierState.NOT_PRESSED, ModifierState.DONT_CARE)
+								addSingleClickAction(RevealConnecting«connecting.connecting.name»Connects«connecting.connected.name»Named«connecting.name»Action.Recursive::ID, ModifierState.DONT_CARE, ModifierState.PRESSED, ModifierState.DONT_CARE)
 							]
 						}
 					«ENDFOR»
@@ -1820,31 +1820,18 @@ class GenerateSyntheses {
                     private static dispatch def void reConnect(«view.name.toFirstUpper»OverviewContext oldContext,
                         «view.name.toFirstUpper»OverviewContext newContext) {
                         «FOR connection : view.shownConnections»
-                            for (oldEdge : oldContext.required«connection.shownConnection.requiring.name»Requires«connection.shownConnection.required.name»Named«connection.shownConnection.name»Edges) {
-                                // check if the source and target of the connection still exist and if they are still in a requirement relation.
-                                val requiring = oldEdge.key.modelElement
-                                val required = oldEdge.value.modelElement
-                                if (newContext.«connection.shownConnection.requiring.name.toFirstLower»s.contains(requiring)
-                                    && newContext.«connection.shownConnection.required.name.toFirstLower»s.contains(required)
-                                    && requiring.required«connection.shownConnection.name»«connection.shownConnection.required.name»s.contains(required)) {
-                                    val requiringContext = newContext.childContexts.findFirst [ requiring === it.modelElement ] as «connection.shownConnection.requiring.name»Context
-                                    val requiredContext  = newContext.childContexts.findFirst [ required  === it.modelElement ] as «connection.shownConnection.required.name»Context
-                                    requiringContext.add«connection.shownConnection.name»«connection.shownConnection.required.name»Edge(requiredContext)
+                            for (oldEdge : oldContext.«connection.shownConnection.connecting.name.toFirstLower»Connects«connection.shownConnection.connected.name»Named«connection.shownConnection.name»Edges) {
+                                // check if the source and target of the connection still exist and if they are still in connected.
+                                val connecting = oldEdge.key.modelElement
+                                val connected = oldEdge.value.modelElement
+                                if (newContext.«connection.shownConnection.connecting.name.toFirstLower»s.contains(connecting)
+                                    && newContext.«connection.shownConnection.connected.name.toFirstLower»s.contains(connected)
+                                    && connecting.connected«connection.shownConnection.name»«connection.shownConnection.connected.name»s.contains(connected)) {
+                                    val connectingContext = newContext.childContexts.findFirst [ connecting === it.modelElement ] as «connection.shownConnection.connecting.name»Context
+                                    val connectedContext  = newContext.childContexts.findFirst [ connected  === it.modelElement ] as «connection.shownConnection.connected.name»Context
+                                    connectingContext.add«connection.shownConnection.name»«connection.shownConnection.connected.name»Edge(connectedContext)
                                 }
                             }
-«««                            TODO :something like this for the other edges?
-«««                            for (oldEdge : oldContext.requiring«connection.shownConnection.requiring.name»Requires«connection.shownConnection.required.name»Named«connection.shownConnection.name»Edges) {
-«««                                // check if the source and target of the connection still exist and if they are still in a requirement relation.
-«««                                val requiring = oldEdge.key.modelElement
-«««                                val required = oldEdge.value.modelElement
-«««                                if (newContext.«connection.shownConnection.requiring.name.toFirstLower»s.contains(requiring)
-«««                                    && newContext.«connection.shownConnection.required.name.toFirstLower»s.contains(required)
-«««                                    && requiring.required«connection.shownConnection.name»«connection.shownConnection.required.name»s.contains(required)) {
-«««                                    val requiringContext = newContext.childContexts.findFirst [ requiring === it.modelElement ] as «connection.shownConnection.requiring.name»Context
-«««                                    val requiredContext  = newContext.childContexts.findFirst [ required  === it.modelElement ] as «connection.shownConnection.required.name»Context
-«««                                    requiredContext.add«connection.shownConnection.name»«connection.shownConnection.required.name»Edge(requiringContext)
-«««                                }
-«««                            }
                         «ENDFOR»
                         reConnectOverviewChildContexts(oldContext, newContext)
                     }

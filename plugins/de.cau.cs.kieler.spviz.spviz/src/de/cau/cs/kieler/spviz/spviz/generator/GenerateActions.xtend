@@ -67,15 +67,15 @@ class GenerateActions {
 		for (view : data.views) {
     		for (shownConnection : view.shownConnections) {
     		    val connection = shownConnection.shownConnection
-    			// reveal required artifacts
+    			// reveal connected artifacts
     			content = generateRevealAction(data, view, connection, true)
     			FileGenerator.generateOrUpdateFile(sourceFolder,
-    			    folder + "RevealRequired" + connection.requiring.name + "Requires" + connection.required.name + "Named" + connection.name + "Action.xtend",
+    			    folder + "RevealConnected" + connection.connecting.name + "Connects" + connection.connected.name + "Named" + connection.name + "Action.xtend",
     			    content, progressMonitor)
-    			// reveal requiring artifacts
+    			// reveal connecting artifacts
     			content = generateRevealAction(data, view, connection, false)
     			FileGenerator.generateOrUpdateFile(sourceFolder,
-    			    folder + "RevealRequiring" + connection.requiring.name + "Requires" + connection.required.name + "Named" + connection.name + "Action.xtend",
+    			    folder + "RevealConnecting" + connection.connecting.name + "Connects" + connection.connected.name + "Named" + connection.name + "Action.xtend",
     			    content, progressMonitor)
     		}
 		}
@@ -239,19 +239,19 @@ class GenerateActions {
 	 * 		name of an artifact as a string
 	 * @param artifactTo
 	 * 		name of an artifact as a string
-	 * @param isRequired
+	 * @param isConnected
 	 * 		boolean which defines the direction of the connection
 	 * @return
 	 * 		the generated file content as a string
 	 */
-	def static generateRevealAction(DataAccess data, View view, Connection connection, boolean isRequired) {
-		val String requiringOrRequired = isRequired ? "Required" : "Requiring"
+	def static generateRevealAction(DataAccess data, View view, Connection connection, boolean isConnected) {
+		val String connectingOrConnected = isConnected ? "Connected" : "Connecting"
 		val connectionName = connection.name
-        val artifactFrom = isRequired ? connection.requiring  : connection.required
-        val artifactTo   = isRequired ? connection.required : connection.requiring
+        val artifactFrom = isConnected ? connection.connecting  : connection.connected
+        val artifactTo   = isConnected ? connection.connected : connection.connecting
         val artifactFromName = artifactFrom.name
         val artifactToName = artifactTo.name
-		val className = "Reveal" + requiringOrRequired + connection.requiring.name + "Requires" + connection.required.name + "Named" + connection.name + "Action"
+		val className = "Reveal" + connectingOrConnected + connection.connecting.name + "Connects" + connection.connected.name + "Named" + connection.name + "Action"
 		val viewName = view.name
 		// TODO: I think the view is irrelevant here, we could also just cast it to IOverviewVisualizationContext<?>
 		// and name the variable accordingly, no need to specify which overview this is in.
@@ -269,9 +269,9 @@ class GenerateActions {
 		import static extension «data.getBundleNamePrefix».model.util.ContextExtensions.*
 		
 		/**
-		 * Expands the «requiringOrRequired.toFirstLower» «artifactToName.toFirstLower»s of any «artifactFromName.toFirstLower» and connects them with an edge from the new «artifactToName.toFirstLower»'s
-		 * 'usedBy«artifactFromName»s' port to this «artifactFromName.toFirstLower»'s '«requiringOrRequired.toFirstLower»«artifactToName»' port. 
-		 * If all «requiringOrRequired.toFirstLower» «artifactToName.toFirstLower»s are already shown, this action reverses its functionality and removes all «artifactToName.toFirstLower»s again.
+		 * Expands the «connectingOrConnected.toFirstLower» «artifactToName.toFirstLower»s of any «artifactFromName.toFirstLower» and connects them with an edge from the new «artifactToName.toFirstLower»'s
+		 * 'usedBy«artifactFromName»s' port to this «artifactFromName.toFirstLower»'s '«connectingOrConnected.toFirstLower»«artifactToName»' port. 
+		 * If all «connectingOrConnected.toFirstLower» «artifactToName.toFirstLower»s are already shown, this action reverses its functionality and removes all «artifactToName.toFirstLower»s again.
 		 * 
 		 * @author nre
 		 */
@@ -292,31 +292,31 @@ class GenerateActions {
 				// The «viewName.toFirstLower» overview context this «artifactFromName.toFirstLower» is shown in.
 				val «viewName.toFirstLower»OverviewContext = «artifactFromName.toFirstLower»Context.parent as «viewName»OverviewContext
 				
-				// The «requiringOrRequired.toFirstLower» «artifactToName.toFirstLower»s that are currently not yet in their detailed view need to be put in that state first.
-				val collapsed«requiringOrRequired»«artifactToName»Contexts = «viewName.toFirstLower»OverviewContext.collapsedElements.filter [
-					«artifactFromName.toFirstLower».«requiringOrRequired.toFirstLower + connectionName + artifactToName»s.contains(it.modelElement)
+				// The «connectingOrConnected.toFirstLower» «artifactToName.toFirstLower»s that are currently not yet in their detailed view need to be put in that state first.
+				val collapsed«connectingOrConnected»«artifactToName»Contexts = «viewName.toFirstLower»OverviewContext.collapsedElements.filter [
+					«artifactFromName.toFirstLower».«connectingOrConnected.toFirstLower + connectionName + artifactToName»s.contains(it.modelElement)
 				].toList
-				collapsed«requiringOrRequired»«artifactToName»Contexts.forEach [
+				collapsed«connectingOrConnected»«artifactToName»Contexts.forEach [
 					«viewName.toFirstLower»OverviewContext.makeDetailed(it)
 				]
 				
 				// The «artifactToName.toFirstLower» contexts in the overview that the «connectionName.toFirstLower» connection can connect to.
 				// Use the detailed «artifactToName.toFirstLower» contexts only, as they are all made detailed above.
 				newlyConnectedContexts = «viewName.toFirstLower»OverviewContext.detailedElements.filter [
-					«artifactFromName.toFirstLower».«requiringOrRequired.toFirstLower + connectionName + artifactToName»s.contains(it.modelElement)
+					«artifactFromName.toFirstLower».«connectingOrConnected.toFirstLower + connectionName + artifactToName»s.contains(it.modelElement)
 				].toList
 				
 «««				// If all are already connected, remove them all. Otherwise, connect them all.
-«««		//		if (ContextUtils.allConnected(«artifactFrom.toFirstLower»Context, «requiringOrRequired.toFirstLower»«artifactTo»Contexts, «view.toFirstLower»OverviewContext, true)) {
-«««		//			«requiringOrRequired.toFirstLower»«artifactTo»Contexts.forEach [ «requiringOrRequired.toFirstLower»«artifactTo»Context |
-«««		//				ContextUtils.remove«connectionName»«artifactTo»Edge(«artifactFrom.toFirstLower»Context, «requiringOrRequired.toFirstLower»«artifactTo»Context as «artifactTo»Context)
+«««		//		if (ContextUtils.allConnected(«artifactFrom.toFirstLower»Context, «connectingOrConnected.toFirstLower»«artifactTo»Contexts, «view.toFirstLower»OverviewContext, true)) {
+«««		//			«connectingOrConnected.toFirstLower»«artifactTo»Contexts.forEach [ «connectingOrConnected.toFirstLower»«artifactTo»Context |
+«««		//				ContextUtils.remove«connectionName»«artifactTo»Edge(«artifactFrom.toFirstLower»Context, «connectingOrConnected.toFirstLower»«artifactTo»Context as «artifactTo»Context)
 «««		//			]
 «««		//		} else {
-				newlyConnectedContexts.forEach [ «requiringOrRequired.toFirstLower»«artifactToName»Context |
-					«IF isRequired»
-						«artifactFromName.toFirstLower»Context.add«connectionName»«artifactToName»Edge(«requiringOrRequired.toFirstLower»«artifactToName»Context as «artifactToName»Context)
+				newlyConnectedContexts.forEach [ «connectingOrConnected.toFirstLower»«artifactToName»Context |
+					«IF isConnected»
+						«artifactFromName.toFirstLower»Context.add«connectionName»«artifactToName»Edge(«connectingOrConnected.toFirstLower»«artifactToName»Context as «artifactToName»Context)
 					«ELSE»
-						(«requiringOrRequired.toFirstLower»«artifactToName»Context as «artifactToName»Context).add«connectionName»«artifactFromName»Edge(«artifactFromName.toFirstLower»Context)
+						(«connectingOrConnected.toFirstLower»«artifactToName»Context as «artifactToName»Context).add«connectionName»«artifactFromName»Edge(«artifactFromName.toFirstLower»Context)
 					«ENDIF»
 				]
 «««		//		}
@@ -694,21 +694,21 @@ class GenerateActions {
         for (view : data.views) {
             for (shownConnection : view.shownConnections) {
                 val connection = shownConnection.shownConnection
-                // Reveal required actions
-                var List<String> actionNames = revealActions.get(connection.requiring)
+                // Reveal connected actions
+                var List<String> actionNames = revealActions.get(connection.connecting)
                 if (actionNames === null) {
                     actionNames = new ArrayList
-                    revealActions.put(connection.requiring, actionNames)
+                    revealActions.put(connection.connecting, actionNames)
                 }
-                actionNames.add("RevealRequired"  + connection.requiring.name + "Requires" + connection.required.name + "Named" + connection.name + "Action")
+                actionNames.add("RevealConnected"  + connection.connecting.name + "Connects" + connection.connected.name + "Named" + connection.name + "Action")
                 
-                // Reveal requiring actions
-                actionNames = revealActions.get(connection.required)
+                // Reveal connecting actions
+                actionNames = revealActions.get(connection.connected)
                 if (actionNames === null) {
                     actionNames = new ArrayList
-                    revealActions.put(connection.required, actionNames)
+                    revealActions.put(connection.connected, actionNames)
                 }
-                actionNames.add("RevealRequiring" + connection.requiring.name + "Requires" + connection.required.name + "Named" + connection.name + "Action")
+                actionNames.add("RevealConnecting" + connection.connecting.name + "Connects" + connection.connected.name + "Named" + connection.name + "Action")
             }
         }
         

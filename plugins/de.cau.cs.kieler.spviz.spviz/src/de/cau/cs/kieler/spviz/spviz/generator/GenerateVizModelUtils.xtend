@@ -3,7 +3,7 @@
  *
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2021 by
+ * Copyright 2021-2022 by
  * + Kiel University
  *   + Department of Computer Science
  *   + Real-Time and Embedded Systems Group
@@ -318,22 +318,22 @@ class GenerateVizModelUtils {
 					«ELSE»
 						«FOR shownElement : view.shownElements»
 							def dispatch static void removeEdges(«view.name»OverviewContext overviewContext, «shownElement.shownElement.name»Context context) {
-								«FOR requiredConnection : data.getRequiredArtifactsInOverview(shownElement.shownElement, view)»
-									overviewContext.required«requiredConnection.requiring.name»Requires«requiredConnection.required.name»Named«requiredConnection.name»Edges.clone.forEach[
+								«FOR connectedConnection : data.getConnectedArtifactsInOverview(shownElement.shownElement, view)»
+									overviewContext.«connectedConnection.connecting.name.toFirstLower»Connects«connectedConnection.connected.name»Named«connectedConnection.name»Edges.clone.forEach[
 										if (key === context) {
-											overviewContext.required«requiredConnection.requiring.name»Requires«requiredConnection.required.name»Named«requiredConnection.name»Edges.remove(it)
-											key.allRequired«requiredConnection.requiring.name»Requires«requiredConnection.required.name»Named«requiredConnection.name»Shown = false
-											value.allRequiring«requiredConnection.requiring.name»Requires«requiredConnection.required.name»Named«requiredConnection.name»Shown = false
+											overviewContext.«connectedConnection.connecting.name.toFirstLower»Connects«connectedConnection.connected.name»Named«connectedConnection.name»Edges.remove(it)
+											key.allConnected«connectedConnection.connecting.name»Connects«connectedConnection.connected.name»Named«connectedConnection.name»Shown = false
+											value.allConnecting«connectedConnection.connecting.name»Connects«connectedConnection.connected.name»Named«connectedConnection.name»Shown = false
 										}
 									]
 									
 								«ENDFOR»
-								«FOR requiringConnection : data.getRequiringArtifactsInOverview(shownElement.shownElement, view)»
-									overviewContext.required«requiringConnection.requiring.name»Requires«requiringConnection.required.name»Named«requiringConnection.name»Edges.clone.forEach[
+								«FOR connectingConnection : data.getConnectingArtifactsInOverview(shownElement.shownElement, view)»
+									overviewContext.«connectingConnection.connecting.name.toFirstLower»Connects«connectingConnection.connected.name»Named«connectingConnection.name»Edges.clone.forEach[
 										if (value === context) {
-											overviewContext.required«requiringConnection.requiring.name»Requires«requiringConnection.required.name»Named«requiringConnection.name»Edges.remove(it)
-											key.allRequired«requiringConnection.requiring.name»Requires«requiringConnection.required.name»Named«requiringConnection.name»Shown = false
-											value.allRequiring«requiringConnection.requiring.name»Requires«requiringConnection.required.name»Named«requiringConnection.name»Shown = false
+											overviewContext.«connectingConnection.connecting.name.toFirstLower»Connects«connectingConnection.connected.name»Named«connectingConnection.name»Edges.remove(it)
+											key.allConnected«connectingConnection.connecting.name»Connects«connectingConnection.connected.name»Named«connectingConnection.name»Shown = false
+											value.allConnecting«connectingConnection.connecting.name»Connects«connectingConnection.connected.name»Named«connectingConnection.name»Shown = false
 										}
 									]
 									
@@ -544,39 +544,39 @@ class GenerateVizModelUtils {
 				«FOR view : data.views»
 					«FOR shownConnection : view.shownConnections»
 						/**
-						 * Adds a required edge to the parent overview context of the two given contexts.
-						 * The direction of the edge indicates that the «shownConnection.shownConnection.requiring.name.toFirstLower» of the {@code requiringContext} requires the «shownConnection.shownConnection.required.name.toFirstLower» of the
-						 * {@code requiredContext}.
-						 * [requiring] ---requires---> [required]
+						 * Adds a connected edge to the parent overview context of the two given contexts.
+						 * The direction of the edge indicates that the «shownConnection.shownConnection.connecting.name.toFirstLower» of the {@code connectingContext} connectes the «shownConnection.shownConnection.connected.name.toFirstLower» of the
+						 * {@code connectedContext}.
+						 * [connecting] ---connects---> [connected]
 						 * 
-						 * @param requiringContext The «shownConnection.shownConnection.requiring.name.toFirstLower» context with the «shownConnection.shownConnection.requiring.name.toFirstLower» requiring the other «shownConnection.shownConnection.required.name.toFirstLower».
-						 * @param requiredContext The «shownConnection.shownConnection.required.name.toFirstLower» context with the «shownConnection.shownConnection.required.name.toFirstLower» required by the other «shownConnection.shownConnection.requiring.name.toFirstLower».
+						 * @param connectingContext The «shownConnection.shownConnection.connecting.name.toFirstLower» context with the «shownConnection.shownConnection.connecting.name.toFirstLower» connecting the other «shownConnection.shownConnection.connected.name.toFirstLower».
+						 * @param connectedContext The «shownConnection.shownConnection.connected.name.toFirstLower» context with the «shownConnection.shownConnection.connected.name.toFirstLower» connected by the other «shownConnection.shownConnection.connecting.name.toFirstLower».
 						 */
-						def static void add«shownConnection.shownConnection.name»«shownConnection.shownConnection.required.name»Edge(«shownConnection.shownConnection.requiring.name»Context requiringContext, «shownConnection.shownConnection.required.name»Context requiredContext) {
-							val parentContext = requiringContext.parent as «view.name»OverviewContext
-							if (requiredContext.parent !== parentContext) {
-								throw new IllegalArgumentException("The requiring and the required context both have to have the same " +
+						def static void add«shownConnection.shownConnection.name»«shownConnection.shownConnection.connected.name»Edge(«shownConnection.shownConnection.connecting.name»Context connectingContext, «shownConnection.shownConnection.connected.name»Context connectedContext) {
+							val parentContext = connectingContext.parent as «view.name»OverviewContext
+							if (connectedContext.parent !== parentContext) {
+								throw new IllegalArgumentException("The connecting and the connected context both have to have the same " +
 									"parent context!")
 							}
-							// Only if this edge does not exist yet, add it to the list of required «shownConnection.shownConnection.required.name.toFirstLower» edges.
-							if (!parentContext.required«shownConnection.shownConnection.requiring.name»Requires«shownConnection.shownConnection.required.name»Named«shownConnection.shownConnection.name»Edges.exists [ key === requiringContext && value === requiredContext ]) {
-								parentContext.required«shownConnection.shownConnection.requiring.name»Requires«shownConnection.shownConnection.required.name»Named«shownConnection.shownConnection.name»Edges += VizModelUtil.createPair(requiringContext, requiredContext)
+							// Only if this edge does not exist yet, add it to the list of connected «shownConnection.shownConnection.connected.name.toFirstLower» edges.
+							if (!parentContext.«shownConnection.shownConnection.connecting.name.toFirstLower»Connects«shownConnection.shownConnection.connected.name»Named«shownConnection.shownConnection.name»Edges.exists [ key === connectingContext && value === connectedContext ]) {
+								parentContext.«shownConnection.shownConnection.connecting.name.toFirstLower»Connects«shownConnection.shownConnection.connected.name»Named«shownConnection.shownConnection.name»Edges += VizModelUtil.createPair(connectingContext, connectedContext)
 								
-								// Check for both the requiring «shownConnection.shownConnection.requiring.name.toFirstLower» and the required «shownConnection.shownConnection.required.name.toFirstLower» if all connections are now shown in the 
-								// parent context. If they are, remember it in the corresponding «shownConnection.shownConnection.requiring.name.toFirstLower» context.
-								// Requiring context:
-								if (requiringContext.modelElement.required«shownConnection.shownConnection.name»«shownConnection.shownConnection.required.name»s.forall [ required |
-									!parentContext.modelElements.contains(required) ||
-									parentContext.required«shownConnection.shownConnection.requiring.name»Requires«shownConnection.shownConnection.required.name»Named«shownConnection.shownConnection.name»Edges.exists [ key === requiringContext && value.modelElement === required ]
+								// Check for both the connecting «shownConnection.shownConnection.connecting.name.toFirstLower» and the connected «shownConnection.shownConnection.connected.name.toFirstLower» if all connections are now shown in the 
+								// parent context. If they are, remember it in the corresponding «shownConnection.shownConnection.connecting.name.toFirstLower» context.
+								// Connecting context:
+								if (connectingContext.modelElement.connected«shownConnection.shownConnection.name»«shownConnection.shownConnection.connected.name»s.forall [ connected |
+									!parentContext.modelElements.contains(connected) ||
+									parentContext.«shownConnection.shownConnection.connecting.name.toFirstLower»Connects«shownConnection.shownConnection.connected.name»Named«shownConnection.shownConnection.name»Edges.exists [ key === connectingContext && value.modelElement === connected ]
 								]) {
-									requiringContext.allRequired«shownConnection.shownConnection.requiring.name»Requires«shownConnection.shownConnection.required.name»Named«shownConnection.shownConnection.name»Shown = true
+									connectingContext.allConnected«shownConnection.shownConnection.connecting.name»Connects«shownConnection.shownConnection.connected.name»Named«shownConnection.shownConnection.name»Shown = true
 								}
-								// Required context:
-								if (requiredContext.modelElement.requiring«shownConnection.shownConnection.name»«shownConnection.shownConnection.requiring.name»s.forall [ requiring |
-									!parentContext.modelElements.contains(requiring) ||
-									parentContext.requiring«shownConnection.shownConnection.requiring.name»Requires«shownConnection.shownConnection.required.name»Named«shownConnection.shownConnection.name»Edges.exists [ value === requiredContext && value.modelElement === requiring ]
+								// Connected context:
+								if (connectedContext.modelElement.connecting«shownConnection.shownConnection.name»«shownConnection.shownConnection.connecting.name»s.forall [ connecting |
+									!parentContext.modelElements.contains(connecting) ||
+									parentContext.«shownConnection.shownConnection.connecting.name.toFirstLower»Connects«shownConnection.shownConnection.connected.name»Named«shownConnection.shownConnection.name»Edges.exists [ key.modelElement === connecting && value === connectedContext ]
 								]) {
-									requiredContext.allRequiring«shownConnection.shownConnection.requiring.name»Requires«shownConnection.shownConnection.required.name»Named«shownConnection.shownConnection.name»Shown = true
+									connectedContext.allConnecting«shownConnection.shownConnection.connecting.name»Connects«shownConnection.shownConnection.connected.name»Named«shownConnection.shownConnection.name»Shown = true
 								}
 							}
 						}

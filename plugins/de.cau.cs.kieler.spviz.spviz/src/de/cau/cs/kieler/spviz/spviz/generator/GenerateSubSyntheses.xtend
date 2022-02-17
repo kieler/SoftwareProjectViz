@@ -3,7 +3,7 @@
  *
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2021 by
+ * Copyright 2021-2022 by
  * + Kiel University
  *   + Department of Computer Science
  *   + Real-Time and Embedded Systems Group
@@ -197,36 +197,35 @@ class GenerateSubSyntheses {
                             ]
                         «ENDFOR»
                         
-«««                        TODO: correct way around?
                         «FOR shownConnection : view.shownConnections»
-                            // Add all by «shownConnection.shownConnection.requiring.name.toFirstLower»s required «shownConnection.shownConnection.required.name.toFirstLower»s edges.
-                            «viewName.toFirstLower»OverviewContext.required«shownConnection.shownConnection.requiring.name»Requires«shownConnection.shownConnection.required.name»Named«shownConnection.shownConnection.name»Edges.forEach [
+                            // Add all by «shownConnection.shownConnection.connecting.name.toFirstLower»s connected «shownConnection.shownConnection.connected.name.toFirstLower»s edges.
+                            «viewName.toFirstLower»OverviewContext.«shownConnection.shownConnection.connecting.name.toFirstLower»Connects«shownConnection.shownConnection.connected.name»Named«shownConnection.shownConnection.name»Edges.forEach [
 «««                            // Connects the {@code sourceBundleNode} and the {@code usedByBundleNode} via an arrow in UML style,
 «««                            // so [usedByBundleNode] ----- uses -----> [sourceBundleNode]
-                                val requiring = key
-                                val required = value
-                                if (!nodeExists(requiring) || !nodeExists(required)) {
+                                val connecting = key
+                                val connected = value
+                                if (!nodeExists(connecting) || !nodeExists(connected)) {
                                     // Only Add edges if the nodes are actually shown.
                                     return
                                 }
-                                val requiringNode = requiring.node
-                                val requiredNode = required.node
-                                val requiringPort = requiringNode.ports.findFirst [
-                                    data.filter(KIdentifier).head?.id === "required«shownConnection.shownConnection.name»«shownConnection.shownConnection.required.name»s"
+                                val connectingNode = connecting.node
+                                val connectedNode = connected.node
+                                val connectingPort = connectingNode.ports.findFirst [
+                                    data.filter(KIdentifier).head?.id === "connected«shownConnection.shownConnection.name»«shownConnection.shownConnection.connected.name»s"
                                 ]
-                                val requiredPort = requiredNode.ports.findFirst [
-                                    data.filter(KIdentifier).head?.id === "requiring«shownConnection.shownConnection.name»«shownConnection.shownConnection.requiring.name»s"
+                                val connectedPort = connectedNode.ports.findFirst [
+                                    data.filter(KIdentifier).head?.id === "connecting«shownConnection.shownConnection.name»«shownConnection.shownConnection.connecting.name»s"
                                 ]
                                 
-                                val edge = createEdge(requiring, required) => [
-                                    addRequired«shownConnection.shownConnection.requiring.name»Requires«shownConnection.shownConnection.required.name»Named«shownConnection.shownConnection.name»EdgeRendering
-                                    sourcePort = requiringPort
-                                    targetPort = requiredPort
-                                    source = requiringNode
-                                    target = requiredNode
+                                val edge = createEdge(connecting, connected) => [
+                                    addConnected«shownConnection.shownConnection.connecting.name»Connects«shownConnection.shownConnection.connected.name»Named«shownConnection.shownConnection.name»EdgeRendering
+                                    sourcePort = connectingPort
+                                    targetPort = connectedPort
+                                    source = connectingNode
+                                    target = connectedNode
                                 ]
-                                requiringNode.outgoingEdges += edge
-                                requiredNode.incomingEdges += edge
+                                connectingNode.outgoingEdges += edge
+                                connectedNode.incomingEdges += edge
                             ]
                         «ENDFOR»
                     ]
@@ -252,11 +251,11 @@ class GenerateSubSyntheses {
         val views = data.getViews(artifact)
         val Set<String> importedArtifacts = new HashSet
         importedArtifacts.add(artifact.name)
-        for (required : data.getRequiredArtifacts(artifact)) {
-            importedArtifacts.add(required.required.name)
+        for (connected : data.getConnectedArtifacts(artifact)) {
+            importedArtifacts.add(connected.connected.name)
         }
-        for (requiring : data.getRequiringArtifacts(artifact)) {
-            importedArtifacts.add(requiring.requiring.name)
+        for (connecting : data.getConnectingArtifacts(artifact)) {
+            importedArtifacts.add(connecting.connecting.name)
         }
         
         return '''
@@ -300,34 +299,34 @@ class GenerateSubSyntheses {
                             associateWith(context)
                             data += createKIdentifier => [ it.id = context.hashCode.toString ]
                             
-                            «FOR required : data.getRequiredArtifacts(artifact)»
-                            val filteredRequired«required.required.name»s = SynthesisUtils.filteredElements(«artifactName.toFirstLower».required«required.name»«required.required.name»s,
-                                context.parent as IOverviewVisualizationContext<«required.required.name»>, usedContext)
-                            if (!filteredRequired«required.required.name»s.empty) {
-                                ports += createPort(context, "required«required.name»«required.required.name»s") => [
+                            «FOR connected : data.getConnectedArtifacts(artifact)»
+                            val filteredConnected«connected.connected.name»s = SynthesisUtils.filteredElements(«artifactName.toFirstLower».connected«connected.name»«connected.connected.name»s,
+                                context.parent as IOverviewVisualizationContext<«connected.connected.name»>, usedContext)
+                            if (!filteredConnected«connected.connected.name»s.empty) {
+                                ports += createPort(context, "connected«connected.name»«connected.connected.name»s") => [
                                     associateWith(context)
-                                    data += createKIdentifier => [ it.id = "required«required.name»«required.required.name»s" ]
-                                    // Required «artifactName.toFirstLower»s are always shown and expanded to the east with the drawing direction.
+                                    data += createKIdentifier => [ it.id = "connected«connected.name»«connected.connected.name»s" ]
+                                    // Connected «artifactName.toFirstLower»s are always shown and expanded to the east with the drawing direction.
                                     addLayoutParam(CoreOptions::PORT_SIDE, PortSide::EAST)
                                     addLayoutParam(CoreOptions::PORT_INDEX, 0)
-                                    addRequired«required.requiring.name»Requires«required.required.name»Named«required.name»ActionPortRendering(filteredRequired«required.required.name»s.size, context.allRequired«required.requiring.name»Requires«required.required.name»Named«required.name»Shown)
+                                    addConnected«connected.connecting.name»Connects«connected.connected.name»Named«connected.name»ActionPortRendering(filteredConnected«connected.connected.name»s.size, context.allConnected«connected.connecting.name»Connects«connected.connected.name»Named«connected.name»Shown)
                                     width = 12
                                     height = 12
                                 ]
                             }
                             
                             «ENDFOR»
-                            «FOR requiring : data.getRequiringArtifacts(artifact)»
-                            val filteredRequiring«requiring.requiring.name»s = SynthesisUtils.filteredElements(«artifactName.toFirstLower».requiring«requiring.name»«requiring.requiring.name»s,
-                                context.parent as IOverviewVisualizationContext<«requiring.requiring.name»>, usedContext)
-                            if (!filteredRequiring«requiring.requiring.name»s.empty) {
-                                ports += createPort(context, "requiring«requiring.name»«requiring.requiring.name»s") => [
+                            «FOR connecting : data.getConnectingArtifacts(artifact)»
+                            val filteredConnecting«connecting.connecting.name»s = SynthesisUtils.filteredElements(«artifactName.toFirstLower».connecting«connecting.name»«connecting.connecting.name»s,
+                                context.parent as IOverviewVisualizationContext<«connecting.connecting.name»>, usedContext)
+                            if (!filteredConnecting«connecting.connecting.name»s.empty) {
+                                ports += createPort(context, "connecting«connecting.name»«connecting.connecting.name»s") => [
                                     associateWith(context)
-                                    data += createKIdentifier => [ it.id = "requiring«requiring.name»«requiring.requiring.name»s" ]
-                                    // Requiring «artifactName.toFirstLower»s are always shown and expanded to the west against the drawing direction.
+                                    data += createKIdentifier => [ it.id = "connecting«connecting.name»«connecting.connecting.name»s" ]
+                                    // Connecting «artifactName.toFirstLower»s are always shown and expanded to the west against the drawing direction.
                                     addLayoutParam(CoreOptions::PORT_SIDE, PortSide::WEST)
                                     addLayoutParam(CoreOptions::PORT_INDEX, 1)
-                                    addRequiring«requiring.requiring.name»Requires«requiring.required.name»Named«requiring.name»ActionPortRendering(filteredRequiring«requiring.requiring.name»s.size, context.allRequiring«requiring.requiring.name»Requires«requiring.required.name»Named«requiring.name»Shown)
+                                    addConnecting«connecting.connecting.name»Connects«connecting.connected.name»Named«connecting.name»ActionPortRendering(filteredConnecting«connecting.connecting.name»s.size, context.allConnecting«connecting.connecting.name»Connects«connecting.connected.name»Named«connecting.name»Shown)
                                     width = 12
                                     height = 12
                                 ]

@@ -1,5 +1,5 @@
 package de.cau.cs.kieler.spviz.osgiviz
-use de.cau.cs.kieler.spviz.osgi
+import "osgi.spvizmodel"
 
 SPViz OSGiViz {
 	Services {
@@ -13,4 +13,4 @@ SPViz OSGiViz {
 		connect OSGi.Bundle.Dependency
 //		connect OSGi.Bundle via OSGi.Bundle.PackageDependency
 	}
-} 
+}

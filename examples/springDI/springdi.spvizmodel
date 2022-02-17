@@ -5,19 +5,19 @@ SPVizModel SpringDI {
 		contains Module
 	}
 	Module {
-		Dependency depends Module
+		Dependency connects Module
 		contains ComponentInterface
 		contains ComponentImplementation
 		contains Class
 	}
 	ComponentInterface {
-		Required depends ComponentInterface
-		Provided depends ComponentImplementation
+		Required connects ComponentInterface
+		Provided connects ComponentImplementation
 	}
 	ComponentImplementation {
-		Required depends ComponentInterface
+		Required connects ComponentInterface
 	}
 	Class {
-		Required depends ComponentInterface
+		Required connects ComponentInterface
 	}
 }

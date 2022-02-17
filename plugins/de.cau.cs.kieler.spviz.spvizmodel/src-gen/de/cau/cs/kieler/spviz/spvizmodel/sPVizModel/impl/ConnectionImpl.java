@@ -38,7 +38,7 @@ import org.eclipse.emf.ecore.impl.ENotificationImpl;
  * </p>
  * <ul>
  *   <li>{@link de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.impl.ConnectionImpl#getName <em>Name</em>}</li>
- *   <li>{@link de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.impl.ConnectionImpl#getDependsOn <em>Depends On</em>}</li>
+ *   <li>{@link de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.impl.ConnectionImpl#getConnects <em>Connects</em>}</li>
  * </ul>
  *
  * @generated
@@ -66,14 +66,14 @@ public class ConnectionImpl extends ReferenceImpl implements Connection
   protected String name = NAME_EDEFAULT;
 
   /**
-   * The cached value of the '{@link #getDependsOn() <em>Depends On</em>}' reference.
+   * The cached value of the '{@link #getConnects() <em>Connects</em>}' reference.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @see #getDependsOn()
+   * @see #getConnects()
    * @generated
    * @ordered
    */
-  protected Artifact dependsOn;
+  protected Artifact connects;
 
   /**
    * <!-- begin-user-doc -->
@@ -127,19 +127,19 @@ public class ConnectionImpl extends ReferenceImpl implements Connection
    * @generated
    */
   @Override
-  public Artifact getDependsOn()
+  public Artifact getConnects()
   {
-    if (dependsOn != null && dependsOn.eIsProxy())
+    if (connects != null && connects.eIsProxy())
     {
-      InternalEObject oldDependsOn = (InternalEObject)dependsOn;
-      dependsOn = (Artifact)eResolveProxy(oldDependsOn);
-      if (dependsOn != oldDependsOn)
+      InternalEObject oldConnects = (InternalEObject)connects;
+      connects = (Artifact)eResolveProxy(oldConnects);
+      if (connects != oldConnects)
       {
         if (eNotificationRequired())
-          eNotify(new ENotificationImpl(this, Notification.RESOLVE, SPVizModelPackage.CONNECTION__DEPENDS_ON, oldDependsOn, dependsOn));
+          eNotify(new ENotificationImpl(this, Notification.RESOLVE, SPVizModelPackage.CONNECTION__CONNECTS, oldConnects, connects));
       }
     }
-    return dependsOn;
+    return connects;
   }
 
   /**
@@ -147,9 +147,9 @@ public class ConnectionImpl extends ReferenceImpl implements Connection
    * <!-- end-user-doc -->
    * @generated
    */
-  public Artifact basicGetDependsOn()
+  public Artifact basicGetConnects()
   {
-    return dependsOn;
+    return connects;
   }
 
   /**
@@ -158,12 +158,12 @@ public class ConnectionImpl extends ReferenceImpl implements Connection
    * @generated
    */
   @Override
-  public void setDependsOn(Artifact newDependsOn)
+  public void setConnects(Artifact newConnects)
   {
-    Artifact oldDependsOn = dependsOn;
-    dependsOn = newDependsOn;
+    Artifact oldConnects = connects;
+    connects = newConnects;
     if (eNotificationRequired())
-      eNotify(new ENotificationImpl(this, Notification.SET, SPVizModelPackage.CONNECTION__DEPENDS_ON, oldDependsOn, dependsOn));
+      eNotify(new ENotificationImpl(this, Notification.SET, SPVizModelPackage.CONNECTION__CONNECTS, oldConnects, connects));
   }
 
   /**
@@ -178,9 +178,9 @@ public class ConnectionImpl extends ReferenceImpl implements Connection
     {
       case SPVizModelPackage.CONNECTION__NAME:
         return getName();
-      case SPVizModelPackage.CONNECTION__DEPENDS_ON:
-        if (resolve) return getDependsOn();
-        return basicGetDependsOn();
+      case SPVizModelPackage.CONNECTION__CONNECTS:
+        if (resolve) return getConnects();
+        return basicGetConnects();
     }
     return super.eGet(featureID, resolve, coreType);
   }
@@ -198,8 +198,8 @@ public class ConnectionImpl extends ReferenceImpl implements Connection
       case SPVizModelPackage.CONNECTION__NAME:
         setName((String)newValue);
         return;
-      case SPVizModelPackage.CONNECTION__DEPENDS_ON:
-        setDependsOn((Artifact)newValue);
+      case SPVizModelPackage.CONNECTION__CONNECTS:
+        setConnects((Artifact)newValue);
         return;
     }
     super.eSet(featureID, newValue);
@@ -218,8 +218,8 @@ public class ConnectionImpl extends ReferenceImpl implements Connection
       case SPVizModelPackage.CONNECTION__NAME:
         setName(NAME_EDEFAULT);
         return;
-      case SPVizModelPackage.CONNECTION__DEPENDS_ON:
-        setDependsOn((Artifact)null);
+      case SPVizModelPackage.CONNECTION__CONNECTS:
+        setConnects((Artifact)null);
         return;
     }
     super.eUnset(featureID);
@@ -237,8 +237,8 @@ public class ConnectionImpl extends ReferenceImpl implements Connection
     {
       case SPVizModelPackage.CONNECTION__NAME:
         return NAME_EDEFAULT == null ? name != null : !NAME_EDEFAULT.equals(name);
-      case SPVizModelPackage.CONNECTION__DEPENDS_ON:
-        return dependsOn != null;
+      case SPVizModelPackage.CONNECTION__CONNECTS:
+        return connects != null;
     }
     return super.eIsSet(featureID);
   }

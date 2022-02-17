@@ -21,7 +21,7 @@ import java.util.ArrayList;
 @SuppressWarnings("all")
 public class InternalSPVizModelParser extends AbstractInternalAntlrParser {
     public static final String[] tokenNames = new String[] {
-        "<invalid>", "<EOR>", "<DOWN>", "<UP>", "RULE_ID", "RULE_INT", "RULE_STRING", "RULE_ML_COMMENT", "RULE_SL_COMMENT", "RULE_WS", "RULE_ANY_OTHER", "'package'", "'SPVizModel'", "'{'", "'}'", "'contains'", "'depends'", "'.'"
+        "<invalid>", "<EOR>", "<DOWN>", "<UP>", "RULE_ID", "RULE_INT", "RULE_STRING", "RULE_ML_COMMENT", "RULE_SL_COMMENT", "RULE_WS", "RULE_ANY_OTHER", "'package'", "'SPVizModel'", "'{'", "'}'", "'contains'", "'connects'", "'.'"
     };
     public static final int RULE_ID=4;
     public static final int RULE_WS=9;
@@ -728,7 +728,7 @@ public class InternalSPVizModelParser extends AbstractInternalAntlrParser {
 
 
     // $ANTLR start "ruleConnection"
-    // InternalSPVizModel.g:315:1: ruleConnection returns [EObject current=null] : ( ( (lv_name_0_0= RULE_ID ) ) otherlv_1= 'depends' ( (otherlv_2= RULE_ID ) ) ) ;
+    // InternalSPVizModel.g:315:1: ruleConnection returns [EObject current=null] : ( ( (lv_name_0_0= RULE_ID ) ) otherlv_1= 'connects' ( (otherlv_2= RULE_ID ) ) ) ;
     public final EObject ruleConnection() throws RecognitionException {
         EObject current = null;
 
@@ -740,11 +740,11 @@ public class InternalSPVizModelParser extends AbstractInternalAntlrParser {
         	enterRule();
 
         try {
-            // InternalSPVizModel.g:321:2: ( ( ( (lv_name_0_0= RULE_ID ) ) otherlv_1= 'depends' ( (otherlv_2= RULE_ID ) ) ) )
-            // InternalSPVizModel.g:322:2: ( ( (lv_name_0_0= RULE_ID ) ) otherlv_1= 'depends' ( (otherlv_2= RULE_ID ) ) )
+            // InternalSPVizModel.g:321:2: ( ( ( (lv_name_0_0= RULE_ID ) ) otherlv_1= 'connects' ( (otherlv_2= RULE_ID ) ) ) )
+            // InternalSPVizModel.g:322:2: ( ( (lv_name_0_0= RULE_ID ) ) otherlv_1= 'connects' ( (otherlv_2= RULE_ID ) ) )
             {
-            // InternalSPVizModel.g:322:2: ( ( (lv_name_0_0= RULE_ID ) ) otherlv_1= 'depends' ( (otherlv_2= RULE_ID ) ) )
-            // InternalSPVizModel.g:323:3: ( (lv_name_0_0= RULE_ID ) ) otherlv_1= 'depends' ( (otherlv_2= RULE_ID ) )
+            // InternalSPVizModel.g:322:2: ( ( (lv_name_0_0= RULE_ID ) ) otherlv_1= 'connects' ( (otherlv_2= RULE_ID ) ) )
+            // InternalSPVizModel.g:323:3: ( (lv_name_0_0= RULE_ID ) ) otherlv_1= 'connects' ( (otherlv_2= RULE_ID ) )
             {
             // InternalSPVizModel.g:323:3: ( (lv_name_0_0= RULE_ID ) )
             // InternalSPVizModel.g:324:4: (lv_name_0_0= RULE_ID )
@@ -774,7 +774,7 @@ public class InternalSPVizModelParser extends AbstractInternalAntlrParser {
 
             otherlv_1=(Token)match(input,16,FOLLOW_3); 
 
-            			newLeafNode(otherlv_1, grammarAccess.getConnectionAccess().getDependsKeyword_1());
+            			newLeafNode(otherlv_1, grammarAccess.getConnectionAccess().getConnectsKeyword_1());
             		
             // InternalSPVizModel.g:345:3: ( (otherlv_2= RULE_ID ) )
             // InternalSPVizModel.g:346:4: (otherlv_2= RULE_ID )
@@ -789,7 +789,7 @@ public class InternalSPVizModelParser extends AbstractInternalAntlrParser {
             				
             otherlv_2=(Token)match(input,RULE_ID,FOLLOW_2); 
 
-            					newLeafNode(otherlv_2, grammarAccess.getConnectionAccess().getDependsOnArtifactCrossReference_2_0());
+            					newLeafNode(otherlv_2, grammarAccess.getConnectionAccess().getConnectsArtifactCrossReference_2_0());
             				
 
             }

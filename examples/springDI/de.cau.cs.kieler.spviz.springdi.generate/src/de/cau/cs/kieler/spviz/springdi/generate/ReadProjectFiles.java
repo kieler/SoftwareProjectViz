@@ -4,7 +4,7 @@
  * A part of Kieler
  * https://github.com/kieler
  * 
- * Copyright 2021 by
+ * Copyright 2021-2022 by
  * + Christian-Albrechts-University of Kiel
  *   + Department of Computer Science
  *     + Real-Time and Embedded Systems Group
@@ -190,7 +190,7 @@ public class ReadProjectFiles {
 					
 					final String depName = depGroupId.getTextContent().strip() + "." + depArtifactId.getTextContent().strip();
 					final Module depModule = createOrFindModule(depName);
-					module.getRequiredDependencyModules().add(depModule);
+					module.getConnectedDependencyModules().add(depModule);
 				}
 			}
 			
@@ -368,7 +368,7 @@ public class ReadProjectFiles {
 						if (interfaceType instanceof SimpleType) {
 							String interfaceName = ((SimpleType) interfaceType).getName().getFullyQualifiedName();
 							final ComponentInterface componentInterface = createOrFindComponentInterface(interfaceName);
-							componentInterface.getRequiredProvidedComponentImplementations().add(componentImplementation);
+							componentInterface.getConnectedProvidedComponentImplementations().add(componentImplementation);
 						}
 					}
 					
@@ -445,11 +445,11 @@ public class ReadProjectFiles {
 		// Add this injected interface to the requiring (class|interface).
 		
 		if (requiring instanceof ComponentInterface) {
-			((ComponentInterface) requiring).getRequiredRequiredComponentInterfaces().add(injectedInterface);
+			((ComponentInterface) requiring).getConnectedRequiredComponentInterfaces().add(injectedInterface);
 		} else if (requiring instanceof ComponentImplementation) {
-			((ComponentImplementation) requiring).getRequiredRequiredComponentInterfaces().add(injectedInterface);
+			((ComponentImplementation) requiring).getConnectedRequiredComponentInterfaces().add(injectedInterface);
 		} else if (requiring instanceof Class) {
-			((Class) requiring).getRequiredRequiredComponentInterfaces().add(injectedInterface);
+			((Class) requiring).getConnectedRequiredComponentInterfaces().add(injectedInterface);
 		}
 	}
 	

@@ -29,7 +29,7 @@ package de.cau.cs.kieler.spviz.spvizmodel.sPVizModel;
  * </p>
  * <ul>
  *   <li>{@link de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.Connection#getName <em>Name</em>}</li>
- *   <li>{@link de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.Connection#getDependsOn <em>Depends On</em>}</li>
+ *   <li>{@link de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.Connection#getConnects <em>Connects</em>}</li>
  * </ul>
  *
  * @see de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.SPVizModelPackage#getConnection()
@@ -61,25 +61,25 @@ public interface Connection extends Reference
   void setName(String value);
 
   /**
-   * Returns the value of the '<em><b>Depends On</b></em>' reference.
+   * Returns the value of the '<em><b>Connects</b></em>' reference.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @return the value of the '<em>Depends On</em>' reference.
-   * @see #setDependsOn(Artifact)
-   * @see de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.SPVizModelPackage#getConnection_DependsOn()
+   * @return the value of the '<em>Connects</em>' reference.
+   * @see #setConnects(Artifact)
+   * @see de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.SPVizModelPackage#getConnection_Connects()
    * @model
    * @generated
    */
-  Artifact getDependsOn();
+  Artifact getConnects();
 
   /**
-   * Sets the value of the '{@link de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.Connection#getDependsOn <em>Depends On</em>}' reference.
+   * Sets the value of the '{@link de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.Connection#getConnects <em>Connects</em>}' reference.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
-   * @param value the new value of the '<em>Depends On</em>' reference.
-   * @see #getDependsOn()
+   * @param value the new value of the '<em>Connects</em>' reference.
+   * @see #getConnects()
    * @generated
    */
-  void setDependsOn(Artifact value);
+  void setConnects(Artifact value);
 
 } // Connection

@@ -195,17 +195,17 @@ public class SPVizModelGrammarAccess extends AbstractElementFinder.AbstractGramm
 		private final Group cGroup = (Group)rule.eContents().get(1);
 		private final Assignment cNameAssignment_0 = (Assignment)cGroup.eContents().get(0);
 		private final RuleCall cNameIDTerminalRuleCall_0_0 = (RuleCall)cNameAssignment_0.eContents().get(0);
-		private final Keyword cDependsKeyword_1 = (Keyword)cGroup.eContents().get(1);
-		private final Assignment cDependsOnAssignment_2 = (Assignment)cGroup.eContents().get(2);
-		private final CrossReference cDependsOnArtifactCrossReference_2_0 = (CrossReference)cDependsOnAssignment_2.eContents().get(0);
-		private final RuleCall cDependsOnArtifactIDTerminalRuleCall_2_0_1 = (RuleCall)cDependsOnArtifactCrossReference_2_0.eContents().get(1);
+		private final Keyword cConnectsKeyword_1 = (Keyword)cGroup.eContents().get(1);
+		private final Assignment cConnectsAssignment_2 = (Assignment)cGroup.eContents().get(2);
+		private final CrossReference cConnectsArtifactCrossReference_2_0 = (CrossReference)cConnectsAssignment_2.eContents().get(0);
+		private final RuleCall cConnectsArtifactIDTerminalRuleCall_2_0_1 = (RuleCall)cConnectsArtifactCrossReference_2_0.eContents().get(1);
 		
 		//Connection returns Connection:
-		//    name=ID 'depends' dependsOn=[Artifact]
+		//    name=ID 'connects' connects=[Artifact]
 		//;
 		@Override public ParserRule getRule() { return rule; }
 		
-		//name=ID 'depends' dependsOn=[Artifact]
+		//name=ID 'connects' connects=[Artifact]
 		public Group getGroup() { return cGroup; }
 		
 		//name=ID
@@ -214,17 +214,17 @@ public class SPVizModelGrammarAccess extends AbstractElementFinder.AbstractGramm
 		//ID
 		public RuleCall getNameIDTerminalRuleCall_0_0() { return cNameIDTerminalRuleCall_0_0; }
 		
-		//'depends'
-		public Keyword getDependsKeyword_1() { return cDependsKeyword_1; }
+		//'connects'
+		public Keyword getConnectsKeyword_1() { return cConnectsKeyword_1; }
 		
-		//dependsOn=[Artifact]
-		public Assignment getDependsOnAssignment_2() { return cDependsOnAssignment_2; }
+		//connects=[Artifact]
+		public Assignment getConnectsAssignment_2() { return cConnectsAssignment_2; }
 		
 		//[Artifact]
-		public CrossReference getDependsOnArtifactCrossReference_2_0() { return cDependsOnArtifactCrossReference_2_0; }
+		public CrossReference getConnectsArtifactCrossReference_2_0() { return cConnectsArtifactCrossReference_2_0; }
 		
 		//ID
-		public RuleCall getDependsOnArtifactIDTerminalRuleCall_2_0_1() { return cDependsOnArtifactIDTerminalRuleCall_2_0_1; }
+		public RuleCall getConnectsArtifactIDTerminalRuleCall_2_0_1() { return cConnectsArtifactIDTerminalRuleCall_2_0_1; }
 	}
 	public class QualifiedNameElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "de.cau.cs.kieler.spviz.spvizmodel.SPVizModel.QualifiedName");
@@ -357,7 +357,7 @@ public class SPVizModelGrammarAccess extends AbstractElementFinder.AbstractGramm
 	}
 	
 	//Connection returns Connection:
-	//    name=ID 'depends' dependsOn=[Artifact]
+	//    name=ID 'connects' connects=[Artifact]
 	//;
 	public ConnectionElements getConnectionAccess() {
 		return pConnection;

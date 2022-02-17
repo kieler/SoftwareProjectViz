@@ -1,7 +1,14 @@
 // ******************************************************************************
 //
-// Copyright (c) 2018-2021 by
+// A part of Kieler
+// https://github.com/kieler
+//
+// Copyright (c) 2018-2022 by
 // Scheidt & Bachmann System Technik GmbH, 24145 Kiel
+// and 
+// + Christian-Albrechts-University of Kiel
+//   + Department of Computer Science
+//     + Real-Time and Embedded Systems Group
 //
 // This program and the accompanying materials are made available under the
 // terms of the Eclipse Public License 2.0 which is available at
@@ -135,8 +142,8 @@ public class ReadProjectFiles {
 			// check all required bundles and create them, if not existing
 			for (final String requiredBundleName : getList(attributes, StaticVariables.REQUIRE_BUNDLE)) {
 				final Bundle requiredBundle = getOrCreateBundle(requiredBundleName);
-				requiredBundle.getRequiringDependencyBundles().add(bundle);
-				bundle.getRequiredDependencyBundles().add(requiredBundle);
+				requiredBundle.getConnectingDependencyBundles().add(bundle);
+				bundle.getConnectedDependencyBundles().add(requiredBundle);
 			}
 			
 			extractServiceComponents(bundle, bundleRoot, attributes);
@@ -186,16 +193,16 @@ public class ReadProjectFiles {
 							.filter(elem -> elem.getName().equals(packageName))//
 							.findFirst();
 					if (ownProjectPackage.isPresent()) {
-						ownProjectPackage.get().getRequiringPackageDependencyBundles().add(bundle);
-						bundle.getRequiredPackageDependencyPackages().add(ownProjectPackage.get());
+						ownProjectPackage.get().getConnectingPackageDependencyBundles().add(bundle);
+						bundle.getConnectedPackageDependencyPackages().add(ownProjectPackage.get());
 //					} else if (knownImportedPackage.isPresent()) {
 //						bundle.getPackageDependency().add(knownImportedPackage.get());
 					} else {
 						final Package newImportedPackage = OSGiFactory.eINSTANCE.createPackage();
 						newImportedPackage.setName(packageName);
 						newImportedPackage.setEcoreId(StaticVariables.PACKAGE_PREFIX + toAscii(packageName));
-						newImportedPackage.getRequiringPackageDependencyBundles().add(bundle);
-						bundle.getRequiredPackageDependencyPackages().add(newImportedPackage);
+						newImportedPackage.getConnectingPackageDependencyBundles().add(bundle);
+						bundle.getConnectedPackageDependencyPackages().add(newImportedPackage);
 //						packageDependencies.add(newImportedPackage);
 						project.getPackages().add(newImportedPackage);
 					}
@@ -266,14 +273,14 @@ public class ReadProjectFiles {
 							.filter(elem -> elem.getName().equals(interfaceName))//
 							.findFirst();
 					if (serviceInterfaceOptional.isPresent()) {
-						serviceInterfaceOptional.get().getRequiringRequiredServiceComponents().add(serviceComponent);
-						serviceComponent.getRequiredRequiredServiceInterfaces().add(serviceInterfaceOptional.get());
+						serviceInterfaceOptional.get().getConnectingRequiredServiceComponents().add(serviceComponent);
+						serviceComponent.getConnectedRequiredServiceInterfaces().add(serviceInterfaceOptional.get());
 					} else {
 						final ServiceInterface serviceInterface = OSGiFactory.eINSTANCE.createServiceInterface();
 						serviceInterface.setName(interfaceName);
 						serviceInterface.setEcoreId(StaticVariables.SERVICE_INTERFACE_PREFIX + toAscii(interfaceName));
-						serviceInterface.getRequiringRequiredServiceComponents().add(serviceComponent);
-						serviceComponent.getRequiredRequiredServiceInterfaces().add(serviceInterface);
+						serviceInterface.getConnectingRequiredServiceComponents().add(serviceComponent);
+						serviceComponent.getConnectedRequiredServiceInterfaces().add(serviceInterface);
 						bundle.getServiceInterfaces().add(serviceInterface);
 						project.getServiceInterfaces().add(serviceInterface);
 					}
