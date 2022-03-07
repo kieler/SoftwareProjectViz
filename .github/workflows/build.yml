@@ -22,7 +22,7 @@ jobs:
       - name: Cache Maven packages
         uses: actions/cache@v2
         with:
-          path: .m2
+          path: ~/.m2/repository
           key: ${{ runner.os }}-m2-${{ hashFiles('.github/workflows/**/*.*', '**/pom.xml', '**/META-INF/MANIFEST.MF', 'build/de.cau.cs.kieler.spviz.targetplatform/de.cau.cs.kieler.spviz.targetplatform.target') }}
       - name: Build with Maven
         run: mvn --batch-mode --update-snapshots -f build/pom.xml verify
