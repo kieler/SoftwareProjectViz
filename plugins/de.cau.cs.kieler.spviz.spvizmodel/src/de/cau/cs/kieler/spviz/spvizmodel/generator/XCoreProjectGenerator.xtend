@@ -44,6 +44,9 @@ class XCoreProjectGenerator {
     
     /** The additional required bundles for this new project. */
     val List<String> requiredBundles = newArrayList
+    
+    /** If this project should have Maven nature. */
+    var boolean mavenNature = false
 
     /**
      * Create a new generator.
@@ -83,6 +86,17 @@ class XCoreProjectGenerator {
         
         return this
     }
+    
+    /**
+     * Configures if this generator should generate this project with Maven nature.
+     * 
+     * @param mavenNature {@code true} if this should have the Maven nature.
+     * @return This generator, for chaining configurations.
+     */
+    def configureMaven(boolean mavenNature) {
+        this.mavenNature = mavenNature
+        return this
+    }
 
     /**
      * Starts the generation of this generator and returns the fully generated XCore project.
@@ -119,16 +133,33 @@ class XCoreProjectGenerator {
         FileGenerator.generateOrUpdateFile(project, "/META-INF/MANIFEST.MF",
             FileGenerator.manifestContent(genModelContainerPath.segment(0), requiredBundles), progressMonitor)
 
-        // Add the Xtext nature to the project
+        // Add the Xtext nature and possibly Maven nature to the project
         val IProjectDescription projectDescription = project.getDescription();
         var String[] natureIds = projectDescription.getNatureIds();
         if (natureIds === null) {
             natureIds = #[ "org.eclipse.xtext.ui.shared.xtextNature" ]
-        } else if (!project.hasNature("org.eclipse.xtext.ui.shared.xtextNature")) {
-            val oldNatureIds = natureIds
-            natureIds = newArrayOfSize(oldNatureIds.length + 1)
-            System.arraycopy(oldNatureIds, 0, natureIds, 0, oldNatureIds.length)
-            natureIds.set(oldNatureIds.length, "org.eclipse.xtext.ui.shared.xtextNature")
+
+            if (mavenNature) {
+                val oldNatureIds = natureIds
+                natureIds = newArrayOfSize(oldNatureIds.length + 1)
+                System.arraycopy(oldNatureIds, 0, natureIds, 0, oldNatureIds.length)
+                natureIds.set(oldNatureIds.length, "org.eclipse.m2e.core.maven2Nature")
+            }
+        } else {
+            // Add the Xtext nature to the project
+            if (!project.hasNature("org.eclipse.xtext.ui.shared.xtextNature")) {
+                val oldNatureIds = natureIds
+                natureIds = newArrayOfSize(oldNatureIds.length + 1)
+                System.arraycopy(oldNatureIds, 0, natureIds, 0, oldNatureIds.length)
+                natureIds.set(oldNatureIds.length, "org.eclipse.xtext.ui.shared.xtextNature")
+            }
+            // Add the Maven nature to the project
+            if (mavenNature && !project.hasNature("org.eclipse.m2e.core.maven2Nature")) {
+                val oldNatureIds = natureIds
+                natureIds = newArrayOfSize(oldNatureIds.length + 1)
+                System.arraycopy(oldNatureIds, 0, natureIds, 0, oldNatureIds.length)
+                natureIds.set(oldNatureIds.length, "org.eclipse.m2e.core.maven2Nature")
+            }
         }
         projectDescription.setNatureIds(natureIds);
         project.setDescription(projectDescription, progressMonitor);

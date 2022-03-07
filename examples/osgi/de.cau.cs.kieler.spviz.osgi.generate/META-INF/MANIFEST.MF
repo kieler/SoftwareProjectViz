@@ -1,9 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: Generate
-Bundle-SymbolicName: de.cau.cs.kieler.spviz.osgi.generate;singleton:=true
-Bundle-Version: 1.0.0.qualifier
-Automatic-Module-Name: de.cau.cs.kieler.spviz.osgi.generate
-Bundle-RequiredExecutionEnvironment: JavaSE-11
-Require-Bundle: de.cau.cs.kieler.spviz.osgi.model,
- org.eclipse.emf.ecore.xmi;bundle-version="2.16.0"

@@ -272,8 +272,41 @@ class GenerateModelMavenBuild {
                         </filesets>
                       </configuration>
                     </plugin>
-            
+                  
+                    <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+                    <plugin>
+                      <groupId>org.eclipse.m2e</groupId>
+                      <artifactId>lifecycle-mapping</artifactId>
+                      <version>1.0.0</version>
+                      <configuration>
+                        <lifecycleMappingMetadata>
+                          <pluginExecutions>
+                            <pluginExecution>
+                              <pluginExecutionFilter>
+                                <groupId>
+                                  org.apache.maven.plugins
+                                </groupId>
+                                <artifactId>
+                                  maven-dependency-plugin
+                                </artifactId>
+                                <versionRange>
+                                  [3.1.1,)
+                                </versionRange>
+                                <goals>
+                                  <goal>tree</goal>
+                                </goals>
+                              </pluginExecutionFilter>
+                              <action>
+                                <ignore></ignore>
+                              </action>
+                            </pluginExecution>
+                          </pluginExecutions>
+                        </lifecycleMappingMetadata>
+                      </configuration>
+                    </plugin>
+          
                   </plugins>
+                
                 </pluginManagement>
               </build>
             
@@ -295,8 +328,15 @@ class GenerateModelMavenBuild {
                   <unit id="org.eclipse.emf.ecore.xcore.lib.feature.group" version="0.0.0"/>
                   <unit id="org.eclipse.emf.transaction" version="0.0.0"/>
                   <unit id="org.eclipse.equinox.executable.feature.group" version="0.0.0"/>
+                  <unit id="org.eclipse.m2e.feature.feature.group" version="0.0.0"/>
+                  <unit id="org.eclipse.m2e.sdk.feature.feature.group" version="0.0.0"/>
+                  <unit id="org.eclipse.wildwebdeveloper.xml.feature.feature.group" version="0.0.0"/>
                   <unit id="org.eclipse.sdk.feature.group" version="0.0.0"/>
                   <repository location="https://download.eclipse.org/releases/2021-06"/>
+                </location>
+                <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
+                  <unit id="org.sonatype.tycho.m2e.feature.feature.group" version="0.0.0"/>
+                  <repository location="https://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-tycho/0.8.1/N/0.8.1.201704211436/"/>
                 </location>
                 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
                   <unit id="org.eclipse.lsp4j.sdk.feature.group" version="0.0.0"/>

@@ -38,6 +38,7 @@ class SPVizModelGenerator extends AbstractGenerator {
         val progressMonitor = new NullProgressMonitor
         val project = new XCoreProjectGenerator(model.package + ".model")
             .configureXCoreFile(model.name + "Model.xcore", fileContent)
+            .configureMaven(true)
             .generate(progressMonitor)
             
         val sourceFolder = project.getFolder("src");

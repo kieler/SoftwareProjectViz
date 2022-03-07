@@ -159,6 +159,7 @@ class GenerateMavenBuild {
                   </activation>
                   
                   <modules>
+                    <module>../spviz.build</module>
                     <module>../spviz.build/de.cau.cs.kieler.spviz.targetplatform</module>
                     «FOR bundleSuffix : bundleSuffixes»
                         <module>../«vizArtifactIdPrefix».«bundleSuffix»</module>

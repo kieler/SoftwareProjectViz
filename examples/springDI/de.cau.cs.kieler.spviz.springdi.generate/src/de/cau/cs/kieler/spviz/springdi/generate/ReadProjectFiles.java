@@ -315,7 +315,7 @@ public class ReadProjectFiles {
 	private void parseJavaFile(Path javaPath, Module parentModule) {
 		final String fileContent = ReadProjectFilesUtility.readFileToString(javaPath.toString());
 		
-		final ASTParser parser = ASTParser.newParser(AST.JLS_Latest);
+		final ASTParser parser = ASTParser.newParser(AST.JLS13);
 		parser.setSource(fileContent.toCharArray());
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
 
