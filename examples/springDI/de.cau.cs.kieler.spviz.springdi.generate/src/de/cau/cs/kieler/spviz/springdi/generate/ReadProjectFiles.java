@@ -54,8 +54,8 @@ import de.cau.cs.kieler.spviz.springdi.model.Class;
 import de.cau.cs.kieler.spviz.springdi.model.ComponentImplementation;
 import de.cau.cs.kieler.spviz.springdi.model.ComponentInterface;
 import de.cau.cs.kieler.spviz.springdi.model.Identifiable;
-import de.cau.cs.kieler.spviz.springdi.model.SpringDIFactory;
 import de.cau.cs.kieler.spviz.springdi.model.Module;
+import de.cau.cs.kieler.spviz.springdi.model.SpringDIFactory;
 import de.cau.cs.kieler.spviz.springdi.model.SpringDIProject;
 
 /**
@@ -315,7 +315,7 @@ public class ReadProjectFiles {
 	private void parseJavaFile(Path javaPath, Module parentModule) {
 		final String fileContent = ReadProjectFilesUtility.readFileToString(javaPath.toString());
 		
-		final ASTParser parser = ASTParser.newParser(AST.JLS13);
+		final ASTParser parser = ASTParser.newParser(AST.getJLSLatest());
 		parser.setSource(fileContent.toCharArray());
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
 

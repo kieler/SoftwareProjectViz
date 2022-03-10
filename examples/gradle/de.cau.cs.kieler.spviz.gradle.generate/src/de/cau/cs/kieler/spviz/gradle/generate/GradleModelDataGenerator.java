@@ -4,7 +4,7 @@
  * A part of Kieler
  * https://github.com/kieler
  * 
- * Copyright 2021 by
+ * Copyright 2022 by
  * + Christian-Albrechts-University of Kiel
  *   + Department of Computer Science
  *     + Real-Time and Embedded Systems Group
@@ -16,46 +16,46 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package de.cau.cs.kieler.spviz.springdi.generate;
+package de.cau.cs.kieler.spviz.gradle.generate;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.System.Logger;
 import java.util.Optional;
 
-import de.cau.cs.kieler.spviz.springdi.model.SpringDIProject;
+import de.cau.cs.kieler.spviz.gradle.model.GradleProject;
 
 /**
- * The model generator for SpringDI projects.
+ * The model generator for Gradle projects.
  * 
  * @author nre
  */
-public final class SpringDIModelDataGenerator {
+public final class GradleModelDataGenerator {
 
-	static final Logger LOGGER = System.getLogger(SpringDIModelDataGenerator.class.getName());
+	static final Logger LOGGER = System.getLogger(GradleModelDataGenerator.class.getName());
 
 	
 	/**
-	 * Generates SpringDI project data from a given project path. The generated Model
+	 * Generates Gradle project data from a given project path. The generated Model
 	 * will be returned and also saved in a file.
 	 * 
 	 * @param projectFilePath The path to the project root folder
 	 * @param projectName     Descriptive name of the project
-	 * @param save    if true, model file will be saved under target/projectName.springdi
-	 * @return The generated SpringDI project data.
+	 * @param save    if true, model file will be saved under target/projectName.gradle
+	 * @return The generated Gradle project data.
 	 */
-	public static SpringDIProject generateData(final String projectFilePath, final String projectName, Optional<String> modelSaveFilePath) {
+	public static GradleProject generateData(final String projectFilePath, final String projectName, Optional<String> modelSaveFilePath) {
 
 		final ReadProjectFiles reader = new ReadProjectFiles();
 		LOGGER.log(System.Logger.Level.INFO, "Generating data for " + projectName);
-		final SpringDIProject project = reader.generateData(new File(projectFilePath), projectName);
+		final GradleProject project = reader.generateData(new File(projectFilePath), projectName);
 		
 		if (modelSaveFilePath.isPresent()) {
 
 			LOGGER.log(System.Logger.Level.INFO, "Saving data for " + projectName);
-			final String fileName = projectName + ".springdi";
+			final String fileName = projectName + ".gradle";
 			try {
-				SpringDIModelSaveAndLoadUtility.saveData(fileName, project, modelSaveFilePath.get());
+				GradleModelSaveAndLoadUtility.saveData(fileName, project, modelSaveFilePath.get());
 			} catch (final IOException e) {
 				LOGGER.log(System.Logger.Level.ERROR, "There was a Problem while saving.", e);
 				e.printStackTrace();

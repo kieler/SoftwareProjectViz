@@ -4,7 +4,7 @@
  * A part of Kieler
  * https://github.com/kieler
  * 
- * Copyright 2021 by
+ * Copyright 2022 by
  * + Christian-Albrechts-University of Kiel
  *   + Department of Computer Science
  *     + Real-Time and Embedded Systems Group
@@ -16,7 +16,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package de.cau.cs.kieler.spviz.springdi.generate;
+package de.cau.cs.kieler.spviz.gradle.generate;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -28,21 +28,21 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 
-import de.cau.cs.kieler.spviz.springdi.model.SpringDIProject;
+import de.cau.cs.kieler.spviz.gradle.model.GradleProject;
 
-public class SpringDIModelSaveAndLoadUtility {
+public class GradleModelSaveAndLoadUtility {
 
 	/**
-	 * Takes a SpringDI project and saves the data under modelSaveFilePath/fileName.
+	 * Takes a Gradle project and saves the data under modelSaveFilePath/fileName.
 	 * 
 	 * @param fileName the name for the file
-	 * @param data SpringDIProject to save
+	 * @param data GradleProject to save
 	 * @throws IOException
 	 */
-	public static void saveData(final String fileName, final SpringDIProject data, String modelSaveFilePath) throws IOException {
+	public static void saveData(final String fileName, final GradleProject data, String modelSaveFilePath) throws IOException {
 		final Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
 		final Map<String, Object> m = reg.getExtensionToFactoryMap();
-		m.put("springdi", new XMIResourceFactoryImpl());
+		m.put("gradle", new XMIResourceFactoryImpl());
 
 		final ResourceSet resSet = new ResourceSetImpl();
 		modelSaveFilePath= modelSaveFilePath.replace("\\", "/");
