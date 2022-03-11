@@ -238,6 +238,7 @@ class GenerateSyntheses {
 	       
 	       import com.google.inject.Inject
 	       import com.google.inject.Injector
+	       import de.cau.cs.kieler.klighd.Klighd
 	       import de.cau.cs.kieler.klighd.krendering.ViewSynthesisShared
 	       import de.cau.cs.kieler.klighd.syntheses.AbstractDiagramSynthesis
 	       import org.eclipse.elk.core.service.ILayoutConfigurationStore
@@ -326,6 +327,10 @@ class GenerateSyntheses {
 	            * @param newLayoutOptions The new layout options to set.
 	            */
 	           protected def void setLayoutOptions(Iterable<Option> newLayoutOptions) {
+	               if (!Klighd.IS_PLATFORM_RUNNING) {
+	                   println("Cannot load layout options without a running Eclipse platform, skipping.")
+	                   return
+	               }
 	               try {
 	                   val Injector injector = LayoutConnectorsService.instance.getInjector(null, usedContext)
 	                   val ILayoutConfigurationStore.Provider layoutConfigStoreProvider =
@@ -1645,6 +1650,10 @@ class GenerateSyntheses {
 	               // to configure the options in the LSP; currently that stores the layout config itself and does not use any ELK
 	               // stuff for that.
 	               // See ELK Issue #719 for details https://github.com/eclipse/elk/issues/719
+	               if (!Klighd.IS_PLATFORM_RUNNING) {
+	                   println("Cannot store layout options without a running Eclipse platform, skipping.")
+	                   return
+	               }
 	               try {
 	                   val Injector injector = LayoutConnectorsService.instance.getInjector(null, viewContext)
 	                   val LayoutConfigurationManager layoutConfigManager = injector.getInstance(LayoutConfigurationManager)
