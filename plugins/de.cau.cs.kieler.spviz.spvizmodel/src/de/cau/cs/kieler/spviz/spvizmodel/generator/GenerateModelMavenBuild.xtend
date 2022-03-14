@@ -92,7 +92,7 @@ class GenerateModelMavenBuild {
               <packaging>eclipse-plugin</packaging>
             
               <build>
-                <sourceDirectory>src</sourceDirectory>
+                <sourceDirectory>src-gen</sourceDirectory>
               </build>
             </project>
             

@@ -105,7 +105,7 @@ class XCoreProjectGenerator {
      * @returns The new XCore project that was generated on the file system.
      */
     def IProject generate(IProgressMonitor progressMonitor) {
-        val genModelContainerPath = new Path("/" + projectPath + "/src")
+        val genModelContainerPath = new Path("/" + projectPath + "/src-gen")
         val IPath genModelProjectLocation = null
 
         // Code taken and adapted from the org.eclipse.emf.ecore.xcore.ui.EmptyXcoreProjectWizard and
@@ -133,7 +133,19 @@ class XCoreProjectGenerator {
         FileGenerator.generateOrUpdateFile(project, "/META-INF/MANIFEST.MF",
             FileGenerator.manifestContent(genModelContainerPath.segment(0), requiredBundles), progressMonitor)
 
-        // Add the Xtext nature and possibly Maven nature to the project
+        XCoreProjectGenerator.addNatures(project, true, progressMonitor)
+
+        return project
+    }
+    
+    /**
+     * Adds the Xtext nature to the given project. If {@code mavenNature} is set, also add the Maven nature.
+     * 
+     * @param project The project to modify.
+     * @param mavenNature {@code true} if the Maven nature should be set as well.
+     * @param progressMonitor The progress monitor for Eclipse.
+     */
+    static def void addNatures(IProject project, boolean mavenNature, IProgressMonitor progressMonitor) {
         val IProjectDescription projectDescription = project.getDescription();
         var String[] natureIds = projectDescription.getNatureIds();
         if (natureIds === null) {
@@ -163,8 +175,6 @@ class XCoreProjectGenerator {
         }
         projectDescription.setNatureIds(natureIds);
         project.setDescription(projectDescription, progressMonitor);
-
-        return project
     }
 
 }

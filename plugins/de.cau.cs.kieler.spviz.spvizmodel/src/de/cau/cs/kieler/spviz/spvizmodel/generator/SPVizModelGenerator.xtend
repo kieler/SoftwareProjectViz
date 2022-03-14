@@ -41,7 +41,7 @@ class SPVizModelGenerator extends AbstractGenerator {
             .configureMaven(true)
             .generate(progressMonitor)
             
-        val sourceFolder = project.getFolder("src");
+        val sourceFolder = project.getFolder("src-gen");
         
         // Generate further source files for the project
         GenerateModelUtils.generate(sourceFolder, model, progressMonitor)
@@ -104,7 +104,7 @@ class SPVizModelGenerator extends AbstractGenerator {
 		return '''
 		@GenModel(
 		    fileExtensions="«model.name.toLowerCase»",
-		    modelDirectory="«model.package».model/src",
+		    modelDirectory="«model.package».model/src-gen",
 		    modelName="«model.name»",
 		    prefix="«model.name»"
 		)

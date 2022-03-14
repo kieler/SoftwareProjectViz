@@ -166,6 +166,7 @@ class FileGenerator {
     def static String buildPropertiesContent(boolean isViz) {
         return '''
             source.. = src/,\
+                       src-gen/,\
                        xtend-gen/
             bin.includes = META-INF/,\
                            «IF isViz»
@@ -188,6 +189,7 @@ class FileGenerator {
                            plugin.properties
             jars.compile.order = .
             source.. = src/,\
+                       src-gen/,\
                        xtend-gen/
             output.. = bin/
             

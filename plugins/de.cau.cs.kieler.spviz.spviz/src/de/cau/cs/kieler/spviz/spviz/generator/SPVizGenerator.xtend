@@ -61,7 +61,7 @@ class SPVizGenerator extends AbstractGenerator {
 		  .configureXCoreFile(data.visualizationName + 'Model.xcore', xcoreContent)
 		  .configureRequiredBundles(#[data.modelBundleNamePrefix + ".model"])
 		  .generate(progressMonitor)
-        val sourceFolder = project.getFolder("src");
+        val sourceFolder = project.getFolder("src-gen");
 		
 		// Generate further source files for the project
 		GenerateVizModelUtils.generate(sourceFolder, data, progressMonitor)
@@ -72,13 +72,14 @@ class SPVizGenerator extends AbstractGenerator {
 		
 		
 		// Generate the -viz.viz model Plug-In Java project
-		val projectPath = new Path("/" + data.getBundleNamePrefix + ".viz/src")
+		val projectPath = new Path("/" + data.getBundleNamePrefix + ".viz/src-gen")
         val vizProject = Generator.createEMFProject(projectPath, null as IPath,
             Collections.<IProject>emptyList(), progressMonitor,
             Generator.EMF_MODEL_PROJECT_STYLE.bitwiseOr(Generator.EMF_PLUGIN_PROJECT_STYLE))
+        XCoreProjectGenerator.addNatures(vizProject, false, progressMonitor)
             
             
-        val sourceVizFolder = vizProject.getFolder("src")
+        val sourceVizFolder = vizProject.getFolder("src-gen")
         
         // Generate the manifest
         FileGenerator.generateOrUpdateFile(vizProject, "/META-INF/MANIFEST.MF",
@@ -141,7 +142,7 @@ class SPVizGenerator extends AbstractGenerator {
         if (!launchFolder.exists) {
             launchFolder.create(false, true, progressMonitor)
         }
-        GenerateLanguageServer.generate(lsProject.getFolder("src"), launchFolder, data, progressMonitor)
+        GenerateLanguageServer.generate(lsProject.getFolder("src-gen"), launchFolder, data, progressMonitor)
         
         // Generate the Maven build framework for this visualization.
         GenerateMavenBuild.generate(data.bundleNamePrefix, data.visualizationName.toFirstUpper ,data.modelBundleNamePrefix + ".model", "0.1.0", progressMonitor)
@@ -242,7 +243,7 @@ class SPVizGenerator extends AbstractGenerator {
 		return '''
 			@GenModel(
 			    fileExtensions="«data.visualizationName.toLowerCase»",
-			    modelDirectory="«data.getBundleNamePrefix».model/src",
+			    modelDirectory="«data.getBundleNamePrefix».model/src-gen",
 			    modelName="«data.visualizationName»",
 			    prefix="«data.visualizationName»"
 			)

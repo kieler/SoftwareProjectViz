@@ -68,7 +68,7 @@ class JavaProjectGenerator {
      * @returns The new Java project that was generated on the file system.
      */
     def IProject generate(IProgressMonitor progressMonitor) {
-        val genModelContainerPath = new Path("/" + projectPath + "/src")
+        val genModelContainerPath = new Path("/" + projectPath + "/src-gen")
 
         // Create the project.
         val IWorkspace workspace = ResourcesPlugin.getWorkspace()
@@ -120,7 +120,7 @@ class JavaProjectGenerator {
         entries.add(JavaCore.newContainerEntry(new Path("org.eclipse.pde.core.requiredPlugins")))
         
         // The source and xtend-gen folders
-        val sourceFolder = project.getFolder("src")
+        val sourceFolder = project.getFolder("src-gen")
         if (!sourceFolder.exists) {
             sourceFolder.create(false, true, BasicMonitor.subProgress(progressMonitor, 1))
         }

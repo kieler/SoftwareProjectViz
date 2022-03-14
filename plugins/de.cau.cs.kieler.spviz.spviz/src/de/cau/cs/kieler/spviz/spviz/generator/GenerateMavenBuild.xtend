@@ -207,7 +207,7 @@ class GenerateMavenBuild {
               <packaging>eclipse-plugin</packaging>
             
               <build>
-                  <sourceDirectory>src</sourceDirectory>
+                  <sourceDirectory>src-gen</sourceDirectory>
                   <plugins>
                     <!-- Compile Xtend code -->
                     <plugin>
