@@ -27,5 +27,5 @@
    <repository-reference location="https://download.eclipse.org/elk/updates/releases/0.7.1/" enabled="true" />
    <repository-reference location="https://rtsys.informatik.uni-kiel.de/~kieler/updatesite/nightly/klighd/" enabled="true" />
    <repository-reference location="https://rtsys.informatik.uni-kiel.de/~kieler/updatesite/sprotty/0.9.0/" enabled="true" />
-
+   <repository-reference location="https://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-tycho/0.8.1/N/0.8.1.201704211436/" enabled="true" />
 </site>

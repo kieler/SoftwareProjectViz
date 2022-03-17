@@ -58,6 +58,8 @@
                 <associateSite>https://kieler.github.io/KLighD/v2.1.0/</associateSite>>
                 <!-- Xtext -->
                 <associateSite>https://download.eclipse.org/modeling/tmf/xtext/updates/releases/2.25.0/</associateSite>>
+                <!-- M2E Connectors -->
+                <associateSite>https://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-tycho/0.8.1/N/0.8.1.201704211436/</associateSite>>
               </associateSites>
             </configuration>
           </execution>
