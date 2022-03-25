@@ -1,0 +1,15 @@
+package de.cau.cs.kieler.spviz.yarnInversifyviz
+import "yarnInversify.spvizmodel"
+
+SPViz YarnInversifyViz {
+	Components {
+		show YarnInversify.Class
+		show YarnInversify.Interface
+		connect YarnInversify.Interface.Providing
+		connect YarnInversify.Class.Required
+	}
+	Modules {
+		show YarnInversify.Package
+		connect YarnInversify.Package.Dependency
+	}
+}

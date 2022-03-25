@@ -1,0 +1,16 @@
+package de.cau.cs.kieler.spviz.yarnInversify
+
+SPVizModel YarnInversify {
+	Package {
+		Dependency connects Package
+		contains Interface
+		contains Class
+	}
+	Interface {
+		Providing connects Class // via binding in di.config.ts files
+	}
+	Class {
+		Required connects Interface // via @inject annotation with TYPES.
+		Required connects Class // via @inject annotations without TYPES.
+	}
+}
