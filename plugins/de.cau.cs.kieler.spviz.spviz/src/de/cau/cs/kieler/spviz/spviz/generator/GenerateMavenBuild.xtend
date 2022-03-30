@@ -51,7 +51,7 @@ class GenerateMavenBuild {
             throw new IllegalStateException("The project does either not exist or is not open, but should be: " + projectId)
         }
         val content = pomXmlContent(artifactIdPrefix, bundleSuffix, version)
-        FileGenerator.generateOrUpdateFile(project, "pom.xml", content, progressMonitor)
+        FileGenerator.generateFile(project, "pom.xml", content, progressMonitor)
     }
     
     private static def addBuildFolder(String artifactIdPrefix, String vizName, String modelId, String version, IProgressMonitor progressMonitor) {
@@ -68,7 +68,7 @@ class GenerateMavenBuild {
         
         // Put the pom.xml in the project.
         val content = spvizPomXmlContent(artifactIdPrefix, modelId, version)
-        FileGenerator.generateOrUpdateFile(project, "pom.xml", content, progressMonitor)
+        FileGenerator.generateFile(project, "pom.xml", content, progressMonitor)
         
         // Generate the Eclipse feature
         addEclipseFeature(project, artifactIdPrefix, modelId, version, progressMonitor)
@@ -87,11 +87,11 @@ class GenerateMavenBuild {
         }
         
         var String content = featureXmlContent(artifactIdPrefix, modelId, version)
-        FileGenerator.generateOrUpdateFile(featureFolder, "feature.xml", content, progressMonitor)
+        FileGenerator.generateFile(featureFolder, "feature.xml", content, progressMonitor)
         content = featurePomXmlContent(artifactIdPrefix, version)
-        FileGenerator.generateOrUpdateFile(featureFolder, "pom.xml", content, progressMonitor)
+        FileGenerator.generateFile(featureFolder, "pom.xml", content, progressMonitor)
         content = featureBuildPropertiesContent
-        FileGenerator.generateOrUpdateFile(featureFolder, "build.properties", content, progressMonitor)
+        FileGenerator.generateFile(featureFolder, "build.properties", content, progressMonitor)
     }
     
     private static def addLSCLI(IProject project, String vizName, String artifactIdPrefix, String modelId, String version, IProgressMonitor progressMonitor) {
@@ -101,11 +101,11 @@ class GenerateMavenBuild {
         }
         
         var String content = cliCategoryXmlContent(artifactIdPrefix, modelId)
-        FileGenerator.generateOrUpdateFile(lscliFolder, "category.xml", content, progressMonitor)
+        FileGenerator.generateFile(lscliFolder, "category.xml", content, progressMonitor)
         content = cliPomXmlContent(artifactIdPrefix, vizName, modelId, version)
-        FileGenerator.generateOrUpdateFile(lscliFolder, "pom.xml", content, progressMonitor)
+        FileGenerator.generateFile(lscliFolder, "pom.xml", content, progressMonitor)
         content = cliUberJarPyContent(artifactIdPrefix, modelId, version)
-        FileGenerator.generateOrUpdateFile(lscliFolder, "uberjar.py", content, progressMonitor)
+        FileGenerator.generateFile(lscliFolder, "uberjar.py", content, progressMonitor)
     }
     
     private static def addTychoUpdateSiteConfig(IProject project, String artifactIdPrefix, String modelId, String version, IProgressMonitor progressMonitor) {
@@ -115,9 +115,9 @@ class GenerateMavenBuild {
         }
         
         var String content = repositoryCategoryXmlContent(artifactIdPrefix, version)
-        FileGenerator.generateOrUpdateFile(repositoryFolder, "category.xml", content, progressMonitor)
+        FileGenerator.generateFile(repositoryFolder, "category.xml", content, progressMonitor)
         content = repositoryPomXmlContent(artifactIdPrefix, modelId, version)
-        FileGenerator.generateOrUpdateFile(repositoryFolder, "pom.xml", content, progressMonitor)
+        FileGenerator.generateFile(repositoryFolder, "pom.xml", content, progressMonitor)
         
         val siteTemplateFolder = project.getFolder(artifactIdPrefix + ".repository/siteTemplate")
         if (!siteTemplateFolder.exists) {
@@ -125,9 +125,9 @@ class GenerateMavenBuild {
         }
         
         content = repositoryIndexHtmlContent()
-        FileGenerator.generateOrUpdateFile(siteTemplateFolder, "index.html", content, progressMonitor)
+        FileGenerator.generateFile(siteTemplateFolder, "index.html", content, progressMonitor)
         content = repositoryP2IndexContent()
-        FileGenerator.generateOrUpdateFile(siteTemplateFolder, "p2.index", content, progressMonitor)
+        FileGenerator.generateFile(siteTemplateFolder, "p2.index", content, progressMonitor)
     }
     
     private static def spvizPomXmlContent(String vizArtifactIdPrefix, String modelId, String version) {

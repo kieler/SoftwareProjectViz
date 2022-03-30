@@ -3,7 +3,7 @@
  *
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2021 by
+ * Copyright 2021-2022 by
  * + Kiel University
  *   + Department of Computer Science
  *   + Real-Time and Embedded Systems Group
@@ -42,10 +42,57 @@ class FileGenerator {
     def static void generateOrUpdateFile(IFolder sourceFolder, String filePath, String fileContent,
         IProgressMonitor progressMonitor) {
         val file = sourceFolder.getFile(filePath);
+        generateOrUpdateFile(file, fileContent, progressMonitor, true)
+    }
+    
+    /**
+     * Generates the file with the given content, if it does not already exist.
+     * 
+     * @param sourceFolder The Java source folder where all sources need to be placed.
+     * @param filePath The relative file path to the file that should be generated.
+     * @param fileContent The file content.
+     */
+    def static void generateFile(IFolder sourceProject, String filePath, String fileContent,
+        IProgressMonitor progressMonitor) {
+        val file = sourceProject.getFile(filePath);
+        generateOrUpdateFile(file, fileContent, progressMonitor, false)
+    }
+    
+    /**
+     * Generates or updates the file with the given content.
+     * 
+     * @param sourceProject The project where the file needs to be placed.
+     * @param filePath The relative file path to the file that should be generated or updated.
+     * @param fileContent The new file content.
+     */
+    def static void generateOrUpdateFile(IProject sourceProject, String filePath, String fileContent,
+        IProgressMonitor progressMonitor) {
+        val file = sourceProject.getFile(filePath);
+        generateOrUpdateFile(file, fileContent, progressMonitor, true)
+    }
+    
+    /**
+     * Generates the file with the given content, if it does not already exist.
+     * 
+     * @param sourceProject The project where the file needs to be placed.
+     * @param filePath The relative file path to the file that should be generated.
+     * @param fileContent The file content.
+     */
+    def static void generateFile(IProject sourceProject, String filePath, String fileContent,
+        IProgressMonitor progressMonitor) {
+        val file = sourceProject.getFile(filePath);
+        generateOrUpdateFile(file, fileContent, progressMonitor, false)
+    }
+    
+    def private static void generateOrUpdateFile(IFile file, String fileContent,
+        IProgressMonitor progressMonitor, boolean overwriteExisting) {
         val inputStream = new ByteArrayInputStream(fileContent.bytes)
         if (!file.exists) {
             create(file, progressMonitor)
-        } 
+        } else if (!overwriteExisting) {
+            // If the file exists already and we should not overwrite it, don't do so.
+            return
+        }
         file.setContents(inputStream, IResource.NONE, progressMonitor)
     }
     
@@ -91,27 +138,7 @@ class FileGenerator {
                     Files.copy(source, newFile.toPath)
                 }
             }
-        }
-        
-        
-        
-    }
-    
-    /**
-     * Generates or updates the file with the given content.
-     * 
-     * @param sourceProject The project where the file needs to be placed.
-     * @param filePath The relative file path to the file that should be generated or updated.
-     * @param fileContent The new file content.
-     */
-    def static void generateOrUpdateFile(IProject sourceProject, String filePath, String fileContent,
-        IProgressMonitor progressMonitor) {
-        val file = sourceProject.getFile(filePath);
-        val inputStream = new ByteArrayInputStream(fileContent.bytes)
-        if (!file.exists) {
-            create(file, progressMonitor)
-        } 
-        file.setContents(inputStream, IResource.NONE, progressMonitor)
+        }   
     }
     
     /**
@@ -143,11 +170,13 @@ class FileGenerator {
      * @param identifier
      *      the fully qualified identifier of the generated bundle.
      * @param requiredBundles
-     *      the Bundles this Bundle requires and should be added to the manifest.
+     *      the Bundles this bundle requires and should be added to the manifest.
+     * @param exportedPackages
+     *      the Packages this bundle exports and should be added to the manifest.
      * @return
      *      the generated content for the manifest as a String.
      */
-    def static String manifestContent(String identifier, Iterable<String> requiredBundles) {
+    def static String manifestContent(String identifier, Iterable<String> requiredBundles, Iterable<String> exportedPackages) {
         return '''
         Manifest-Version: 1.0
         Bundle-ManifestVersion: 2
@@ -156,6 +185,10 @@ class FileGenerator {
         Bundle-SymbolicName: «CodeGenUtil.validPluginID(identifier)»; singleton:=true
         Bundle-Version: 0.1.0.qualifier
         Bundle-RequiredExecutionEnvironment: JavaSE-11
+        Export-Package: 
+        «FOR exportedPackage : exportedPackages SEPARATOR ','»
+            «" " + exportedPackage»
+        «ENDFOR»
         Require-Bundle: 
         «FOR requiredBundle : requiredBundles SEPARATOR ','»
             «" " + requiredBundle»

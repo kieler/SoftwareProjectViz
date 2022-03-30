@@ -15,6 +15,7 @@ package de.cau.cs.kieler.spviz.spviz.generator
 import de.cau.cs.kieler.spviz.spvizmodel.generator.FileGenerator
 import de.cau.cs.kieler.spviz.spvizmodel.generator.JavaProjectGenerator
 import de.cau.cs.kieler.spviz.spvizmodel.generator.XCoreProjectGenerator
+import java.util.Arrays
 import java.util.Collections
 import java.util.List
 import org.eclipse.core.resources.IProject
@@ -24,6 +25,7 @@ import org.eclipse.core.runtime.NullProgressMonitor
 import org.eclipse.core.runtime.Path
 import org.eclipse.emf.codegen.ecore.Generator
 import org.eclipse.emf.ecore.resource.Resource
+import org.eclipse.jdt.core.JavaCore
 import org.eclipse.xtext.generator.AbstractGenerator
 import org.eclipse.xtext.generator.IFileSystemAccess2
 import org.eclipse.xtext.generator.IGeneratorContext
@@ -58,16 +60,30 @@ class SPVizGenerator extends AbstractGenerator {
 		val String xcoreContent = xcoreContent(data)
 		val progressMonitor = new NullProgressMonitor
 		val project = new XCoreProjectGenerator(data.getBundleNamePrefix + ".model")
-		  .configureXCoreFile(data.visualizationName + 'Model.xcore', xcoreContent)
-		  .configureRequiredBundles(#[data.modelBundleNamePrefix + ".model"])
-		  .generate(progressMonitor)
-        val sourceFolder = project.getFolder("src-gen");
+		    .configureXCoreFile(data.visualizationName + 'Model.xcore', xcoreContent)
+		    .configureRequiredBundles(#[data.modelBundleNamePrefix + ".model"])
+		    .configureExportedPackages(exportedVizModelPackages(data))
+		    .generate(progressMonitor)
+        
+        // Add the xtend-gen folder to the classpath
+        val xtendGenFolder = project.getFolder("xtend-gen")
+        if (!xtendGenFolder.exists()) {
+            xtendGenFolder.create(false, true, progressMonitor)
+        }
+        val javaProject = JavaCore.create(project);
+        val oldClasspathEntries = javaProject.getRawClasspath
+        if (!oldClasspathEntries.contains(JavaCore.newSourceEntry(xtendGenFolder.getFullPath()))) {        
+            val classpathEntries = Arrays.copyOf(oldClasspathEntries, oldClasspathEntries.size + 1)
+            classpathEntries.set(oldClasspathEntries.size, JavaCore.newSourceEntry(xtendGenFolder.getFullPath()))
+            javaProject.setRawClasspath(classpathEntries, progressMonitor)
+        }
 		
+        val sourceFolder = project.getFolder("src-gen")
 		// Generate further source files for the project
 		GenerateVizModelUtils.generate(sourceFolder, data, progressMonitor)
 		
 		// Generate the build.properties file
-		FileGenerator.generateOrUpdateFile(project, "/build.properties",
+		FileGenerator.generateFile(project, "/build.properties",
 		    FileGenerator.modelBuildPropertiesContent(), progressMonitor)
 		
 		
@@ -82,18 +98,18 @@ class SPVizGenerator extends AbstractGenerator {
         val sourceVizFolder = vizProject.getFolder("src-gen")
         
         // Generate the manifest
-        FileGenerator.generateOrUpdateFile(vizProject, "/META-INF/MANIFEST.MF",
-            FileGenerator.manifestContent(data.getBundleNamePrefix + '.viz', requiredVizBundles(data)), progressMonitor)
+        FileGenerator.generateFile(vizProject, "/META-INF/MANIFEST.MF",
+            FileGenerator.manifestContent(data.getBundleNamePrefix + '.viz', requiredVizBundles(data), exportedVizPackages(data)), progressMonitor)
         
         // Generate the services file
-        FileGenerator.generateOrUpdateFile(vizProject,
+        FileGenerator.generateFile(vizProject,
             "/META-INF/services/de.cau.cs.kieler.klighd.IKlighdStartupHook", serviceFileContent(data), progressMonitor)
         
         // Generate the plugin.xml file
-        FileGenerator.generateOrUpdateFile(vizProject, "/plugin.xml", pluginXmlContent(data), progressMonitor)
+        FileGenerator.generateFile(vizProject, "/plugin.xml", pluginXmlContent(data), progressMonitor)
         
         // Generate the build.properties file
-        FileGenerator.generateOrUpdateFile(vizProject, "/build.properties", 
+        FileGenerator.generateFile(vizProject, "/build.properties", 
             FileGenerator.buildPropertiesContent(true), progressMonitor
         )
 		
@@ -134,8 +150,9 @@ class SPVizGenerator extends AbstractGenerator {
 	    
 	    // Generate the .language.server Java project
 	    val lsProject = new JavaProjectGenerator(data.getBundleNamePrefix + ".language.server")
-	       .configureRequiredBundles(requiredLSBundles(data))
-	       .generate(progressMonitor)
+	        .configureRequiredBundles(requiredLSBundles(data))
+            .configureExportedPackages(exportedLSPackages(data))
+	        .generate(progressMonitor)
         
         // Generate further source files for the java project
         val launchFolder = lsProject.getFolder("launch")
@@ -147,6 +164,14 @@ class SPVizGenerator extends AbstractGenerator {
         // Generate the Maven build framework for this visualization.
         GenerateMavenBuild.generate(data.bundleNamePrefix, data.visualizationName.toFirstUpper ,data.modelBundleNamePrefix + ".model", "0.1.0", progressMonitor)
 	}
+    
+    protected def List<String> exportedVizModelPackages(DataAccess data) {
+        return #[
+            data.bundleNamePrefix + ".model",
+            data.bundleNamePrefix + ".model.impl",
+            data.bundleNamePrefix + ".model.util"
+        ]
+    }
 	
 	protected def List<String> requiredLSBundles(DataAccess data) {
 	    return #[
@@ -177,6 +202,12 @@ class SPVizGenerator extends AbstractGenerator {
            data.modelBundleNamePrefix + ".model"
 	    ]
 	}
+    
+    protected def List<String> exportedLSPackages(DataAccess data) {
+        return #[
+           data.bundleNamePrefix + ".language.server"
+        ]
+    }
 	
 	protected def List<String> requiredVizBundles(DataAccess data) {
         return #[
@@ -191,6 +222,12 @@ class SPVizGenerator extends AbstractGenerator {
             "com.google.inject",
             data.getBundleNamePrefix + ".model",
             data.modelBundleNamePrefix + ".model"
+        ]
+    }
+    
+    protected def List<String> exportedVizPackages(DataAccess data) {
+        return #[
+           data.bundleNamePrefix + ".viz"
         ]
     }
     
@@ -245,7 +282,8 @@ class SPVizGenerator extends AbstractGenerator {
 			    fileExtensions="«data.visualizationName.toLowerCase»",
 			    modelDirectory="«data.getBundleNamePrefix».model/src-gen",
 			    modelName="«data.visualizationName»",
-			    prefix="«data.visualizationName»"
+			    prefix="«data.visualizationName»",
+			    updateClasspath="false"
 			)
 			
 			package «data.getBundleNamePrefix».model

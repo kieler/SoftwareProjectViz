@@ -37,7 +37,7 @@ class GenerateLanguageServer {
         content = generateRegistrationLsExt(data)
         FileGenerator.generateOrUpdateFile(sourceFolder, folder + data.visualizationName + "RegistrationLsExt.xtend", content, progressMonitor)
         content = generateLaunchConfig(data)
-        FileGenerator.generateOrUpdateFile(launchFolder, data.visualizationName + " Launguage Server.launch", content, progressMonitor)
+        FileGenerator.generateFile(launchFolder, data.visualizationName + " Launguage Server.launch", content, progressMonitor)
     }
     
     /**

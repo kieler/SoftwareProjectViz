@@ -45,6 +45,9 @@ class XCoreProjectGenerator {
     /** The additional required bundles for this new project. */
     val List<String> requiredBundles = newArrayList
     
+    /** The exported packages for this project. */
+    val List<String> exportedPackages = newArrayList
+    
     /** If this project should have Maven nature. */
     var boolean mavenNature = false
 
@@ -81,6 +84,22 @@ class XCoreProjectGenerator {
         for (requiredBundle : requiredBundles) {
             if (!this.requiredBundles.contains(requiredBundle)) {
                 this.requiredBundles.add(requiredBundle)
+            }
+        }
+        
+        return this
+    }
+    
+    /**
+     * Adds the given packages to be written into the manifest as package exports.
+     * 
+     * @param exportedPackages The IDs of the packages to be exported.
+     * @return This generator, for chaining configurations.
+     */
+    def XCoreProjectGenerator configureExportedPackages(Iterable<String> exportedPackages) {
+        for (exportedPackage : exportedPackages) {
+            if (!this.exportedPackages.contains(exportedPackage)) {
+                this.exportedPackages.add(exportedPackage)
             }
         }
         
@@ -131,9 +150,9 @@ class XCoreProjectGenerator {
         
         // Generate the manifest
         FileGenerator.generateOrUpdateFile(project, "/META-INF/MANIFEST.MF",
-            FileGenerator.manifestContent(genModelContainerPath.segment(0), requiredBundles), progressMonitor)
+            FileGenerator.manifestContent(genModelContainerPath.segment(0), requiredBundles, exportedPackages), progressMonitor)
 
-        XCoreProjectGenerator.addNatures(project, true, progressMonitor)
+        XCoreProjectGenerator.addNatures(project, mavenNature, progressMonitor)
 
         return project
     }

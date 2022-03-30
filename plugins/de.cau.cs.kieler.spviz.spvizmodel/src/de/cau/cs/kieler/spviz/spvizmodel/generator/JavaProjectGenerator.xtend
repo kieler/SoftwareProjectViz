@@ -37,6 +37,9 @@ class JavaProjectGenerator {
     
     /** The additional required bundles for this new project. */
     val List<String> requiredBundles = newArrayList
+    
+    /** The exported packages for this new project. */
+    val List<String> exportedPackages = newArrayList
 
     /**
      * Create a new generator.
@@ -55,6 +58,22 @@ class JavaProjectGenerator {
         for (requiredBundle : requiredBundles) {
             if (!this.requiredBundles.contains(requiredBundle)) {
                 this.requiredBundles.add(requiredBundle)
+            }
+        }
+        
+        return this
+    }
+    
+    /**
+     * Adds the given exported packages to be written into the manifest.
+     * 
+     * @param exportedPackages The IDs of the exported packages.
+     * @return This generator, for chaining configurations.
+     */
+    def JavaProjectGenerator configureExportedPackages(Iterable<String> exportedPackages) {
+        for (exportedPackage : exportedPackages) {
+            if (!this.exportedPackages.contains(exportedPackage)) {
+                this.exportedPackages.add(exportedPackage)
             }
         }
         
@@ -136,11 +155,11 @@ class JavaProjectGenerator {
         javaProject.setRawClasspath(entries.toArray(<IClasspathEntry>newArrayOfSize(entries.size)), null)
         
         // Generate the manifest
-        FileGenerator.generateOrUpdateFile(project, "/META-INF/MANIFEST.MF",
-            FileGenerator.manifestContent(genModelContainerPath.segment(0), requiredBundles), progressMonitor)
+        FileGenerator.generateFile(project, "/META-INF/MANIFEST.MF",
+            FileGenerator.manifestContent(genModelContainerPath.segment(0), requiredBundles, exportedPackages), progressMonitor)
         
         // Generate the build.properties file
-        FileGenerator.generateOrUpdateFile(project, "/build.properties",
+        FileGenerator.generateFile(project, "/build.properties",
             FileGenerator.buildPropertiesContent(false), progressMonitor)
         
         return project
