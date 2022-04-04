@@ -312,11 +312,15 @@ class GenerateSubSyntheses {
                             setLayoutOption(CoreOptions::NODE_SIZE_CONSTRAINTS, EnumSet.of(SizeConstraint.MINIMUM_SIZE))
                             SynthesisUtils.configureBoxLayout(it)
                             setLayoutOption(BoxLayouterOptions.BOX_PACKING_MODE, PackingMode.GROUP_MIXED)
-                             
+                            
                             «FOR containedView : containedViews»
                                 // Show a «containedView.view.name.toFirstLower» overview within this «artifactName»
-                                val «containedView.view.name.toFirstLower»OverviewNodes = «containedView.view.name.toFirstLower»OverviewSynthesis.transform(context.«containedView.view.name.toFirstLower»OverviewContext)
-                                children += «containedView.view.name.toFirstLower»OverviewNodes
+                                // Only show this, if the option for it says so and if the context is available.
+«««                             TODO: implement option to filter away overviews in artifacts.
+                                if (context.«containedView.view.name.toFirstLower»OverviewContext !== null) {
+                                    val «containedView.view.name.toFirstLower»OverviewNodes = «containedView.view.name.toFirstLower»OverviewSynthesis.transform(context.«containedView.view.name.toFirstLower»OverviewContext)
+                                    children += «containedView.view.name.toFirstLower»OverviewNodes
+                                }
                             «ENDFOR»
                             
                             «FOR connected : data.getConnectedArtifacts(artifact)»
@@ -334,7 +338,7 @@ class GenerateSubSyntheses {
                                         height = 12
                                     ]
                                 }
-                            
+                                
                             «ENDFOR»
                             «FOR connecting : data.getConnectingArtifacts(artifact)»
                                 val filteredConnecting«connecting.connecting.name»s = SynthesisUtils.filteredElements(«artifactName.toFirstLower».connecting«connecting.name»«connecting.connecting.name»s,
@@ -351,7 +355,7 @@ class GenerateSubSyntheses {
                                         height = 12
                                     ]
                                 }
-                            
+                                
                             «ENDFOR»
                             // Add the rendering.
                             val hasChildren = !children.empty

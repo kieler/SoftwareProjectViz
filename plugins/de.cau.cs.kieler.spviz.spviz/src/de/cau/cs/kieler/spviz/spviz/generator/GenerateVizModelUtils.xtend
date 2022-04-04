@@ -236,10 +236,13 @@ class GenerateVizModelUtils {
 					       «FOR artifactSource : containedView.sources»
 					           val «containedView.view.name.toFirstLower»«artifactSource.artifact.name.toFirstUpper»s = the«artifact.name»Context.modelElement«artifactSource.sourceChain.followToArtifact».toSet.toEList
 					       «ENDFOR»
-					       the«artifact.name»Context.«containedView.view.name.toFirstLower»OverviewContext = VizModelUtil
-					           .create«containedView.view.name»OverviewContext(
-					               «FOR artifactSource : containedView.sources»«containedView.view.name.toFirstLower»«artifactSource.artifact.name.toFirstUpper»s, «ENDFOR»
-					           the«artifact.name»Context)
+					       // Only show this overview if it is not empty
+					       if («FOR artifactSource : containedView.sources SEPARATOR ' || '»!«containedView.view.name.toFirstLower»«artifactSource.artifact.name.toFirstUpper»s.empty«ENDFOR») {
+					           the«artifact.name»Context.«containedView.view.name.toFirstLower»OverviewContext = VizModelUtil
+					               .create«containedView.view.name»OverviewContext(
+					                   «FOR artifactSource : containedView.sources»«containedView.view.name.toFirstLower»«artifactSource.artifact.name.toFirstUpper»s, «ENDFOR»
+					               the«artifact.name»Context)
+					       }
 					    «ENDFOR»
 						the«artifact.name»Context.childrenInitialized = true
 					}
