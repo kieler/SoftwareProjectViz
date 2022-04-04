@@ -3,7 +3,7 @@
  *
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2020-2021 by
+ * Copyright 2020-2022 by
  * + Kiel University
  *   + Department of Computer Science
  *     + Real-Time and Embedded Systems Group
@@ -16,29 +16,51 @@ generate sPViz "http://www.cau.de/cs/kieler/spviz/spviz/SPViz"
 
 import "http://www.cau.de/cs/kieler/spviz/spvizmodel/SPVizModel" as spvizmodel
 
-SPViz returns SPViz:
+SPViz:
 	'package' package=QualifiedName
 	'import' importURI=STRING
 	'SPViz' name=ID '{'
 		views += View*
+		artifactShows += ArtifactShows*
 	'}'
 ;
 
-View returns View:
+View:
 	name=ID '{'
 		shownElements+=ShownElement*
 		shownConnections+=ShownConnection*
 	'}'
 ;
 
-ShownElement returns ShownElement:
+ArtifactShows:
+    artifactShows=[spvizmodel::Artifact|QualifiedName] 'shows' '{'
+        views += ArtifactView*
+    '}'
+;
+
+ArtifactView:
+    view = [View] 'with' '{'
+        sources += ArtifactSource*
+    '}'
+;
+
+ArtifactSource:
+    artifact = [spvizmodel::Artifact|QualifiedName]
+    'from' sourceChain = ArtifactChain
+;
+
+ArtifactChain:
+    source = [spvizmodel::Artifact|QualifiedName] ('>' further = ArtifactChain)?
+;
+
+ShownElement:
 	'show' shownElement=[spvizmodel::Artifact|QualifiedName]
 	(
 		'in' containedIn=[spvizmodel::Artifact|QualifiedName]
 	)?
 ;
 
-ShownConnection returns ShownConnection:
+ShownConnection:
 	'connect' shownConnection=[spvizmodel::Connection|QualifiedName]
 	(
 		'via' via=[spvizmodel::Artifact|QualifiedName]

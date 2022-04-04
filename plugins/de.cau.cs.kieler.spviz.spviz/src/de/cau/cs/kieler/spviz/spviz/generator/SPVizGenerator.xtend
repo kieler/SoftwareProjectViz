@@ -379,6 +379,10 @@ class SPVizGenerator extends AbstractGenerator {
 					«FOR connecting : data.getConnectingArtifacts(artifact)»
 						boolean allConnecting«connecting.connecting.name»Connects«connecting.connected.name»Named«connecting.name»Shown
 					«ENDFOR»
+					«FOR containedView : data.getContainedViews(artifact)»
+					   // The overview context for the «containedView.view.name.toFirstLower» overview shown in detailed «artifact.name.toFirstLower»s
+					   refers «containedView.view.name»OverviewContext «containedView.view.name.toFirstLower»OverviewContext
+					«ENDFOR»
 				}
 				
 			«ENDFOR»

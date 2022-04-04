@@ -12,6 +12,7 @@
  */
 package de.cau.cs.kieler.spviz.spviz.generator
 
+import de.cau.cs.kieler.spviz.spviz.sPViz.ArtifactView
 import de.cau.cs.kieler.spviz.spviz.sPViz.SPViz
 import de.cau.cs.kieler.spviz.spviz.sPViz.View
 import de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.Artifact
@@ -58,6 +59,8 @@ class DataAccess {
      * A convenient map to show all {@link Connection}s with the key of the map as the connected {@link Artifact}.
      */
 	Map<Artifact, List<Connection>> connectingArtifacts
+	/** A convenient map to show all {@link ArtifactView}s that may be shown within the key {@link Artifact}. */
+	Map<Artifact, List<ArtifactView>> containedViews
 	
 	/**
 	 * Constructor
@@ -80,6 +83,7 @@ class DataAccess {
 		projectName = spvizModel.name + "Project"
 		connectedArtifacts = newHashMap
 		connectingArtifacts = newHashMap
+		containedViews = newHashMap
 		
 		for (view : spviz.views) {
             // find all connections between artifacts
@@ -97,6 +101,13 @@ class DataAccess {
                     connectingArtifacts.put(connected, newArrayList)
                 }
                 connectingArtifacts.get(connected).add(connection)
+            }
+        }
+        
+        for (artifact : spvizModel.artifacts) {
+            val artifactShows = spviz.artifactShows.findFirst[it.artifactShows === artifact]
+            if (artifactShows !== null) {
+                containedViews.put(artifact, artifactShows.views)
             }
         }
     }
@@ -197,7 +208,7 @@ class DataAccess {
 	 * @return
 	 * 		A list of all views that may contain the artifact.
 	 */
-    def List<View> getViews(Artifact artifact) {
+    def List<View> getContainingViews(Artifact artifact) {
         val possibleViews = newArrayList
         for (view : views) {
             for (shownElement : view.shownElements) {
@@ -207,6 +218,18 @@ class DataAccess {
             }
         }
         return possibleViews 
+    }
+    
+    /**
+     * For a given artifact, finds the overviews that may be shown in this artifact.
+     * 
+     * @param artifact
+     *      The artifact that may contain further overviews.
+     * @return
+     *      A list of all views with their source configuration that may be contained in this artifact.
+     */
+    def List<ArtifactView> getContainedViews(Artifact artifact) {
+        return containedViews.get(artifact) ?: #[]
     }
 
     /**

@@ -12,6 +12,7 @@
  */
 package de.cau.cs.kieler.spviz.spviz.generator
 
+import de.cau.cs.kieler.spviz.spviz.sPViz.ArtifactChain
 import de.cau.cs.kieler.spviz.spvizmodel.generator.FileGenerator
 import java.util.List
 import org.eclipse.core.resources.IFolder
@@ -165,6 +166,8 @@ class GenerateVizModelUtils {
 			«ENDFOR»
 			import java.util.List
 			
+			import static extension org.eclipse.emf.common.util.ECollections.*
+			
 			/**
 			 * Extension class that contains some static methods commonly used in the OSGi synthesis for modifying the visualization
 			 * context.
@@ -229,7 +232,15 @@ class GenerateVizModelUtils {
 					 * Initializes all child contexts needed for this element, once it is displayed in a detailed fashion.
 					 */
 					def static dispatch void initializeChildVisualizationContexts(«artifact.name»Context the«artifact.name»Context) {
-«««					TODO: initialize child context here
+					    «FOR containedView : data.getContainedViews(artifact)»
+					       «FOR artifactSource : containedView.sources»
+					           val «containedView.view.name.toFirstLower»«artifactSource.artifact.name.toFirstUpper»s = the«artifact.name»Context.modelElement«artifactSource.sourceChain.followToArtifact».toSet.toEList
+					       «ENDFOR»
+					       the«artifact.name»Context.«containedView.view.name.toFirstLower»OverviewContext = VizModelUtil
+					           .create«containedView.view.name»OverviewContext(
+					               «FOR artifactSource : containedView.sources»«containedView.view.name.toFirstLower»«artifactSource.artifact.name.toFirstUpper»s, «ENDFOR»
+					           the«artifact.name»Context)
+					    «ENDFOR»
 						the«artifact.name»Context.childrenInitialized = true
 					}
 					
@@ -585,6 +596,26 @@ class GenerateVizModelUtils {
 			}
 		'''
 	}
+    
+    /**
+     * Generates code that will output an iterable of all artifacts from the type of the last artifact in the chain
+     * when following all elements in the artifact chain.
+     */
+    def static followToArtifact(ArtifactChain artifactChain) {
+        var String result = ""
+        var next = artifactChain.further
+        // At first we only have a single artifact with the next part of the chain as a direct call 
+        if (next !== null) {
+            result += '.' + next.source.name.toFirstLower + 's'
+            next = next.further
+        }
+        // For all further artifacts in the chain we already have an iterable that we need to call the next artifact from.
+        while (next !== null) {
+            result += ".flatMap[ " + next.source.name.toFirstLower + "s ]"
+            next = next.further
+        }
+        return result
+    }
 	
 	
 	/**

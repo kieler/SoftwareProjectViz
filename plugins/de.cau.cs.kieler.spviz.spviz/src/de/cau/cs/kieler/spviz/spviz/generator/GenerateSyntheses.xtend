@@ -1800,12 +1800,12 @@ class GenerateSyntheses {
                 «FOR artifact : data.artifacts»
                     private static dispatch def void reInitialize(«artifact.name.toFirstUpper»Context oldContext, «artifact.name.toFirstUpper»Context newContext) {
                         reInitializeChildContexts(oldContext, newContext)
-«««                        if (newContext.childrenInitialized) {
-«««                            // Restore the contained artifact overview contexts.
-«««                            «FOR overviewContext : TODO: when this is implemented, this should be all overviews that may be visualized within this artifact (e.g., bundles, features and services within a product in OSGi»
-«««                                reInitialize(oldContext.«overviewContext.name.toFirstLower», newContext.«overviewContext.toFirstLower»)
-«««                            «ENDFOR»
-«««                        }
+                        if (newContext.childrenInitialized) {
+                            // Restore the contained artifact overview contexts.
+                            «FOR artifactView : data.getContainedViews(artifact)»
+                                reInitialize(oldContext.«artifactView.view.name.toFirstLower»OverviewContext, newContext.«artifactView.view.name.toFirstLower»OverviewContext)
+                            «ENDFOR»
+                        }
                     }
                 «ENDFOR»
                 
@@ -1860,9 +1860,9 @@ class GenerateSyntheses {
                 
                 «FOR artifact : data.artifacts»
                     private static dispatch def void reConnect(«artifact.name.toFirstUpper»Context oldContext, «artifact.name.toFirstUpper»Context newContext) {
-«««                        «FOR overviewContext : TODO: when this is implemented, this should be all overviews that may be visualized within this artifact (e.g., bundles, features and services within a product in OSGi»
-«««                            reConnect(oldContext.«overviewContext.name.toFirstLower»OverviewContext, newContext.«overviewContext.name.toFirstLower»OverviewContext)
-«««                        «ENDFOR»
+                        «FOR containedView : data.getContainedViews(artifact)»
+                            reConnect(oldContext.«containedView.view.name.toFirstLower»OverviewContext, newContext.«containedView.view.name.toFirstLower»OverviewContext)
+                        «ENDFOR»
                     }
                 «ENDFOR»
                 private static dispatch def void reConnect(Void oldContext, Void newContext) {}

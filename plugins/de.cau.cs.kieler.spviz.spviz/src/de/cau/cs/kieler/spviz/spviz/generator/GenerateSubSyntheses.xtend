@@ -248,7 +248,8 @@ class GenerateSubSyntheses {
      */
     def static String generateSynthesis(Artifact artifact, DataAccess data) {
         val artifactName = artifact.name
-        val views = data.getViews(artifact)
+        val views = data.getContainingViews(artifact)
+        val containedViews = data.getContainedViews(artifact)
         val Set<String> importedArtifacts = new HashSet
         importedArtifacts.add(artifact.name)
         for (connected : data.getConnectedArtifacts(artifact)) {
@@ -278,9 +279,16 @@ class GenerateSubSyntheses {
             «FOR view : views»
                 import «data.bundleNamePrefix».model.«view.name»OverviewContext
             «ENDFOR»
+            
+            import java.util.EnumSet
+            import org.eclipse.elk.core.options.BoxLayouterOptions
             import org.eclipse.elk.core.options.CoreOptions
             import org.eclipse.elk.core.options.PortConstraints
             import org.eclipse.elk.core.options.PortSide
+            import org.eclipse.elk.core.options.SizeConstraint
+            import org.eclipse.elk.core.util.BoxLayoutProvider.PackingMode
+            
+            import static extension de.cau.cs.kieler.klighd.syntheses.DiagramSyntheses.*
             
             /**
              * Sub-synthesis of {@link «data.projectName»}s that handles expanded {@link «artifactName»} views.
@@ -289,6 +297,9 @@ class GenerateSubSyntheses {
                 @Inject extension KNodeExtensions
                 @Inject extension KPortExtensions
                 @Inject extension Styles
+                «FOR containedView : containedViews»
+                    @Inject «containedView.view.name»OverviewSynthesis «containedView.view.name.toFirstLower»OverviewSynthesis
+                «ENDFOR»
                 extension KGraphFactory = KGraphFactory.eINSTANCE
                 
                 override transform(«artifactName»Context context) {
@@ -298,39 +309,48 @@ class GenerateSubSyntheses {
                             addLayoutParam(CoreOptions::PORT_CONSTRAINTS, PortConstraints::FIXED_ORDER)
                             associateWith(context)
                             data += createKIdentifier => [ it.id = context.hashCode.toString ]
+                            setLayoutOption(CoreOptions::NODE_SIZE_CONSTRAINTS, EnumSet.of(SizeConstraint.MINIMUM_SIZE))
+                            SynthesisUtils.configureBoxLayout(it)
+                            setLayoutOption(BoxLayouterOptions.BOX_PACKING_MODE, PackingMode.GROUP_MIXED)
+                             
+                            «FOR containedView : containedViews»
+                                // Show a «containedView.view.name.toFirstLower» overview within this «artifactName»
+                                val «containedView.view.name.toFirstLower»OverviewNodes = «containedView.view.name.toFirstLower»OverviewSynthesis.transform(context.«containedView.view.name.toFirstLower»OverviewContext)
+                                children += «containedView.view.name.toFirstLower»OverviewNodes
+                            «ENDFOR»
                             
                             «FOR connected : data.getConnectedArtifacts(artifact)»
-                            val filteredConnected«connected.connected.name»s = SynthesisUtils.filteredElements(«artifactName.toFirstLower».connected«connected.name»«connected.connected.name»s,
-                                context.parent as IOverviewVisualizationContext<«connected.connected.name»>, usedContext)
-                            if (!filteredConnected«connected.connected.name»s.empty) {
-                                ports += createPort(context, "connected«connected.name»«connected.connected.name»s") => [
-                                    associateWith(context)
-                                    data += createKIdentifier => [ it.id = "connected«connected.name»«connected.connected.name»s" ]
-                                    // Connected «artifactName.toFirstLower»s are always shown and expanded to the east with the drawing direction.
-                                    addLayoutParam(CoreOptions::PORT_SIDE, PortSide::EAST)
-                                    addLayoutParam(CoreOptions::PORT_INDEX, 0)
-                                    addConnected«connected.connecting.name»Connects«connected.connected.name»Named«connected.name»ActionPortRendering(filteredConnected«connected.connected.name»s.size, context.allConnected«connected.connecting.name»Connects«connected.connected.name»Named«connected.name»Shown)
-                                    width = 12
-                                    height = 12
-                                ]
-                            }
+                                val filteredConnected«connected.connected.name»s = SynthesisUtils.filteredElements(«artifactName.toFirstLower».connected«connected.name»«connected.connected.name»s,
+                                    context.parent as IOverviewVisualizationContext<«connected.connected.name»>, usedContext)
+                                if (!filteredConnected«connected.connected.name»s.empty) {
+                                    ports += createPort(context, "connected«connected.name»«connected.connected.name»s") => [
+                                        associateWith(context)
+                                        data += createKIdentifier => [ it.id = "connected«connected.name»«connected.connected.name»s" ]
+                                        // Connected «artifactName.toFirstLower»s are always shown and expanded to the east with the drawing direction.
+                                        addLayoutParam(CoreOptions::PORT_SIDE, PortSide::EAST)
+                                        addLayoutParam(CoreOptions::PORT_INDEX, 0)
+                                        addConnected«connected.connecting.name»Connects«connected.connected.name»Named«connected.name»ActionPortRendering(filteredConnected«connected.connected.name»s.size, context.allConnected«connected.connecting.name»Connects«connected.connected.name»Named«connected.name»Shown)
+                                        width = 12
+                                        height = 12
+                                    ]
+                                }
                             
                             «ENDFOR»
                             «FOR connecting : data.getConnectingArtifacts(artifact)»
-                            val filteredConnecting«connecting.connecting.name»s = SynthesisUtils.filteredElements(«artifactName.toFirstLower».connecting«connecting.name»«connecting.connecting.name»s,
-                                context.parent as IOverviewVisualizationContext<«connecting.connecting.name»>, usedContext)
-                            if (!filteredConnecting«connecting.connecting.name»s.empty) {
-                                ports += createPort(context, "connecting«connecting.name»«connecting.connecting.name»s") => [
-                                    associateWith(context)
-                                    data += createKIdentifier => [ it.id = "connecting«connecting.name»«connecting.connecting.name»s" ]
-                                    // Connecting «artifactName.toFirstLower»s are always shown and expanded to the west against the drawing direction.
-                                    addLayoutParam(CoreOptions::PORT_SIDE, PortSide::WEST)
-                                    addLayoutParam(CoreOptions::PORT_INDEX, 1)
-                                    addConnecting«connecting.connecting.name»Connects«connecting.connected.name»Named«connecting.name»ActionPortRendering(filteredConnecting«connecting.connecting.name»s.size, context.allConnecting«connecting.connecting.name»Connects«connecting.connected.name»Named«connecting.name»Shown)
-                                    width = 12
-                                    height = 12
-                                ]
-                            }
+                                val filteredConnecting«connecting.connecting.name»s = SynthesisUtils.filteredElements(«artifactName.toFirstLower».connecting«connecting.name»«connecting.connecting.name»s,
+                                    context.parent as IOverviewVisualizationContext<«connecting.connecting.name»>, usedContext)
+                                if (!filteredConnecting«connecting.connecting.name»s.empty) {
+                                    ports += createPort(context, "connecting«connecting.name»«connecting.connecting.name»s") => [
+                                        associateWith(context)
+                                        data += createKIdentifier => [ it.id = "connecting«connecting.name»«connecting.connecting.name»s" ]
+                                        // Connecting «artifactName.toFirstLower»s are always shown and expanded to the west against the drawing direction.
+                                        addLayoutParam(CoreOptions::PORT_SIDE, PortSide::WEST)
+                                        addLayoutParam(CoreOptions::PORT_INDEX, 1)
+                                        addConnecting«connecting.connecting.name»Connects«connecting.connected.name»Named«connecting.name»ActionPortRendering(filteredConnecting«connecting.connecting.name»s.size, context.allConnecting«connecting.connecting.name»Connects«connecting.connected.name»Named«connecting.name»Shown)
+                                        width = 12
+                                        height = 12
+                                    ]
+                                }
                             
                             «ENDFOR»
                             // Add the rendering.
