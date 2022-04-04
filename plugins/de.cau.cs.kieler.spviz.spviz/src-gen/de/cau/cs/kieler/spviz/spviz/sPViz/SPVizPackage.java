@@ -3,7 +3,7 @@
  * 
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2021 by
+ * Copyright 2022 by
  * + Kiel University
  *   + Department of Computer Science
  *     + Real-Time and Embedded Systems Group
@@ -119,13 +119,22 @@ public interface SPVizPackage extends EPackage
   int SP_VIZ__VIEWS = 3;
 
   /**
+   * The feature id for the '<em><b>Artifact Shows</b></em>' containment reference list.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int SP_VIZ__ARTIFACT_SHOWS = 4;
+
+  /**
    * The number of structural features of the '<em>SP Viz</em>' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int SP_VIZ_FEATURE_COUNT = 4;
+  int SP_VIZ_FEATURE_COUNT = 5;
 
   /**
    * The meta object id for the '{@link de.cau.cs.kieler.spviz.spviz.sPViz.impl.ViewImpl <em>View</em>}' class.
@@ -174,6 +183,154 @@ public interface SPVizPackage extends EPackage
   int VIEW_FEATURE_COUNT = 3;
 
   /**
+   * The meta object id for the '{@link de.cau.cs.kieler.spviz.spviz.sPViz.impl.ArtifactShowsImpl <em>Artifact Shows</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see de.cau.cs.kieler.spviz.spviz.sPViz.impl.ArtifactShowsImpl
+   * @see de.cau.cs.kieler.spviz.spviz.sPViz.impl.SPVizPackageImpl#getArtifactShows()
+   * @generated
+   */
+  int ARTIFACT_SHOWS = 2;
+
+  /**
+   * The feature id for the '<em><b>Artifact Shows</b></em>' reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int ARTIFACT_SHOWS__ARTIFACT_SHOWS = 0;
+
+  /**
+   * The feature id for the '<em><b>Views</b></em>' containment reference list.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int ARTIFACT_SHOWS__VIEWS = 1;
+
+  /**
+   * The number of structural features of the '<em>Artifact Shows</em>' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int ARTIFACT_SHOWS_FEATURE_COUNT = 2;
+
+  /**
+   * The meta object id for the '{@link de.cau.cs.kieler.spviz.spviz.sPViz.impl.ArtifactViewImpl <em>Artifact View</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see de.cau.cs.kieler.spviz.spviz.sPViz.impl.ArtifactViewImpl
+   * @see de.cau.cs.kieler.spviz.spviz.sPViz.impl.SPVizPackageImpl#getArtifactView()
+   * @generated
+   */
+  int ARTIFACT_VIEW = 3;
+
+  /**
+   * The feature id for the '<em><b>View</b></em>' reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int ARTIFACT_VIEW__VIEW = 0;
+
+  /**
+   * The feature id for the '<em><b>Sources</b></em>' containment reference list.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int ARTIFACT_VIEW__SOURCES = 1;
+
+  /**
+   * The number of structural features of the '<em>Artifact View</em>' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int ARTIFACT_VIEW_FEATURE_COUNT = 2;
+
+  /**
+   * The meta object id for the '{@link de.cau.cs.kieler.spviz.spviz.sPViz.impl.ArtifactSourceImpl <em>Artifact Source</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see de.cau.cs.kieler.spviz.spviz.sPViz.impl.ArtifactSourceImpl
+   * @see de.cau.cs.kieler.spviz.spviz.sPViz.impl.SPVizPackageImpl#getArtifactSource()
+   * @generated
+   */
+  int ARTIFACT_SOURCE = 4;
+
+  /**
+   * The feature id for the '<em><b>Artifact</b></em>' reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int ARTIFACT_SOURCE__ARTIFACT = 0;
+
+  /**
+   * The feature id for the '<em><b>Source Chain</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int ARTIFACT_SOURCE__SOURCE_CHAIN = 1;
+
+  /**
+   * The number of structural features of the '<em>Artifact Source</em>' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int ARTIFACT_SOURCE_FEATURE_COUNT = 2;
+
+  /**
+   * The meta object id for the '{@link de.cau.cs.kieler.spviz.spviz.sPViz.impl.ArtifactChainImpl <em>Artifact Chain</em>}' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see de.cau.cs.kieler.spviz.spviz.sPViz.impl.ArtifactChainImpl
+   * @see de.cau.cs.kieler.spviz.spviz.sPViz.impl.SPVizPackageImpl#getArtifactChain()
+   * @generated
+   */
+  int ARTIFACT_CHAIN = 5;
+
+  /**
+   * The feature id for the '<em><b>Source</b></em>' reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int ARTIFACT_CHAIN__SOURCE = 0;
+
+  /**
+   * The feature id for the '<em><b>Further</b></em>' containment reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int ARTIFACT_CHAIN__FURTHER = 1;
+
+  /**
+   * The number of structural features of the '<em>Artifact Chain</em>' class.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int ARTIFACT_CHAIN_FEATURE_COUNT = 2;
+
+  /**
    * The meta object id for the '{@link de.cau.cs.kieler.spviz.spviz.sPViz.impl.ShownElementImpl <em>Shown Element</em>}' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
@@ -181,7 +338,7 @@ public interface SPVizPackage extends EPackage
    * @see de.cau.cs.kieler.spviz.spviz.sPViz.impl.SPVizPackageImpl#getShownElement()
    * @generated
    */
-  int SHOWN_ELEMENT = 2;
+  int SHOWN_ELEMENT = 6;
 
   /**
    * The feature id for the '<em><b>Shown Element</b></em>' reference.
@@ -218,7 +375,7 @@ public interface SPVizPackage extends EPackage
    * @see de.cau.cs.kieler.spviz.spviz.sPViz.impl.SPVizPackageImpl#getShownConnection()
    * @generated
    */
-  int SHOWN_CONNECTION = 3;
+  int SHOWN_CONNECTION = 7;
 
   /**
    * The feature id for the '<em><b>Shown Connection</b></em>' reference.
@@ -303,6 +460,17 @@ public interface SPVizPackage extends EPackage
   EReference getSPViz_Views();
 
   /**
+   * Returns the meta object for the containment reference list '{@link de.cau.cs.kieler.spviz.spviz.sPViz.SPViz#getArtifactShows <em>Artifact Shows</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference list '<em>Artifact Shows</em>'.
+   * @see de.cau.cs.kieler.spviz.spviz.sPViz.SPViz#getArtifactShows()
+   * @see #getSPViz()
+   * @generated
+   */
+  EReference getSPViz_ArtifactShows();
+
+  /**
    * Returns the meta object for class '{@link de.cau.cs.kieler.spviz.spviz.sPViz.View <em>View</em>}'.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
@@ -344,6 +512,134 @@ public interface SPVizPackage extends EPackage
    * @generated
    */
   EReference getView_ShownConnections();
+
+  /**
+   * Returns the meta object for class '{@link de.cau.cs.kieler.spviz.spviz.sPViz.ArtifactShows <em>Artifact Shows</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>Artifact Shows</em>'.
+   * @see de.cau.cs.kieler.spviz.spviz.sPViz.ArtifactShows
+   * @generated
+   */
+  EClass getArtifactShows();
+
+  /**
+   * Returns the meta object for the reference '{@link de.cau.cs.kieler.spviz.spviz.sPViz.ArtifactShows#getArtifactShows <em>Artifact Shows</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the reference '<em>Artifact Shows</em>'.
+   * @see de.cau.cs.kieler.spviz.spviz.sPViz.ArtifactShows#getArtifactShows()
+   * @see #getArtifactShows()
+   * @generated
+   */
+  EReference getArtifactShows_ArtifactShows();
+
+  /**
+   * Returns the meta object for the containment reference list '{@link de.cau.cs.kieler.spviz.spviz.sPViz.ArtifactShows#getViews <em>Views</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference list '<em>Views</em>'.
+   * @see de.cau.cs.kieler.spviz.spviz.sPViz.ArtifactShows#getViews()
+   * @see #getArtifactShows()
+   * @generated
+   */
+  EReference getArtifactShows_Views();
+
+  /**
+   * Returns the meta object for class '{@link de.cau.cs.kieler.spviz.spviz.sPViz.ArtifactView <em>Artifact View</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>Artifact View</em>'.
+   * @see de.cau.cs.kieler.spviz.spviz.sPViz.ArtifactView
+   * @generated
+   */
+  EClass getArtifactView();
+
+  /**
+   * Returns the meta object for the reference '{@link de.cau.cs.kieler.spviz.spviz.sPViz.ArtifactView#getView <em>View</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the reference '<em>View</em>'.
+   * @see de.cau.cs.kieler.spviz.spviz.sPViz.ArtifactView#getView()
+   * @see #getArtifactView()
+   * @generated
+   */
+  EReference getArtifactView_View();
+
+  /**
+   * Returns the meta object for the containment reference list '{@link de.cau.cs.kieler.spviz.spviz.sPViz.ArtifactView#getSources <em>Sources</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference list '<em>Sources</em>'.
+   * @see de.cau.cs.kieler.spviz.spviz.sPViz.ArtifactView#getSources()
+   * @see #getArtifactView()
+   * @generated
+   */
+  EReference getArtifactView_Sources();
+
+  /**
+   * Returns the meta object for class '{@link de.cau.cs.kieler.spviz.spviz.sPViz.ArtifactSource <em>Artifact Source</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>Artifact Source</em>'.
+   * @see de.cau.cs.kieler.spviz.spviz.sPViz.ArtifactSource
+   * @generated
+   */
+  EClass getArtifactSource();
+
+  /**
+   * Returns the meta object for the reference '{@link de.cau.cs.kieler.spviz.spviz.sPViz.ArtifactSource#getArtifact <em>Artifact</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the reference '<em>Artifact</em>'.
+   * @see de.cau.cs.kieler.spviz.spviz.sPViz.ArtifactSource#getArtifact()
+   * @see #getArtifactSource()
+   * @generated
+   */
+  EReference getArtifactSource_Artifact();
+
+  /**
+   * Returns the meta object for the containment reference '{@link de.cau.cs.kieler.spviz.spviz.sPViz.ArtifactSource#getSourceChain <em>Source Chain</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference '<em>Source Chain</em>'.
+   * @see de.cau.cs.kieler.spviz.spviz.sPViz.ArtifactSource#getSourceChain()
+   * @see #getArtifactSource()
+   * @generated
+   */
+  EReference getArtifactSource_SourceChain();
+
+  /**
+   * Returns the meta object for class '{@link de.cau.cs.kieler.spviz.spviz.sPViz.ArtifactChain <em>Artifact Chain</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for class '<em>Artifact Chain</em>'.
+   * @see de.cau.cs.kieler.spviz.spviz.sPViz.ArtifactChain
+   * @generated
+   */
+  EClass getArtifactChain();
+
+  /**
+   * Returns the meta object for the reference '{@link de.cau.cs.kieler.spviz.spviz.sPViz.ArtifactChain#getSource <em>Source</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the reference '<em>Source</em>'.
+   * @see de.cau.cs.kieler.spviz.spviz.sPViz.ArtifactChain#getSource()
+   * @see #getArtifactChain()
+   * @generated
+   */
+  EReference getArtifactChain_Source();
+
+  /**
+   * Returns the meta object for the containment reference '{@link de.cau.cs.kieler.spviz.spviz.sPViz.ArtifactChain#getFurther <em>Further</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the containment reference '<em>Further</em>'.
+   * @see de.cau.cs.kieler.spviz.spviz.sPViz.ArtifactChain#getFurther()
+   * @see #getArtifactChain()
+   * @generated
+   */
+  EReference getArtifactChain_Further();
 
   /**
    * Returns the meta object for class '{@link de.cau.cs.kieler.spviz.spviz.sPViz.ShownElement <em>Shown Element</em>}'.
@@ -475,6 +771,14 @@ public interface SPVizPackage extends EPackage
     EReference SP_VIZ__VIEWS = eINSTANCE.getSPViz_Views();
 
     /**
+     * The meta object literal for the '<em><b>Artifact Shows</b></em>' containment reference list feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference SP_VIZ__ARTIFACT_SHOWS = eINSTANCE.getSPViz_ArtifactShows();
+
+    /**
      * The meta object literal for the '{@link de.cau.cs.kieler.spviz.spviz.sPViz.impl.ViewImpl <em>View</em>}' class.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
@@ -507,6 +811,110 @@ public interface SPVizPackage extends EPackage
      * @generated
      */
     EReference VIEW__SHOWN_CONNECTIONS = eINSTANCE.getView_ShownConnections();
+
+    /**
+     * The meta object literal for the '{@link de.cau.cs.kieler.spviz.spviz.sPViz.impl.ArtifactShowsImpl <em>Artifact Shows</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see de.cau.cs.kieler.spviz.spviz.sPViz.impl.ArtifactShowsImpl
+     * @see de.cau.cs.kieler.spviz.spviz.sPViz.impl.SPVizPackageImpl#getArtifactShows()
+     * @generated
+     */
+    EClass ARTIFACT_SHOWS = eINSTANCE.getArtifactShows();
+
+    /**
+     * The meta object literal for the '<em><b>Artifact Shows</b></em>' reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference ARTIFACT_SHOWS__ARTIFACT_SHOWS = eINSTANCE.getArtifactShows_ArtifactShows();
+
+    /**
+     * The meta object literal for the '<em><b>Views</b></em>' containment reference list feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference ARTIFACT_SHOWS__VIEWS = eINSTANCE.getArtifactShows_Views();
+
+    /**
+     * The meta object literal for the '{@link de.cau.cs.kieler.spviz.spviz.sPViz.impl.ArtifactViewImpl <em>Artifact View</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see de.cau.cs.kieler.spviz.spviz.sPViz.impl.ArtifactViewImpl
+     * @see de.cau.cs.kieler.spviz.spviz.sPViz.impl.SPVizPackageImpl#getArtifactView()
+     * @generated
+     */
+    EClass ARTIFACT_VIEW = eINSTANCE.getArtifactView();
+
+    /**
+     * The meta object literal for the '<em><b>View</b></em>' reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference ARTIFACT_VIEW__VIEW = eINSTANCE.getArtifactView_View();
+
+    /**
+     * The meta object literal for the '<em><b>Sources</b></em>' containment reference list feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference ARTIFACT_VIEW__SOURCES = eINSTANCE.getArtifactView_Sources();
+
+    /**
+     * The meta object literal for the '{@link de.cau.cs.kieler.spviz.spviz.sPViz.impl.ArtifactSourceImpl <em>Artifact Source</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see de.cau.cs.kieler.spviz.spviz.sPViz.impl.ArtifactSourceImpl
+     * @see de.cau.cs.kieler.spviz.spviz.sPViz.impl.SPVizPackageImpl#getArtifactSource()
+     * @generated
+     */
+    EClass ARTIFACT_SOURCE = eINSTANCE.getArtifactSource();
+
+    /**
+     * The meta object literal for the '<em><b>Artifact</b></em>' reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference ARTIFACT_SOURCE__ARTIFACT = eINSTANCE.getArtifactSource_Artifact();
+
+    /**
+     * The meta object literal for the '<em><b>Source Chain</b></em>' containment reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference ARTIFACT_SOURCE__SOURCE_CHAIN = eINSTANCE.getArtifactSource_SourceChain();
+
+    /**
+     * The meta object literal for the '{@link de.cau.cs.kieler.spviz.spviz.sPViz.impl.ArtifactChainImpl <em>Artifact Chain</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see de.cau.cs.kieler.spviz.spviz.sPViz.impl.ArtifactChainImpl
+     * @see de.cau.cs.kieler.spviz.spviz.sPViz.impl.SPVizPackageImpl#getArtifactChain()
+     * @generated
+     */
+    EClass ARTIFACT_CHAIN = eINSTANCE.getArtifactChain();
+
+    /**
+     * The meta object literal for the '<em><b>Source</b></em>' reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference ARTIFACT_CHAIN__SOURCE = eINSTANCE.getArtifactChain_Source();
+
+    /**
+     * The meta object literal for the '<em><b>Further</b></em>' containment reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference ARTIFACT_CHAIN__FURTHER = eINSTANCE.getArtifactChain_Further();
 
     /**
      * The meta object literal for the '{@link de.cau.cs.kieler.spviz.spviz.sPViz.impl.ShownElementImpl <em>Shown Element</em>}' class.

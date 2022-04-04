@@ -3,7 +3,7 @@
  * 
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2021 by
+ * Copyright 2022 by
  * + Kiel University
  *   + Department of Computer Science
  *     + Real-Time and Embedded Systems Group
@@ -55,6 +55,42 @@ public interface SPVizFactory extends EFactory
    * @generated
    */
   View createView();
+
+  /**
+   * Returns a new object of class '<em>Artifact Shows</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>Artifact Shows</em>'.
+   * @generated
+   */
+  ArtifactShows createArtifactShows();
+
+  /**
+   * Returns a new object of class '<em>Artifact View</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>Artifact View</em>'.
+   * @generated
+   */
+  ArtifactView createArtifactView();
+
+  /**
+   * Returns a new object of class '<em>Artifact Source</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>Artifact Source</em>'.
+   * @generated
+   */
+  ArtifactSource createArtifactSource();
+
+  /**
+   * Returns a new object of class '<em>Artifact Chain</em>'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return a new object of class '<em>Artifact Chain</em>'.
+   * @generated
+   */
+  ArtifactChain createArtifactChain();
 
   /**
    * Returns a new object of class '<em>Shown Element</em>'.

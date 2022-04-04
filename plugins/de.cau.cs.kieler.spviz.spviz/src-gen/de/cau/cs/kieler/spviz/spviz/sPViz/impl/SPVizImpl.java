@@ -3,7 +3,7 @@
  * 
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2021 by
+ * Copyright 2022 by
  * + Kiel University
  *   + Department of Computer Science
  *     + Real-Time and Embedded Systems Group
@@ -18,6 +18,7 @@
  */
 package de.cau.cs.kieler.spviz.spviz.sPViz.impl;
 
+import de.cau.cs.kieler.spviz.spviz.sPViz.ArtifactShows;
 import de.cau.cs.kieler.spviz.spviz.sPViz.SPViz;
 import de.cau.cs.kieler.spviz.spviz.sPViz.SPVizPackage;
 import de.cau.cs.kieler.spviz.spviz.sPViz.View;
@@ -50,6 +51,7 @@ import org.eclipse.emf.ecore.util.InternalEList;
  *   <li>{@link de.cau.cs.kieler.spviz.spviz.sPViz.impl.SPVizImpl#getImportURI <em>Import URI</em>}</li>
  *   <li>{@link de.cau.cs.kieler.spviz.spviz.sPViz.impl.SPVizImpl#getName <em>Name</em>}</li>
  *   <li>{@link de.cau.cs.kieler.spviz.spviz.sPViz.impl.SPVizImpl#getViews <em>Views</em>}</li>
+ *   <li>{@link de.cau.cs.kieler.spviz.spviz.sPViz.impl.SPVizImpl#getArtifactShows <em>Artifact Shows</em>}</li>
  * </ul>
  *
  * @generated
@@ -125,6 +127,16 @@ public class SPVizImpl extends MinimalEObjectImpl.Container implements SPViz
    * @ordered
    */
   protected EList<View> views;
+
+  /**
+   * The cached value of the '{@link #getArtifactShows() <em>Artifact Shows</em>}' containment reference list.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see #getArtifactShows()
+   * @generated
+   * @ordered
+   */
+  protected EList<ArtifactShows> artifactShows;
 
   /**
    * <!-- begin-user-doc -->
@@ -243,12 +255,29 @@ public class SPVizImpl extends MinimalEObjectImpl.Container implements SPViz
    * @generated
    */
   @Override
+  public EList<ArtifactShows> getArtifactShows()
+  {
+    if (artifactShows == null)
+    {
+      artifactShows = new EObjectContainmentEList<ArtifactShows>(ArtifactShows.class, this, SPVizPackage.SP_VIZ__ARTIFACT_SHOWS);
+    }
+    return artifactShows;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
   public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs)
   {
     switch (featureID)
     {
       case SPVizPackage.SP_VIZ__VIEWS:
         return ((InternalEList<?>)getViews()).basicRemove(otherEnd, msgs);
+      case SPVizPackage.SP_VIZ__ARTIFACT_SHOWS:
+        return ((InternalEList<?>)getArtifactShows()).basicRemove(otherEnd, msgs);
     }
     return super.eInverseRemove(otherEnd, featureID, msgs);
   }
@@ -271,6 +300,8 @@ public class SPVizImpl extends MinimalEObjectImpl.Container implements SPViz
         return getName();
       case SPVizPackage.SP_VIZ__VIEWS:
         return getViews();
+      case SPVizPackage.SP_VIZ__ARTIFACT_SHOWS:
+        return getArtifactShows();
     }
     return super.eGet(featureID, resolve, coreType);
   }
@@ -299,6 +330,10 @@ public class SPVizImpl extends MinimalEObjectImpl.Container implements SPViz
         getViews().clear();
         getViews().addAll((Collection<? extends View>)newValue);
         return;
+      case SPVizPackage.SP_VIZ__ARTIFACT_SHOWS:
+        getArtifactShows().clear();
+        getArtifactShows().addAll((Collection<? extends ArtifactShows>)newValue);
+        return;
     }
     super.eSet(featureID, newValue);
   }
@@ -325,6 +360,9 @@ public class SPVizImpl extends MinimalEObjectImpl.Container implements SPViz
       case SPVizPackage.SP_VIZ__VIEWS:
         getViews().clear();
         return;
+      case SPVizPackage.SP_VIZ__ARTIFACT_SHOWS:
+        getArtifactShows().clear();
+        return;
     }
     super.eUnset(featureID);
   }
@@ -347,6 +385,8 @@ public class SPVizImpl extends MinimalEObjectImpl.Container implements SPViz
         return NAME_EDEFAULT == null ? name != null : !NAME_EDEFAULT.equals(name);
       case SPVizPackage.SP_VIZ__VIEWS:
         return views != null && !views.isEmpty();
+      case SPVizPackage.SP_VIZ__ARTIFACT_SHOWS:
+        return artifactShows != null && !artifactShows.isEmpty();
     }
     return super.eIsSet(featureID);
   }

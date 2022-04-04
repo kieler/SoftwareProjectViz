@@ -3,7 +3,7 @@
  * 
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2021 by
+ * Copyright 2022 by
  * + Kiel University
  *   + Department of Computer Science
  *     + Real-Time and Embedded Systems Group
@@ -35,6 +35,7 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link de.cau.cs.kieler.spviz.spviz.sPViz.SPViz#getImportURI <em>Import URI</em>}</li>
  *   <li>{@link de.cau.cs.kieler.spviz.spviz.sPViz.SPViz#getName <em>Name</em>}</li>
  *   <li>{@link de.cau.cs.kieler.spviz.spviz.sPViz.SPViz#getViews <em>Views</em>}</li>
+ *   <li>{@link de.cau.cs.kieler.spviz.spviz.sPViz.SPViz#getArtifactShows <em>Artifact Shows</em>}</li>
  * </ul>
  *
  * @see de.cau.cs.kieler.spviz.spviz.sPViz.SPVizPackage#getSPViz()
@@ -120,5 +121,17 @@ public interface SPViz extends EObject
    * @generated
    */
   EList<View> getViews();
+
+  /**
+   * Returns the value of the '<em><b>Artifact Shows</b></em>' containment reference list.
+   * The list contents are of type {@link de.cau.cs.kieler.spviz.spviz.sPViz.ArtifactShows}.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the value of the '<em>Artifact Shows</em>' containment reference list.
+   * @see de.cau.cs.kieler.spviz.spviz.sPViz.SPVizPackage#getSPViz_ArtifactShows()
+   * @model containment="true"
+   * @generated
+   */
+  EList<ArtifactShows> getArtifactShows();
 
 } // SPViz

@@ -3,7 +3,7 @@
  * 
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2021 by
+ * Copyright 2022 by
  * + Kiel University
  *   + Department of Computer Science
  *     + Real-Time and Embedded Systems Group
@@ -102,6 +102,34 @@ public class SPVizSwitch<T> extends Switch<T>
         if (result == null) result = defaultCase(theEObject);
         return result;
       }
+      case SPVizPackage.ARTIFACT_SHOWS:
+      {
+        ArtifactShows artifactShows = (ArtifactShows)theEObject;
+        T result = caseArtifactShows(artifactShows);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
+      case SPVizPackage.ARTIFACT_VIEW:
+      {
+        ArtifactView artifactView = (ArtifactView)theEObject;
+        T result = caseArtifactView(artifactView);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
+      case SPVizPackage.ARTIFACT_SOURCE:
+      {
+        ArtifactSource artifactSource = (ArtifactSource)theEObject;
+        T result = caseArtifactSource(artifactSource);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
+      case SPVizPackage.ARTIFACT_CHAIN:
+      {
+        ArtifactChain artifactChain = (ArtifactChain)theEObject;
+        T result = caseArtifactChain(artifactChain);
+        if (result == null) result = defaultCase(theEObject);
+        return result;
+      }
       case SPVizPackage.SHOWN_ELEMENT:
       {
         ShownElement shownElement = (ShownElement)theEObject;
@@ -148,6 +176,70 @@ public class SPVizSwitch<T> extends Switch<T>
    * @generated
    */
   public T caseView(View object)
+  {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Artifact Shows</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Artifact Shows</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseArtifactShows(ArtifactShows object)
+  {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Artifact View</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Artifact View</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseArtifactView(ArtifactView object)
+  {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Artifact Source</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Artifact Source</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseArtifactSource(ArtifactSource object)
+  {
+    return null;
+  }
+
+  /**
+   * Returns the result of interpreting the object as an instance of '<em>Artifact Chain</em>'.
+   * <!-- begin-user-doc -->
+   * This implementation returns null;
+   * returning a non-null result will terminate the switch.
+   * <!-- end-user-doc -->
+   * @param object the target of the switch.
+   * @return the result of interpreting the object as an instance of '<em>Artifact Chain</em>'.
+   * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
+   * @generated
+   */
+  public T caseArtifactChain(ArtifactChain object)
   {
     return null;
   }

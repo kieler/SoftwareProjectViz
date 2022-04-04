@@ -8,6 +8,8 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="views" upperBound="-1"
         eType="#//View" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="artifactShows" upperBound="-1"
+        eType="#//ArtifactShows" containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="View">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
@@ -15,6 +17,26 @@
         eType="#//ShownElement" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="shownConnections" upperBound="-1"
         eType="#//ShownConnection" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ArtifactShows">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="artifactShows" eType="ecore:EClass platform:/resource/de.cau.cs.kieler.spviz.spvizmodel/model/generated/SPVizModel.ecore#//Artifact"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="views" upperBound="-1"
+        eType="#//ArtifactView" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ArtifactView">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="view" eType="#//View"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="sources" upperBound="-1"
+        eType="#//ArtifactSource" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ArtifactSource">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="artifact" eType="ecore:EClass platform:/resource/de.cau.cs.kieler.spviz.spvizmodel/model/generated/SPVizModel.ecore#//Artifact"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="sourceChain" eType="#//ArtifactChain"
+        containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ArtifactChain">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="source" eType="ecore:EClass platform:/resource/de.cau.cs.kieler.spviz.spvizmodel/model/generated/SPVizModel.ecore#//Artifact"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="further" eType="#//ArtifactChain"
+        containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="ShownElement">
     <eStructuralFeatures xsi:type="ecore:EReference" name="shownElement" eType="ecore:EClass platform:/resource/de.cau.cs.kieler.spviz.spvizmodel/model/generated/SPVizModel.ecore#//Artifact"/>

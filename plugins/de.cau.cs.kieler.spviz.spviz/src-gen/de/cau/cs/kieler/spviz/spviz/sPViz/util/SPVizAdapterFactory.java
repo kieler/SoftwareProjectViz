@@ -3,7 +3,7 @@
  * 
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2021 by
+ * Copyright 2022 by
  * + Kiel University
  *   + Department of Computer Science
  *     + Real-Time and Embedded Systems Group
@@ -101,6 +101,26 @@ public class SPVizAdapterFactory extends AdapterFactoryImpl
         return createViewAdapter();
       }
       @Override
+      public Adapter caseArtifactShows(ArtifactShows object)
+      {
+        return createArtifactShowsAdapter();
+      }
+      @Override
+      public Adapter caseArtifactView(ArtifactView object)
+      {
+        return createArtifactViewAdapter();
+      }
+      @Override
+      public Adapter caseArtifactSource(ArtifactSource object)
+      {
+        return createArtifactSourceAdapter();
+      }
+      @Override
+      public Adapter caseArtifactChain(ArtifactChain object)
+      {
+        return createArtifactChainAdapter();
+      }
+      @Override
       public Adapter caseShownElement(ShownElement object)
       {
         return createShownElementAdapter();
@@ -158,6 +178,66 @@ public class SPVizAdapterFactory extends AdapterFactoryImpl
    * @generated
    */
   public Adapter createViewAdapter()
+  {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link de.cau.cs.kieler.spviz.spviz.sPViz.ArtifactShows <em>Artifact Shows</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see de.cau.cs.kieler.spviz.spviz.sPViz.ArtifactShows
+   * @generated
+   */
+  public Adapter createArtifactShowsAdapter()
+  {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link de.cau.cs.kieler.spviz.spviz.sPViz.ArtifactView <em>Artifact View</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see de.cau.cs.kieler.spviz.spviz.sPViz.ArtifactView
+   * @generated
+   */
+  public Adapter createArtifactViewAdapter()
+  {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link de.cau.cs.kieler.spviz.spviz.sPViz.ArtifactSource <em>Artifact Source</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see de.cau.cs.kieler.spviz.spviz.sPViz.ArtifactSource
+   * @generated
+   */
+  public Adapter createArtifactSourceAdapter()
+  {
+    return null;
+  }
+
+  /**
+   * Creates a new adapter for an object of class '{@link de.cau.cs.kieler.spviz.spviz.sPViz.ArtifactChain <em>Artifact Chain</em>}'.
+   * <!-- begin-user-doc -->
+   * This default implementation returns null so that we can easily ignore cases;
+   * it's useful to ignore a case when inheritance will catch all the cases anyway.
+   * <!-- end-user-doc -->
+   * @return the new adapter.
+   * @see de.cau.cs.kieler.spviz.spviz.sPViz.ArtifactChain
+   * @generated
+   */
+  public Adapter createArtifactChainAdapter()
   {
     return null;
   }

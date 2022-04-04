@@ -3,7 +3,7 @@
  * 
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2021 by
+ * Copyright 2022 by
  * + Kiel University
  *   + Department of Computer Science
  *     + Real-Time and Embedded Systems Group
@@ -18,6 +18,10 @@
  */
 package de.cau.cs.kieler.spviz.spviz.sPViz.impl;
 
+import de.cau.cs.kieler.spviz.spviz.sPViz.ArtifactChain;
+import de.cau.cs.kieler.spviz.spviz.sPViz.ArtifactShows;
+import de.cau.cs.kieler.spviz.spviz.sPViz.ArtifactSource;
+import de.cau.cs.kieler.spviz.spviz.sPViz.ArtifactView;
 import de.cau.cs.kieler.spviz.spviz.sPViz.SPViz;
 import de.cau.cs.kieler.spviz.spviz.sPViz.SPVizFactory;
 import de.cau.cs.kieler.spviz.spviz.sPViz.SPVizPackage;
@@ -55,6 +59,34 @@ public class SPVizPackageImpl extends EPackageImpl implements SPVizPackage
    * @generated
    */
   private EClass viewEClass = null;
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  private EClass artifactShowsEClass = null;
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  private EClass artifactViewEClass = null;
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  private EClass artifactSourceEClass = null;
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  private EClass artifactChainEClass = null;
 
   /**
    * <!-- begin-user-doc -->
@@ -197,6 +229,17 @@ public class SPVizPackageImpl extends EPackageImpl implements SPVizPackage
    * @generated
    */
   @Override
+  public EReference getSPViz_ArtifactShows()
+  {
+    return (EReference)spVizEClass.getEStructuralFeatures().get(4);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
   public EClass getView()
   {
     return viewEClass;
@@ -233,6 +276,138 @@ public class SPVizPackageImpl extends EPackageImpl implements SPVizPackage
   public EReference getView_ShownConnections()
   {
     return (EReference)viewEClass.getEStructuralFeatures().get(2);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public EClass getArtifactShows()
+  {
+    return artifactShowsEClass;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public EReference getArtifactShows_ArtifactShows()
+  {
+    return (EReference)artifactShowsEClass.getEStructuralFeatures().get(0);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public EReference getArtifactShows_Views()
+  {
+    return (EReference)artifactShowsEClass.getEStructuralFeatures().get(1);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public EClass getArtifactView()
+  {
+    return artifactViewEClass;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public EReference getArtifactView_View()
+  {
+    return (EReference)artifactViewEClass.getEStructuralFeatures().get(0);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public EReference getArtifactView_Sources()
+  {
+    return (EReference)artifactViewEClass.getEStructuralFeatures().get(1);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public EClass getArtifactSource()
+  {
+    return artifactSourceEClass;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public EReference getArtifactSource_Artifact()
+  {
+    return (EReference)artifactSourceEClass.getEStructuralFeatures().get(0);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public EReference getArtifactSource_SourceChain()
+  {
+    return (EReference)artifactSourceEClass.getEStructuralFeatures().get(1);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public EClass getArtifactChain()
+  {
+    return artifactChainEClass;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public EReference getArtifactChain_Source()
+  {
+    return (EReference)artifactChainEClass.getEStructuralFeatures().get(0);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public EReference getArtifactChain_Further()
+  {
+    return (EReference)artifactChainEClass.getEStructuralFeatures().get(1);
   }
 
   /**
@@ -337,11 +512,28 @@ public class SPVizPackageImpl extends EPackageImpl implements SPVizPackage
     createEAttribute(spVizEClass, SP_VIZ__IMPORT_URI);
     createEAttribute(spVizEClass, SP_VIZ__NAME);
     createEReference(spVizEClass, SP_VIZ__VIEWS);
+    createEReference(spVizEClass, SP_VIZ__ARTIFACT_SHOWS);
 
     viewEClass = createEClass(VIEW);
     createEAttribute(viewEClass, VIEW__NAME);
     createEReference(viewEClass, VIEW__SHOWN_ELEMENTS);
     createEReference(viewEClass, VIEW__SHOWN_CONNECTIONS);
+
+    artifactShowsEClass = createEClass(ARTIFACT_SHOWS);
+    createEReference(artifactShowsEClass, ARTIFACT_SHOWS__ARTIFACT_SHOWS);
+    createEReference(artifactShowsEClass, ARTIFACT_SHOWS__VIEWS);
+
+    artifactViewEClass = createEClass(ARTIFACT_VIEW);
+    createEReference(artifactViewEClass, ARTIFACT_VIEW__VIEW);
+    createEReference(artifactViewEClass, ARTIFACT_VIEW__SOURCES);
+
+    artifactSourceEClass = createEClass(ARTIFACT_SOURCE);
+    createEReference(artifactSourceEClass, ARTIFACT_SOURCE__ARTIFACT);
+    createEReference(artifactSourceEClass, ARTIFACT_SOURCE__SOURCE_CHAIN);
+
+    artifactChainEClass = createEClass(ARTIFACT_CHAIN);
+    createEReference(artifactChainEClass, ARTIFACT_CHAIN__SOURCE);
+    createEReference(artifactChainEClass, ARTIFACT_CHAIN__FURTHER);
 
     shownElementEClass = createEClass(SHOWN_ELEMENT);
     createEReference(shownElementEClass, SHOWN_ELEMENT__SHOWN_ELEMENT);
@@ -391,11 +583,28 @@ public class SPVizPackageImpl extends EPackageImpl implements SPVizPackage
     initEAttribute(getSPViz_ImportURI(), ecorePackage.getEString(), "importURI", null, 0, 1, SPViz.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEAttribute(getSPViz_Name(), ecorePackage.getEString(), "name", null, 0, 1, SPViz.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEReference(getSPViz_Views(), this.getView(), null, "views", null, 0, -1, SPViz.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getSPViz_ArtifactShows(), this.getArtifactShows(), null, "artifactShows", null, 0, -1, SPViz.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
     initEClass(viewEClass, View.class, "View", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
     initEAttribute(getView_Name(), ecorePackage.getEString(), "name", null, 0, 1, View.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEReference(getView_ShownElements(), this.getShownElement(), null, "shownElements", null, 0, -1, View.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEReference(getView_ShownConnections(), this.getShownConnection(), null, "shownConnections", null, 0, -1, View.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+    initEClass(artifactShowsEClass, ArtifactShows.class, "ArtifactShows", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+    initEReference(getArtifactShows_ArtifactShows(), theSPVizModelPackage.getArtifact(), null, "artifactShows", null, 0, 1, ArtifactShows.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getArtifactShows_Views(), this.getArtifactView(), null, "views", null, 0, -1, ArtifactShows.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+    initEClass(artifactViewEClass, ArtifactView.class, "ArtifactView", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+    initEReference(getArtifactView_View(), this.getView(), null, "view", null, 0, 1, ArtifactView.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getArtifactView_Sources(), this.getArtifactSource(), null, "sources", null, 0, -1, ArtifactView.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+    initEClass(artifactSourceEClass, ArtifactSource.class, "ArtifactSource", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+    initEReference(getArtifactSource_Artifact(), theSPVizModelPackage.getArtifact(), null, "artifact", null, 0, 1, ArtifactSource.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getArtifactSource_SourceChain(), this.getArtifactChain(), null, "sourceChain", null, 0, 1, ArtifactSource.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+
+    initEClass(artifactChainEClass, ArtifactChain.class, "ArtifactChain", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+    initEReference(getArtifactChain_Source(), theSPVizModelPackage.getArtifact(), null, "source", null, 0, 1, ArtifactChain.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getArtifactChain_Further(), this.getArtifactChain(), null, "further", null, 0, 1, ArtifactChain.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
     initEClass(shownElementEClass, ShownElement.class, "ShownElement", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
     initEReference(getShownElement_ShownElement(), theSPVizModelPackage.getArtifact(), null, "shownElement", null, 0, 1, ShownElement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);

@@ -3,7 +3,7 @@
  * 
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2021 by
+ * Copyright 2022 by
  * + Kiel University
  *   + Department of Computer Science
  *     + Real-Time and Embedded Systems Group
@@ -82,6 +82,10 @@ public class SPVizFactoryImpl extends EFactoryImpl implements SPVizFactory
     {
       case SPVizPackage.SP_VIZ: return createSPViz();
       case SPVizPackage.VIEW: return createView();
+      case SPVizPackage.ARTIFACT_SHOWS: return createArtifactShows();
+      case SPVizPackage.ARTIFACT_VIEW: return createArtifactView();
+      case SPVizPackage.ARTIFACT_SOURCE: return createArtifactSource();
+      case SPVizPackage.ARTIFACT_CHAIN: return createArtifactChain();
       case SPVizPackage.SHOWN_ELEMENT: return createShownElement();
       case SPVizPackage.SHOWN_CONNECTION: return createShownConnection();
       default:
@@ -111,6 +115,54 @@ public class SPVizFactoryImpl extends EFactoryImpl implements SPVizFactory
   {
     ViewImpl view = new ViewImpl();
     return view;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public ArtifactShows createArtifactShows()
+  {
+    ArtifactShowsImpl artifactShows = new ArtifactShowsImpl();
+    return artifactShows;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public ArtifactView createArtifactView()
+  {
+    ArtifactViewImpl artifactView = new ArtifactViewImpl();
+    return artifactView;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public ArtifactSource createArtifactSource()
+  {
+    ArtifactSourceImpl artifactSource = new ArtifactSourceImpl();
+    return artifactSource;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public ArtifactChain createArtifactChain()
+  {
+    ArtifactChainImpl artifactChain = new ArtifactChainImpl();
+    return artifactChain;
   }
 
   /**

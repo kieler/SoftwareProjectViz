@@ -3,7 +3,7 @@
  *
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2021 by
+ * Copyright 2022 by
  * + Kiel University
  *   + Department of Computer Science
  *     + Real-Time and Embedded Systems Group
@@ -19,6 +19,10 @@
 package de.cau.cs.kieler.spviz.spviz.serializer;
 
 import com.google.inject.Inject;
+import de.cau.cs.kieler.spviz.spviz.sPViz.ArtifactChain;
+import de.cau.cs.kieler.spviz.spviz.sPViz.ArtifactShows;
+import de.cau.cs.kieler.spviz.spviz.sPViz.ArtifactSource;
+import de.cau.cs.kieler.spviz.spviz.sPViz.ArtifactView;
 import de.cau.cs.kieler.spviz.spviz.sPViz.SPViz;
 import de.cau.cs.kieler.spviz.spviz.sPViz.SPVizPackage;
 import de.cau.cs.kieler.spviz.spviz.sPViz.ShownConnection;
@@ -32,7 +36,9 @@ import org.eclipse.xtext.Action;
 import org.eclipse.xtext.Parameter;
 import org.eclipse.xtext.ParserRule;
 import org.eclipse.xtext.serializer.ISerializationContext;
+import org.eclipse.xtext.serializer.acceptor.SequenceFeeder;
 import org.eclipse.xtext.serializer.sequencer.AbstractDelegatingSemanticSequencer;
+import org.eclipse.xtext.serializer.sequencer.ITransientValueService.ValueTransient;
 
 @SuppressWarnings("all")
 public class SPVizSemanticSequencer extends AbstractDelegatingSemanticSequencer {
@@ -48,6 +54,18 @@ public class SPVizSemanticSequencer extends AbstractDelegatingSemanticSequencer 
 		Set<Parameter> parameters = context.getEnabledBooleanParameters();
 		if (epackage == SPVizPackage.eINSTANCE)
 			switch (semanticObject.eClass().getClassifierID()) {
+			case SPVizPackage.ARTIFACT_CHAIN:
+				sequence_ArtifactChain(context, (ArtifactChain) semanticObject); 
+				return; 
+			case SPVizPackage.ARTIFACT_SHOWS:
+				sequence_ArtifactShows(context, (ArtifactShows) semanticObject); 
+				return; 
+			case SPVizPackage.ARTIFACT_SOURCE:
+				sequence_ArtifactSource(context, (ArtifactSource) semanticObject); 
+				return; 
+			case SPVizPackage.ARTIFACT_VIEW:
+				sequence_ArtifactView(context, (ArtifactView) semanticObject); 
+				return; 
 			case SPVizPackage.SP_VIZ:
 				sequence_SPViz(context, (SPViz) semanticObject); 
 				return; 
@@ -67,10 +85,67 @@ public class SPVizSemanticSequencer extends AbstractDelegatingSemanticSequencer 
 	
 	/**
 	 * Contexts:
+	 *     ArtifactChain returns ArtifactChain
+	 *
+	 * Constraint:
+	 *     (source=[Artifact|QualifiedName] further=ArtifactChain?)
+	 */
+	protected void sequence_ArtifactChain(ISerializationContext context, ArtifactChain semanticObject) {
+		genericSequencer.createSequence(context, semanticObject);
+	}
+	
+	
+	/**
+	 * Contexts:
+	 *     ArtifactShows returns ArtifactShows
+	 *
+	 * Constraint:
+	 *     (artifactShows=[Artifact|QualifiedName] views+=ArtifactView*)
+	 */
+	protected void sequence_ArtifactShows(ISerializationContext context, ArtifactShows semanticObject) {
+		genericSequencer.createSequence(context, semanticObject);
+	}
+	
+	
+	/**
+	 * Contexts:
+	 *     ArtifactSource returns ArtifactSource
+	 *
+	 * Constraint:
+	 *     (artifact=[Artifact|QualifiedName] sourceChain=ArtifactChain)
+	 */
+	protected void sequence_ArtifactSource(ISerializationContext context, ArtifactSource semanticObject) {
+		if (errorAcceptor != null) {
+			if (transientValues.isValueTransient(semanticObject, SPVizPackage.Literals.ARTIFACT_SOURCE__ARTIFACT) == ValueTransient.YES)
+				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, SPVizPackage.Literals.ARTIFACT_SOURCE__ARTIFACT));
+			if (transientValues.isValueTransient(semanticObject, SPVizPackage.Literals.ARTIFACT_SOURCE__SOURCE_CHAIN) == ValueTransient.YES)
+				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, SPVizPackage.Literals.ARTIFACT_SOURCE__SOURCE_CHAIN));
+		}
+		SequenceFeeder feeder = createSequencerFeeder(context, semanticObject);
+		feeder.accept(grammarAccess.getArtifactSourceAccess().getArtifactArtifactQualifiedNameParserRuleCall_0_0_1(), semanticObject.eGet(SPVizPackage.Literals.ARTIFACT_SOURCE__ARTIFACT, false));
+		feeder.accept(grammarAccess.getArtifactSourceAccess().getSourceChainArtifactChainParserRuleCall_2_0(), semanticObject.getSourceChain());
+		feeder.finish();
+	}
+	
+	
+	/**
+	 * Contexts:
+	 *     ArtifactView returns ArtifactView
+	 *
+	 * Constraint:
+	 *     (view=[View|ID] sources+=ArtifactSource*)
+	 */
+	protected void sequence_ArtifactView(ISerializationContext context, ArtifactView semanticObject) {
+		genericSequencer.createSequence(context, semanticObject);
+	}
+	
+	
+	/**
+	 * Contexts:
 	 *     SPViz returns SPViz
 	 *
 	 * Constraint:
-	 *     (package=QualifiedName importURI=STRING name=ID views+=View*)
+	 *     (package=QualifiedName importURI=STRING name=ID views+=View* artifactShows+=ArtifactShows*)
 	 */
 	protected void sequence_SPViz(ISerializationContext context, SPViz semanticObject) {
 		genericSequencer.createSequence(context, semanticObject);

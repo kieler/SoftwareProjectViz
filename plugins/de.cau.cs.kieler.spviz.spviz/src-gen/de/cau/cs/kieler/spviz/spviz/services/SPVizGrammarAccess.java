@@ -3,7 +3,7 @@
  *
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2021 by
+ * Copyright 2022 by
  * + Kiel University
  *   + Department of Computer Science
  *     + Real-Time and Embedded Systems Group
@@ -52,13 +52,16 @@ public class SPVizGrammarAccess extends AbstractElementFinder.AbstractGrammarEle
 		private final Keyword cLeftCurlyBracketKeyword_6 = (Keyword)cGroup.eContents().get(6);
 		private final Assignment cViewsAssignment_7 = (Assignment)cGroup.eContents().get(7);
 		private final RuleCall cViewsViewParserRuleCall_7_0 = (RuleCall)cViewsAssignment_7.eContents().get(0);
-		private final Keyword cRightCurlyBracketKeyword_8 = (Keyword)cGroup.eContents().get(8);
+		private final Assignment cArtifactShowsAssignment_8 = (Assignment)cGroup.eContents().get(8);
+		private final RuleCall cArtifactShowsArtifactShowsParserRuleCall_8_0 = (RuleCall)cArtifactShowsAssignment_8.eContents().get(0);
+		private final Keyword cRightCurlyBracketKeyword_9 = (Keyword)cGroup.eContents().get(9);
 		
-		//SPViz returns SPViz:
+		//SPViz:
 		//    'package' package=QualifiedName
 		//    'import' importURI=STRING
 		//    'SPViz' name=ID '{'
 		//        views += View*
+		//        artifactShows += ArtifactShows*
 		//    '}'
 		//;
 		@Override public ParserRule getRule() { return rule; }
@@ -67,6 +70,7 @@ public class SPVizGrammarAccess extends AbstractElementFinder.AbstractGrammarEle
 		//'import' importURI=STRING
 		//'SPViz' name=ID '{'
 		//    views += View*
+		//    artifactShows += ArtifactShows*
 		//'}'
 		public Group getGroup() { return cGroup; }
 		
@@ -106,8 +110,14 @@ public class SPVizGrammarAccess extends AbstractElementFinder.AbstractGrammarEle
 		//View
 		public RuleCall getViewsViewParserRuleCall_7_0() { return cViewsViewParserRuleCall_7_0; }
 		
+		//artifactShows += ArtifactShows*
+		public Assignment getArtifactShowsAssignment_8() { return cArtifactShowsAssignment_8; }
+		
+		//ArtifactShows
+		public RuleCall getArtifactShowsArtifactShowsParserRuleCall_8_0() { return cArtifactShowsArtifactShowsParserRuleCall_8_0; }
+		
 		//'}'
-		public Keyword getRightCurlyBracketKeyword_8() { return cRightCurlyBracketKeyword_8; }
+		public Keyword getRightCurlyBracketKeyword_9() { return cRightCurlyBracketKeyword_9; }
 	}
 	public class ViewElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "de.cau.cs.kieler.spviz.spviz.SPViz.View");
@@ -121,7 +131,7 @@ public class SPVizGrammarAccess extends AbstractElementFinder.AbstractGrammarEle
 		private final RuleCall cShownConnectionsShownConnectionParserRuleCall_3_0 = (RuleCall)cShownConnectionsAssignment_3.eContents().get(0);
 		private final Keyword cRightCurlyBracketKeyword_4 = (Keyword)cGroup.eContents().get(4);
 		
-		//View returns View:
+		//View:
 		//    name=ID '{'
 		//        shownElements+=ShownElement*
 		//        shownConnections+=ShownConnection*
@@ -159,6 +169,180 @@ public class SPVizGrammarAccess extends AbstractElementFinder.AbstractGrammarEle
 		//'}'
 		public Keyword getRightCurlyBracketKeyword_4() { return cRightCurlyBracketKeyword_4; }
 	}
+	public class ArtifactShowsElements extends AbstractParserRuleElementFinder {
+		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "de.cau.cs.kieler.spviz.spviz.SPViz.ArtifactShows");
+		private final Group cGroup = (Group)rule.eContents().get(1);
+		private final Assignment cArtifactShowsAssignment_0 = (Assignment)cGroup.eContents().get(0);
+		private final CrossReference cArtifactShowsArtifactCrossReference_0_0 = (CrossReference)cArtifactShowsAssignment_0.eContents().get(0);
+		private final RuleCall cArtifactShowsArtifactQualifiedNameParserRuleCall_0_0_1 = (RuleCall)cArtifactShowsArtifactCrossReference_0_0.eContents().get(1);
+		private final Keyword cShowsKeyword_1 = (Keyword)cGroup.eContents().get(1);
+		private final Keyword cLeftCurlyBracketKeyword_2 = (Keyword)cGroup.eContents().get(2);
+		private final Assignment cViewsAssignment_3 = (Assignment)cGroup.eContents().get(3);
+		private final RuleCall cViewsArtifactViewParserRuleCall_3_0 = (RuleCall)cViewsAssignment_3.eContents().get(0);
+		private final Keyword cRightCurlyBracketKeyword_4 = (Keyword)cGroup.eContents().get(4);
+		
+		//ArtifactShows:
+		//    artifactShows=[spvizmodel::Artifact|QualifiedName] 'shows' '{'
+		//        views += ArtifactView*
+		//    '}'
+		//;
+		@Override public ParserRule getRule() { return rule; }
+		
+		//artifactShows=[spvizmodel::Artifact|QualifiedName] 'shows' '{'
+		//    views += ArtifactView*
+		//'}'
+		public Group getGroup() { return cGroup; }
+		
+		//artifactShows=[spvizmodel::Artifact|QualifiedName]
+		public Assignment getArtifactShowsAssignment_0() { return cArtifactShowsAssignment_0; }
+		
+		//[spvizmodel::Artifact|QualifiedName]
+		public CrossReference getArtifactShowsArtifactCrossReference_0_0() { return cArtifactShowsArtifactCrossReference_0_0; }
+		
+		//QualifiedName
+		public RuleCall getArtifactShowsArtifactQualifiedNameParserRuleCall_0_0_1() { return cArtifactShowsArtifactQualifiedNameParserRuleCall_0_0_1; }
+		
+		//'shows'
+		public Keyword getShowsKeyword_1() { return cShowsKeyword_1; }
+		
+		//'{'
+		public Keyword getLeftCurlyBracketKeyword_2() { return cLeftCurlyBracketKeyword_2; }
+		
+		//views += ArtifactView*
+		public Assignment getViewsAssignment_3() { return cViewsAssignment_3; }
+		
+		//ArtifactView
+		public RuleCall getViewsArtifactViewParserRuleCall_3_0() { return cViewsArtifactViewParserRuleCall_3_0; }
+		
+		//'}'
+		public Keyword getRightCurlyBracketKeyword_4() { return cRightCurlyBracketKeyword_4; }
+	}
+	public class ArtifactViewElements extends AbstractParserRuleElementFinder {
+		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "de.cau.cs.kieler.spviz.spviz.SPViz.ArtifactView");
+		private final Group cGroup = (Group)rule.eContents().get(1);
+		private final Assignment cViewAssignment_0 = (Assignment)cGroup.eContents().get(0);
+		private final CrossReference cViewViewCrossReference_0_0 = (CrossReference)cViewAssignment_0.eContents().get(0);
+		private final RuleCall cViewViewIDTerminalRuleCall_0_0_1 = (RuleCall)cViewViewCrossReference_0_0.eContents().get(1);
+		private final Keyword cWithKeyword_1 = (Keyword)cGroup.eContents().get(1);
+		private final Keyword cLeftCurlyBracketKeyword_2 = (Keyword)cGroup.eContents().get(2);
+		private final Assignment cSourcesAssignment_3 = (Assignment)cGroup.eContents().get(3);
+		private final RuleCall cSourcesArtifactSourceParserRuleCall_3_0 = (RuleCall)cSourcesAssignment_3.eContents().get(0);
+		private final Keyword cRightCurlyBracketKeyword_4 = (Keyword)cGroup.eContents().get(4);
+		
+		//ArtifactView:
+		//    view = [View] 'with' '{'
+		//        sources += ArtifactSource*
+		//    '}'
+		//;
+		@Override public ParserRule getRule() { return rule; }
+		
+		//view = [View] 'with' '{'
+		//    sources += ArtifactSource*
+		//'}'
+		public Group getGroup() { return cGroup; }
+		
+		//view = [View]
+		public Assignment getViewAssignment_0() { return cViewAssignment_0; }
+		
+		//[View]
+		public CrossReference getViewViewCrossReference_0_0() { return cViewViewCrossReference_0_0; }
+		
+		//ID
+		public RuleCall getViewViewIDTerminalRuleCall_0_0_1() { return cViewViewIDTerminalRuleCall_0_0_1; }
+		
+		//'with'
+		public Keyword getWithKeyword_1() { return cWithKeyword_1; }
+		
+		//'{'
+		public Keyword getLeftCurlyBracketKeyword_2() { return cLeftCurlyBracketKeyword_2; }
+		
+		//sources += ArtifactSource*
+		public Assignment getSourcesAssignment_3() { return cSourcesAssignment_3; }
+		
+		//ArtifactSource
+		public RuleCall getSourcesArtifactSourceParserRuleCall_3_0() { return cSourcesArtifactSourceParserRuleCall_3_0; }
+		
+		//'}'
+		public Keyword getRightCurlyBracketKeyword_4() { return cRightCurlyBracketKeyword_4; }
+	}
+	public class ArtifactSourceElements extends AbstractParserRuleElementFinder {
+		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "de.cau.cs.kieler.spviz.spviz.SPViz.ArtifactSource");
+		private final Group cGroup = (Group)rule.eContents().get(1);
+		private final Assignment cArtifactAssignment_0 = (Assignment)cGroup.eContents().get(0);
+		private final CrossReference cArtifactArtifactCrossReference_0_0 = (CrossReference)cArtifactAssignment_0.eContents().get(0);
+		private final RuleCall cArtifactArtifactQualifiedNameParserRuleCall_0_0_1 = (RuleCall)cArtifactArtifactCrossReference_0_0.eContents().get(1);
+		private final Keyword cFromKeyword_1 = (Keyword)cGroup.eContents().get(1);
+		private final Assignment cSourceChainAssignment_2 = (Assignment)cGroup.eContents().get(2);
+		private final RuleCall cSourceChainArtifactChainParserRuleCall_2_0 = (RuleCall)cSourceChainAssignment_2.eContents().get(0);
+		
+		//ArtifactSource:
+		//    artifact = [spvizmodel::Artifact|QualifiedName]
+		//    'from' sourceChain = ArtifactChain
+		//;
+		@Override public ParserRule getRule() { return rule; }
+		
+		//artifact = [spvizmodel::Artifact|QualifiedName]
+		//'from' sourceChain = ArtifactChain
+		public Group getGroup() { return cGroup; }
+		
+		//artifact = [spvizmodel::Artifact|QualifiedName]
+		public Assignment getArtifactAssignment_0() { return cArtifactAssignment_0; }
+		
+		//[spvizmodel::Artifact|QualifiedName]
+		public CrossReference getArtifactArtifactCrossReference_0_0() { return cArtifactArtifactCrossReference_0_0; }
+		
+		//QualifiedName
+		public RuleCall getArtifactArtifactQualifiedNameParserRuleCall_0_0_1() { return cArtifactArtifactQualifiedNameParserRuleCall_0_0_1; }
+		
+		//'from'
+		public Keyword getFromKeyword_1() { return cFromKeyword_1; }
+		
+		//sourceChain = ArtifactChain
+		public Assignment getSourceChainAssignment_2() { return cSourceChainAssignment_2; }
+		
+		//ArtifactChain
+		public RuleCall getSourceChainArtifactChainParserRuleCall_2_0() { return cSourceChainArtifactChainParserRuleCall_2_0; }
+	}
+	public class ArtifactChainElements extends AbstractParserRuleElementFinder {
+		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "de.cau.cs.kieler.spviz.spviz.SPViz.ArtifactChain");
+		private final Group cGroup = (Group)rule.eContents().get(1);
+		private final Assignment cSourceAssignment_0 = (Assignment)cGroup.eContents().get(0);
+		private final CrossReference cSourceArtifactCrossReference_0_0 = (CrossReference)cSourceAssignment_0.eContents().get(0);
+		private final RuleCall cSourceArtifactQualifiedNameParserRuleCall_0_0_1 = (RuleCall)cSourceArtifactCrossReference_0_0.eContents().get(1);
+		private final Group cGroup_1 = (Group)cGroup.eContents().get(1);
+		private final Keyword cGreaterThanSignKeyword_1_0 = (Keyword)cGroup_1.eContents().get(0);
+		private final Assignment cFurtherAssignment_1_1 = (Assignment)cGroup_1.eContents().get(1);
+		private final RuleCall cFurtherArtifactChainParserRuleCall_1_1_0 = (RuleCall)cFurtherAssignment_1_1.eContents().get(0);
+		
+		//ArtifactChain:
+		//    source = [spvizmodel::Artifact|QualifiedName] ('>' further = ArtifactChain)?
+		//;
+		@Override public ParserRule getRule() { return rule; }
+		
+		//source = [spvizmodel::Artifact|QualifiedName] ('>' further = ArtifactChain)?
+		public Group getGroup() { return cGroup; }
+		
+		//source = [spvizmodel::Artifact|QualifiedName]
+		public Assignment getSourceAssignment_0() { return cSourceAssignment_0; }
+		
+		//[spvizmodel::Artifact|QualifiedName]
+		public CrossReference getSourceArtifactCrossReference_0_0() { return cSourceArtifactCrossReference_0_0; }
+		
+		//QualifiedName
+		public RuleCall getSourceArtifactQualifiedNameParserRuleCall_0_0_1() { return cSourceArtifactQualifiedNameParserRuleCall_0_0_1; }
+		
+		//('>' further = ArtifactChain)?
+		public Group getGroup_1() { return cGroup_1; }
+		
+		//'>'
+		public Keyword getGreaterThanSignKeyword_1_0() { return cGreaterThanSignKeyword_1_0; }
+		
+		//further = ArtifactChain
+		public Assignment getFurtherAssignment_1_1() { return cFurtherAssignment_1_1; }
+		
+		//ArtifactChain
+		public RuleCall getFurtherArtifactChainParserRuleCall_1_1_0() { return cFurtherArtifactChainParserRuleCall_1_1_0; }
+	}
 	public class ShownElementElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "de.cau.cs.kieler.spviz.spviz.SPViz.ShownElement");
 		private final Group cGroup = (Group)rule.eContents().get(1);
@@ -172,7 +356,7 @@ public class SPVizGrammarAccess extends AbstractElementFinder.AbstractGrammarEle
 		private final CrossReference cContainedInArtifactCrossReference_2_1_0 = (CrossReference)cContainedInAssignment_2_1.eContents().get(0);
 		private final RuleCall cContainedInArtifactQualifiedNameParserRuleCall_2_1_0_1 = (RuleCall)cContainedInArtifactCrossReference_2_1_0.eContents().get(1);
 		
-		//ShownElement returns ShownElement:
+		//ShownElement:
 		//    'show' shownElement=[spvizmodel::Artifact|QualifiedName]
 		//    (
 		//        'in' containedIn=[spvizmodel::Artifact|QualifiedName]
@@ -228,7 +412,7 @@ public class SPVizGrammarAccess extends AbstractElementFinder.AbstractGrammarEle
 		private final CrossReference cViaArtifactCrossReference_2_1_0 = (CrossReference)cViaAssignment_2_1.eContents().get(0);
 		private final RuleCall cViaArtifactQualifiedNameParserRuleCall_2_1_0_1 = (RuleCall)cViaArtifactCrossReference_2_1_0.eContents().get(1);
 		
-		//ShownConnection returns ShownConnection:
+		//ShownConnection:
 		//    'connect' shownConnection=[spvizmodel::Connection|QualifiedName]
 		//    (
 		//        'via' via=[spvizmodel::Artifact|QualifiedName]
@@ -303,6 +487,10 @@ public class SPVizGrammarAccess extends AbstractElementFinder.AbstractGrammarEle
 	
 	private final SPVizElements pSPViz;
 	private final ViewElements pView;
+	private final ArtifactShowsElements pArtifactShows;
+	private final ArtifactViewElements pArtifactView;
+	private final ArtifactSourceElements pArtifactSource;
+	private final ArtifactChainElements pArtifactChain;
 	private final ShownElementElements pShownElement;
 	private final ShownConnectionElements pShownConnection;
 	private final QualifiedNameElements pQualifiedName;
@@ -318,6 +506,10 @@ public class SPVizGrammarAccess extends AbstractElementFinder.AbstractGrammarEle
 		this.gaTerminals = gaTerminals;
 		this.pSPViz = new SPVizElements();
 		this.pView = new ViewElements();
+		this.pArtifactShows = new ArtifactShowsElements();
+		this.pArtifactView = new ArtifactViewElements();
+		this.pArtifactSource = new ArtifactSourceElements();
+		this.pArtifactChain = new ArtifactChainElements();
 		this.pShownElement = new ShownElementElements();
 		this.pShownConnection = new ShownConnectionElements();
 		this.pQualifiedName = new QualifiedNameElements();
@@ -350,11 +542,12 @@ public class SPVizGrammarAccess extends AbstractElementFinder.AbstractGrammarEle
 	}
 
 	
-	//SPViz returns SPViz:
+	//SPViz:
 	//    'package' package=QualifiedName
 	//    'import' importURI=STRING
 	//    'SPViz' name=ID '{'
 	//        views += View*
+	//        artifactShows += ArtifactShows*
 	//    '}'
 	//;
 	public SPVizElements getSPVizAccess() {
@@ -365,7 +558,7 @@ public class SPVizGrammarAccess extends AbstractElementFinder.AbstractGrammarEle
 		return getSPVizAccess().getRule();
 	}
 	
-	//View returns View:
+	//View:
 	//    name=ID '{'
 	//        shownElements+=ShownElement*
 	//        shownConnections+=ShownConnection*
@@ -379,7 +572,56 @@ public class SPVizGrammarAccess extends AbstractElementFinder.AbstractGrammarEle
 		return getViewAccess().getRule();
 	}
 	
-	//ShownElement returns ShownElement:
+	//ArtifactShows:
+	//    artifactShows=[spvizmodel::Artifact|QualifiedName] 'shows' '{'
+	//        views += ArtifactView*
+	//    '}'
+	//;
+	public ArtifactShowsElements getArtifactShowsAccess() {
+		return pArtifactShows;
+	}
+	
+	public ParserRule getArtifactShowsRule() {
+		return getArtifactShowsAccess().getRule();
+	}
+	
+	//ArtifactView:
+	//    view = [View] 'with' '{'
+	//        sources += ArtifactSource*
+	//    '}'
+	//;
+	public ArtifactViewElements getArtifactViewAccess() {
+		return pArtifactView;
+	}
+	
+	public ParserRule getArtifactViewRule() {
+		return getArtifactViewAccess().getRule();
+	}
+	
+	//ArtifactSource:
+	//    artifact = [spvizmodel::Artifact|QualifiedName]
+	//    'from' sourceChain = ArtifactChain
+	//;
+	public ArtifactSourceElements getArtifactSourceAccess() {
+		return pArtifactSource;
+	}
+	
+	public ParserRule getArtifactSourceRule() {
+		return getArtifactSourceAccess().getRule();
+	}
+	
+	//ArtifactChain:
+	//    source = [spvizmodel::Artifact|QualifiedName] ('>' further = ArtifactChain)?
+	//;
+	public ArtifactChainElements getArtifactChainAccess() {
+		return pArtifactChain;
+	}
+	
+	public ParserRule getArtifactChainRule() {
+		return getArtifactChainAccess().getRule();
+	}
+	
+	//ShownElement:
 	//    'show' shownElement=[spvizmodel::Artifact|QualifiedName]
 	//    (
 	//        'in' containedIn=[spvizmodel::Artifact|QualifiedName]
@@ -393,7 +635,7 @@ public class SPVizGrammarAccess extends AbstractElementFinder.AbstractGrammarEle
 		return getShownElementAccess().getRule();
 	}
 	
-	//ShownConnection returns ShownConnection:
+	//ShownConnection:
 	//    'connect' shownConnection=[spvizmodel::Connection|QualifiedName]
 	//    (
 	//        'via' via=[spvizmodel::Artifact|QualifiedName]

@@ -3,7 +3,7 @@
  *
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2021 by
+ * Copyright 2022 by
  * + Kiel University
  *   + Department of Computer Science
  *     + Real-Time and Embedded Systems Group
@@ -181,9 +181,28 @@ ruleSPViz returns [EObject current=null]
 				}
 			)
 		)*
-		otherlv_8='}'
+		(
+			(
+				{
+					newCompositeNode(grammarAccess.getSPVizAccess().getArtifactShowsArtifactShowsParserRuleCall_8_0());
+				}
+				lv_artifactShows_8_0=ruleArtifactShows
+				{
+					if ($current==null) {
+						$current = createModelElementForParent(grammarAccess.getSPVizRule());
+					}
+					add(
+						$current,
+						"artifactShows",
+						lv_artifactShows_8_0,
+						"de.cau.cs.kieler.spviz.spviz.SPViz.ArtifactShows");
+					afterParserOrEnumRuleCall();
+				}
+			)
+		)*
+		otherlv_9='}'
 		{
-			newLeafNode(otherlv_8, grammarAccess.getSPVizAccess().getRightCurlyBracketKeyword_8());
+			newLeafNode(otherlv_9, grammarAccess.getSPVizAccess().getRightCurlyBracketKeyword_9());
 		}
 	)
 ;
@@ -268,6 +287,253 @@ ruleView returns [EObject current=null]
 		{
 			newLeafNode(otherlv_4, grammarAccess.getViewAccess().getRightCurlyBracketKeyword_4());
 		}
+	)
+;
+
+// Entry rule entryRuleArtifactShows
+entryRuleArtifactShows returns [EObject current=null]:
+	{ newCompositeNode(grammarAccess.getArtifactShowsRule()); }
+	iv_ruleArtifactShows=ruleArtifactShows
+	{ $current=$iv_ruleArtifactShows.current; }
+	EOF;
+
+// Rule ArtifactShows
+ruleArtifactShows returns [EObject current=null]
+@init {
+	enterRule();
+}
+@after {
+	leaveRule();
+}:
+	(
+		(
+			(
+				{
+					if ($current==null) {
+						$current = createModelElement(grammarAccess.getArtifactShowsRule());
+					}
+				}
+				{
+					newCompositeNode(grammarAccess.getArtifactShowsAccess().getArtifactShowsArtifactCrossReference_0_0());
+				}
+				ruleQualifiedName
+				{
+					afterParserOrEnumRuleCall();
+				}
+			)
+		)
+		otherlv_1='shows'
+		{
+			newLeafNode(otherlv_1, grammarAccess.getArtifactShowsAccess().getShowsKeyword_1());
+		}
+		otherlv_2='{'
+		{
+			newLeafNode(otherlv_2, grammarAccess.getArtifactShowsAccess().getLeftCurlyBracketKeyword_2());
+		}
+		(
+			(
+				{
+					newCompositeNode(grammarAccess.getArtifactShowsAccess().getViewsArtifactViewParserRuleCall_3_0());
+				}
+				lv_views_3_0=ruleArtifactView
+				{
+					if ($current==null) {
+						$current = createModelElementForParent(grammarAccess.getArtifactShowsRule());
+					}
+					add(
+						$current,
+						"views",
+						lv_views_3_0,
+						"de.cau.cs.kieler.spviz.spviz.SPViz.ArtifactView");
+					afterParserOrEnumRuleCall();
+				}
+			)
+		)*
+		otherlv_4='}'
+		{
+			newLeafNode(otherlv_4, grammarAccess.getArtifactShowsAccess().getRightCurlyBracketKeyword_4());
+		}
+	)
+;
+
+// Entry rule entryRuleArtifactView
+entryRuleArtifactView returns [EObject current=null]:
+	{ newCompositeNode(grammarAccess.getArtifactViewRule()); }
+	iv_ruleArtifactView=ruleArtifactView
+	{ $current=$iv_ruleArtifactView.current; }
+	EOF;
+
+// Rule ArtifactView
+ruleArtifactView returns [EObject current=null]
+@init {
+	enterRule();
+}
+@after {
+	leaveRule();
+}:
+	(
+		(
+			(
+				{
+					if ($current==null) {
+						$current = createModelElement(grammarAccess.getArtifactViewRule());
+					}
+				}
+				otherlv_0=RULE_ID
+				{
+					newLeafNode(otherlv_0, grammarAccess.getArtifactViewAccess().getViewViewCrossReference_0_0());
+				}
+			)
+		)
+		otherlv_1='with'
+		{
+			newLeafNode(otherlv_1, grammarAccess.getArtifactViewAccess().getWithKeyword_1());
+		}
+		otherlv_2='{'
+		{
+			newLeafNode(otherlv_2, grammarAccess.getArtifactViewAccess().getLeftCurlyBracketKeyword_2());
+		}
+		(
+			(
+				{
+					newCompositeNode(grammarAccess.getArtifactViewAccess().getSourcesArtifactSourceParserRuleCall_3_0());
+				}
+				lv_sources_3_0=ruleArtifactSource
+				{
+					if ($current==null) {
+						$current = createModelElementForParent(grammarAccess.getArtifactViewRule());
+					}
+					add(
+						$current,
+						"sources",
+						lv_sources_3_0,
+						"de.cau.cs.kieler.spviz.spviz.SPViz.ArtifactSource");
+					afterParserOrEnumRuleCall();
+				}
+			)
+		)*
+		otherlv_4='}'
+		{
+			newLeafNode(otherlv_4, grammarAccess.getArtifactViewAccess().getRightCurlyBracketKeyword_4());
+		}
+	)
+;
+
+// Entry rule entryRuleArtifactSource
+entryRuleArtifactSource returns [EObject current=null]:
+	{ newCompositeNode(grammarAccess.getArtifactSourceRule()); }
+	iv_ruleArtifactSource=ruleArtifactSource
+	{ $current=$iv_ruleArtifactSource.current; }
+	EOF;
+
+// Rule ArtifactSource
+ruleArtifactSource returns [EObject current=null]
+@init {
+	enterRule();
+}
+@after {
+	leaveRule();
+}:
+	(
+		(
+			(
+				{
+					if ($current==null) {
+						$current = createModelElement(grammarAccess.getArtifactSourceRule());
+					}
+				}
+				{
+					newCompositeNode(grammarAccess.getArtifactSourceAccess().getArtifactArtifactCrossReference_0_0());
+				}
+				ruleQualifiedName
+				{
+					afterParserOrEnumRuleCall();
+				}
+			)
+		)
+		otherlv_1='from'
+		{
+			newLeafNode(otherlv_1, grammarAccess.getArtifactSourceAccess().getFromKeyword_1());
+		}
+		(
+			(
+				{
+					newCompositeNode(grammarAccess.getArtifactSourceAccess().getSourceChainArtifactChainParserRuleCall_2_0());
+				}
+				lv_sourceChain_2_0=ruleArtifactChain
+				{
+					if ($current==null) {
+						$current = createModelElementForParent(grammarAccess.getArtifactSourceRule());
+					}
+					set(
+						$current,
+						"sourceChain",
+						lv_sourceChain_2_0,
+						"de.cau.cs.kieler.spviz.spviz.SPViz.ArtifactChain");
+					afterParserOrEnumRuleCall();
+				}
+			)
+		)
+	)
+;
+
+// Entry rule entryRuleArtifactChain
+entryRuleArtifactChain returns [EObject current=null]:
+	{ newCompositeNode(grammarAccess.getArtifactChainRule()); }
+	iv_ruleArtifactChain=ruleArtifactChain
+	{ $current=$iv_ruleArtifactChain.current; }
+	EOF;
+
+// Rule ArtifactChain
+ruleArtifactChain returns [EObject current=null]
+@init {
+	enterRule();
+}
+@after {
+	leaveRule();
+}:
+	(
+		(
+			(
+				{
+					if ($current==null) {
+						$current = createModelElement(grammarAccess.getArtifactChainRule());
+					}
+				}
+				{
+					newCompositeNode(grammarAccess.getArtifactChainAccess().getSourceArtifactCrossReference_0_0());
+				}
+				ruleQualifiedName
+				{
+					afterParserOrEnumRuleCall();
+				}
+			)
+		)
+		(
+			otherlv_1='>'
+			{
+				newLeafNode(otherlv_1, grammarAccess.getArtifactChainAccess().getGreaterThanSignKeyword_1_0());
+			}
+			(
+				(
+					{
+						newCompositeNode(grammarAccess.getArtifactChainAccess().getFurtherArtifactChainParserRuleCall_1_1_0());
+					}
+					lv_further_2_0=ruleArtifactChain
+					{
+						if ($current==null) {
+							$current = createModelElementForParent(grammarAccess.getArtifactChainRule());
+						}
+						set(
+							$current,
+							"further",
+							lv_further_2_0,
+							"de.cau.cs.kieler.spviz.spviz.SPViz.ArtifactChain");
+						afterParserOrEnumRuleCall();
+					}
+				)
+			)
+		)?
 	)
 ;
 
