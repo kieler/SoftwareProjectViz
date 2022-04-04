@@ -382,22 +382,9 @@ public class ReadProjectFiles {
 			for (int x = 0, size = bundleNodeList.getLength(); x < size; x++) {
 				final String bundleName = bundleNodeList.item(x).getAttributes().getNamedItem(StaticVariables.ID)
 						.getNodeValue();
-				final Optional<Bundle> bundleOptional = project.getBundles()//
-						.stream()//
-						.filter(elem -> elem.getName().equals(bundleName))//
-						.findFirst();
-				if (bundleOptional.isPresent()) {
-					Bundle bundle = bundleOptional.get();
-					bundle.getProducts().add(product);
-					product.getBundles().add(bundle);
-				} else {
-					final Bundle bundle = OSGiFactory.eINSTANCE.createBundle();
-					bundle.setName(bundleName);
-					bundle.setEcoreId(StaticVariables.BUNDLE_PREFIX + toAscii(bundleName));
-					bundle.getProducts().add(product);
-					product.getBundles().add(bundle);
-					project.getBundles().add(bundle);
-				}
+				final Bundle bundle = getOrCreateBundle(bundleName);
+				bundle.getProducts().add(product);
+				product.getBundles().add(bundle);
 			}
 		} catch (ParserConfigurationException | SAXException | IOException e) {
 			LOGGER.log(System.Logger.Level.ERROR, "There was an error with reading the product xml file " + e); //$NON-NLS-1$
