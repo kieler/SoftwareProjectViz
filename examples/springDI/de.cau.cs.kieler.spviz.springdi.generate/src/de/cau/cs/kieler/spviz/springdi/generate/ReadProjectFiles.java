@@ -337,7 +337,9 @@ public class ReadProjectFiles {
 					
 					final ComponentInterface componentInterface = createOrFindComponentInterface(interfaceName);
 					componentInterface.setExternal(false);
-					parentModule.getComponentInterfaces().add(componentInterface);
+					if (!parentModule.getComponentInterfaces().contains(componentInterface) ) {
+						parentModule.getComponentInterfaces().add(componentInterface);
+					}
 				}
 				return true;
 			}
@@ -359,7 +361,9 @@ public class ReadProjectFiles {
 					
 					final ComponentImplementation componentImplementation = createOrFindComponentImplementation(componentName);
 					componentImplementation.setExternal(false);
-					parentModule.getComponentImplementations().add(componentImplementation);
+					if (!parentModule.getComponentImplementations().contains(componentImplementation)) {
+						parentModule.getComponentImplementations().add(componentImplementation);
+					}
 					
 					// Link this implementation to its interface
 					@SuppressWarnings("unchecked") // JavaDoc says it returns List<Type> whereas the Java return type is just List
@@ -391,12 +395,21 @@ public class ReadProjectFiles {
 					if (parentDeclaration.isInterface()) {
 						// This is an interface requiring another interface via injection.
 						requiring = createOrFindComponentInterface(parentName);
+						if (!parentModule.getComponentInterfaces().contains(requiring)) {
+							parentModule.getComponentInterfaces().add((ComponentInterface) requiring);
+						}
 					} else if (isComponentImplementation(parentDeclaration)) {
 						// This is an implemented component requiring a service interface via injection.
 						requiring = createOrFindComponentImplementation(parentName);
+						if (!parentModule.getComponentImplementations().contains(requiring)) {
+							parentModule.getComponentImplementations().add((ComponentImplementation) requiring);
+						}
 					} else {
 						// This is some regular class (i.e., not a component), yet requiring an interface via injection.
 						requiring = createOrFindClass(parentName);
+						if (!parentModule.getClasss().contains(requiring)) {
+							parentModule.getClasss().add((Class) requiring);
+						}
 					}
 					requiring.setExternal(false);
 
