@@ -11,8 +11,30 @@ SPViz SpringDIViz {
 		connect SpringDI.ComponentImplementation.Required
 		connect SpringDI.Class.Required
 	}
-	Modules { 
+	Modules {
 		show SpringDI.Module
 		connect SpringDI.Module.Dependency
+	}
+	Artifacts {
+		show SpringDI.Artifact
+	}
+	
+	SpringDI.Artifact shows {
+		Components with {
+			SpringDI.ComponentInterface from SpringDI.Artifact>SpringDI.Module>SpringDI.ComponentInterface
+			SpringDI.ComponentImplementation from SpringDI.Artifact>SpringDI.Module>SpringDI.ComponentImplementation
+			SpringDI.Class from SpringDI.Artifact>SpringDI.Module>SpringDI.Class
+		}
+		Modules with {
+			SpringDI.Module from SpringDI.Artifact>SpringDI.Module
+		}
+	}
+	
+	SpringDI.Module shows {
+		Components with {
+			SpringDI.ComponentInterface from SpringDI.Module>SpringDI.ComponentInterface
+			SpringDI.ComponentImplementation from SpringDI.Module>SpringDI.ComponentImplementation
+			SpringDI.Class from SpringDI.Module>SpringDI.Class
+		}
 	}
 }
