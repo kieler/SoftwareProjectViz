@@ -225,11 +225,9 @@ public class ReadProjectFiles {
 			if (serviceComponentFiles != null) {
 				for (final File serviceComponentFile : serviceComponentFiles) {
 
-					final ServiceComponent serviceComponent = OSGiFactory.eINSTANCE.createServiceComponent();
 					String componentName = serviceComponentFile.getName()
 							.replace(".xml", StaticVariables.EMPTY_STRING);
-					serviceComponent.setName(componentName);
-					serviceComponent.setEcoreId(StaticVariables.SERVICE_COMPONENT_PREFIX + toAscii(componentName));
+					final ServiceComponent serviceComponent = getOrCreateServiceComponent(componentName);
 					serviceComponent.getBundles().add(bundle);
 					bundle.getServiceComponents().add(serviceComponent);
 					project.getServiceComponents().add(serviceComponent);
@@ -268,22 +266,10 @@ public class ReadProjectFiles {
 					final String interfaceName = providedInterfaceList.item(x).getAttributes()
 							.getNamedItem(StaticVariables.INTERFACE).getNodeValue();
 					
-					final Optional<ServiceInterface> serviceInterfaceOptional = project.getServiceInterfaces()//
-							.stream()//
-							.filter(elem -> elem.getName().equals(interfaceName))//
-							.findFirst();
-					if (serviceInterfaceOptional.isPresent()) {
-						serviceInterfaceOptional.get().getConnectingRequiredServiceComponents().add(serviceComponent);
-						serviceComponent.getConnectedRequiredServiceInterfaces().add(serviceInterfaceOptional.get());
-					} else {
-						final ServiceInterface serviceInterface = OSGiFactory.eINSTANCE.createServiceInterface();
-						serviceInterface.setName(interfaceName);
-						serviceInterface.setEcoreId(StaticVariables.SERVICE_INTERFACE_PREFIX + toAscii(interfaceName));
-						serviceInterface.getConnectingRequiredServiceComponents().add(serviceComponent);
-						serviceComponent.getConnectedRequiredServiceInterfaces().add(serviceInterface);
-						bundle.getServiceInterfaces().add(serviceInterface);
-						project.getServiceInterfaces().add(serviceInterface);
-					}
+					final ServiceInterface serviceInterface = getOrCreateServiceInterface(interfaceName);
+					serviceInterface.getConnectingRequiredServiceComponents().add(serviceComponent);
+					serviceComponent.getConnectedRequiredServiceInterfaces().add(serviceInterface);
+					bundle.getServiceInterfaces().add(serviceInterface);
 				}
 			}
 			
@@ -313,8 +299,10 @@ public class ReadProjectFiles {
 			final Document doc = dBuilder.parse(xmlFile);
 			final NodeList pluginNodeList = doc.getElementsByTagName(StaticVariables.PLUGIN);
 			
-			final Feature feature = OSGiFactory.eINSTANCE.createFeature();
-			project.getFeatures().add(feature);
+
+			String featureName = doc.getDocumentElement().getAttribute(StaticVariables.ID);
+			final Feature feature = getOrCreateFeature(featureName);
+			feature.setExternal(false);
 			
 			for (int x = 0, size = pluginNodeList.getLength(); x < size; x++) {
 				final String plugin = pluginNodeList.item(x).getAttributes().getNamedItem(StaticVariables.ID)
@@ -323,10 +311,6 @@ public class ReadProjectFiles {
 				bundle.getFeatures().add(feature);
 				feature.getBundles().add(bundle);
 			}
-			String featureName = doc.getDocumentElement().getAttribute(StaticVariables.ID);
-			feature.setName(featureName);
-			feature.setEcoreId(StaticVariables.FEATURE_PREFIX + toAscii(featureName));
-			feature.setExternal(false);
 			
 		} catch (ParserConfigurationException | SAXException | IOException e) {
 			LOGGER.log(System.Logger.Level.ERROR, "There was an error with reading the feature.xml file " + e); //$NON-NLS-1$
@@ -358,24 +342,9 @@ public class ReadProjectFiles {
 			for (int x = 0, size = featureNodeList.getLength(); x < size; x++) {
 				final String featureName = featureNodeList.item(x).getAttributes().getNamedItem(StaticVariables.ID)
 						.getNodeValue();
-				final Optional<Feature> featureOptional = project.getFeatures()//
-						.stream()//
-						.filter(elem -> elem.getName().equals(featureName))//
-						.findFirst();
-
-				if (featureOptional.isPresent()) {
-					Feature feature = featureOptional.get();
-					feature.getProducts().add(product);
-					product.getFeatures().add(feature);
-				} else {
-					final Feature feature = OSGiFactory.eINSTANCE.createFeature();
-					feature.setName(featureName);
-					feature.setEcoreId(StaticVariables.FEATURE_PREFIX + toAscii(featureName));
-					feature.setExternal(true);
-					feature.getProducts().add(product);
-					product.getFeatures().add(feature);
-					project.getFeatures().add(feature);
-				}
+				final Feature feature = getOrCreateFeature(featureName);
+				feature.getProducts().add(product);
+				product.getFeatures().add(feature);
 			}
 			
 			final NodeList bundleNodeList = doc.getElementsByTagName(StaticVariables.PLUGIN);
@@ -391,12 +360,12 @@ public class ReadProjectFiles {
 		}
 	}
 
-	
 	/**
-	 * returns a bundle if it already exists, else bundle is created
+	 * Returns the bundle with the given identifying name. Will be created if the
+	 * bundle does not exist yet.
 	 *
-	 * @param uniqueId is the unique id of the bundle
-	 * @return bundle Object
+	 * @param name The unique name of the bundle.
+	 * @return The bundle for the given name.
 	 */
 	private Bundle getOrCreateBundle(final String name) {
 		final Optional<Bundle> bundleAlreadyPresent = project.getBundles()//
@@ -412,6 +381,76 @@ public class ReadProjectFiles {
 			bundle.setExternal(true);
 			project.getBundles().add(bundle);
 			return bundle;
+		}
+	}
+
+	/**
+	 * Returns the feature with the given identifying name. Will be created if the
+	 * feature does not exist yet.
+	 *
+	 * @param name The unique name of the feature.
+	 * @return The feature for the given name.
+	 */
+	private Feature getOrCreateFeature(final String name) {
+		final Optional<Feature> featureAlreadyPresent = project.getFeatures()//
+				.stream()//
+				.filter(elem -> elem.getEcoreId().equals(StaticVariables.FEATURE_PREFIX + toAscii(name)))//
+				.findFirst();
+		if (featureAlreadyPresent.isPresent()) {
+			return featureAlreadyPresent.get();
+		} else {
+			final Feature feature = OSGiFactory.eINSTANCE.createFeature();
+			feature.setName(name);
+			feature.setEcoreId(StaticVariables.FEATURE_PREFIX + toAscii(name));
+			feature.setExternal(true);
+			project.getFeatures().add(feature);
+			return feature;
+		}
+	}
+	
+	/**
+	 * Returns the service interface with the given identifying name. Will be created if the
+	 * interface does not exist yet.
+	 * 
+	 * @param name The unique name of the service interface.
+	 * @return The service interface for the given name.
+	 */
+	private ServiceInterface getOrCreateServiceInterface(final String name) {
+		final Optional<ServiceInterface> serviceInterfaceOptional = project.getServiceInterfaces()//
+				.stream()//
+				.filter(elem -> elem.getName().equals(StaticVariables.SERVICE_INTERFACE_PREFIX + toAscii(name)))//
+				.findFirst();
+		if (serviceInterfaceOptional.isPresent()) {
+			return serviceInterfaceOptional.get();
+		} else {
+			final ServiceInterface serviceInterface = OSGiFactory.eINSTANCE.createServiceInterface();
+			serviceInterface.setName(name);
+			serviceInterface.setEcoreId(StaticVariables.SERVICE_INTERFACE_PREFIX + toAscii(name));
+			project.getServiceInterfaces().add(serviceInterface);
+			return serviceInterface;
+		}
+	}
+	
+	/**
+	 * Returns the service component with the given identifying name. Will be created if the
+	 * component does not exist yet.
+	 * 
+	 * @param name The unique name of the service component.
+	 * @return The service component for the given name.
+	 */
+	private ServiceComponent getOrCreateServiceComponent(final String name) {
+		final Optional<ServiceComponent> serviceComponentOptional = project.getServiceComponents()//
+				.stream()//
+				.filter(elem -> elem.getName().equals(StaticVariables.SERVICE_COMPONENT_PREFIX + toAscii(name)))//
+				.findFirst();
+		if (serviceComponentOptional.isPresent()) {
+			return serviceComponentOptional.get();
+		} else {
+			final ServiceComponent serviceComponent = OSGiFactory.eINSTANCE.createServiceComponent();
+			serviceComponent.setName(name);
+			serviceComponent.setEcoreId(StaticVariables.SERVICE_COMPONENT_PREFIX + toAscii(name));
+			project.getServiceComponents().add(serviceComponent);
+			return serviceComponent;
 		}
 	}
 	
