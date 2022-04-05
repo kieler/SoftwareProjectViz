@@ -272,8 +272,9 @@ class GenerateSubSyntheses {
                 import «data.modelBundleNamePrefix».model.«importedArtifact»
             «ENDFOR»
             import «data.modelBundleNamePrefix».model.«data.projectName»
-            import «data.getBundleNamePrefix».viz.SynthesisUtils
+            import «data.getBundleNamePrefix».viz.Options
             import «data.getBundleNamePrefix».viz.Styles
+            import «data.getBundleNamePrefix».viz.SynthesisUtils
             import «data.getBundleNamePrefix».model.«artifactName»Context
             import «data.getBundleNamePrefix».model.IOverviewVisualizationContext
             «FOR view : views»
@@ -316,8 +317,8 @@ class GenerateSubSyntheses {
                             «FOR containedView : containedViews»
                                 // Show a «containedView.view.name.toFirstLower» overview within this «artifactName»
                                 // Only show this, if the option for it says so and if the context is available.
-«««                             TODO: implement option to filter away overviews in artifacts.
-                                if (context.«containedView.view.name.toFirstLower»OverviewContext !== null) {
+                                if (usedContext.getOptionValue(Options.«artifactName.toUpperCase»_SHOW_«containedView.view.name.toUpperCase») === true
+                                    && context.«containedView.view.name.toFirstLower»OverviewContext !== null) {
                                     val «containedView.view.name.toFirstLower»OverviewNodes = «containedView.view.name.toFirstLower»OverviewSynthesis.transform(context.«containedView.view.name.toFirstLower»OverviewContext)
                                     children += «containedView.view.name.toFirstLower»OverviewNodes
                                 }

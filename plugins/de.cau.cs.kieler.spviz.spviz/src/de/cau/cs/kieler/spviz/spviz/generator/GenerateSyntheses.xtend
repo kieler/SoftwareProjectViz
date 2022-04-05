@@ -134,9 +134,6 @@ class GenerateSyntheses {
 				override getDisplayedSynthesisOptions() {
 					val options = new LinkedHashSet()
 					
-«««					// Add general options.
-«««					options.addAll(SERVICE_CONNECTION_VISUALIZATION_IN_BUNDLES)
-«««					
 					// Add category options.
 					options.addAll(FILTER_CATEGORY, TEXT_FILTER_CATEGORY, VIEW_FILTER_CATEGORY, PERFORMANCE)
 					
@@ -147,6 +144,13 @@ class GenerateSyntheses {
 					
 					// Add all view filter options.
 					options.addAll(SHOW_EXTERNAL, SHORTEN_BY, INTERACTIVE_BUTTONS)
+					
+					// Add all artifact view filters.
+					«FOR artifact : data.artifacts»
+					   «FOR view : data.getContainedViews(artifact) BEFORE "options.addAll(" SEPARATOR "," AFTER ")"»
+					       «artifact.name.toUpperCase»_SHOW_«view.view.name.toUpperCase»
+					   «ENDFOR»
+					«ENDFOR»
 					
 					// Add all performance options.
 					options.addAll(SHOW_ICONS)
@@ -1401,6 +1405,18 @@ class GenerateSyntheses {
 				public static final SynthesisOption SHOW_EXTERNAL = SynthesisOption.createCheckOption(
 					"External elements", true).setCategory(VIEW_FILTER_CATEGORY)
 				
+				/** Category option containing options for filtering artifact views. */
+				public static final SynthesisOption ARTIFACT_VIEW_FILTER_CATEGORY = SynthesisOption.createCategory("Artifact overview filter", false)
+				    .setCategory(FILTER_CATEGORY)
+				
+				«FOR artifact : data.artifacts»
+				    «FOR view : data.getContainedViews(artifact)»
+				            /** Option indicating whether «view.view.name.toFirstLower» overviews should be shown in «artifact.name.toFirstLower»s. */
+				            public static final SynthesisOption «artifact.name.toUpperCase»_SHOW_«view.view.name.toUpperCase»= SynthesisOption.createCheckOption(
+				                "«view.view.name.toFirstUpper» Overviews in «artifact.name.toFirstUpper»", true).setCategory(ARTIFACT_VIEW_FILTER_CATEGORY)
+				            
+				    «ENDFOR»
+				«ENDFOR»
 				/** Option for limiting the length of descriptive texts. */
 				public static final SynthesisOption DESCRIPTION_LENGTH = SynthesisOption.createRangeOption(
 					"Description text length", 0, 500, 1, 20).setCategory(VIEW_FILTER_CATEGORY)
