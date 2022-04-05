@@ -279,10 +279,14 @@ class GenerateVizModelUtils {
 					 */
 					def static dispatch String overviewText(«view.name»OverviewContext overviewContext) {
 						switch (overviewContext.parent) {
-«««							TODO: add more cases for nested views
 							«data.visualizationName»: {
-								"All «view.name.toFirstLower»s contained in this project."
+								"The «view.name.toFirstLower» overview for this project."
 							}
+							«FOR artifact : data.getArtifactsShowing(view)»
+							    «artifact.name»Context: {
+							        "The «view.name.toFirstLower» overview for the «artifact.name.toFirstLower» " + (overviewContext.parent.modelElement as «artifact.name»).name + "."
+							    }
+							«ENDFOR»
 							default: {
 								"No descriptive text for this product overview available yet."
 							}

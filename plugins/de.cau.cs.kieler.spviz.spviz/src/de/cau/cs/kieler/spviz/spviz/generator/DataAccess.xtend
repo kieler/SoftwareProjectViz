@@ -61,6 +61,8 @@ class DataAccess {
 	Map<Artifact, List<Connection>> connectingArtifacts
 	/** A convenient map to show all {@link ArtifactView}s that may be shown within the key {@link Artifact}. */
 	Map<Artifact, List<ArtifactView>> containedViews
+	/** A convenient map to show all {@link Artifact}s that show the key {@link View}. */
+	Map<View, List<Artifact>> artifactsShowing
 	
 	/**
 	 * Constructor
@@ -84,6 +86,7 @@ class DataAccess {
 		connectedArtifacts = newHashMap
 		connectingArtifacts = newHashMap
 		containedViews = newHashMap
+		artifactsShowing = newHashMap
 		
 		for (view : spviz.views) {
             // find all connections between artifacts
@@ -108,6 +111,18 @@ class DataAccess {
             val artifactShows = spviz.artifactShows.findFirst[it.artifactShows === artifact]
             if (artifactShows !== null) {
                 containedViews.put(artifact, artifactShows.views)
+            }
+        }
+        
+        for (artifactShows : spviz.artifactShows) {
+            val artifact = artifactShows.artifactShows
+            for (view : artifactShows.views) {
+                var theArtifactsShowing = artifactsShowing.get(view.view)
+                if (theArtifactsShowing === null) {
+                    theArtifactsShowing = newArrayList
+                    artifactsShowing.put(view.view, theArtifactsShowing)
+                }
+                theArtifactsShowing.add(artifact)
             }
         }
     }
@@ -246,6 +261,16 @@ class DataAccess {
             }
         }
         return false
+    }
+    
+    /**
+     * Returns which artifacts show the given overview.
+     * 
+     * @param view The view that is shown in all returned artifacts.
+     * @return The artifacts showing the view. 
+     */
+    def List<Artifact> getArtifactsShowing(View view) {
+        return artifactsShowing.get(view) ?: #[]
     }
 	
 }
