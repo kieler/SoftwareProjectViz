@@ -38,6 +38,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.io.FilenameUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -65,7 +66,7 @@ import de.cau.cs.kieler.spviz.osgi.model.ServiceInterface;
  * from the service interface class. For products it searches for product files
  * and an about file.
  *
- * @author dams
+ * @author dams, nre
  *
  */
 public class ReadProjectFiles {
@@ -75,6 +76,7 @@ public class ReadProjectFiles {
 	final OSGiProject project = OSGiFactory.eINSTANCE.createOSGiProject();
 //	private final List<Package> packageDependencies = new ArrayList<Package>();
 	private final List<Path> filePaths = new ArrayList<Path>();
+	private final Map<ServiceComponent, String> componentPaths = new HashMap<>();
 
 
 	/**
@@ -101,6 +103,9 @@ public class ReadProjectFiles {
 		for (final Path featurePath : filePaths) {
 			extractFeatureData(featurePath);
 		}
+
+		// parsing of service data
+		project.getServiceComponents().forEach(elem -> extractServiceData(elem));
 		
 		// parsing of product data
 		filePaths.clear();
@@ -119,7 +124,6 @@ public class ReadProjectFiles {
 	 *
 	 * @param manifestPath is the path to the prepared manifest file
 	 */
-	// CHECKSTYLE IGNORE check FOR NEXT 1 LINES
 	private void extractBundleData(final Path manifestPath) {
 		String symbolicName = StaticVariables.EMPTY_STRING;
 		final Path manifestFolder = manifestPath.getParent();
@@ -143,220 +147,49 @@ public class ReadProjectFiles {
 			for (final String requiredBundleName : getList(attributes, StaticVariables.REQUIRE_BUNDLE)) {
 				final Bundle requiredBundle = getOrCreateBundle(requiredBundleName);
 				requiredBundle.getConnectingDependencyBundles().add(bundle);
-				bundle.getConnectedDependencyBundles().add(requiredBundle);
 			}
 			
-			extractServiceComponents(bundle, bundleRoot, attributes);
+			final List<String> serviceComponents = getList(attributes, StaticVariables.SERVICE_COMPONENT);
 			
-		} catch (final IOException e) {
-			LOGGER.log(System.Logger.Level.ERROR, "There was an error with reading the manifest file " + e); //$NON-NLS-1$
-		}
-	}
-	
-	/**
-	 * Generates a list of {@link PackageObject} for a bundle. Packages can be
-	 * exported or imported packages of a bundle
-	 *
-	 * @param bundle     is the bundle which exports/imports the packages
-	 * @param attributes is the String of packages
-	 * @param key        describes whether the packages are imported or exported
-	 * @return
-	 */
-	private void extractPackages(final Bundle bundle, final Attributes attributes) {
-		for (final String importOrExport : new String[] { StaticVariables.EXPORT_PACKAGE,
-				StaticVariables.IMPORT_PACKAGE }) {
+			if (serviceComponents.contains("OSGI-INF/*.xml")) {
+				if (!new File(bundleRoot + "/OSGI-INF").exists()) {
+					LOGGER.log(System.Logger.Level.INFO, "The MANIFEST-INF folder and the OSGI-INF folder are not in the same path."
+							+ manifestPath.toString());
+				}
+				final File serviceComponentsFolder = new File(bundleRoot + "/OSGI-INF/");
+				final File[] serviceComponentFiles = serviceComponentsFolder
+						.listFiles((dir, name) -> name.toLowerCase().endsWith(".xml"));
 
-			final String packageIds = attributes.getValue(importOrExport);
-			attributes.remove(new Attributes.Name(importOrExport));
-			
-			if (null == packageIds) {
-				continue;
-			}
-			
-			for (final String b : packageIds.replaceAll("\\s", "").replaceAll("\"(.*?)\"", "").split(",")) { //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
-				final String packageName = b.split(";")[0]; //$NON-NLS-1$			
-				
-				if (importOrExport.equals(StaticVariables.EXPORT_PACKAGE)) {
-					final Package newExportedPackage = OSGiFactory.eINSTANCE.createPackage();
-					newExportedPackage.setName(packageName);
-					newExportedPackage.setEcoreId(StaticVariables.PACKAGE_PREFIX + toAscii(packageName));
-					newExportedPackage.getBundles().add(bundle);
-					bundle.getPackages().add(newExportedPackage);
-					project.getPackages().add(newExportedPackage);
-				} else {
-//					final Optional<Package> knownImportedPackage = packageDependencies//
-//							.stream()//
-//							.filter(elem -> elem.getName().equals(packageName))//
-//							.findFirst();
-					final Optional<Package> ownProjectPackage = project.getPackages()//
-							.stream()//
-							.filter(elem -> elem.getName().equals(packageName))//
-							.findFirst();
-					if (ownProjectPackage.isPresent()) {
-						ownProjectPackage.get().getConnectingPackageDependencyBundles().add(bundle);
-						bundle.getConnectedPackageDependencyPackages().add(ownProjectPackage.get());
-//					} else if (knownImportedPackage.isPresent()) {
-//						bundle.getPackageDependency().add(knownImportedPackage.get());
-					} else {
-						final Package newImportedPackage = OSGiFactory.eINSTANCE.createPackage();
-						newImportedPackage.setName(packageName);
-						newImportedPackage.setEcoreId(StaticVariables.PACKAGE_PREFIX + toAscii(packageName));
-						newImportedPackage.getConnectingPackageDependencyBundles().add(bundle);
-						bundle.getConnectedPackageDependencyPackages().add(newImportedPackage);
-//						packageDependencies.add(newImportedPackage);
-						project.getPackages().add(newImportedPackage);
+				if (serviceComponentFiles != null) {
+					for (final File serviceComponentFile : serviceComponentFiles) {
+
+						String componentName = serviceComponentFile.getName()
+								.replace(".xml", StaticVariables.EMPTY_STRING);
+						final ServiceComponent serviceComponent = getOrCreateServiceComponent(componentName);
+						serviceComponent.getBundles().add(bundle);
+						bundle.getServiceComponents().add(serviceComponent);
+						componentPaths.put(serviceComponent, FilenameUtils.separatorsToUnix(serviceComponentFile.getAbsolutePath()));
+					}
+				}
+			} else {
+				for (final String service : serviceComponents) {
+					final String serviceName = service.replace(".xml", StaticVariables.EMPTY_STRING).replace(
+							"OSGI-INF/", StaticVariables.EMPTY_STRING);
+					final ServiceComponent serviceComponent = OSGiFactory.eINSTANCE.createServiceComponent();
+					serviceComponent.setName(serviceName);
+					serviceComponent.setEcoreId(StaticVariables.SERVICE_COMPONENT_PREFIX + toAscii(serviceName));
+					bundle.getServiceComponents().add(serviceComponent);
+					project.getServiceComponents().add(serviceComponent);
+					if (service.contains(StaticVariables.XML_FILE) && !service.contains("*.xml")
+							&& bundleRoot != null) {
+						componentPaths.put(serviceComponent, FilenameUtils.separatorsToUnix(
+								bundleRoot + service.replace("OSGI-INF/", "/OSGI-INF/")));
 					}
 				}
 			}
-		}
-	}
-	
-	
-	private void extractServiceComponents (final Bundle bundle, final Path bundleRoot, final Attributes attributes) {
-		final List<String> serviceComponents = getList(attributes, StaticVariables.SERVICE_COMPONENT);
-		if (serviceComponents.contains("OSGI-INF/*.xml")) {
-			if (!new File(bundleRoot + "/OSGI-INF").exists()) { //$NON-NLS-1$
-				LOGGER.log(System.Logger.Level.INFO, "The MANIFEST-INF folder and the OSGI-INF folder are not in the same path."); //$NON-NLS-1$
-			}
-			final File serviceComponentsFolder = new File(bundleRoot + "/OSGI-INF/");
-			final File[] serviceComponentFiles = serviceComponentsFolder
-					.listFiles((dir, name) -> name.toLowerCase().endsWith(".xml"));
-
-			if (serviceComponentFiles != null) {
-				for (final File serviceComponentFile : serviceComponentFiles) {
-
-					String componentName = serviceComponentFile.getName()
-							.replace(".xml", StaticVariables.EMPTY_STRING);
-					final ServiceComponent serviceComponent = getOrCreateServiceComponent(componentName);
-					serviceComponent.getBundles().add(bundle);
-					bundle.getServiceComponents().add(serviceComponent);
-					project.getServiceComponents().add(serviceComponent);
-					
-					extractServiceInterfaces(bundle, serviceComponent, serviceComponentFile);
-				}
-			}
-		} else {
-			for (final String service : serviceComponents) {
-				final String serviceName = service.replace(".xml", StaticVariables.EMPTY_STRING).replace( //$NON-NLS-1$
-						"OSGI-INF/", StaticVariables.EMPTY_STRING);
-				final ServiceComponent serviceComponent = OSGiFactory.eINSTANCE.createServiceComponent();
-				serviceComponent.setName(serviceName);
-				serviceComponent.setEcoreId(StaticVariables.SERVICE_COMPONENT_PREFIX + toAscii(serviceName));
-				serviceComponent.getBundles().add(bundle);
-				bundle.getServiceComponents().add(serviceComponent);
-				project.getServiceComponents().add(serviceComponent);
-				
-				final File serviceComponentFile = new File(bundleRoot + File.separator + service);
-				extractServiceInterfaces(bundle, serviceComponent, serviceComponentFile);
-			}
-		}
-		
-	}
-	
-	private void extractServiceInterfaces(final Bundle bundle, final ServiceComponent serviceComponent, final File xmlFile) {
-		try {
-			final DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder dBuilder;
-			dBuilder = dbFactory.newDocumentBuilder();
-			final Document doc = dBuilder.parse(xmlFile);
-			final NodeList providedInterfaceList = doc.getElementsByTagName(StaticVariables.PROVIDE);
-			// read interface
-			if (providedInterfaceList.getLength() != 0) {
-				for (int x = 0, size = providedInterfaceList.getLength(); x < size; x++) {
-					final String interfaceName = providedInterfaceList.item(x).getAttributes()
-							.getNamedItem(StaticVariables.INTERFACE).getNodeValue();
-					
-					final ServiceInterface serviceInterface = getOrCreateServiceInterface(interfaceName);
-					serviceInterface.getConnectingRequiredServiceComponents().add(serviceComponent);
-					serviceComponent.getConnectedRequiredServiceInterfaces().add(serviceInterface);
-					bundle.getServiceInterfaces().add(serviceInterface);
-				}
-			}
 			
-			//
-			// REQUIRED
-			//
-			
-		} catch (ParserConfigurationException | SAXException | IOException e) {
-			LOGGER.log(System.Logger.Level.ERROR, "There was an error with reading the service xml file " + e); //$NON-NLS-1$
-		}
-	}
-
-
-	/**
-	 * extracts information out of the feature xml file in featurepath, and adds it
-	 * to the feature HashMap
-	 *
-	 * @param featurePath is the path to the feature.xml file
-	 */
-	private void extractFeatureData(final Path featurePath) {
-		final File xmlFile = featurePath.toFile();
-		final DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder dBuilder;
-		
-		try {
-			dBuilder = dbFactory.newDocumentBuilder();
-			final Document doc = dBuilder.parse(xmlFile);
-			final NodeList pluginNodeList = doc.getElementsByTagName(StaticVariables.PLUGIN);
-			
-
-			String featureName = doc.getDocumentElement().getAttribute(StaticVariables.ID);
-			final Feature feature = getOrCreateFeature(featureName);
-			feature.setExternal(false);
-			
-			for (int x = 0, size = pluginNodeList.getLength(); x < size; x++) {
-				final String plugin = pluginNodeList.item(x).getAttributes().getNamedItem(StaticVariables.ID)
-						.getNodeValue();
-				Bundle bundle = getOrCreateBundle(plugin);
-				bundle.getFeatures().add(feature);
-				feature.getBundles().add(bundle);
-			}
-			
-		} catch (ParserConfigurationException | SAXException | IOException e) {
-			LOGGER.log(System.Logger.Level.ERROR, "There was an error with reading the feature.xml file " + e); //$NON-NLS-1$
-		}
-	}
-
-	// CHECKSTYLEON NPathComplexity
-	/**
-	 * extracts information out of the product file, and adds it to productData.
-	 *
-	 * @param productPath is the path to the product file
-	 */
-	private void extractProductData(final Path productPath) {
-		final DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder dBuilder;
-		try {
-			dBuilder = dbFactory.newDocumentBuilder();
-			final Document doc = dBuilder.parse(productPath.toString());
-//			final String productName = doc.getDocumentElement().getAttribute(StaticVariables.NAME);
-			final String productName = doc.getDocumentElement().getAttribute(StaticVariables.UNIQUE_ID);
-			
-			final Product product = OSGiFactory.eINSTANCE.createProduct();
-			product.setName(productName);
-			product.setEcoreId(StaticVariables.PRODUCT_PREFIX + toAscii(productName));
-			
-			project.getProducts().add(product);
-			
-			final NodeList featureNodeList = doc.getElementsByTagName(StaticVariables.FEATURE);
-			for (int x = 0, size = featureNodeList.getLength(); x < size; x++) {
-				final String featureName = featureNodeList.item(x).getAttributes().getNamedItem(StaticVariables.ID)
-						.getNodeValue();
-				final Feature feature = getOrCreateFeature(featureName);
-				feature.getProducts().add(product);
-				product.getFeatures().add(feature);
-			}
-			
-			final NodeList bundleNodeList = doc.getElementsByTagName(StaticVariables.PLUGIN);
-			for (int x = 0, size = bundleNodeList.getLength(); x < size; x++) {
-				final String bundleName = bundleNodeList.item(x).getAttributes().getNamedItem(StaticVariables.ID)
-						.getNodeValue();
-				final Bundle bundle = getOrCreateBundle(bundleName);
-				bundle.getProducts().add(product);
-				product.getBundles().add(bundle);
-			}
-		} catch (ParserConfigurationException | SAXException | IOException e) {
-			LOGGER.log(System.Logger.Level.ERROR, "There was an error with reading the product xml file " + e); //$NON-NLS-1$
+		} catch (final IOException e) {
+			LOGGER.log(System.Logger.Level.ERROR, "There was an error with reading the manifest file " + e);
 		}
 	}
 
@@ -409,29 +242,6 @@ public class ReadProjectFiles {
 	}
 	
 	/**
-	 * Returns the service interface with the given identifying name. Will be created if the
-	 * interface does not exist yet.
-	 * 
-	 * @param name The unique name of the service interface.
-	 * @return The service interface for the given name.
-	 */
-	private ServiceInterface getOrCreateServiceInterface(final String name) {
-		final Optional<ServiceInterface> serviceInterfaceOptional = project.getServiceInterfaces()//
-				.stream()//
-				.filter(elem -> elem.getName().equals(StaticVariables.SERVICE_INTERFACE_PREFIX + toAscii(name)))//
-				.findFirst();
-		if (serviceInterfaceOptional.isPresent()) {
-			return serviceInterfaceOptional.get();
-		} else {
-			final ServiceInterface serviceInterface = OSGiFactory.eINSTANCE.createServiceInterface();
-			serviceInterface.setName(name);
-			serviceInterface.setEcoreId(StaticVariables.SERVICE_INTERFACE_PREFIX + toAscii(name));
-			project.getServiceInterfaces().add(serviceInterface);
-			return serviceInterface;
-		}
-	}
-	
-	/**
 	 * Returns the service component with the given identifying name. Will be created if the
 	 * component does not exist yet.
 	 * 
@@ -451,6 +261,153 @@ public class ReadProjectFiles {
 			serviceComponent.setEcoreId(StaticVariables.SERVICE_COMPONENT_PREFIX + toAscii(name));
 			project.getServiceComponents().add(serviceComponent);
 			return serviceComponent;
+		}
+	}
+
+	/**
+	 * extracts information out of the feature xml file in featurepath, and adds it
+	 * to the feature HashMap
+	 *
+	 * @param featurePath is the path to the feature.xml file
+	 */
+	private void extractFeatureData(final Path featurePath) {
+		final File xmlFile = featurePath.toFile();
+		final DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder dBuilder;
+		
+		try {
+			dBuilder = dbFactory.newDocumentBuilder();
+			final Document doc = dBuilder.parse(xmlFile);
+			final NodeList pluginNodeList = doc.getElementsByTagName(StaticVariables.PLUGIN);
+			
+			String featureName = doc.getDocumentElement().getAttribute(StaticVariables.ID);
+			final Feature feature = getOrCreateFeature(featureName);
+			feature.setExternal(false);
+			
+			for (int x = 0, size = pluginNodeList.getLength(); x < size; x++) {
+				final String plugin = pluginNodeList.item(x).getAttributes().getNamedItem(StaticVariables.ID)
+						.getNodeValue();
+				feature.getBundles().add(getOrCreateBundle(plugin));
+			}
+			
+		} catch (ParserConfigurationException | SAXException | IOException e) {
+			LOGGER.log(System.Logger.Level.ERROR, "There was an error with reading the feature.xml file " + e);
+		}
+	}
+
+	/**
+	 * extracts information out of the service xml file in servicePath, and adds it
+	 * to serviceData.
+	 *
+	 * @param servicePath is the path to the service xml file
+	 */
+	private void extractServiceData(final ServiceComponent serviceComponent) {
+		try {
+			final DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilder dBuilder;
+			dBuilder = dbFactory.newDocumentBuilder();
+			
+			final File xmlFile = new File(componentPaths.get(serviceComponent));
+			final Document doc = dBuilder.parse(xmlFile);
+			final NodeList referenceList = doc.getElementsByTagName(StaticVariables.REFERENCE);
+			final NodeList interfaceList = doc.getElementsByTagName(StaticVariables.PROVIDE);
+			
+			// read interface
+			if (interfaceList.getLength() != 0) {
+				for (int x = 0, size = interfaceList.getLength(); x < size; x++) {
+					final String interfaceName = interfaceList.item(x).getAttributes()
+							.getNamedItem(StaticVariables.INTERFACE).getNodeValue();
+					
+					final Optional<ServiceInterface> serviceInterfaceOptional = project.getServiceInterfaces()//
+							.stream()//
+							.filter(elem -> elem.getName().equals(interfaceName))//
+							.findFirst();
+					if (serviceInterfaceOptional.isPresent()) {
+						serviceInterfaceOptional.get().getConnectedRequiredServiceComponents().add(serviceComponent);
+					} else {
+						Bundle interfaceBundle = ReadProjectFilesUtility.getBundleFromInterface(interfaceName, project);
+						final ServiceInterface serviceInterface = OSGiFactory.eINSTANCE.createServiceInterface();
+						serviceInterface.getConnectedRequiredServiceComponents().add(serviceComponent);
+						serviceInterface.setName(interfaceName);
+						serviceInterface.setEcoreId(StaticVariables.SERVICE_INTERFACE_PREFIX + interfaceName);
+						if (interfaceBundle != null) {
+							interfaceBundle.getServiceInterfaces().add(serviceInterface);
+						}
+						project.getServiceInterfaces().add(serviceInterface);
+					}
+				}
+			}
+
+			// read references
+			for (int x = 0, size = referenceList.getLength(); x < size; x++) {
+				
+				final String interfaceName = (referenceList.item(x).getAttributes()
+						.getNamedItem(StaticVariables.REFERENCE_INTERFACE) == null ? StaticVariables.NOT_SET
+								: referenceList.item(x).getAttributes()
+										.getNamedItem(StaticVariables.REFERENCE_INTERFACE).getNodeValue());
+				
+				// check if interface is already existing, else create it.
+				final Optional<ServiceInterface> serviceInterfaceOptional = project.getServiceInterfaces()//
+						.stream()//
+						.filter(elem -> elem.getName().equals(interfaceName))//
+						.findFirst();
+				if (serviceInterfaceOptional.isPresent()) {
+					serviceComponent.getConnectedRequiredServiceInterfaces().add(serviceInterfaceOptional.get());
+				} else {
+					final ServiceInterface serviceInterface = OSGiFactory.eINSTANCE.createServiceInterface();
+					Bundle interfaceBundle = ReadProjectFilesUtility.getBundleFromInterface(interfaceName, project);
+					serviceInterface.setName(interfaceName);
+					serviceInterface.setEcoreId(StaticVariables.SERVICE_INTERFACE_PREFIX + interfaceName);
+					if (interfaceBundle != null) {
+						interfaceBundle.getServiceInterfaces().add(serviceInterface);
+					}
+					serviceComponent.getConnectedRequiredServiceInterfaces().add(serviceInterface);
+					project.getServiceInterfaces().add(serviceInterface);
+				}
+			}
+		} catch (ParserConfigurationException | SAXException | IOException e) {
+			LOGGER.log(System.Logger.Level.ERROR, "There was an error with reading the service xml file " + e);
+		}
+	}
+	
+	/**
+	 * extracts information out of the product file, and adds it to productData.
+	 *
+	 * @param productPath is the path to the product file
+	 */
+	private void extractProductData(final Path productPath) {
+		final DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder dBuilder;
+		try {
+			dBuilder = dbFactory.newDocumentBuilder();
+			final Document doc = dBuilder.parse(productPath.toString());
+			final String productName = doc.getDocumentElement().getAttribute(StaticVariables.UNIQUE_ID);
+			
+			final Product product = OSGiFactory.eINSTANCE.createProduct();
+			product.setName(productName);
+			product.setEcoreId(StaticVariables.PRODUCT_PREFIX + toAscii(productName));
+			
+			project.getProducts().add(product);
+			
+			final NodeList featureNodeList = doc.getElementsByTagName(StaticVariables.FEATURE);
+			for (int x = 0, size = featureNodeList.getLength(); x < size; x++) {
+				final String featureName = featureNodeList.item(x).getAttributes().getNamedItem(StaticVariables.ID)
+						.getNodeValue();
+				final Feature feature = getOrCreateFeature(featureName);
+				feature.getProducts().add(product);
+				product.getFeatures().add(feature);
+			}
+			
+			final NodeList bundleNodeList = doc.getElementsByTagName(StaticVariables.PLUGIN);
+			for (int x = 0, size = bundleNodeList.getLength(); x < size; x++) {
+				final String bundleName = bundleNodeList.item(x).getAttributes().getNamedItem(StaticVariables.ID)
+						.getNodeValue();
+				final Bundle bundle = getOrCreateBundle(bundleName);
+				bundle.getProducts().add(product);
+				product.getBundles().add(bundle);
+			}
+		} catch (ParserConfigurationException | SAXException | IOException e) {
+			LOGGER.log(System.Logger.Level.ERROR, "There was an error with reading the product xml file " + e);
 		}
 	}
 	
@@ -479,7 +436,64 @@ public class ReadProjectFiles {
 			}
 		}
 	}
+	
+	/**
+	 * Generates a list of {@link PackageObject} for a bundle. Packages can be
+	 * exported or imported packages of a bundle
+	 *
+	 * @param bundle     is the bundle which exports/imports the packages
+	 * @param attributes is the String of packages
+	 * @param key        describes whether the packages are imported or exported
+	 * @return
+	 */
+	private void extractPackages(final Bundle bundle, final Attributes attributes) {
+		for (final String importOrExport : new String[] { StaticVariables.EXPORT_PACKAGE,
+				StaticVariables.IMPORT_PACKAGE }) {
 
+			final String packageIds = attributes.getValue(importOrExport);
+			attributes.remove(new Attributes.Name(importOrExport));
+			
+			if (null == packageIds) {
+				continue;
+			}
+			
+			for (final String b : packageIds.replaceAll("\\s", "").replaceAll("\"(.*?)\"", "").split(",")) {
+				final String packageName = b.split(";")[0];			
+				
+				if (importOrExport.equals(StaticVariables.EXPORT_PACKAGE)) {
+					final Package newExportedPackage = OSGiFactory.eINSTANCE.createPackage();
+					newExportedPackage.setName(packageName);
+					newExportedPackage.setEcoreId(StaticVariables.PACKAGE_PREFIX + toAscii(packageName));
+					newExportedPackage.getBundles().add(bundle);
+					bundle.getPackages().add(newExportedPackage);
+					project.getPackages().add(newExportedPackage);
+				} else {
+//					final Optional<Package> knownImportedPackage = packageDependencies//
+//							.stream()//
+//							.filter(elem -> elem.getName().equals(packageName))//
+//							.findFirst();
+					final Optional<Package> ownProjectPackage = project.getPackages()//
+							.stream()//
+							.filter(elem -> elem.getName().equals(packageName))//
+							.findFirst();
+					if (ownProjectPackage.isPresent()) {
+						ownProjectPackage.get().getConnectingPackageDependencyBundles().add(bundle);
+						bundle.getConnectedPackageDependencyPackages().add(ownProjectPackage.get());
+//					} else if (knownImportedPackage.isPresent()) {
+//						bundle.getPackageDependency().add(knownImportedPackage.get());
+					} else {
+						final Package newImportedPackage = OSGiFactory.eINSTANCE.createPackage();
+						newImportedPackage.setName(packageName);
+						newImportedPackage.setEcoreId(StaticVariables.PACKAGE_PREFIX + toAscii(packageName));
+						newImportedPackage.getConnectingPackageDependencyBundles().add(bundle);
+						bundle.getConnectedPackageDependencyPackages().add(newImportedPackage);
+//						packageDependencies.add(newImportedPackage);
+						project.getPackages().add(newImportedPackage);
+					}
+				}
+			}
+		}
+	}
 
 	/**
 	 * Returns the value of the attribute "key" out of an attribute list and removes
@@ -497,7 +511,7 @@ public class ReadProjectFiles {
 			return StaticVariables.NOT_SET;
 		}
 
-		return value.split(";")[0]; //$NON-NLS-1$
+		return value.split(";")[0];
 	}
 
 	/**
@@ -516,10 +530,10 @@ public class ReadProjectFiles {
 		if (null == list) {
 			return result;
 		}
-		for (final String b : list.replaceAll("\"(.*?)\"", "")// remove all characters between '"'
-				.replaceAll("\\s", "")// remove all whitespaces
-				.split(",")) { //$NON-NLS-1$
-			result.add(b.split(";")[0]); //$NON-NLS-1$
+		for (final String b : list.replaceAll("\"(.*?)\"", "") // remove all characters between '"'
+				.replaceAll("\\s", "") // remove all whitespaces
+				.split(",")) {
+			result.add(b.split(";")[0]);
 		}
 		return result;
 	}
