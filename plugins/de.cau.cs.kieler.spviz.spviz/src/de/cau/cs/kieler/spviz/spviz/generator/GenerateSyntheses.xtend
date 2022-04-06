@@ -423,7 +423,6 @@ class GenerateSyntheses {
 		'''
 	}
 	
-	// TODO: add connections specific renderings
 	/**
 	 * Generates the content for the synthesis styles class.
 	 * 

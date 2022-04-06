@@ -68,12 +68,12 @@ class GenerateActions {
     		for (shownConnection : view.shownConnections) {
     		    val connection = shownConnection.shownConnection
     			// reveal connected artifacts
-    			content = generateRevealAction(data, view, connection, true)
+    			content = generateRevealAction(data, connection, true)
     			FileGenerator.generateOrUpdateFile(sourceFolder,
     			    folder + "RevealConnected" + connection.connecting.name + "Connects" + connection.connected.name + "Named" + connection.name + "Action.xtend",
     			    content, progressMonitor)
     			// reveal connecting artifacts
-    			content = generateRevealAction(data, view, connection, false)
+    			content = generateRevealAction(data, connection, false)
     			FileGenerator.generateOrUpdateFile(sourceFolder,
     			    folder + "RevealConnecting" + connection.connecting.name + "Connects" + connection.connected.name + "Named" + connection.name + "Action.xtend",
     			    content, progressMonitor)
@@ -231,20 +231,14 @@ class GenerateActions {
 	 * 
 	 * @param data
 	 * 		a DataAccess to easily get the information from
-	 * @param overview
-	 * 		an overview name as a string
-	 * @param connectionName
-	 * 		name of the connection to reveal as a string
-	 * @param artifactFrom
-	 * 		name of an artifact as a string
-	 * @param artifactTo
-	 * 		name of an artifact as a string
+	 * @param connection
+	 * 		the connection to reveal
 	 * @param isConnected
 	 * 		boolean which defines the direction of the connection
 	 * @return
 	 * 		the generated file content as a string
 	 */
-	def static generateRevealAction(DataAccess data, View view, Connection connection, boolean isConnected) {
+	def static generateRevealAction(DataAccess data, Connection connection, boolean isConnected) {
 		val String connectingOrConnected = isConnected ? "Connected" : "Connecting"
 		val connectionName = connection.name
         val artifactFrom = isConnected ? connection.connecting  : connection.connected
@@ -252,14 +246,11 @@ class GenerateActions {
         val artifactFromName = artifactFrom.name
         val artifactToName = artifactTo.name
 		val className = "Reveal" + connectingOrConnected + connection.connecting.name + "Connects" + connection.connected.name + "Named" + connection.name + "Action"
-		val viewName = view.name
-		// TODO: I think the view is irrelevant here, we could also just cast it to IOverviewVisualizationContext<?>
-		// and name the variable accordingly, no need to specify which overview this is in.
 		
 		return '''
 		package «data.getBundleNamePrefix».viz.actions
 		
-		import «data.getBundleNamePrefix».model.«viewName»OverviewContext
+		import «data.getBundleNamePrefix».model.IOverviewVisualizationContext
 		import «data.getBundleNamePrefix».model.«artifactFromName»Context
 		«IF artifactFromName != artifactToName»
 			import «data.getBundleNamePrefix».model.«artifactToName»Context
@@ -289,20 +280,20 @@ class GenerateActions {
 				// The «artifactFromName.toFirstLower» itself from the context.
 				val «artifactFromName.toFirstLower» = «artifactFromName.toFirstLower»Context.modelElement
 				
-				// The «viewName.toFirstLower» overview context this «artifactFromName.toFirstLower» is shown in.
-				val «viewName.toFirstLower»OverviewContext = «artifactFromName.toFirstLower»Context.parent as «viewName»OverviewContext
+				// The overview context this «artifactFromName.toFirstLower» is shown in.
+				val overviewContext = «artifactFromName.toFirstLower»Context.parent as IOverviewVisualizationContext<?>
 				
 				// The «connectingOrConnected.toFirstLower» «artifactToName.toFirstLower»s that are currently not yet in their detailed view need to be put in that state first.
-				val collapsed«connectingOrConnected»«artifactToName»Contexts = «viewName.toFirstLower»OverviewContext.collapsedElements.filter [
+				val collapsed«connectingOrConnected»«artifactToName»Contexts = overviewContext.collapsedElements.filter [
 					«artifactFromName.toFirstLower».«connectingOrConnected.toFirstLower + connectionName + artifactToName»s.contains(it.modelElement)
 				].toList
 				collapsed«connectingOrConnected»«artifactToName»Contexts.forEach [
-					«viewName.toFirstLower»OverviewContext.makeDetailed(it)
+					overviewContext.makeDetailed(it)
 				]
 				
 				// The «artifactToName.toFirstLower» contexts in the overview that the «connectionName.toFirstLower» connection can connect to.
 				// Use the detailed «artifactToName.toFirstLower» contexts only, as they are all made detailed above.
-				newlyConnectedContexts = «viewName.toFirstLower»OverviewContext.detailedElements.filter [
+				newlyConnectedContexts = overviewContext.detailedElements.filter [
 					«artifactFromName.toFirstLower».«connectingOrConnected.toFirstLower + connectionName + artifactToName»s.contains(it.modelElement)
 				].toList
 				
@@ -360,12 +351,12 @@ class GenerateActions {
 			
 			import de.cau.cs.kieler.klighd.IAction
 			import de.cau.cs.kieler.klighd.kgraph.util.KGraphUtil
+			import de.cau.cs.kieler.klighd.Klighd
 			import «data.getBundleNamePrefix».viz.SynthesisProperties
 			import «data.getBundleNamePrefix».model.IVisualizationContext
 			import «data.getBundleNamePrefix».model.«data.visualizationName»
 			import org.eclipse.core.runtime.Status
 			import org.eclipse.emf.ecore.util.EcoreUtil.Copier
-			import org.eclipse.ui.statushandlers.StatusManager
 			
 			import static extension «data.getBundleNamePrefix».model.util.ContextExtensions.*
 			
@@ -406,7 +397,6 @@ class GenerateActions {
 					// The visualization context of the element that this action is performed on.
 					val modelVisualizationContext = context.getDomainElement(context.KNode) as IVisualizationContext<?>
 					if (!currentVisualizationContext.isChildContextOrEqual(modelVisualizationContext)) {
-«««						TODO: visualisation becomes unresponsive from here sometimes. why?
 						throw new IllegalStateException("This action is performed on an element that is not currently in the " +
 							"currently displayed visualization context:" + this.class
 							+ "\nSomething during the clone process by the undo action probably went wrong.")
@@ -424,20 +414,12 @@ class GenerateActions {
 						return getActionResult(context)
 						
 					} catch (Exception e) {
-«««						TODO:
-«««						// Put an error model in the context and show that.
-«««						val errorModel = new ErrorModel("The action failed to execute and threw an exception.", e)
-«««						visualizationContexts.add(index + 1, errorModel) // TODO: Vis context of that.
-«««						context.viewContext.setProperty(SynthesisProperties.CURRENT_VISUALIZATION_CONTEXT_INDEX, index + 1)
-«««						// Show the exception, but continue normally.
-«««						e.printStackTrace
-«««						TODO: remove this eclipse ui dependency once this is possible via a service.
-						
-						StatusManager.getManager().handle(new Status(Status.ERROR, "«data.getBundleNamePrefix».viz",
+						val errorStatus = new Status(Status.ERROR, "«data.getBundleNamePrefix».viz",
 							"Something went wrong while executing the " + this.class.canonicalName + " action.\n" + 
 							"Please view the error log and send the stack trace and the way to " +
-							"reproduce this error to the developer.", e), 
-							StatusManager.SHOW.bitwiseOr(StatusManager.LOG));
+							"reproduce this error to the developer.", e)
+						Klighd.show(errorStatus)
+						Klighd.log(errorStatus)
 						return getActionResult(context)
 					}
 				}
