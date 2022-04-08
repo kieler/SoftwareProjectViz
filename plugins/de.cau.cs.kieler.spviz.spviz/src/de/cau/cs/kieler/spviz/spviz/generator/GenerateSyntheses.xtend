@@ -374,7 +374,7 @@ class GenerateSyntheses {
 			import «data.getBundleNamePrefix».viz.actions.ContextCollapseExpandAction
 			import «data.getBundleNamePrefix».viz.actions.ContextExpandAllAction
 «««			import «spviz.packageName».viz.actions.ContextRemoveAction
-«««			import «spviz.packageName».viz.actions.FocusAction
+			import «data.getBundleNamePrefix».viz.actions.FocusAction
 			import «data.getBundleNamePrefix».viz.actions.OverviewContextCollapseExpandAction
 			«FOR view : data.views»
 				«FOR connection : view.shownConnections»
@@ -396,7 +396,7 @@ class GenerateSyntheses {
 				override execute() {
 					KlighdDataManager.instance
 					.registerAction(SelectRelatedAction.ID, new SelectRelatedAction)
-«««					.registerAction(FocusAction.ID, new FocusAction)
+					.registerAction(FocusAction.ID, new FocusAction)
 					.registerAction(UndoAction.ID, new UndoAction)
 					.registerAction(RedoAction.ID, new RedoAction)
 					.registerAction(ResetViewAction.ID, new ResetViewAction)
@@ -469,10 +469,7 @@ class GenerateSyntheses {
 			import de.cau.cs.kieler.klighd.kgraph.KEdge
 			import de.cau.cs.kieler.klighd.kgraph.KNode
 			import de.cau.cs.kieler.klighd.kgraph.KPort
-«««			import de.cau.cs.kieler.klighd.krendering.Arc
-«««			import de.cau.cs.kieler.klighd.krendering.KArc
 			import de.cau.cs.kieler.klighd.krendering.KContainerRendering
-«««			import de.cau.cs.kieler.klighd.krendering.KEllipse
 			import de.cau.cs.kieler.klighd.krendering.KPolyline
 			import de.cau.cs.kieler.klighd.krendering.KRectangle
 			import de.cau.cs.kieler.klighd.krendering.KRoundedRectangle
@@ -490,7 +487,7 @@ class GenerateSyntheses {
 			import «data.getBundleNamePrefix».viz.actions.ContextCollapseExpandAction
 			import «data.getBundleNamePrefix».viz.actions.ContextExpandAllAction
 «««			import «spviz.packageName».viz.actions.ContextRemoveAction
-«««			import «spviz.packageName».viz.actions.FocusAction
+			import «data.getBundleNamePrefix».viz.actions.FocusAction
 			import «data.getBundleNamePrefix».viz.actions.OverviewContextCollapseExpandAction
 			import «data.getBundleNamePrefix».viz.actions.SelectRelatedAction
 			import «data.getBundleNamePrefix».viz.actions.ShowHideCollapsedAction
@@ -585,7 +582,7 @@ class GenerateSyntheses {
 							var columns = 1
 							val interactiveButtons = context.getOptionValue(INTERACTIVE_BUTTONS) as Boolean
 							if (interactiveButtons) {
-								columns += 3
+								columns += 4
 								if (isConnectable) {
 									columns += 1
 								}
@@ -601,7 +598,7 @@ class GenerateSyntheses {
 							]
 							if (interactiveButtons) {
 								addVerticalLine
-«««								addFocusButton(context)
+								addFocusButton(context)
 								addExpandAllButton(context)
 								if (isConnectable) {
 									addConnectAllButton(context)
@@ -854,33 +851,33 @@ class GenerateSyntheses {
 						}
 					]
 				}
-«««				
-«««				/**
-«««				 * Adds a button in grid placement that causes the {@link FocusAction} to be called.
-«««				 * 
-«««				 * @param container The parent rendering this button should be added to.
-«««				 * @param context The used ViewContext.
-«««				 */
-«««				def KRectangle addFocusButton(KContainerRendering container, ViewContext context) {
-«««					val action = FocusAction::ID
-«««					return container.addRectangle => [
-«««						setGridPlacementData => [
-«««							flexibleWidth = false
-«««						]
-«««						addSingleOrMultiClickAction(action)
-«««						lineWidth = 0
-«««						tooltip = "Focus the view to this overview alone."
-«««						if (context.getOptionValue(SHOW_ICONS) as Boolean) {
-«««							addImage("«data.bundleNamePrefix».viz", "icons/loupe128.png") => [
-«««								setPointPlacementData(RIGHT, 0, 0.5f, TOP, 0, 0.5f, H_CENTRAL, V_CENTRAL, 4f, 4f, 12, 12)
-«««								addSingleOrMultiClickAction(action)
-«««							]
-«««						} else {
-«««							val label = "Focus"
-«««							addButton(label, action)
-«««						}
-«««					]
-«««				}
+				
+				/**
+				 * Adds a button in grid placement that causes the {@link FocusAction} to be called.
+				 * 
+				 * @param container The parent rendering this button should be added to.
+				 * @param context The used ViewContext.
+				 */
+				def KRectangle addFocusButton(KContainerRendering container, ViewContext context) {
+					val action = FocusAction::ID
+					return container.addRectangle => [
+						setGridPlacementData => [
+							flexibleWidth = false
+						]
+						addSingleOrMultiClickAction(action)
+						lineWidth = 0
+						tooltip = "Focus the view to this overview alone."
+						if (context.getOptionValue(SHOW_ICONS) as Boolean) {
+							addImage("«data.bundleNamePrefix».viz", "icons/loupe128.png") => [
+								setPointPlacementData(RIGHT, 0, 0.5f, TOP, 0, 0.5f, H_CENTRAL, V_CENTRAL, 4f, 4f, 12, 12)
+								addSingleOrMultiClickAction(action)
+							]
+						} else {
+							val label = "Focus"
+							addButton(label, action)
+						}
+					]
+				}
 				
 				/**
 				 * Adds a simple text label to any rendering with some surrounding space for better readability.

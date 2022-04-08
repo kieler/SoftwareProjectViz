@@ -12,7 +12,6 @@
  */
 package de.cau.cs.kieler.spviz.spviz.generator
 
-import de.cau.cs.kieler.spviz.spviz.sPViz.View
 import de.cau.cs.kieler.spviz.spvizmodel.generator.FileGenerator
 import de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.Artifact
 import de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.Connection
@@ -53,6 +52,8 @@ class GenerateActions {
 		FileGenerator.generateOrUpdateFile(sourceFolder, folder + "ContextExpandAllAction.xtend", content, progressMonitor)
 		content = generateConnectAllAction(data)
 		FileGenerator.generateOrUpdateFile(sourceFolder, folder + "ConnectAllAction.xtend", content, progressMonitor)
+		content = generateFocusAction(data)
+		FileGenerator.generateOrUpdateFile(sourceFolder, folder + "FocusAction.xtend", content, progressMonitor)
         content = generateSelectRelatedAction(data)
         FileGenerator.generateOrUpdateFile(sourceFolder, folder + "SelectRelatedAction.xtend", content, progressMonitor)
         content = generateShowHideCollapsedAction(data)
@@ -64,6 +65,7 @@ class GenerateActions {
 		FileGenerator.generateOrUpdateFile(sourceFolder, folder + "RecursiveRevealAction.xtend", content, progressMonitor)
 		content = generateRevealAction(data)
 		FileGenerator.generateOrUpdateFile(sourceFolder, folder + "RevealAction.xtend", content, progressMonitor)
+		
 		for (view : data.views) {
     		for (shownConnection : view.shownConnections) {
     		    val connection = shownConnection.shownConnection
@@ -757,6 +759,47 @@ class GenerateActions {
                         }
                     ]
                 }
+            }
+            
+        '''
+    }
+    
+    /**
+     * Generates the content for the FocusAction class.
+     * 
+     * @param data
+     *      the DataAccess to easily get the information from.
+     * @return
+     *      the generated file content as a String.
+     */
+    def static generateFocusAction(DataAccess data) {
+        return '''
+            package «data.bundleNamePrefix».viz.actions
+            
+            import «data.bundleNamePrefix».model.IVisualizationContext
+            
+            import static extension «data.bundleNamePrefix».model.util.ContextExtensions.*
+            
+            /**
+             * Focuses the element this action is issued on by setting the 'focus' attribute on the root visualization.
+             * 
+             * @author nre
+             */
+            class FocusAction extends AbstractVisualizationContextChangingAction {
+                /**
+                 * This action's ID.
+                 */
+                public static val String ID = FocusAction.name
+                
+                override changeVisualization(IVisualizationContext<?> modelVisualizationContext, ActionContext actionContext) {
+                    val rootVisualization = modelVisualizationContext.rootVisualization
+                    rootVisualization.focus = modelVisualizationContext
+                }
+                
+                override protected ActionResult getActionResult(ActionContext context) {
+                    return super.getActionResult(context).doZoomToFit
+                }
+                
             }
             
         '''
