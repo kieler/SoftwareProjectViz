@@ -359,7 +359,6 @@ class GenerateModelMavenBuild {
                 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
                   <unit id="com.google.gson" version="0.0.0"/>
                   <unit id="com.google.inject" version="0.0.0"/>
-                  <unit id="javax.xml.bind" version="0.0.0"/>
                   <repository location="https://download.eclipse.org/tools/orbit/downloads/drops/R20210602031627/repository/"/>
                 </location>
                 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
