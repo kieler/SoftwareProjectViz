@@ -987,7 +987,7 @@ class GenerateSyntheses {
 							addSingleClickAction(SelectRelatedAction::ID, ModifierState.NOT_PRESSED, ModifierState.NOT_PRESSED,
 								ModifierState.NOT_PRESSED)
 							setShadow(SHADOW_COLOR.color, 4, 4)
-							tooltip = artifact.getName
+							tooltip = "«artifact.name» \"" + artifact.getName + "\""
 							setSelectionStyle
 						]
 					}
@@ -1041,7 +1041,7 @@ class GenerateSyntheses {
 							addRectangle => [
 								invisible = true
 								addSimpleLabel("ID: " + SynthesisUtils.getId(artifact.getName, context)) => [
-									tooltip = artifact.getName
+									tooltip = "«artifact.name» \"" + artifact.getName + "\""
 									addSingleClickAction(SelectRelatedAction::ID, ModifierState.NOT_PRESSED, ModifierState.NOT_PRESSED,
 										ModifierState.NOT_PRESSED)
 								]
