@@ -54,6 +54,8 @@ class GenerateActions {
 		FileGenerator.generateOrUpdateFile(sourceFolder, folder + "ConnectAllAction.xtend", content, progressMonitor)
 		content = generateFocusAction(data)
 		FileGenerator.generateOrUpdateFile(sourceFolder, folder + "FocusAction.xtend", content, progressMonitor)
+		content = generateDefocusAction(data)
+		FileGenerator.generateOrUpdateFile(sourceFolder, folder + "DefocusAction.xtend", content, progressMonitor)
         content = generateSelectRelatedAction(data)
         FileGenerator.generateOrUpdateFile(sourceFolder, folder + "SelectRelatedAction.xtend", content, progressMonitor)
         content = generateShowHideCollapsedAction(data)
@@ -794,6 +796,50 @@ class GenerateActions {
                 override changeVisualization(IVisualizationContext<?> modelVisualizationContext, ActionContext actionContext) {
                     val rootVisualization = modelVisualizationContext.rootVisualization
                     rootVisualization.focus = modelVisualizationContext
+                }
+                
+                override protected ActionResult getActionResult(ActionContext context) {
+                    return super.getActionResult(context).doZoomToFit
+                }
+                
+            }
+            
+        '''
+    }
+    
+    /**
+     * Generates the content for the DefocusAction class.
+     * 
+     * @param data
+     *      the DataAccess to easily get the information from.
+     * @return
+     *      the generated file content as a String.
+     */
+    def static generateDefocusAction(DataAccess data) {
+        return '''
+            package «data.bundleNamePrefix».viz.actions
+            
+            import «data.bundleNamePrefix».model.IVisualizationContext
+            
+            import static extension «data.bundleNamePrefix».model.util.ContextExtensions.*
+            
+            /**
+             * Defocuses the element this action is issued on by unsetting the 'focus' attribute on the root visualization.
+             * 
+             * @author nre
+             */
+            class DefocusAction extends AbstractVisualizationContextChangingAction {
+                /**
+                 * This action's ID.
+                 */
+                public static val String ID = DefocusAction.name
+                
+                override changeVisualization(IVisualizationContext<?> modelVisualizationContext, ActionContext actionContext) {
+                    val rootVisualization = modelVisualizationContext.rootVisualization
+                    if (!(rootVisualization.focus === modelVisualizationContext)) {
+                        throw new IllegalStateException("Defocus called on an overview that was not focused!")
+                    }
+                    rootVisualization.focus = null
                 }
                 
                 override protected ActionResult getActionResult(ActionContext context) {

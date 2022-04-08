@@ -374,6 +374,7 @@ class GenerateSyntheses {
 			import «data.getBundleNamePrefix».viz.actions.ContextCollapseExpandAction
 			import «data.getBundleNamePrefix».viz.actions.ContextExpandAllAction
 «««			import «spviz.packageName».viz.actions.ContextRemoveAction
+			import «data.getBundleNamePrefix».viz.actions.DefocusAction
 			import «data.getBundleNamePrefix».viz.actions.FocusAction
 			import «data.getBundleNamePrefix».viz.actions.OverviewContextCollapseExpandAction
 			«FOR view : data.views»
@@ -397,6 +398,7 @@ class GenerateSyntheses {
 					KlighdDataManager.instance
 					.registerAction(SelectRelatedAction.ID, new SelectRelatedAction)
 					.registerAction(FocusAction.ID, new FocusAction)
+					.registerAction(DefocusAction.ID, new DefocusAction)
 					.registerAction(UndoAction.ID, new UndoAction)
 					.registerAction(RedoAction.ID, new RedoAction)
 					.registerAction(ResetViewAction.ID, new ResetViewAction)
@@ -487,6 +489,7 @@ class GenerateSyntheses {
 			import «data.getBundleNamePrefix».viz.actions.ContextCollapseExpandAction
 			import «data.getBundleNamePrefix».viz.actions.ContextExpandAllAction
 «««			import «spviz.packageName».viz.actions.ContextRemoveAction
+			import «data.getBundleNamePrefix».viz.actions.DefocusAction
 			import «data.getBundleNamePrefix».viz.actions.FocusAction
 			import «data.getBundleNamePrefix».viz.actions.OverviewContextCollapseExpandAction
 			import «data.getBundleNamePrefix».viz.actions.SelectRelatedAction
@@ -569,10 +572,11 @@ class GenerateSyntheses {
 				 * @param headlineText The headline presenting this overview.
 				 * @param tooltipText What should be shown in a tooltip when hovering this overview.
 				 * @param isConnectable if the overview rendering contains connectable elements
+				 * @param isFocused if the overview is currently focused
 				 * @param context The used ViewContext.
 				 */
 				def void addOverviewRendering(KNode node, String headlineText, String tooltipText, boolean isConnectable,
-					ViewContext context) {
+					boolean isFocused, ViewContext context) {
 					// Expanded
 					node.addRoundedRectangle(ROUNDNESS, ROUNDNESS) => [
 						setAsExpandedView
@@ -598,7 +602,11 @@ class GenerateSyntheses {
 							]
 							if (interactiveButtons) {
 								addVerticalLine
-								addFocusButton(context)
+								if (isFocused) {
+								    addDefocusButton(context)
+								} else {
+								    addFocusButton(context)
+								}
 								addExpandAllButton(context)
 								if (isConnectable) {
 									addConnectAllButton(context)
@@ -877,6 +885,33 @@ class GenerateSyntheses {
 							addButton(label, action)
 						}
 					]
+				}
+				
+				/**
+				 * Adds a button in grid placement that causes the {@link DefocusAction} to be called.
+				 * 
+				 * @param container The parent rendering this button should be added to.
+				 * @param context The used ViewContext.
+				 */
+				def KRectangle addDefocusButton(KContainerRendering container, ViewContext context) {
+				    val action = DefocusAction::ID
+				    return container.addRectangle => [
+				        setGridPlacementData => [
+				            flexibleWidth = false
+				        ]
+				        addSingleOrMultiClickAction(action)
+				        lineWidth = 0
+				        tooltip = "Remove the focus from this overview."
+				        if (context.getOptionValue(SHOW_ICONS) as Boolean) {
+				            addImage("«data.bundleNamePrefix».viz", "icons/loupe-crossed128.png") => [
+				                setPointPlacementData(RIGHT, 0, 0.5f, TOP, 0, 0.5f, H_CENTRAL, V_CENTRAL, 4f, 4f, 12, 12)
+				                addSingleOrMultiClickAction(action)
+				            ]
+				        } else {
+				            val label = "Defocus"
+				            addButton(label, action)
+				        }
+				    ]
 				}
 				
 				/**
