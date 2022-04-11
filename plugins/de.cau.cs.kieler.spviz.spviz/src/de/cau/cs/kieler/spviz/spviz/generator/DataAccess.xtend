@@ -41,37 +41,37 @@ class DataAccess {
     
     /** The bundle and package prefix for the generated visualization bundles. */
     @Accessors(PUBLIC_GETTER)
-	String bundleNamePrefix
-	/** The imported model bundle and package prefix of the required {@link SPVizModel}. */
+    String bundleNamePrefix
+    /** The imported model bundle and package prefix of the required {@link SPVizModel}. */
     @Accessors(PUBLIC_GETTER)
-	String modelBundleNamePrefix
-	/** The name of the visualization */
+    String modelBundleNamePrefix
+    /** The name of the visualization */
     @Accessors(PUBLIC_GETTER)
-	String visualizationName
-	/** The name of the root object of the required {@link SPVizModel} instance, usually its name + 'Project' */
+    String visualizationName
+    /** The name of the root object of the required {@link SPVizModel} instance, usually its name + 'Project' */
     @Accessors(PUBLIC_GETTER)
-	String projectName
-	/** 
-	 * A convenient map to show all {@link Connection}s with the key of the map as the connecting {@link Artifact}.
-	 */
-	Map<Artifact, List<Connection>> connectedArtifacts
+    String projectName
+    /** 
+     * A convenient map to show all {@link Connection}s with the key of the map as the connecting {@link Artifact}.
+     */
+    Map<Artifact, List<Connection>> connectedArtifacts
     /**
      * A convenient map to show all {@link Connection}s with the key of the map as the connected {@link Artifact}.
      */
-	Map<Artifact, List<Connection>> connectingArtifacts
-	/** A convenient map to show all {@link ArtifactView}s that may be shown within the key {@link Artifact}. */
-	Map<Artifact, List<ArtifactView>> containedViews
-	/** A convenient map to show all {@link Artifact}s that show the key {@link View}. */
-	Map<View, List<Artifact>> artifactsShowing
-	
-	/**
-	 * Constructor
-	 * 
-	 * @param resource
-	 * 		The resource for the {@link SPViz} model loaded in the editor.
-	 */
-	new(Resource resource) {
-	    spviz = resource.contents.head as SPViz
+    Map<Artifact, List<Connection>> connectingArtifacts
+    /** A convenient map to show all {@link ArtifactView}s that may be shown within the key {@link Artifact}. */
+    Map<Artifact, List<ArtifactView>> containedViews
+    /** A convenient map to show all {@link Artifact}s that show the key {@link View}. */
+    Map<View, List<Artifact>> artifactsShowing
+    
+    /**
+     * Constructor
+     * 
+     * @param resource
+     *         The resource for the {@link SPViz} model loaded in the editor.
+     */
+    new(Resource resource) {
+        spviz = resource.contents.head as SPViz
         bundleNamePrefix = spviz.package
         
         spvizModel = resource.resourceSet.resources.findFirst[
@@ -82,13 +82,13 @@ class DataAccess {
         }
         modelBundleNamePrefix = spvizModel.package
         visualizationName = spviz.name
-		projectName = spvizModel.name + "Project"
-		connectedArtifacts = newHashMap
-		connectingArtifacts = newHashMap
-		containedViews = newHashMap
-		artifactsShowing = newHashMap
-		
-		for (view : spviz.views) {
+        projectName = spvizModel.name + "Project"
+        connectedArtifacts = newHashMap
+        connectingArtifacts = newHashMap
+        containedViews = newHashMap
+        artifactsShowing = newHashMap
+        
+        for (view : spviz.views) {
             // find all connections between artifacts
             for (shownConnection : view.shownConnections) {
                 val connection = shownConnection.shownConnection
@@ -126,86 +126,86 @@ class DataAccess {
             }
         }
     }
-	
-	/** 
-	 * All views displayable in this SPViz.
-	 * 
-	 * @return The views
-	 */
-	def List<View> getViews() {
-	    return this.spviz.views
-	}
-	
-	/** 
-	 * All artifacts displayable in this SPViz.
-	 * 
-	 * @return all artifact names as a string array
-	 */
-	def List<Artifact> getArtifacts() {
-	    return this.spvizModel.artifacts
-	}
-	
-	/** 
-	 * Returns all connections with the connected artifacts for a given connecting artifact. 
-	 * 
-	 * @param connecting
-	 * 		the artifact which connects other artifacts
-	 * @return
-	 * 		List of the connections
-	 */
-	def List<Connection> getConnectedArtifacts(Artifact connecting) { 
-		if (!connectedArtifacts.containsKey(connecting)) {
-			return newArrayList
-		}
-		return connectedArtifacts.get(connecting)
-	}
-	
-	/** 
-	 * Returns all connections with the connecting artifacts for a given connected artifact. 
-	 * 
-	 * @param connected
-	 * 		the artifact which is connected by other artifacts
-	 * @return
-	 * 		List of the connections
-	 */
-	def List<Connection>getConnectingArtifacts(Artifact connected) {
-		if (!connectingArtifacts.containsKey(connected)) {
-			return newArrayList
-		}
-		return connectingArtifacts.get(connected)
-	}
-	
-	/** 
-	 * Returns all connections with the connected artifacts for a given connecting artifact, if displayed in the view.
-	 * 
-	 * @param connecting
-	 * 		the artifact which connects other artifacts
-	 * @param view
-	 *      the view showing this connection
-	 * @return
-	 * 		List of the connections.
-	 */
-	def List<Connection> getConnectedArtifactsInOverview(Artifact connecting, View view) {
-		val List<Connection> connections = newArrayList
-		for (connectedConnection : connectedArtifacts.get(connecting) ?: #[]) {
-			if (isConnectionDisplayedInOverview(connectedConnection, view)) {
-				connections.add(connectedConnection)
-			}
-		}
-		return connections
-	}
-	
-	/** 
-     * Returns all connections with the connecting artifacts for a given connected artifact, if displayed in the view.
-	 * 
-	 * @param connected
-	 * 		the artifact which is connected by other artifacts
+    
+    /** 
+     * All views displayable in this SPViz.
+     * 
+     * @return The views
+     */
+    def List<View> getViews() {
+        return this.spviz.views
+    }
+    
+    /** 
+     * All artifacts displayable in this SPViz.
+     * 
+     * @return all artifact names as a string array
+     */
+    def List<Artifact> getArtifacts() {
+        return this.spvizModel.artifacts
+    }
+    
+    /** 
+     * Returns all connections with the connected artifacts for a given connecting artifact. 
+     * 
+     * @param connecting
+     *         the artifact which connects other artifacts
+     * @return
+     *         List of the connections
+     */
+    def List<Connection> getConnectedArtifacts(Artifact connecting) { 
+        if (!connectedArtifacts.containsKey(connecting)) {
+            return newArrayList
+        }
+        return connectedArtifacts.get(connecting)
+    }
+    
+    /** 
+     * Returns all connections with the connecting artifacts for a given connected artifact. 
+     * 
+     * @param connected
+     *         the artifact which is connected by other artifacts
+     * @return
+     *         List of the connections
+     */
+    def List<Connection>getConnectingArtifacts(Artifact connected) {
+        if (!connectingArtifacts.containsKey(connected)) {
+            return newArrayList
+        }
+        return connectingArtifacts.get(connected)
+    }
+    
+    /** 
+     * Returns all connections with the connected artifacts for a given connecting artifact, if displayed in the view.
+     * 
+     * @param connecting
+     *         the artifact which connects other artifacts
      * @param view
      *      the view showing this connection
-	 * @return
-	 * 		List of the connections.
-	 */
-	def List<Connection> getConnectingArtifactsInOverview(Artifact connected, View view) {
+     * @return
+     *         List of the connections.
+     */
+    def List<Connection> getConnectedArtifactsInOverview(Artifact connecting, View view) {
+        val List<Connection> connections = newArrayList
+        for (connectedConnection : connectedArtifacts.get(connecting) ?: #[]) {
+            if (isConnectionDisplayedInOverview(connectedConnection, view)) {
+                connections.add(connectedConnection)
+            }
+        }
+        return connections
+    }
+    
+    /** 
+     * Returns all connections with the connecting artifacts for a given connected artifact, if displayed in the view.
+     * 
+     * @param connected
+     *         the artifact which is connected by other artifacts
+     * @param view
+     *      the view showing this connection
+     * @return
+     *         List of the connections.
+     */
+    def List<Connection> getConnectingArtifactsInOverview(Artifact connected, View view) {
         val List<Connection> connections = newArrayList
         for (connectingConnection : connectingArtifacts.get(connected) ?: #[]) {
             if (isConnectionDisplayedInOverview(connectingConnection, view)) {
@@ -214,15 +214,15 @@ class DataAccess {
         }
         return connections
     }
-	
-	/** 
-	 * For a given artifact, finds the overviews, it can be contained in.
-	 * 
-	 * @param artifact
-	 * 		The artifact to find all possible views for.
-	 * @return
-	 * 		A list of all views that may contain the artifact.
-	 */
+    
+    /** 
+     * For a given artifact, finds the overviews, it can be contained in.
+     * 
+     * @param artifact
+     *         The artifact to find all possible views for.
+     * @return
+     *         A list of all views that may contain the artifact.
+     */
     def List<View> getContainingViews(Artifact artifact) {
         val possibleViews = newArrayList
         for (view : views) {
@@ -272,5 +272,5 @@ class DataAccess {
     def List<Artifact> getArtifactsShowing(View view) {
         return artifactsShowing.get(view) ?: #[]
     }
-	
+    
 }

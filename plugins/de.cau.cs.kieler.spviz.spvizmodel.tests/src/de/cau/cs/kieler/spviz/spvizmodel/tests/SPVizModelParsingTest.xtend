@@ -24,40 +24,40 @@ import org.junit.jupiter.api.^extension.ExtendWith
 @ExtendWith(InjectionExtension)
 @InjectWith(SPVizModelInjectorProvider)
 class SPVizModelParsingTest {
-	@Inject
-	ParseHelper<SPVizModel> parseHelper
-	
-	@Test
-	def void loadModel() {
-		val result = parseHelper.parse('''
-			package de.cau.cs.kieler.spviz.osgi
-			
-			SPVizModel OSGi {
-			    Product {
-			        contains Feature
-			        contains Bundle
-			    }
-			    Feature {
-			        contains Bundle
-			    }
-			    Bundle {
-			        Dependency connects Bundle
-			        PackageDependency connects Package
-			        contains ServiceInterface
-			        contains ServiceComponent
-			        contains Package
-			    }
-			    ServiceInterface {
-			        Required connects ServiceComponent
-			    }
-			    ServiceComponent {
-			        Required connects ServiceInterface
-			    }
-			    Package
-			}
-		''')
-		Assertions.assertNotNull(result)
-		val errors = result.eResource.errors
-		Assertions.assertTrue(errors.isEmpty, '''Unexpected errors: «errors.join(", ")»''')
-	}
+    @Inject
+    ParseHelper<SPVizModel> parseHelper
+    
+    @Test
+    def void loadModel() {
+        val result = parseHelper.parse('''
+            package de.cau.cs.kieler.spviz.osgi
+            
+            SPVizModel OSGi {
+                Product {
+                    contains Feature
+                    contains Bundle
+                }
+                Feature {
+                    contains Bundle
+                }
+                Bundle {
+                    Dependency connects Bundle
+                    PackageDependency connects Package
+                    contains ServiceInterface
+                    contains ServiceComponent
+                    contains Package
+                }
+                ServiceInterface {
+                    Required connects ServiceComponent
+                }
+                ServiceComponent {
+                    Required connects ServiceInterface
+                }
+                Package
+            }
+        ''')
+        Assertions.assertNotNull(result)
+        val errors = result.eResource.errors
+        Assertions.assertTrue(errors.isEmpty, '''Unexpected errors: «errors.join(", ")»''')
+    }
 }

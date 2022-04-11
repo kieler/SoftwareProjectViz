@@ -24,31 +24,31 @@ import org.junit.jupiter.api.^extension.ExtendWith
 @ExtendWith(InjectionExtension)
 @InjectWith(SPVizInjectorProvider)
 class SPVizParsingTest {
-	@Inject
-	ParseHelper<SPViz> parseHelper
-	
-	@Test
-	def void loadModel() {
-		val result = parseHelper.parse('''
-			package de.cau.cs.kieler.spviz.osgiviz
-			import "osgi.spvizmodel"
-			
-			SPViz OSGiViz {
-			    Services {
-			        show OSGi.ServiceInterface
-			        show OSGi.ServiceComponent
-			        connect OSGi.ServiceComponent.Required
-			        connect OSGi.ServiceInterface.Required
-			    }
-			    BundleDependencies { 
-			        show OSGi.Bundle
-			        connect OSGi.Bundle.Dependency
-			        connect OSGi.Bundle via OSGi.Bundle.PackageDependency
-			    }
-			}
-		''')
-		Assertions.assertNotNull(result)
-		val errors = result.eResource.errors
-		Assertions.assertTrue(errors.isEmpty, '''Unexpected errors: «errors.join(", ")»''')
-	}
+    @Inject
+    ParseHelper<SPViz> parseHelper
+    
+    @Test
+    def void loadModel() {
+        val result = parseHelper.parse('''
+            package de.cau.cs.kieler.spviz.osgiviz
+            import "osgi.spvizmodel"
+            
+            SPViz OSGiViz {
+                Services {
+                    show OSGi.ServiceInterface
+                    show OSGi.ServiceComponent
+                    connect OSGi.ServiceComponent.Required
+                    connect OSGi.ServiceInterface.Required
+                }
+                BundleDependencies { 
+                    show OSGi.Bundle
+                    connect OSGi.Bundle.Dependency
+                    connect OSGi.Bundle via OSGi.Bundle.PackageDependency
+                }
+            }
+        ''')
+        Assertions.assertNotNull(result)
+        val errors = result.eResource.errors
+        Assertions.assertTrue(errors.isEmpty, '''Unexpected errors: «errors.join(", ")»''')
+    }
 }

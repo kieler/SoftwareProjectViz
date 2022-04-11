@@ -19,7 +19,7 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
  */
 public class SPVizModelUiModule extends AbstractSPVizModelUiModule {
 
-	public SPVizModelUiModule(AbstractUIPlugin plugin) {
-		super(plugin);
-	}
+    public SPVizModelUiModule(AbstractUIPlugin plugin) {
+        super(plugin);
+    }
 }

@@ -22,55 +22,55 @@ import org.eclipse.core.runtime.IProgressMonitor
  * @author leo, nre
  */
 class GenerateModelUtils {
-	def static void generate(IFolder sourceFolder, SPVizModel spvizModel, IProgressMonitor progressMonitor) {
-		var folder = spvizModel.package.replace('.', '/') + "/model/util/"
+    def static void generate(IFolder sourceFolder, SPVizModel spvizModel, IProgressMonitor progressMonitor) {
+        var folder = spvizModel.package.replace('.', '/') + "/model/util/"
         FileGenerator.generateOrUpdateFile(sourceFolder, folder + "ModelUtil.java",
             generateModelUtil(spvizModel.name + "Project", spvizModel.package), progressMonitor)
-	}
-	
-	/**
-	 * Generates the contend for the ModelUtil.java file contained inside the model package
-	 * 
-	 * @param projectName
-	 *  	the model project name
-	 * @param importedNamespace
-	 * 		the model package name
-	 * @return 
-	 * 		the generated file content as a string
-	 */
-	def static String generateModelUtil(String projectName, String importedNamespace){
-		return '''
-			package «importedNamespace».model.util;
+    }
+    
+    /**
+     * Generates the contend for the ModelUtil.java file contained inside the model package
+     * 
+     * @param projectName
+     *      the model project name
+     * @param importedNamespace
+     *         the model package name
+     * @return 
+     *         the generated file content as a string
+     */
+    def static String generateModelUtil(String projectName, String importedNamespace){
+        return '''
+            package «importedNamespace».model.util;
 
-			import «importedNamespace».model.«projectName»;
-			import org.eclipse.emf.ecore.EObject;
-			
-			/**
-			 * Handy methods for handling with OSGi model elements.
-			 */
-			public final class ModelUtil {
-				
-				/**
-				 * Returns the «projectName» this model element belongs to.
-				 * 
-				 * @param element The element to find the project for.
-				 * @return The project containing the element.
-				 */
-				public static «projectName» parentProject(EObject element) {
-					EObject current = element;
-					while (!(current instanceof «projectName») && current != null) {
-						current = current.eContainer();
-					}
-					if (current instanceof «projectName») {
-						return («projectName») current;
-					} else {
-						return null;
-					}
-				}
-				
-			}
-			
-		'''
-	}
+            import «importedNamespace».model.«projectName»;
+            import org.eclipse.emf.ecore.EObject;
+            
+            /**
+             * Handy methods for handling with OSGi model elements.
+             */
+            public final class ModelUtil {
+                
+                /**
+                 * Returns the «projectName» this model element belongs to.
+                 * 
+                 * @param element The element to find the project for.
+                 * @return The project containing the element.
+                 */
+                public static «projectName» parentProject(EObject element) {
+                    EObject current = element;
+                    while (!(current instanceof «projectName») && current != null) {
+                        current = current.eContainer();
+                    }
+                    if (current instanceof «projectName») {
+                        return («projectName») current;
+                    } else {
+                        return null;
+                    }
+                }
+                
+            }
+            
+        '''
+    }
 
 }

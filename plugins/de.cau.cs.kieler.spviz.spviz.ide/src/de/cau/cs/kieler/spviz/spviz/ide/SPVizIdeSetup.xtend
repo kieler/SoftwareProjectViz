@@ -22,8 +22,8 @@ import org.eclipse.xtext.util.Modules2
  */
 class SPVizIdeSetup extends SPVizStandaloneSetup {
 
-	override createInjector() {
-		Guice.createInjector(Modules2.mixin(new SPVizRuntimeModule, new SPVizIdeModule))
-	}
-	
+    override createInjector() {
+        Guice.createInjector(Modules2.mixin(new SPVizRuntimeModule, new SPVizIdeModule))
+    }
+    
 }

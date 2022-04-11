@@ -23,18 +23,18 @@ import org.eclipse.xtext.ui.label.DefaultEObjectLabelProvider;
  */
 public class SPVizModelLabelProvider extends DefaultEObjectLabelProvider {
 
-	@Inject
-	public SPVizModelLabelProvider(AdapterFactoryLabelProvider delegate) {
-		super(delegate);
-	}
+    @Inject
+    public SPVizModelLabelProvider(AdapterFactoryLabelProvider delegate) {
+        super(delegate);
+    }
 
-	// Labels and icons can be computed like this:
-	
-//	String text(Greeting ele) {
-//		return "A greeting to " + ele.getName();
-//	}
+    // Labels and icons can be computed like this:
+    
+//    String text(Greeting ele) {
+//        return "A greeting to " + ele.getName();
+//    }
 //
-//	String image(Greeting ele) {
-//		return "Greeting.gif";
-//	}
+//    String image(Greeting ele) {
+//        return "Greeting.gif";
+//    }
 }

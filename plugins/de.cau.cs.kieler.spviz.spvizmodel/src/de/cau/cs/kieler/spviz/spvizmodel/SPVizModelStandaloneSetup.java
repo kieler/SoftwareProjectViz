@@ -18,7 +18,7 @@ package de.cau.cs.kieler.spviz.spvizmodel;
  */
 public class SPVizModelStandaloneSetup extends SPVizModelStandaloneSetupGenerated {
 
-	public static void doSetup() {
-		new SPVizModelStandaloneSetup().createInjectorAndDoEMFRegistration();
-	}
+    public static void doSetup() {
+        new SPVizModelStandaloneSetup().createInjectorAndDoEMFRegistration();
+    }
 }

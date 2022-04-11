@@ -36,7 +36,7 @@ Containment returns Containment:
 ;
 
 Connection returns Connection:
-	name=ID 'connects' connects=[Artifact]
+    name=ID 'connects' connects=[Artifact]
 ;
 
 QualifiedName:
