@@ -71,16 +71,23 @@ class GenerateActions {
         for (view : data.views) {
             for (shownConnection : view.shownConnections) {
                 val connection = shownConnection.shownConnection
+                val actionNameInfix = connection.connecting.name + "Connects" + connection.connected.name + "Named" + connection.name
                 // reveal connected artifacts
                 content = generateRevealAction(data, connection, true)
                 FileGenerator.generateOrUpdateFile(sourceFolder,
-                    folder + "RevealConnected" + connection.connecting.name + "Connects" + connection.connected.name + "Named" + connection.name + "Action.xtend",
-                    content, progressMonitor)
+                    folder + "RevealConnected" + actionNameInfix + "Action.xtend", content, progressMonitor)
+                // remove connected artifacts
+                content = generateRemoveAction(data, connection, true)
+                FileGenerator.generateOrUpdateFile(sourceFolder,
+                    folder + "RemoveConnected" + actionNameInfix + "Action.xtend", content, progressMonitor)
                 // reveal connecting artifacts
                 content = generateRevealAction(data, connection, false)
                 FileGenerator.generateOrUpdateFile(sourceFolder,
-                    folder + "RevealConnecting" + connection.connecting.name + "Connects" + connection.connected.name + "Named" + connection.name + "Action.xtend",
-                    content, progressMonitor)
+                    folder + "RevealConnecting" + actionNameInfix + "Action.xtend", content, progressMonitor)
+                // remove connecting artifacts
+                content = generateRemoveAction(data, connection, false)
+                FileGenerator.generateOrUpdateFile(sourceFolder,
+                    folder + "RemoveConnecting" + actionNameInfix + "Action.xtend", content, progressMonitor)
             }
         }
     }
@@ -252,92 +259,164 @@ class GenerateActions {
         val className = "Reveal" + connectingOrConnected + connection.connecting.name + "Connects" + connection.connected.name + "Named" + connection.name + "Action"
         
         return '''
-        package «data.getBundleNamePrefix».viz.actions
-        
-        import «data.getBundleNamePrefix».model.IOverviewVisualizationContext
-        import «data.getBundleNamePrefix».model.«artifactFromName»Context
-        «IF artifactFromName != artifactToName»
-            import «data.getBundleNamePrefix».model.«artifactToName»Context
-        «ENDIF»
-        import «data.getBundleNamePrefix».model.IVisualizationContext
-        
-        import static extension «data.getBundleNamePrefix».model.util.ContextExtensions.*
-        
-        /**
-         * Expands the «connectingOrConnected.toFirstLower» «artifactToName.toFirstLower»s of any «artifactFromName.toFirstLower» and connects them with an edge from the new «artifactToName.toFirstLower»'s
-         * 'usedBy«artifactFromName»s' port to this «artifactFromName.toFirstLower»'s '«connectingOrConnected.toFirstLower»«artifactToName»' port. 
-         * If all «connectingOrConnected.toFirstLower» «artifactToName.toFirstLower»s are already shown, this action reverses its functionality and removes all «artifactToName.toFirstLower»s again.
-         * 
-         * @author nre
-         */
-        class «className» extends RevealAction<«artifactFromName»Context> {
+            package «data.getBundleNamePrefix».viz.actions
+            
+            import «data.getBundleNamePrefix».model.IOverviewVisualizationContext
+            import «data.getBundleNamePrefix».model.«artifactFromName»Context
+            «IF artifactFromName != artifactToName»
+                import «data.getBundleNamePrefix».model.«artifactToName»Context
+            «ENDIF»
+            import «data.getBundleNamePrefix».model.IVisualizationContext
+            
+            import static extension «data.getBundleNamePrefix».model.util.ContextExtensions.*
             
             /**
-             * This action's ID.
+             * Expands the «connectingOrConnected.toFirstLower» «artifactToName.toFirstLower»s of any «artifactFromName.toFirstLower» and connects them with an edge from the new «artifactToName.toFirstLower»'s
+             * 'usedBy«artifactFromName»s' port to this «artifactFromName.toFirstLower»'s '«connectingOrConnected.toFirstLower»«artifactToName»' port.
+             * 
+             * @author nre
              */
-            public static val String ID = «className».name
-            
-            override changeVisualization(IVisualizationContext<?> modelVisualizationContext, ActionContext actionContext) {
-                // The «artifactFromName»Context element for the element that was clicked on.
-                val «artifactFromName.toFirstLower»Context = modelVisualizationContext as «artifactFromName»Context
-                
-                // The «artifactFromName.toFirstLower» itself from the context.
-                val «artifactFromName.toFirstLower» = «artifactFromName.toFirstLower»Context.modelElement
-                
-                // The overview context this «artifactFromName.toFirstLower» is shown in.
-                val overviewContext = «artifactFromName.toFirstLower»Context.parent as IOverviewVisualizationContext<?>
-                
-                // The «connectingOrConnected.toFirstLower» «artifactToName.toFirstLower»s that are currently not yet in their detailed view need to be put in that state first.
-                val collapsed«connectingOrConnected»«artifactToName»Contexts = overviewContext.collapsedElements.filter [
-                    «artifactFromName.toFirstLower».«connectingOrConnected.toFirstLower + connectionName + artifactToName»s.contains(it.modelElement)
-                ].toList
-                collapsed«connectingOrConnected»«artifactToName»Contexts.forEach [
-                    overviewContext.makeDetailed(it)
-                ]
-                
-                // The «artifactToName.toFirstLower» contexts in the overview that the «connectionName.toFirstLower» connection can connect to.
-                // Use the detailed «artifactToName.toFirstLower» contexts only, as they are all made detailed above.
-                newlyConnectedContexts = overviewContext.detailedElements.filter [
-                    «artifactFromName.toFirstLower».«connectingOrConnected.toFirstLower + connectionName + artifactToName»s.contains(it.modelElement)
-                ].toList
-                
-«««                // If all are already connected, remove them all. Otherwise, connect them all.
-«««        //        if (ContextUtils.allConnected(«artifactFrom.toFirstLower»Context, «connectingOrConnected.toFirstLower»«artifactTo»Contexts, «view.toFirstLower»OverviewContext, true)) {
-«««        //            «connectingOrConnected.toFirstLower»«artifactTo»Contexts.forEach [ «connectingOrConnected.toFirstLower»«artifactTo»Context |
-«««        //                ContextUtils.remove«connectionName»«artifactTo»Edge(«artifactFrom.toFirstLower»Context, «connectingOrConnected.toFirstLower»«artifactTo»Context as «artifactTo»Context)
-«««        //            ]
-«««        //        } else {
-                newlyConnectedContexts.forEach [ «connectingOrConnected.toFirstLower»«artifactToName»Context |
-                    «IF isConnected»
-                        «artifactFromName.toFirstLower»Context.add«connectionName»«artifactToName»Edge(«connectingOrConnected.toFirstLower»«artifactToName»Context as «artifactToName»Context)
-                    «ELSE»
-                        («connectingOrConnected.toFirstLower»«artifactToName»Context as «artifactToName»Context).add«connectionName»«artifactFromName»Edge(«artifactFromName.toFirstLower»Context)
-                    «ENDIF»
-                ]
-«««        //        }
-            }
-                
-            override applicableContext() {
-                return «artifactFromName»Context
-            }
-            
-            /**
-             * Recursive version of the parent class's action, revealing all elements using the same connection type connected.
-             */
-            static class Recursive extends RecursiveRevealAction<«artifactFromName»Context, «className»> {
+            class «className» extends RevealAction<«artifactFromName»Context> {
                 
                 /**
                  * This action's ID.
                  */
-                public static val String ID = Recursive.name
+                public static val String ID = «className».name
                 
-                override revealActionClass() {
-                    return «className»
+                override changeVisualization(IVisualizationContext<?> modelVisualizationContext, ActionContext actionContext) {
+                    // The «artifactFromName»Context element for the element that was clicked on.
+                    val «artifactFromName.toFirstLower»Context = modelVisualizationContext as «artifactFromName»Context
+                    
+                    // The «artifactFromName.toFirstLower» itself from the context.
+                    val «artifactFromName.toFirstLower» = «artifactFromName.toFirstLower»Context.modelElement
+                    
+                    // The overview context this «artifactFromName.toFirstLower» is shown in.
+                    val overviewContext = «artifactFromName.toFirstLower»Context.parent as IOverviewVisualizationContext<?>
+                    
+                    // The «connectingOrConnected.toFirstLower» «artifactToName.toFirstLower»s that are currently not yet in their detailed view need to be put in that state first.
+                    val collapsed«connectingOrConnected»«artifactToName»Contexts = overviewContext.collapsedElements.filter [
+                        «artifactFromName.toFirstLower».«connectingOrConnected.toFirstLower + connectionName + artifactToName»s.contains(it.modelElement)
+                    ].toList
+                    collapsed«connectingOrConnected»«artifactToName»Contexts.forEach [
+                        overviewContext.makeDetailed(it)
+                    ]
+                    
+                    // The «artifactToName.toFirstLower» contexts in the overview that the «connectionName.toFirstLower» connection can connect to.
+                    // Use the detailed «artifactToName.toFirstLower» contexts only, as they are all made detailed above.
+                    newlyConnectedContexts = overviewContext.detailedElements.filter [
+                        «artifactFromName.toFirstLower».«connectingOrConnected.toFirstLower + connectionName + artifactToName»s.contains(it.modelElement)
+                    ].toList
+                    
+                    newlyConnectedContexts.forEach [ «connectingOrConnected.toFirstLower»«artifactToName»Context |
+                        «IF isConnected»
+                            «artifactFromName.toFirstLower»Context.add«connectionName»«artifactToName»Edge(«connectingOrConnected.toFirstLower»«artifactToName»Context as «artifactToName»Context)
+                        «ELSE»
+                            («connectingOrConnected.toFirstLower»«artifactToName»Context as «artifactToName»Context).add«connectionName»«artifactFromName»Edge(«artifactFromName.toFirstLower»Context)
+                        «ENDIF»
+                    ]
+                }
+                    
+                override applicableContext() {
+                    return «artifactFromName»Context
+                }
+                
+                /**
+                 * Recursive version of the parent class's action, revealing all elements using the same connection type connected.
+                 */
+                static class Recursive extends RecursiveRevealAction<«artifactFromName»Context, «className»> {
+                    
+                    /**
+                     * This action's ID.
+                     */
+                    public static val String ID = Recursive.name
+                    
+                    override revealActionClass() {
+                        return «className»
+                    }
+                    
                 }
                 
             }
             
-        }
+        '''
+    }
+    
+    /**
+     * Generates the content for a remove action class.
+     * 
+     * @param data
+     *         a DataAccess to easily get the information from
+     * @param connection
+     *         the connection to remove
+     * @param isConnected
+     *         boolean which defines the direction of the connection
+     * @return
+     *         the generated file content as a string
+     */
+    def static generateRemoveAction(DataAccess data, Connection connection, boolean isConnected) {
+        val String connectingOrConnected = isConnected ? "Connected" : "Connecting"
+        val connectionName = connection.name
+        val artifactFrom = isConnected ? connection.connecting  : connection.connected
+        val artifactTo   = isConnected ? connection.connected : connection.connecting
+        val artifactFromName = artifactFrom.name
+        val artifactToName = artifactTo.name
+        val className = "Remove" + connectingOrConnected + connection.connecting.name + "Connects" + connection.connected.name + "Named" + connection.name + "Action"
+        
+        return '''
+            package «data.getBundleNamePrefix».viz.actions
+            
+            import java.util.List
+            
+            import «data.getBundleNamePrefix».model.IOverviewVisualizationContext
+            import «data.getBundleNamePrefix».model.«artifactFromName»Context
+            «IF artifactFromName != artifactToName»
+                import «data.getBundleNamePrefix».model.«artifactToName»Context
+            «ENDIF»
+            import «data.getBundleNamePrefix».model.IVisualizationContext
+            
+            import static extension «data.getBundleNamePrefix».model.util.ContextExtensions.*
+            
+            /**
+             * Disconnects the «connectingOrConnected.toFirstLower» «artifactToName.toFirstLower»s of any «artifactFromName.toFirstLower» and collapses them if they are not
+             * connected to anything anymore.
+             * 
+             * @author nre
+             */
+            class «className» extends AbstractVisualizationContextChangingAction {
+                
+                /**
+                 * This action's ID.
+                 */
+                public static val String ID = «className».name
+                
+                override changeVisualization(IVisualizationContext<?> modelVisualizationContext, ActionContext actionContext) {
+                        // The «artifactFromName»Context element for the element that was clicked on.
+                        val «artifactFromName.toFirstLower»Context = modelVisualizationContext as «artifactFromName»Context
+                        
+                        // The «artifactFromName.toFirstLower» itself from the context.
+                        val «artifactFromName.toFirstLower» = «artifactFromName.toFirstLower»Context.modelElement
+                        
+                        // The overview context this «artifactFromName.toFirstLower» is shown in.
+                        val overviewContext = «artifactFromName.toFirstLower»Context.parent as IOverviewVisualizationContext<?>
+                        
+                        // The «connectingOrConnected.toFirstLower» «artifactToName.toFirstLower»s that are currently in their detailed view.
+                        val detailed«connectingOrConnected»«artifactToName»Contexts = overviewContext.detailedElements.filter [
+                            «artifactFromName.toFirstLower».«connectingOrConnected.toFirstLower + connectionName + artifactToName»s.contains(it.modelElement)
+                        ].toList as List<«artifactToName»Context>
+                        detailed«connectingOrConnected»«artifactToName»Contexts.forEach [
+                            «IF isConnected»
+                                «artifactFromName.toFirstLower»Context.remove«connectionName»«artifactToName»Edge(it)
+                            «ELSE»
+                                it.remove«connectionName»«artifactFromName»Edge(«artifactFromName.toFirstLower»Context)
+                            «ENDIF»
+                            if (overviewContext.hasNoConnections(it)) {
+                                overviewContext.collapse(it)
+                            }
+                        ]
+                    }
+                
+            }
+            
         '''
     }
     

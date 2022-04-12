@@ -380,7 +380,9 @@ class GenerateSyntheses {
             «FOR view : data.views»
                 «FOR connection : view.shownConnections»
                     import «data.getBundleNamePrefix».viz.actions.RevealConnected«connection.shownConnection.connecting.name»Connects«connection.shownConnection.connected.name»Named«connection.shownConnection.name»Action
+                    import «data.getBundleNamePrefix».viz.actions.RemoveConnected«connection.shownConnection.connecting.name»Connects«connection.shownConnection.connected.name»Named«connection.shownConnection.name»Action
                     import «data.getBundleNamePrefix».viz.actions.RevealConnecting«connection.shownConnection.connecting.name»Connects«connection.shownConnection.connected.name»Named«connection.shownConnection.name»Action
+                    import «data.getBundleNamePrefix».viz.actions.RemoveConnecting«connection.shownConnection.connecting.name»Connects«connection.shownConnection.connected.name»Named«connection.shownConnection.name»Action
                 «ENDFOR»
             «ENDFOR»
             import «data.getBundleNamePrefix».viz.actions.SelectRelatedAction
@@ -413,8 +415,10 @@ class GenerateSyntheses {
                         «FOR connection : view.shownConnections»
                             .registerAction(RevealConnected«connection.shownConnection.connecting.name»Connects«connection.shownConnection.connected.name»Named«connection.shownConnection.name»Action.ID, new RevealConnected«connection.shownConnection.connecting.name»Connects«connection.shownConnection.connected.name»Named«connection.shownConnection.name»Action)
                             .registerAction(RevealConnected«connection.shownConnection.connecting.name»Connects«connection.shownConnection.connected.name»Named«connection.shownConnection.name»Action.Recursive.ID, new RevealConnected«connection.shownConnection.connecting.name»Connects«connection.shownConnection.connected.name»Named«connection.shownConnection.name»Action.Recursive)
+                            .registerAction(RemoveConnected«connection.shownConnection.connecting.name»Connects«connection.shownConnection.connected.name»Named«connection.shownConnection.name»Action.ID, new RemoveConnected«connection.shownConnection.connecting.name»Connects«connection.shownConnection.connected.name»Named«connection.shownConnection.name»Action)
                             .registerAction(RevealConnecting«connection.shownConnection.connecting.name»Connects«connection.shownConnection.connected.name»Named«connection.shownConnection.name»Action.ID, new RevealConnecting«connection.shownConnection.connecting.name»Connects«connection.shownConnection.connected.name»Named«connection.shownConnection.name»Action)
                             .registerAction(RevealConnecting«connection.shownConnection.connecting.name»Connects«connection.shownConnection.connected.name»Named«connection.shownConnection.name»Action.Recursive.ID, new RevealConnecting«connection.shownConnection.connecting.name»Connects«connection.shownConnection.connected.name»Named«connection.shownConnection.name»Action.Recursive)
+                            .registerAction(RemoveConnecting«connection.shownConnection.connecting.name»Connects«connection.shownConnection.connected.name»Named«connection.shownConnection.name»Action.ID, new RemoveConnecting«connection.shownConnection.connecting.name»Connects«connection.shownConnection.connected.name»Named«connection.shownConnection.name»Action)
                         «ENDFOR»
                     «ENDFOR»
                     .registerDiagramSynthesisClass(«data.projectName.toFirstUpper»DiagramSynthesis.name, «data.projectName.toFirstUpper»DiagramSynthesis)
@@ -497,7 +501,9 @@ class GenerateSyntheses {
             «FOR view : data.views»
                 «FOR connection : view.shownConnections»
                     import «data.getBundleNamePrefix».viz.actions.RevealConnected«connection.shownConnection.connecting.name»Connects«connection.shownConnection.connected.name»Named«connection.shownConnection.name»Action
+                    import «data.getBundleNamePrefix».viz.actions.RemoveConnected«connection.shownConnection.connecting.name»Connects«connection.shownConnection.connected.name»Named«connection.shownConnection.name»Action
                     import «data.getBundleNamePrefix».viz.actions.RevealConnecting«connection.shownConnection.connecting.name»Connects«connection.shownConnection.connected.name»Named«connection.shownConnection.name»Action
+                    import «data.getBundleNamePrefix».viz.actions.RemoveConnecting«connection.shownConnection.connecting.name»Connects«connection.shownConnection.connected.name»Named«connection.shownConnection.name»Action
                 «ENDFOR»
             «ENDFOR»
             «FOR artifact : data.artifacts»
@@ -1072,15 +1078,22 @@ class GenerateSyntheses {
                     
                     «FOR connected : data.getConnectedArtifacts(artifact)»
                         /**
-                         * The rendering of a port that connects a «artifact.name» with the connected «connected.connected.name». Issues the
-                         * {@link RevealConnected«connected.connecting.name»Connects«connected.connected.name»Named«connected.name»Action} or {@link RevealConnected«connected.connecting.name»Connects«connected.connected.name»Named«connected.name»Action.Recursive} if clicked.
+                         * The rendering of a port that connects a «artifact.name» with the connected «connected.connected.name»s. Issues the
+                         * {@link RevealConnected«connected.connecting.name»Connects«connected.connected.name»Named«connected.name»Action} or {@link RevealConnected«connected.connecting.name»Connects«connected.connected.name»Named«connected.name»Action.Recursive} if
+                         * clicked when not all connected «connected.connected.name»s are shown, or the {@link RemoveConnected«connected.connecting.name»Connects«connected.connected.name»Named«connected.name»Action}
+                         * if all are already shown.
                          */
                         def KRectangle addConnected«connected.connecting.name»Connects«connected.connected.name»Named«connected.name»ActionPortRendering(KPort port, int numReferences, boolean allShown) {
                             return port.addRectangle => [
-                                background = if (allShown) ALL_SHOWN_COLOR.color else NOT_ALL_SHOWN_COLOR.color
-                                val tooltipText = "Show connected «connected.connected.name.toFirstLower»s via «connected.name» (" + numReferences + " total)."
-                                tooltip = tooltipText
-                                addSingleClickAction(RevealConnected«connected.connecting.name»Connects«connected.connected.name»Named«connected.name»Action::ID, ModifierState.DONT_CARE, ModifierState.NOT_PRESSED, ModifierState.DONT_CARE)
+                                if (allShown) {
+                                    background = ALL_SHOWN_COLOR.color
+                                    tooltip = "Remove connected «connected.connected.name.toFirstLower»s via «connected.name»."
+                                    addSingleClickAction(RemoveConnected«connected.connecting.name»Connects«connected.connected.name»Named«connected.name»Action::ID, ModifierState.DONT_CARE, ModifierState.NOT_PRESSED, ModifierState.DONT_CARE)
+                                } else {
+                                    background = NOT_ALL_SHOWN_COLOR.color
+                                    tooltip = "Show connected «connected.connected.name.toFirstLower»s via «connected.name» (" + numReferences + " total)."
+                                    addSingleClickAction(RevealConnected«connected.connecting.name»Connects«connected.connected.name»Named«connected.name»Action::ID, ModifierState.DONT_CARE, ModifierState.NOT_PRESSED, ModifierState.DONT_CARE)
+                                }
                                 addSingleClickAction(RevealConnected«connected.connecting.name»Connects«connected.connected.name»Named«connected.name»Action.Recursive::ID, ModifierState.DONT_CARE, ModifierState.PRESSED, ModifierState.DONT_CARE)
                             ]
                         }
@@ -1114,14 +1127,21 @@ class GenerateSyntheses {
                     «FOR connecting : data.getConnectingArtifacts(artifact)»
                         /**
                          * The rendering of a port that connects a «artifact.name.toFirstLower» with the «connecting.connecting.name»s that connect it. Issues the
-                         * {@link RevealConnecting«connecting.connecting.name»Connects«connecting.connected.name»Named«connecting.name»Action} or {@link RevealConnecting«connecting.connecting.name»Connects«connecting.connected.name»Named«connecting.name»Action.Recursive} if clicked.
+                         * {@link RevealConnecting«connecting.connecting.name»Connects«connecting.connected.name»Named«connecting.name»Action} or {@link RevealConnecting«connecting.connecting.name»Connects«connecting.connected.name»Named«connecting.name»Action.Recursive} if
+                         * clicked when not all connecting «connecting.connecting.name»s are shown, or the {@link RemoveConnecting«connecting.connecting.name»Connects«connecting.connected.name»Named«connecting.name»Action}
+                         * if all are already shown.
                          */
                         def KRectangle addConnecting«connecting.connecting.name»Connects«connecting.connected.name»Named«connecting.name»ActionPortRendering(KPort port, int numReferences, boolean allShown) {
                             return port.addRectangle => [
-                                background = if (allShown) ALL_SHOWN_COLOR.color else NOT_ALL_SHOWN_COLOR.color
-                                val tooltipText = "Show connecting «connecting.connecting.name.toFirstLower»s via «connecting.name» (" + numReferences + " total)."
-                                tooltip = tooltipText
-                                addSingleClickAction(RevealConnecting«connecting.connecting.name»Connects«connecting.connected.name»Named«connecting.name»Action::ID, ModifierState.DONT_CARE, ModifierState.NOT_PRESSED, ModifierState.DONT_CARE)
+                                if (allShown) {
+                                    background = ALL_SHOWN_COLOR.color
+                                    tooltip = "Remove connecting «connecting.connecting.name.toFirstLower»s via «connecting.name»."
+                                    addSingleClickAction(RemoveConnecting«connecting.connecting.name»Connects«connecting.connected.name»Named«connecting.name»Action::ID, ModifierState.DONT_CARE, ModifierState.NOT_PRESSED, ModifierState.DONT_CARE)
+                                } else {
+                                    background = NOT_ALL_SHOWN_COLOR.color
+                                    tooltip = "Show connecting «connecting.connecting.name.toFirstLower»s via «connecting.name» (" + numReferences + " total)."
+                                    addSingleClickAction(RevealConnecting«connecting.connecting.name»Connects«connecting.connected.name»Named«connecting.name»Action::ID, ModifierState.DONT_CARE, ModifierState.NOT_PRESSED, ModifierState.DONT_CARE)
+                                }
                                 addSingleClickAction(RevealConnecting«connecting.connecting.name»Connects«connecting.connected.name»Named«connecting.name»Action.Recursive::ID, ModifierState.DONT_CARE, ModifierState.PRESSED, ModifierState.DONT_CARE)
                             ]
                         }

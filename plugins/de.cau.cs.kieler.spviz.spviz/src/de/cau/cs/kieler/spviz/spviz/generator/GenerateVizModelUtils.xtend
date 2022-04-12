@@ -598,6 +598,71 @@ class GenerateVizModelUtils {
                                 }
                             }
                         }
+                        
+                        /**
+                         * Removes a connected edge to the parent overview context of the two given contexts.
+                         * 
+                         * @param connectingContext The «shownConnection.shownConnection.connecting.name.toFirstLower» context with the «shownConnection.shownConnection.connecting.name.toFirstLower» connecting the other «shownConnection.shownConnection.connected.name.toFirstLower».
+                         * @param connectedContext The «shownConnection.shownConnection.connected.name.toFirstLower» context with the «shownConnection.shownConnection.connected.name.toFirstLower» connected by the other «shownConnection.shownConnection.connecting.name.toFirstLower».
+                         */
+                        def static void remove«shownConnection.shownConnection.name»«shownConnection.shownConnection.connected.name»Edge(«shownConnection.shownConnection.connecting.name»Context connectingContext, «shownConnection.shownConnection.connected.name»Context connectedContext) {
+                            val parentContext = connectingContext.parent as «view.name»OverviewContext
+                            if (connectedContext.parent !== parentContext) {
+                                throw new IllegalArgumentException("The connecting and the connected context both have to have the same " +
+                                    "parent context!")
+                            }
+                            parentContext.«shownConnection.shownConnection.connecting.name.toFirstLower»Connects«shownConnection.shownConnection.connected.name»Named«shownConnection.shownConnection.name»Edges.removeIf [ key === connectingContext && value === connectedContext ]
+                            
+                            // Mark for both the connecting and connected context that not all connections are shown in the 
+                            // parent context anymore. Remember that in the corresponding context.
+                            connectingContext.allConnected«shownConnection.shownConnection.connecting.name»Connects«shownConnection.shownConnection.connected.name»Named«shownConnection.shownConnection.name»Shown = false
+                            connectedContext.allConnecting«shownConnection.shownConnection.connecting.name»Connects«shownConnection.shownConnection.connected.name»Named«shownConnection.shownConnection.name»Shown = false
+                        }
+                        
+                    «ENDFOR»
+                «ENDFOR»
+                
+                // Method to let Xtend create the needed generic super type.
+                /**
+                 * Determines if the given artifact context is currently in no connection to any other element within this parent
+                 * context.
+                 * 
+                 * @param parent The parent context to check any connection in.
+                 * @param child The child context to check if it is connected
+                 * @return {@code} true, if there is no connection related to the {@code child} context in this {@code parent} context.
+                 */
+                def static dispatch boolean hasNoConnections(IOverviewVisualizationContext<?> parent, IVisualizationContext<?> child) {
+                    return true
+                }
+                
+                «FOR view : data.views»
+                    «FOR artifact : view.shownElements.map[shownElement]»
+                        /**
+                         * Determines if the given «artifact.name.toFirstLower» context is currently in no connection to any other element within this parent
+                         * context.
+                         * 
+                         * @param parent The parent context to check any connection in.
+                         * @param child The child context to check if it is connected
+                         * @return {@code} true, if there is no connection related to the {@code child} context in this {@code parent} context.
+                         */
+                        def static dispatch boolean hasNoConnections(«view.name»OverviewContext parent, «artifact.name»Context child) {
+                            «FOR connection : view.shownConnections.map[shownConnection]»
+                                «IF connection.connecting === artifact || connection.connected === artifact»
+                                    if (parent.«connection.connecting.name.toFirstLower»Connects«connection.connected.name»Named«connection.name»Edges.exists [ edge |
+                                        «IF connection.connecting === artifact»
+                                            edge.key === child || 
+                                        «ENDIF»
+                                        «IF connection.connected === artifact»
+                                            edge.value === child ||
+                                        «ENDIF»
+                                        false
+                                    ]) {
+                                        return false
+                                    }
+                                «ENDIF»
+                            «ENDFOR»
+                            return true
+                        }
                     «ENDFOR»
                 «ENDFOR»
             }
