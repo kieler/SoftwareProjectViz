@@ -51,6 +51,9 @@ class SPVizModelGenerator extends AbstractGenerator {
         GenerateModelMavenBuild.addPluginPom(project, model, version, progressMonitor)
         
         GenerateModelMavenBuild.addSpvizBuildProjectPom(version, progressMonitor)
+        
+        // Generate a .generate scaffold for the model if not already existent.
+        GenerateGeneratorScaffold.generate(model, version, progressMonitor)
     }
     
     /**

@@ -40,6 +40,9 @@ class JavaProjectGenerator {
     
     /** The exported packages for this new project. */
     val List<String> exportedPackages = newArrayList
+    
+    /** The subfolder name of the source folder */
+    var String sourceFolderName = "src-gen"
 
     /**
      * Create a new generator.
@@ -79,6 +82,17 @@ class JavaProjectGenerator {
         
         return this
     }
+    
+    /**
+     * Configure the source folder where the files should be generated into. Defaults to "src-gen".
+     * 
+     * @param sourceFolderName the source folder to generate and configure.
+     * @return This generator, for chaining configurations.
+     */
+    def JavaProjectGenerator configureSourceFolderName(String sourceFolderName) {
+        this.sourceFolderName = sourceFolderName
+        return this
+    }
 
     /**
      * Starts the generation of this generator and returns the fully generated Java project.
@@ -87,7 +101,7 @@ class JavaProjectGenerator {
      * @returns The new Java project that was generated on the file system.
      */
     def IProject generate(IProgressMonitor progressMonitor) {
-        val genModelContainerPath = new Path("/" + projectPath + "/src-gen")
+        val genModelContainerPath = new Path("/" + projectPath + "/" + sourceFolderName)
 
         // Create the project.
         val IWorkspace workspace = ResourcesPlugin.getWorkspace()
@@ -139,7 +153,7 @@ class JavaProjectGenerator {
         entries.add(JavaCore.newContainerEntry(new Path("org.eclipse.pde.core.requiredPlugins")))
         
         // The source and xtend-gen folders
-        val sourceFolder = project.getFolder("src-gen")
+        val sourceFolder = project.getFolder(sourceFolderName)
         if (!sourceFolder.exists) {
             sourceFolder.create(false, true, BasicMonitor.subProgress(progressMonitor, 1))
         }
