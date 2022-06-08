@@ -323,11 +323,11 @@ public class ReadProjectFiles {
 							.filter(elem -> elem.getName().equals(interfaceName))//
 							.findFirst();
 					if (serviceInterfaceOptional.isPresent()) {
-						serviceInterfaceOptional.get().getConnectedRequiredServiceComponents().add(serviceComponent);
+						serviceInterfaceOptional.get().getConnectedProvidedByServiceComponents().add(serviceComponent);
 					} else {
 						Bundle interfaceBundle = ReadProjectFilesUtility.getBundleFromInterface(interfaceName, project);
 						final ServiceInterface serviceInterface = OSGiFactory.eINSTANCE.createServiceInterface();
-						serviceInterface.getConnectedRequiredServiceComponents().add(serviceComponent);
+						serviceInterface.getConnectedProvidedByServiceComponents().add(serviceComponent);
 						serviceInterface.setName(interfaceName);
 						serviceInterface.setEcoreId(StaticVariables.SERVICE_INTERFACE_PREFIX + interfaceName);
 						if (interfaceBundle != null) {

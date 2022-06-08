@@ -16,7 +16,7 @@ SPVizModel OSGi {
 		contains Package
 	}
 	ServiceInterface {
-		Required connects ServiceComponent
+		ProvidedBy connects ServiceComponent
 	}
 	ServiceComponent {
 		Required connects ServiceInterface
