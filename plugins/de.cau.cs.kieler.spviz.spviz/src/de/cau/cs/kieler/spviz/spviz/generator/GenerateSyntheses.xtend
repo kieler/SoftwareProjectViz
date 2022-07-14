@@ -1466,12 +1466,14 @@ class GenerateSyntheses {
                 /** Category option containing options for filtering artifact views. */
                 public static final SynthesisOption ARTIFACT_VIEW_FILTER_CATEGORY = SynthesisOption.createCategory("Artifact overview filter", false)
                     .setCategory(FILTER_CATEGORY)
+                    .description = "Category for filtering overviews shown within artifacts."
                 
                 «FOR artifact : data.artifacts»
                     «FOR view : data.getContainedViews(artifact)»
                             /** Option indicating whether «view.view.name.toFirstLower» overviews should be shown in «artifact.name.toFirstLower»s. */
                             public static final SynthesisOption «artifact.name.toUpperCase»_SHOW_«view.view.name.toUpperCase»= SynthesisOption.createCheckOption(
                                 "«view.view.name.toFirstUpper» Overviews in «artifact.name.toFirstUpper»", true).setCategory(ARTIFACT_VIEW_FILTER_CATEGORY)
+                                .description = "Changes whether «view.view.name.toFirstUpper» overviews are shown within «artifact.name.toFirstUpper»."
                             
                     «ENDFOR»
                 «ENDFOR»
@@ -1483,6 +1485,7 @@ class GenerateSyntheses {
                 /** Option for shortening all IDs by the prefix in the option. */
                 public static final SynthesisOption SHORTEN_BY = SynthesisOption.createTextOption(
                     "Shorten IDs by").setCategory(VIEW_FILTER_CATEGORY)
+                    .description = "Shorten the IDs of all artifacts by this prefix."
                 
                 /** Option for showing interactive buttons. */
                 public static final SynthesisOption INTERACTIVE_BUTTONS = SynthesisOption.createCheckOption(
