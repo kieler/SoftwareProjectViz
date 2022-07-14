@@ -56,7 +56,7 @@
     <pluginRepository>
       <id>jboss-public-repository-group</id>
       <name>JBoss Public Repository Group</name>
-      <url>https://repository.jboss.org/nexus/content/groups/public/</url>
+      <url>https://repository.jboss.org/nexus/content/groups/public/</url><!-- Something went wrong with this in the other repos, why not here? Comment in this file to force GH Actions build to rebuild with a clean cache. -->
     </pluginRepository>
     <pluginRepository>
       <id>jboss-snapshots-repository</id>
