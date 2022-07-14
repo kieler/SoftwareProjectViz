@@ -53,9 +53,9 @@
                 <!-- Eclipse Orbit -->
                 <associateSite>https://download.eclipse.org/tools/orbit/downloads/drops/R20210602031627/repository/</associateSite>
                 <!-- Eclipse Layout Kernel -->
-                <associateSite>https://download.eclipse.org/elk/updates/releases/0.7.1/</associateSite>>
+                <associateSite>https://download.eclipse.org/elk/updates/releases/0.8.1/</associateSite>>
                 <!-- KLighD -->
-                <associateSite>https://kieler.github.io/KLighD/v2.1.0/</associateSite>>
+                <associateSite>https://kieler.github.io/KLighD/v2.2.0/</associateSite>>
                 <!-- Xtext -->
                 <associateSite>https://download.eclipse.org/modeling/tmf/xtext/updates/releases/2.25.0/</associateSite>>
                 <!-- M2E Connectors -->

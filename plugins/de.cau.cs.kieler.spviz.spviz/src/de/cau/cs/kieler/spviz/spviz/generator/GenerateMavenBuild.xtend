@@ -746,8 +746,8 @@ class GenerateMavenBuild {
                 <repository-reference location="https://archive.eclipse.org/lsp4j/updates/releases/0.10.0/" enabled="true" />
                 <repository-reference location="https://download.eclipse.org/tools/orbit/downloads/drops/R20210602031627/repository/" enabled="true" />
                 <repository-reference location="https://download.eclipse.org/modeling/tmf/xtext/updates/releases/2.25.0/" enabled="true" />
-                <repository-reference location="https://download.eclipse.org/elk/updates/releases/0.7.1/" enabled="true" />
-                <repository-reference location="https://rtsys.informatik.uni-kiel.de/~kieler/updatesite/nightly/klighd/" enabled="true" />
+                <repository-reference location="https://download.eclipse.org/elk/updates/releases/0.8.1/" enabled="true" />
+                <repository-reference location="https://kieler.github.io/KLighD/v2.2.0/" enabled="true" />
                 <repository-reference location="https://rtsys.informatik.uni-kiel.de/~kieler/updatesite/sprotty/0.9.0/" enabled="true" />
             
             </site>
@@ -809,8 +809,8 @@ class GenerateMavenBuild {
                           <associateSites>
                             <associateSite>https://download.eclipse.org/releases/2021-06</associateSite>
                             <associateSite>https://download.eclipse.org/modeling/tmf/xtext/updates/releases/2.25.0/</associateSite>
-                            <associateSite>https://download.eclipse.org/elk/updates/releases/0.7.1/</associateSite>
-                            <associateSite>https://kieler.github.io/KLighD/v2.1.0/</associateSite>
+                            <associateSite>https://download.eclipse.org/elk/updates/releases/0.8.1/</associateSite>
+                            <associateSite>https://kieler.github.io/KLighD/v2.2.0/</associateSite>
                             <associateSite>https://download.eclipse.org/tools/orbit/downloads/drops/R20210602031627/repository/</associateSite>
                           </associateSites>
                         </configuration>
