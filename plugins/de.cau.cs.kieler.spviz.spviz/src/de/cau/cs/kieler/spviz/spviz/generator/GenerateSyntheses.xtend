@@ -1000,7 +1000,7 @@ class GenerateSyntheses {
                     
                     /**
                      * Adds a rendering for a {@link «artifact.name»} to the given node.
-                     * Contains the name of the «artifact.name.toFirstLower», a button to focus this product and text for the ID and description of this product.
+                     * Contains the name of the «artifact.name.toFirstLower», a button to focus this artifact and text for the ID and description of this artifact.
                      * 
                      * @param node The KNode this rendering should be attached to.
                      * @param artifact The «artifact.name.toFirstLower» this rendering represents.
@@ -1029,7 +1029,7 @@ class GenerateSyntheses {
                                 invisible = true
                                 addRectangle => [
                                     invisible = true
-                                    addSimpleLabel(artifact.getName) => [
+                                    addSimpleLabel(SynthesisUtils.getId(artifact.getName, context)) => [
                                         fontBold = true
                                         selectionFontBold = true
                                     ]
@@ -1043,15 +1043,15 @@ class GenerateSyntheses {
                                     }
                                 }
                             ]
-                            addHorizontalSeperatorLine(1, 0)
-                            addRectangle => [
-                                invisible = true
-                                addSimpleLabel("ID: " + SynthesisUtils.getId(artifact.getName, context)) => [
-                                    tooltip = "«artifact.name» \"" + artifact.getName + "\""
-                                    addSingleClickAction(SelectRelatedAction::ID, ModifierState.NOT_PRESSED, ModifierState.NOT_PRESSED,
-                                        ModifierState.NOT_PRESSED)
-                                ]
-                            ]
+«««                            addHorizontalSeperatorLine(1, 0)
+«««                            addRectangle => [
+«««                                invisible = true
+«««                                addSimpleLabel("ID: " + SynthesisUtils.getId(artifact.getName, context)) => [
+«««                                    tooltip = "«artifact.name» \"" + artifact.getName + "\""
+«««                                    addSingleClickAction(SelectRelatedAction::ID, ModifierState.NOT_PRESSED, ModifierState.NOT_PRESSED,
+«««                                        ModifierState.NOT_PRESSED)
+«««                                ]
+«««                            ]
 «««                            if (context.getOptionValue(FILTER_DESCRIPTIONS) as Boolean) {
 «««                                val desc = SynthesisUtils.descriptionLabel(artifact.about, context)
 «««                                if (!desc.empty) {
