@@ -463,7 +463,7 @@ public class ReadProjectFiles {
 				if (importOrExport.equals(StaticVariables.EXPORT_PACKAGE)) {
 					final Package newExportedPackage = OSGiFactory.eINSTANCE.createPackage();
 					newExportedPackage.setName(packageName);
-					newExportedPackage.setEcoreId(StaticVariables.PACKAGE_PREFIX + toAscii(packageName));
+					newExportedPackage.setEcoreId(StaticVariables.PACKAGE_PREFIX + bundle.getEcoreId() + toAscii(packageName));
 					newExportedPackage.getBundles().add(bundle);
 					bundle.getPackages().add(newExportedPackage);
 					project.getPackages().add(newExportedPackage);
