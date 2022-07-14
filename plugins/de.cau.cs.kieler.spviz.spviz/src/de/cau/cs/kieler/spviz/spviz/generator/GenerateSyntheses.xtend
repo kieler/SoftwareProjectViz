@@ -1753,8 +1753,8 @@ class GenerateSyntheses {
                        }
                    } catch (Throwable t) {
                        // Continue without storing the layout options, but log it on the console for now.
-                       println("Cannot store the layout options for this model:")
-                       t.printStackTrace
+                       println("Cannot store the layout options for this model in non-Eclipse mode.")
+                       // t.printStackTrace
                    }
                }
            }
