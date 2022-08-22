@@ -115,24 +115,14 @@ class GenerateModelMavenBuild {
               <!-- Define a few properties used throughout all build profiles. -->
               <properties>
                 <targetJdk>11</targetJdk>
-                <tycho-version>1.7.0</tycho-version>
-                <xtext-version>2.25.0</xtext-version>
+                <tycho-version>2.7.3</tycho-version>
+                <xtext-version>2.27.0</xtext-version>
                 <kieler-version>${project.version}</kieler-version>
                 <sourceFeatureLabelSuffix>&#xA0;(Sources)</sourceFeatureLabelSuffix>
                 <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
                 <project.build.resourceEncoding>UTF-8</project.build.resourceEncoding>
                 <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
               </properties>
-              
-              <!-- Additional plug-in repositories. -->
-              <pluginRepositories>
-                <pluginRepository>
-                  <id>jboss-releases</id>
-                  <name>JBoss Releases Maven Repository</name>
-                  <url>https://repository.jboss.org/nexus/content/repositories/releases/</url>
-                </pluginRepository>
-              </pluginRepositories>
-            
             
               <!-- Modify the build process to add Tycho and configure some utility plug-ins. -->
               <build>
@@ -332,7 +322,7 @@ class GenerateModelMavenBuild {
                   <unit id="org.eclipse.m2e.sdk.feature.feature.group" version="0.0.0"/>
                   <unit id="org.eclipse.wildwebdeveloper.xml.feature.feature.group" version="0.0.0"/>
                   <unit id="org.eclipse.sdk.feature.group" version="0.0.0"/>
-                  <repository location="https://download.eclipse.org/releases/2021-06"/>
+                  <repository location="https://download.eclipse.org/releases/2022-06"/>
                 </location>
                 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
                   <unit id="org.sonatype.tycho.m2e.feature.feature.group" version="0.0.0"/>
@@ -340,11 +330,11 @@ class GenerateModelMavenBuild {
                 </location>
                 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
                   <unit id="org.eclipse.lsp4j.sdk.feature.group" version="0.0.0"/>
-                  <repository location="https://archive.eclipse.org/lsp4j/updates/releases/0.10.0/"/>
+                  <repository location="http://download.eclipse.org/lsp4j/updates/releases/0.14.0/"/>
                 </location>
                 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
                   <unit id="org.eclipse.xtext.sdk.feature.group" version="0.0.0"/>
-                  <repository location="https://download.eclipse.org/modeling/tmf/xtext/updates/releases/2.25.0/"/>
+                  <repository location="https://download.eclipse.org/modeling/tmf/xtext/updates/releases/2.27.0/"/>
                 </location>
                 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
                   <unit id="org.eclipse.elk.sdk.feature.feature.group" version="0.0.0"/>
@@ -359,9 +349,9 @@ class GenerateModelMavenBuild {
                 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
                   <unit id="com.google.gson" version="0.0.0"/>
                   <unit id="com.google.inject" version="0.0.0"/>
-                  <repository location="https://download.eclipse.org/tools/orbit/downloads/drops/R20210602031627/repository/"/>
+                  <repository location="https://download.eclipse.org/tools/orbit/downloads/drops/R20220531185310/repository/"/>
                 </location>
-                <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+                <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
                   <unit id="org.eclipse.sprotty" version="0.0.0"/>
                   <repository location="https://rtsys.informatik.uni-kiel.de/~kieler/updatesite/sprotty/0.9.0/"/>
                 </location>
@@ -389,6 +379,18 @@ class GenerateModelMavenBuild {
                 <version>«version»-SNAPSHOT</version>
                 <relativePath>../pom.xml</relativePath>
               </parent>
+              
+              <build>
+                <plugins>
+                  <!-- do not publish this artifact to Maven repositories -->
+                  <plugin>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <configuration>
+                      <skip>true</skip>
+                    </configuration>
+                  </plugin>
+                </plugins>
+              </build>
             
             </project>
             

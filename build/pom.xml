@@ -10,8 +10,8 @@
   
   <!-- Define a few properties used throughout all build profiles. -->
   <properties>
-    <tycho-version>2.5.0</tycho-version>
-    <xtext-version>2.25.0</xtext-version>
+    <tycho-version>2.7.3</tycho-version>
+    <xtext-version>2.27.0</xtext-version>
     <targetJdk>11</targetJdk>
     
     <!-- Non-breakable space, as normal spaces are trimmed. -->
@@ -49,22 +49,6 @@
       </modules>
     </profile>
   </profiles>
-  
-  
-  <!-- Additional plug-in repositories. -->
-  <pluginRepositories>
-    <pluginRepository>
-      <id>jboss-public-repository-group</id>
-      <name>JBoss Public Repository Group</name>
-      <url>https://repository.jboss.org/nexus/content/groups/public/</url>
-    </pluginRepository>
-    <pluginRepository>
-      <id>jboss-snapshots-repository</id>
-      <name>JBoss Snapshots Repository</name>
-      <url>https://repository.jboss.org/nexus/content/repositories/snapshots/</url>
-    </pluginRepository>
-  </pluginRepositories>
-
 
   <!-- Modify the build process to add Tycho and configure some utility plug-ins. -->
   <build>

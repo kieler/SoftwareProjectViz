@@ -116,7 +116,7 @@ class GenerateMavenBuild {
         
         var String content = repositoryCategoryXmlContent(artifactIdPrefix, version)
         FileGenerator.generateFile(repositoryFolder, "category.xml", content, progressMonitor)
-        content = repositoryPomXmlContent(artifactIdPrefix, modelId, version)
+        content = repositoryPomXmlContent(artifactIdPrefix, version)
         FileGenerator.generateFile(repositoryFolder, "pom.xml", content, progressMonitor)
         
         val siteTemplateFolder = project.getFolder(artifactIdPrefix + ".repository/siteTemplate")
@@ -124,7 +124,7 @@ class GenerateMavenBuild {
             siteTemplateFolder.create(false, true, progressMonitor)
         }
         
-        content = repositoryIndexHtmlContent()
+        content = repositoryIndexHtmlContent(artifactIdPrefix)
         FileGenerator.generateFile(siteTemplateFolder, "index.html", content, progressMonitor)
         content = repositoryP2IndexContent()
         FileGenerator.generateFile(siteTemplateFolder, "p2.index", content, progressMonitor)
@@ -742,10 +742,10 @@ class GenerateMavenBuild {
                     <category name="viz"/>
                 </feature>
                
-                <repository-reference location="https://download.eclipse.org/releases/2021-06/" enabled="true" />
-                <repository-reference location="https://archive.eclipse.org/lsp4j/updates/releases/0.10.0/" enabled="true" />
-                <repository-reference location="https://download.eclipse.org/tools/orbit/downloads/drops/R20210602031627/repository/" enabled="true" />
-                <repository-reference location="https://download.eclipse.org/modeling/tmf/xtext/updates/releases/2.25.0/" enabled="true" />
+                <repository-reference location="https://download.eclipse.org/releases/2022-06/" enabled="true" />
+                <repository-reference location="https://download.eclipse.org/lsp4j/updates/releases/0.14.0/" enabled="true" />
+                <repository-reference location="https://download.eclipse.org/tools/orbit/downloads/drops/R20220531185310/repository/" enabled="true" />
+                <repository-reference location="https://download.eclipse.org/modeling/tmf/xtext/updates/releases/2.27.0/" enabled="true" />
                 <repository-reference location="https://download.eclipse.org/elk/updates/releases/0.8.1/" enabled="true" />
                 <repository-reference location="https://kieler.github.io/KLighD/v2.2.0/" enabled="true" />
                 <repository-reference location="https://rtsys.informatik.uni-kiel.de/~kieler/updatesite/sprotty/0.9.0/" enabled="true" />
@@ -755,7 +755,7 @@ class GenerateMavenBuild {
         '''
     }
     
-    private static def repositoryPomXmlContent(String artifactIdPrefix, String modelId, String version) {
+    private static def repositoryPomXmlContent(String artifactIdPrefix, String version) {
         return '''
             <?xml version="1.0" encoding="UTF-8"?>
             <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -773,49 +773,26 @@ class GenerateMavenBuild {
                 <version>«version»-SNAPSHOT</version>
                 <relativePath>../../spviz.build/pom.xml</relativePath>
               </parent>
-              
-              <properties>
-                <update.site.name>«artifactIdPrefix»</update.site.name>
-                <update.site.description>P2 Update Site for «artifactIdPrefix»</update.site.description>
-                <update.site.version>${kieler-version}</update.site.version>
-                <target.eclipse.version>2021-06</target.eclipse.version>
-              </properties>
             
               <build>
+                <resources>
+                  <resource>
+                    <directory>siteTemplate</directory>
+                  </resource>
+                </resources>
+                
                 <plugins>
                   <plugin>
-                    <groupId>org.jboss.tools.tycho-plugins</groupId>
-                    <artifactId>repository-utils</artifactId>
-                    <version>1.7.0</version>
-                    <executions>
-                    
-                      <!-- creates index.html and other artifacts -->
-                      <execution>
-                        <id>generate-facade</id>
-                        <phase>package</phase>
-                        <goals>
-                          <goal>generate-repository-facade</goal>
-                        </goals>
-                        <configuration>
-                          <siteTemplateFolder>siteTemplate</siteTemplateFolder>
-                          <symbols>
-                            <update.site.name>${update.site.name}</update.site.name>
-                            <update.site.description>${update.site.description}</update.site.description>
-                            <update.site.version>${update.site.version}</update.site.version>
-                            <target.eclipse.version>${target.eclipse.version}</target.eclipse.version>
-                          </symbols>
-                        
-                          <!-- this adds repository references to the update site's content.xml -->
-                          <associateSites>
-                            <associateSite>https://download.eclipse.org/releases/2021-06</associateSite>
-                            <associateSite>https://download.eclipse.org/modeling/tmf/xtext/updates/releases/2.25.0/</associateSite>
-                            <associateSite>https://download.eclipse.org/elk/updates/releases/0.8.1/</associateSite>
-                            <associateSite>https://kieler.github.io/KLighD/v2.2.0/</associateSite>
-                            <associateSite>https://download.eclipse.org/tools/orbit/downloads/drops/R20210602031627/repository/</associateSite>
-                          </associateSites>
-                        </configuration>
-                      </execution>
-                    </executions>
+                    <groupId>org.eclipse.tycho</groupId>
+                    <artifactId>tycho-p2-repository-plugin</artifactId>
+                    <version>${tycho-version}</version>
+                  </plugin>
+                  <!-- do not publish this artifact to Maven repositories -->
+                  <plugin>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <configuration>
+                      <skip>true</skip>
+                    </configuration>
                   </plugin>
                 </plugins>
               </build>
@@ -824,11 +801,11 @@ class GenerateMavenBuild {
         '''
     }
     
-    private static def repositoryIndexHtmlContent() {
+    private static def repositoryIndexHtmlContent(String artifactIdPrefix) {
         return '''
             <html>
             <head>
-            <title>${update.site.name} - ${update.site.description} Update Site: ${update.site.version}</title>
+            <title>«artifactIdPrefix» - P2 Update Site</title>
             <link rel="stylesheet" type="text/css" href="web/site.css">
             </head>
             <body marginheight="0" marginwidth="0" leftmargin="0" topmargin="0">
@@ -838,18 +815,13 @@ class GenerateMavenBuild {
                 <td>
                 <h2 class="title"><br/><br/>${update.site.name} - ${update.site.description} Update Site</h2>
                 <table width="100%">
-                  <tr class="header">
-                    <td class="sub-header" width="100%"><span>Latest Build: ${update.site.version}</span></td>
-                  </tr>
-            
                   <tr class="light-row" style="height: 30px">
                     <td class="bodyText">
                       <p class="bodyText">
-                        This is the <b>${update.site.description}</b>
-                        Update Site for ${update.site.name}.
+                        This is the Update Site for «artifactIdPrefix».
                         <blockquote style="border: 1px dashed #1778be; padding: 2px">
                           <ol>
-                            <li>To install from this site, start up Eclipse ${target.eclipse.version}, then do:
+                            <li>To install from this site, start up Eclipse, then do:
                               <ul>
                                 <code><strong>Help > Install New Software... ></strong></code>
                               </ul>

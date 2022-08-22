@@ -158,6 +158,7 @@ class JavaMavenProjectGenerator {
                    <groupId>de.cau.cs.kieler.spviz</groupId>
                    <artifactId>parent</artifactId>
                    <version>0.1.0-SNAPSHOT</version>
+                   <relativePath>../spviz.build/pom.xml</relativePath>
                 </parent>
               
                 <modelVersion>4.0.0</modelVersion>
