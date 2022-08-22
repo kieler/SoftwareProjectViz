@@ -5,13 +5,13 @@
   <parent>
     <groupId>de.cau.cs.kieler.spviz</groupId>
     <artifactId>parent</artifactId>
-    <version>0.1.1-SNAPSHOT</version>
+    <version>0.2.0.v20220822</version>
     <relativePath>../../build/pom.xml</relativePath>
   </parent>
 
   <groupId>de.cau.cs.kieler.spviz</groupId>
   <artifactId>de.cau.cs.kieler.spviz.spviz.tests</artifactId>
-  <version>0.1.1-SNAPSHOT</version>
+  <version>0.2.0.v20220822</version>
   <packaging>eclipse-test-plugin</packaging>
 
   <build>
