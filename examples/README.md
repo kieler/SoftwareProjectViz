@@ -8,6 +8,6 @@ These examples try to show what can be visualized in a simple way using the Soft
 
 ## Using Maven to handle the generated artifacts
 After building the `.spvizmodel` and `.spviz` files in your Eclipse and letting the project generate all the model and visualization artifacts for you, you can use these artifacts directly in your Eclipse.
-You can also use Maven to build the artifacts, connect the example generators in the sub-folders here to it and build a language server with KLighD diagrams for your project artitecture visualization.
-To connect the example project's Maven builds to the generated model artifacts, you first have to call `mvn install` on the generated visualizaton's `.build` folder to install the artifacts in your local `.m2` repository, then call Maven in the example `.generate` folders.
+You can also use Maven to build the artifacts, connect the example generators in the sub-folders here to it and build a language server with KLighD diagrams for your project architecture visualization.
+To connect the example project's Maven builds to the generated model artifacts, you first have to call `mvn install` on the generated visualization's `.build` folder to install the artifacts in your local `.m2` repository, then call Maven in the example `.generate` folders.
 This will create a shaded `jar` you can execute to generate your model.
