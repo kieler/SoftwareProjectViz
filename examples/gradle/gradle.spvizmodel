@@ -1,7 +1,0 @@
-package de.cau.cs.kieler.spviz.gradle
-
-SPVizModel Gradle {
-	Project {
-		Dependency connects Project
-	}
-}

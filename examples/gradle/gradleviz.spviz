@@ -1,9 +1,0 @@
-package de.cau.cs.kieler.spviz.gradleviz
-import "gradle.spvizmodel"
-
-SPViz GradleViz {
-	Projects {
-		show Gradle.Project
-		connect Gradle.Project.Dependency
-	}
-}
