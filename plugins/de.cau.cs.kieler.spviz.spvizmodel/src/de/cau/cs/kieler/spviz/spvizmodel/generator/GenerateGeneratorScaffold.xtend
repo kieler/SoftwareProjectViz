@@ -333,7 +333,7 @@ class GenerateGeneratorScaffold {
                      * @return The (possibly newly created) «artifact.name.toFirstLower».
                      */
                     private «artifact.name.toFirstUpper» createOrFind«artifact.name.toFirstUpper»(String name) {
-                        if ( «artifact.name.toFirstLower»s.containsKey(name)) {
+                        if («artifact.name.toFirstLower»s.containsKey(name)) {
                             return «artifact.name.toFirstLower»s.get(name);
                         } else {
                             // Create a new «artifact.name.toFirstLower» and set it up

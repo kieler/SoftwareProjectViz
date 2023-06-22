@@ -1171,6 +1171,9 @@ class GenerateSyntheses {
             import de.cau.cs.kieler.klighd.syntheses.DiagramSyntheses
             import «data.getBundleNamePrefix».model.IOverviewVisualizationContext
             import «data.getBundleNamePrefix».model.IVisualizationContext
+            «FOR view : data.views»
+                import «data.bundleNamePrefix».model.impl.«view.name»OverviewContextImpl
+            «ENDFOR»
             import java.util.List
             import org.eclipse.elk.core.options.CoreOptions
             import org.eclipse.elk.core.options.Direction
@@ -1186,7 +1189,7 @@ class GenerateSyntheses {
             import static extension «data.getBundleNamePrefix».model.util.ContextExtensions.*
             
             /**
-             * Util class that contains some static methods commonly used for the Osgi synthesis.
+             * Util class that contains some static methods commonly used for the syntheses.
              * 
              * @author nre
              */
@@ -1197,7 +1200,7 @@ class GenerateSyntheses {
                 private new() {}
                 
                 /**
-                 * If the id should be truncated by the prefix of the {@link OsgiOptions#SHORTEN_BY} option, this returns a
+                 * If the id should be truncated by the prefix of the {@link Options#SHORTEN_BY} option, this returns a
                  * truncated version of the id, otherwise the id itself.
                  * 
                  * @param id The id that should possibly be truncated.
@@ -1209,6 +1212,15 @@ class GenerateSyntheses {
                         return "..." + id.substring(prefix.length)
                     }
                     return id
+                }
+                
+                def static boolean overviewContainsConnection(IOverviewVisualizationContext<?> parentContext, String connectionName) {
+                    return false
+                    «FOR view : data.views»
+                        «FOR connection : view.shownConnections»
+                            || (parentContext.class.isAssignableFrom(«view.name.toFirstUpper»OverviewContextImpl) && connectionName.equals("«connection.shownConnection.name»"))
+                        «ENDFOR»
+                    «ENDFOR»
                 }
                 
                 def static <M> Iterable<M> filteredElements(List<M> elements, IOverviewVisualizationContext<M> oc,

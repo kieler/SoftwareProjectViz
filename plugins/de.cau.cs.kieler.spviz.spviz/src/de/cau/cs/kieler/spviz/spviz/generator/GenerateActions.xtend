@@ -755,25 +755,26 @@ class GenerateActions {
      *      the generated file content as a string
      */
     def static generateConnectAllAction(DataAccess data) {
-        val Map<Artifact, List<String>> revealActions = new HashMap
+        // Map for each artifact to the connections and the names of the reveal actions that they support.
+        val Map<Artifact, List<Pair<Connection, String>>> revealActions = new HashMap
         for (view : data.views) {
             for (shownConnection : view.shownConnections) {
                 val connection = shownConnection.shownConnection
                 // Reveal connected actions
-                var List<String> actionNames = revealActions.get(connection.connecting)
-                if (actionNames === null) {
-                    actionNames = new ArrayList
-                    revealActions.put(connection.connecting, actionNames)
+                var List<Pair<Connection, String>> connectionActions = revealActions.get(connection.connecting)
+                if (connectionActions === null) {
+                    connectionActions = new ArrayList
+                    revealActions.put(connection.connecting, connectionActions)
                 }
-                actionNames.add("RevealConnected"  + connection.connecting.name + "Connects" + connection.connected.name + "Named" + connection.name + "Action")
+                connectionActions.add(Pair.of(connection, "RevealConnected"  + connection.connecting.name + "Connects" + connection.connected.name + "Named" + connection.name + "Action"))
                 
                 // Reveal connecting actions
-                actionNames = revealActions.get(connection.connected)
-                if (actionNames === null) {
-                    actionNames = new ArrayList
-                    revealActions.put(connection.connected, actionNames)
+                connectionActions = revealActions.get(connection.connected)
+                if (connectionActions === null) {
+                    connectionActions = new ArrayList
+                    revealActions.put(connection.connected, connectionActions)
                 }
-                actionNames.add("RevealConnecting" + connection.connecting.name + "Connects" + connection.connected.name + "Named" + connection.name + "Action")
+                connectionActions.add(Pair.of(connection, "RevealConnecting" + connection.connecting.name + "Connects" + connection.connected.name + "Named" + connection.name + "Action"))
             }
         }
         
@@ -788,6 +789,7 @@ class GenerateActions {
             «FOR artifact : revealActions.keySet»
                 import «data.bundleNamePrefix».model.«artifact.name»Context
             «ENDFOR»
+            import «data.getBundleNamePrefix».viz.SynthesisUtils
             
             import static extension «data.bundleNamePrefix».model.util.ContextExtensions.*
             
@@ -805,9 +807,9 @@ class GenerateActions {
                 
                 override changeVisualization(IVisualizationContext<?> modelVisualizationContext, ActionContext actionContext) {
                     val kdm = KlighdDataManager.instance
-                    «FOR actionNames : revealActions.values»
-                        «FOR actionName : actionNames»
-                            val «actionName.toFirstLower» = kdm.getActionById(«actionName».ID) as «actionName»
+                    «FOR connectionActions : revealActions.values»
+                        «FOR connectionAction : connectionActions»
+                            val «connectionAction.value.toFirstLower» = kdm.getActionById(«connectionAction.value».ID) as «connectionAction.value»
                         «ENDFOR»
                     «ENDFOR»
                     
@@ -829,8 +831,11 @@ class GenerateActions {
                             «FOR artifact : revealActions.keySet»
                                 «artifact.name»Context: {
                                     // Connect all artifacts that may connect to this one.
-                                    «FOR actionName : revealActions.get(artifact)»
-                                        «actionName.toFirstLower».changeVisualization(childContext, actionContext)
+                                    «FOR connectionAction : revealActions.get(artifact)»
+                                        // Only try to connect using this connection type if the parent overview context supports it.
+                                        if (SynthesisUtils.overviewContainsConnection(ovc, "«connectionAction.key.name»")) {
+                                            «connectionAction.value.toFirstLower».changeVisualization(childContext, actionContext)
+                                        }
                                     «ENDFOR»
                                 }
                             «ENDFOR»

@@ -304,8 +304,6 @@ class SPVizGenerator extends AbstractGenerator {
              * context will give the synthesis additional information in which state parts of the model should be generated in.
              * 
              * @param <M> The model element class this visualization context is for.
-             * 
-             * @author nre
              */
             interface IVisualizationContext<M> {
                 
@@ -336,8 +334,6 @@ class SPVizGenerator extends AbstractGenerator {
              * fashion individually.
              * 
              * @param <M> The model element class of the child contexts of this context.
-             * 
-             * @author nre
              */
             interface IOverviewVisualizationContext<M> extends IVisualizationContext<EEList<M>> {
                 
