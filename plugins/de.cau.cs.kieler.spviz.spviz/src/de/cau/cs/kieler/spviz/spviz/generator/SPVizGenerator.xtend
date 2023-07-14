@@ -162,7 +162,7 @@ class SPVizGenerator extends AbstractGenerator {
         GenerateLanguageServer.generate(lsProject.getFolder("src-gen"), launchFolder, data, progressMonitor)
         
         // Generate the Maven build framework for this visualization.
-        GenerateMavenBuild.generate(data.bundleNamePrefix, data.visualizationName.toFirstUpper ,data.modelBundleNamePrefix + ".model", "0.1.0", progressMonitor)
+        GenerateMavenBuild.generate(data.bundleNamePrefix, data.visualizationName.toFirstUpper, data.modelBundleNamePrefix, "0.1.0", progressMonitor)
     }
     
     protected def List<String> exportedVizModelPackages(DataAccess data) {

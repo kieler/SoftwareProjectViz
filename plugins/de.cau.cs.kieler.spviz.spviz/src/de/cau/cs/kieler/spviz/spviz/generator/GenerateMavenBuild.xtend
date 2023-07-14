@@ -30,16 +30,16 @@ class GenerateMavenBuild {
      * Generates the entire Maven build for this visualization.
      * 
      * @param groupId The prefix group ID for this visualization project.
-     * @param modelId The ID of the model bundle.
+     * @param modelId The ID prefix of the model bundle.
      * @param artifactIdPrefix The individual bundle's prefix artifact ID
      */
-    static def generate(String artifactIdPrefix, String vizName, String modelId, String version, IProgressMonitor progressMonitor) {
+    static def generate(String artifactIdPrefix, String vizName, String modelIdPrefix, String version, IProgressMonitor progressMonitor) {
         // A pom for each sub-module
         for (bundleSuffix : bundleSuffixes) {
             addProjectPom(artifactIdPrefix, bundleSuffix, version, progressMonitor)
         }
         // The main build folder with the main pom to build this viz, an Eclipse feature, LS CLI build, and Tycho update site config
-        addBuildFolder(artifactIdPrefix, vizName, modelId, version, progressMonitor)
+        addBuildFolder(artifactIdPrefix, vizName, modelIdPrefix, version, progressMonitor)
     }
     
     private static def addProjectPom(String artifactIdPrefix, String bundleSuffix, String version, IProgressMonitor progressMonitor) {
@@ -54,7 +54,9 @@ class GenerateMavenBuild {
         FileGenerator.generateFile(project, "pom.xml", content, progressMonitor)
     }
     
-    private static def addBuildFolder(String artifactIdPrefix, String vizName, String modelId, String version, IProgressMonitor progressMonitor) {
+    private static def addBuildFolder(String artifactIdPrefix, String vizName, String modelIdPrefix, String version, IProgressMonitor progressMonitor) {
+        val String modelId = modelIdPrefix + ".model"
+        
         // The main build folder with an Eclipse feature, LS CLI build, and Tycho update site config
         // Create a project to hold the build artifacts.
         val buildProjectName = artifactIdPrefix + ".build"
@@ -67,7 +69,7 @@ class GenerateMavenBuild {
         project.open(progressMonitor)
         
         // Put the pom.xml in the project.
-        val content = spvizPomXmlContent(artifactIdPrefix, modelId, version)
+        val content = spvizPomXmlContent(artifactIdPrefix, modelIdPrefix, version)
         FileGenerator.generateFile(project, "pom.xml", content, progressMonitor)
         
         // Generate the Eclipse feature
@@ -130,7 +132,7 @@ class GenerateMavenBuild {
         FileGenerator.generateFile(siteTemplateFolder, "p2.index", content, progressMonitor)
     }
     
-    private static def spvizPomXmlContent(String vizArtifactIdPrefix, String modelId, String version) {
+    private static def spvizPomXmlContent(String vizArtifactIdPrefix, String modelIdPrefix, String version) {
         return '''
             <?xml version="1.0" encoding="UTF-8"?>
             <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
@@ -164,7 +166,7 @@ class GenerateMavenBuild {
                     «FOR bundleSuffix : bundleSuffixes»
                         <module>../«vizArtifactIdPrefix».«bundleSuffix»</module>
                     «ENDFOR»
-                    <module>../«modelId»</module>
+                    <module>../«modelIdPrefix».model</module>
                     <module>feature</module>
                     <module>«vizArtifactIdPrefix».repository</module>
                   </modules>
@@ -178,8 +180,18 @@ class GenerateMavenBuild {
                     «FOR bundleSuffix : bundleSuffixes»
                         <module>../«vizArtifactIdPrefix».«bundleSuffix»</module>
                     «ENDFOR»
-                    <module>../«modelId»</module>
+                    <module>../«modelIdPrefix».model</module>
                     <module>«vizArtifactIdPrefix».language.server.cli</module>
+                  </modules>
+                </profile>
+                
+                <!-- build just the model generator. -->
+                <profile>
+                  <id>generator</id>
+                  <modules>
+                    <module>../spviz.build/de.cau.cs.kieler.spviz.targetplatform</module>
+                    <module>../«modelIdPrefix».model</module>
+                    <module>../«modelIdPrefix».generate</module>
                   </modules>
                 </profile>
               </profiles>
