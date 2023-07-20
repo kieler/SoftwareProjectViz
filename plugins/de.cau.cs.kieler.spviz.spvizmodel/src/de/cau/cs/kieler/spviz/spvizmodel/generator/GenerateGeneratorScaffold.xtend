@@ -3,7 +3,7 @@
  *
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2022 by
+ * Copyright 2022-2023 by
  * + Kiel University
  *   + Department of Computer Science
  *   + Real-Time and Embedded Systems Group
@@ -39,9 +39,11 @@ class GenerateGeneratorScaffold {
         }
         
         // Generate a new Java project 
-        val generateProject = new JavaMavenProjectGenerator(generatorBundleName)
+        val generateProject = new JavaMavenProjectGenerator(model.package, generatorBundleName)
             .configureDependencies(requiredBundles(model))
             .configureSourceFolderName("src")
+            .configureGenerateShadedJar(true)
+            .configureMainClass("ConfigAndExecuteCli")
             .generate(progressMonitor)
         
         val packageFolder = generateProject.getFolder(generatorBundleName.split('\\.').fold("src", [l, r | l + '/' + r]))

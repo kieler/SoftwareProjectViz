@@ -3,7 +3,7 @@
  *
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2020-2022 by
+ * Copyright 2020-2023 by
  * + Kiel University
  *   + Department of Computer Science
  *     + Real-Time and Embedded Systems Group
@@ -13,8 +13,9 @@
 package de.cau.cs.kieler.spviz.spviz.generator
 
 import de.cau.cs.kieler.spviz.spvizmodel.generator.FileGenerator
-import de.cau.cs.kieler.spviz.spvizmodel.generator.JavaProjectGenerator
+import de.cau.cs.kieler.spviz.spvizmodel.generator.JavaMavenProjectGenerator
 import de.cau.cs.kieler.spviz.spvizmodel.generator.XCoreProjectGenerator
+import de.cau.cs.kieler.spviz.spvizmodel.generator.maven.Dependency
 import java.util.Arrays
 import java.util.Collections
 import java.util.List
@@ -63,6 +64,7 @@ class SPVizGenerator extends AbstractGenerator {
             .configureXCoreFile(data.visualizationName + 'Model.xcore', xcoreContent)
             .configureRequiredBundles(#[data.modelBundleNamePrefix + ".model"])
             .configureExportedPackages(exportedVizModelPackages(data))
+            .configureMaven(true)
             .generate(progressMonitor)
         
         // Add the xtend-gen folder to the classpath
@@ -92,7 +94,7 @@ class SPVizGenerator extends AbstractGenerator {
         val vizProject = Generator.createEMFProject(projectPath, null as IPath,
             Collections.<IProject>emptyList(), progressMonitor,
             Generator.EMF_MODEL_PROJECT_STYLE.bitwiseOr(Generator.EMF_PLUGIN_PROJECT_STYLE))
-        XCoreProjectGenerator.addNatures(vizProject, false, progressMonitor)
+        XCoreProjectGenerator.addNatures(vizProject, true, progressMonitor)
             
             
         val sourceVizFolder = vizProject.getFolder("src-gen")
@@ -148,10 +150,14 @@ class SPVizGenerator extends AbstractGenerator {
         vizProject.setDescription(projectDescription, progressMonitor);
         
         
-        // Generate the .language.server Java project
-        val lsProject = new JavaProjectGenerator(data.getBundleNamePrefix + ".language.server")
-            .configureRequiredBundles(requiredLSBundles(data))
-            .configureExportedPackages(exportedLSPackages(data))
+        // Generate the .language.server Maven project
+        val lsProject = new JavaMavenProjectGenerator(data.getBundleNamePrefix, data.getBundleNamePrefix + ".language.server")
+            .configureDependencies(requiredLSDependencies(data))
+            .configureDependencyManagement(lsDependencyManagement)
+            .configureXtendSources(true)
+            .configureSourceFolderName("src-gen")
+            .configureGenerateShadedJar(true)
+            .configureMainClass(data.visualizationName + "LanguageServer")
             .generate(progressMonitor)
         
         // Generate further source files for the java project
@@ -165,6 +171,78 @@ class SPVizGenerator extends AbstractGenerator {
         GenerateMavenBuild.generate(data.bundleNamePrefix, data.visualizationName.toFirstUpper, data.modelBundleNamePrefix, "0.1.0", progressMonitor)
     }
     
+    def lsDependencyManagement() {
+        return '''
+            <dependencyManagement>
+              <dependencies>
+                <dependency>
+                  <groupId>de.cau.cs.kieler.klighd</groupId>
+                  <artifactId>de.cau.cs.kieler.kgraph.text</artifactId>
+                  <version>${klighd-version}</version>
+                  <exclusions>
+                    <exclusion>
+                      <groupId>org.eclipse.platform</groupId>
+                      <artifactId>org.eclipse.swt</artifactId>
+                    </exclusion>
+                  </exclusions>
+                </dependency>
+                <dependency>
+                  <groupId>de.cau.cs.kieler.klighd</groupId>
+                  <artifactId>de.cau.cs.kieler.kgraph.text.ide</artifactId>
+                  <version>${klighd-version}</version>
+                  <exclusions>
+                    <exclusion>
+                      <groupId>org.eclipse.platform</groupId>
+                      <artifactId>org.eclipse.swt</artifactId>
+                    </exclusion>
+                  </exclusions>
+                </dependency>
+                <dependency>
+                  <groupId>de.cau.cs.kieler.klighd</groupId>
+                  <artifactId>de.cau.cs.kieler.klighd.incremental</artifactId>
+                  <version>${klighd-version}</version>
+                  <exclusions>
+                    <exclusion>
+                      <groupId>org.eclipse.platform</groupId>
+                      <artifactId>org.eclipse.swt</artifactId>
+                    </exclusion>
+                  </exclusions>
+                </dependency>
+                <dependency>
+                  <groupId>de.cau.cs.kieler.klighd</groupId>
+                  <artifactId>de.cau.cs.kieler.klighd.lsp</artifactId>
+                  <version>${klighd-version}</version>
+                  <exclusions>
+                    <exclusion>
+                      <groupId>org.eclipse.platform</groupId>
+                      <artifactId>org.eclipse.swt</artifactId>
+                    </exclusion>
+                  </exclusions>
+                </dependency>
+                <dependency>
+                  <groupId>de.cau.cs.kieler.klighd</groupId>
+                  <artifactId>de.cau.cs.kieler.klighd</artifactId>
+                  <version>${klighd-version}</version>
+                  <exclusions>
+                    <exclusion>
+                      <groupId>org.eclipse.platform</groupId>
+                      <artifactId>org.eclipse.swt</artifactId>
+                    </exclusion>
+                    <exclusion>
+                      <groupId>org.eclipse.platform</groupId>
+                      <artifactId>org.eclipse.ui.workbench</artifactId>
+                    </exclusion>
+                    <exclusion>
+                      <groupId>org.eclipse.platform</groupId>
+                      <artifactId>org.eclipse.jface</artifactId>
+                    </exclusion>
+                  </exclusions>
+                </dependency>
+              </dependencies>
+            </dependencyManagement>
+        '''
+    }
+    
     protected def List<String> exportedVizModelPackages(DataAccess data) {
         return #[
             data.bundleNamePrefix + ".model",
@@ -173,39 +251,32 @@ class SPVizGenerator extends AbstractGenerator {
         ]
     }
     
-    protected def List<String> requiredLSBundles(DataAccess data) {
+    protected def List<Dependency> requiredLSDependencies(DataAccess data) {
         return #[
-           "com.google.gson",
-           "de.cau.cs.kieler.kgraph.text",
-           "de.cau.cs.kieler.kgraph.text.ide",
-           "de.cau.cs.kieler.klighd",
-           "de.cau.cs.kieler.klighd.ide",
-           "de.cau.cs.kieler.klighd.incremental",
-           "de.cau.cs.kieler.klighd.krendering.extensions",
-           "de.cau.cs.kieler.klighd.lsp",
-           "de.cau.cs.kieler.klighd.piccolo",
-           "de.cau.cs.kieler.klighd.standalone",
-           "org.aopalliance",
-           "org.apache.log4j",
-           "org.eclipse.elk.alg.common",
-           "org.eclipse.elk.alg.layered",
-           "org.eclipse.elk.alg.rectpacking",
-           "org.eclipse.elk.core",
-           "org.eclipse.elk.core.service",
-           "org.eclipse.lsp4j",
-           "org.eclipse.lsp4j.jsonrpc",
-           "org.eclipse.sprotty",
-           "org.eclipse.xtend.lib",
-           "org.eclipse.xtext.ide",
-           "org.eclipse.xtext.xbase.lib",
-           data.bundleNamePrefix + ".model",
-           data.modelBundleNamePrefix + ".model"
-        ]
-    }
-    
-    protected def List<String> exportedLSPackages(DataAccess data) {
-        return #[
-           data.bundleNamePrefix + ".language.server"
+           new Dependency("com.google.code.gson", "gson", "${gson-version}"),
+           new Dependency("com.google.inject", "guice", "${guice-version}"),
+           new Dependency("de.cau.cs.kieler.klighd", "de.cau.cs.kieler.kgraph.text", "${klighd-version}"),
+           new Dependency("de.cau.cs.kieler.klighd", "de.cau.cs.kieler.kgraph.text.ide", "${klighd-version}"),
+           new Dependency("de.cau.cs.kieler.klighd", "de.cau.cs.kieler.klighd", "${klighd-version}"),
+           new Dependency("de.cau.cs.kieler.klighd", "de.cau.cs.kieler.klighd.ide", "${klighd-version}"),
+           new Dependency("de.cau.cs.kieler.klighd", "de.cau.cs.kieler.klighd.incremental", "${klighd-version}"),
+           new Dependency("de.cau.cs.kieler.klighd", "de.cau.cs.kieler.klighd.krendering.extensions", "${klighd-version}"),
+           new Dependency("de.cau.cs.kieler.klighd", "de.cau.cs.kieler.klighd.lsp", "${klighd-version}"),
+           new Dependency("de.cau.cs.kieler.klighd", "de.cau.cs.kieler.klighd.standalone", "${klighd-version}"),
+           new Dependency("org.apache.logging.log4j", "log4j-core", "2.18.0"),
+           new Dependency("org.eclipse.elk", "org.eclipse.elk.alg.common", "${elk-version}"),
+           new Dependency("org.eclipse.elk", "org.eclipse.elk.alg.layered", "${elk-version}"),
+           new Dependency("org.eclipse.elk", "org.eclipse.elk.alg.rectpacking", "${elk-version}"),
+           new Dependency("org.eclipse.elk", "org.eclipse.elk.core", "${elk-version}"),
+           new Dependency("org.eclipse.elk", "org.eclipse.elk.core.service", "${elk-version}"),
+           new Dependency("org.eclipse.lsp4j", "org.eclipse.lsp4j", "${lsp4j-version}"),
+           new Dependency("org.eclipse.lsp4j", "org.eclipse.lsp4j.jsonrpc", "${lsp4j-version}"),
+           new Dependency("org.eclipse.xtend", "org.eclipse.xtend.lib", "${xtend-version}"),
+           new Dependency("org.eclipse.xtext", "org.eclipse.xtext.ide", "${xtext-version}"),
+           new Dependency("org.eclipse.xtext", "org.eclipse.xtext.xbase.lib", "${xtext-version}"),
+           new Dependency(data.bundleNamePrefix, data.bundleNamePrefix + ".viz", "${project.version}"),
+           new Dependency(data.bundleNamePrefix, data.bundleNamePrefix + ".model", "${project.version}"),
+           new Dependency(data.modelBundleNamePrefix, data.modelBundleNamePrefix + ".model", "${project.version}")
         ]
     }
     

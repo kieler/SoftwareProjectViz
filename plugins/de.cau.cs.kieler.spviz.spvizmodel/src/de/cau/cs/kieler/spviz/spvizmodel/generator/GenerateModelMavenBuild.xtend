@@ -3,7 +3,7 @@
  *
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2022 by
+ * Copyright 2022-2023 by
  * + Kiel University
  *   + Department of Computer Science
  *   + Real-Time and Embedded Systems Group
@@ -115,9 +115,18 @@ class GenerateModelMavenBuild {
               <!-- Define a few properties used throughout all build profiles. -->
               <properties>
                 <targetJdk>11</targetJdk>
+                <maven.compiler.source>11</maven.compiler.source>
+                <maven.compiler.target>11</maven.compiler.target>
+                
                 <tycho-version>2.7.3</tycho-version>
-                <xtext-version>2.27.0</xtext-version>
-                <kieler-version>${project.version}</kieler-version>
+                <xtext-version>2.28.0</xtext-version>
+                <elk-version>0.8.1</elk-version>
+                <gson-version>2.9.0</gson-version>
+                <guice-version>5.1.0</guice-version>
+                <klighd-version>2.3.0.v20230606</klighd-version>
+                <lsp4j-version>0.15.0</lsp4j-version>
+                <xtend-version>2.28.0</xtend-version>
+                
                 <sourceFeatureLabelSuffix>&#xA0;(Sources)</sourceFeatureLabelSuffix>
                 <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
                 <project.build.resourceEncoding>UTF-8</project.build.resourceEncoding>
@@ -320,40 +329,32 @@ class GenerateModelMavenBuild {
                   <unit id="org.eclipse.equinox.executable.feature.group" version="0.0.0"/>
                   <unit id="org.eclipse.m2e.feature.feature.group" version="0.0.0"/>
                   <unit id="org.eclipse.m2e.sdk.feature.feature.group" version="0.0.0"/>
+                  <unit id="org.eclipse.lsp4j.sdk.feature.group" version="0.0.0"/>
                   <unit id="org.eclipse.wildwebdeveloper.xml.feature.feature.group" version="0.0.0"/>
                   <unit id="org.eclipse.sdk.feature.group" version="0.0.0"/>
-                  <repository location="https://download.eclipse.org/releases/2022-06"/>
+                  <repository location="https://download.eclipse.org/releases/2022-09"/>
                 </location>
-                <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
-                  <unit id="org.sonatype.tycho.m2e.feature.feature.group" version="0.0.0"/>
-                  <repository location="https://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-tycho/0.8.1/N/0.8.1.201704211436/"/>
-                </location>
-                <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
-                  <unit id="org.eclipse.lsp4j.sdk.feature.group" version="0.0.0"/>
-                  <repository location="http://download.eclipse.org/lsp4j/updates/releases/0.14.0/"/>
-                </location>
+«««                <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
+«««                  <unit id="org.sonatype.tycho.m2e.feature.feature.group" version="0.0.0"/>
+«««                  <repository location="https://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-tycho/0.8.1/N/0.8.1.201704211436/"/>
+«««                </location>
                 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
                   <unit id="org.eclipse.xtext.sdk.feature.group" version="0.0.0"/>
-                  <repository location="https://download.eclipse.org/modeling/tmf/xtext/updates/releases/2.27.0/"/>
+                  <repository location="https://download.eclipse.org/modeling/tmf/xtext/updates/releases/2.28.0/"/>
                 </location>
                 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
                   <unit id="org.eclipse.elk.sdk.feature.feature.group" version="0.0.0"/>
                   <repository location="https://download.eclipse.org/elk/updates/releases/0.8.1/"/>
                 </location>
                 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
-                  <unit id="de.cau.cs.kieler.klighd.lsp" version="0.0.0"/>
                   <unit id="de.cau.cs.kieler.kgraph.text.ide" version="0.0.0"/>
                   <unit id="de.cau.cs.kieler.klighd.view.feature.feature.group" version="0.0.0"/>
-                  <repository location="https://kieler.github.io/KLighD/v2.2.0/"/>
+                  <repository location="https://kieler.github.io/KLighD/v2.3.0/"/>
                 </location>
                 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
                   <unit id="com.google.gson" version="0.0.0"/>
                   <unit id="com.google.inject" version="0.0.0"/>
-                  <repository location="https://download.eclipse.org/tools/orbit/downloads/drops/R20220531185310/repository/"/>
-                </location>
-                <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
-                  <unit id="org.eclipse.sprotty" version="0.0.0"/>
-                  <repository location="https://rtsys.informatik.uni-kiel.de/~kieler/updatesite/sprotty/0.9.0/"/>
+                  <repository location="https://download.eclipse.org/tools/orbit/downloads/drops/R20220830213456/repository/"/>
                 </location>
               </locations>
             </target>
