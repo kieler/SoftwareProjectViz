@@ -3,7 +3,7 @@
  *
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2021-2022 by
+ * Copyright 2021-2023 by
  * + Kiel University
  *   + Department of Computer Science
  *   + Real-Time and Embedded Systems Group
@@ -68,27 +68,24 @@ class GenerateActions {
         content = generateRevealAction(data)
         FileGenerator.generateOrUpdateFile(sourceFolder, folder + "RevealAction.xtend", content, progressMonitor)
         
-        for (view : data.views) {
-            for (shownConnection : view.shownConnections) {
-                val connection = shownConnection.shownConnection
-                val actionNameInfix = connection.connecting.name + "Connects" + connection.connected.name + "Named" + connection.name
-                // reveal connected artifacts
-                content = generateRevealAction(data, connection, true)
-                FileGenerator.generateOrUpdateFile(sourceFolder,
-                    folder + "RevealConnected" + actionNameInfix + "Action.xtend", content, progressMonitor)
-                // remove connected artifacts
-                content = generateRemoveAction(data, connection, true)
-                FileGenerator.generateOrUpdateFile(sourceFolder,
-                    folder + "RemoveConnected" + actionNameInfix + "Action.xtend", content, progressMonitor)
-                // reveal connecting artifacts
-                content = generateRevealAction(data, connection, false)
-                FileGenerator.generateOrUpdateFile(sourceFolder,
-                    folder + "RevealConnecting" + actionNameInfix + "Action.xtend", content, progressMonitor)
-                // remove connecting artifacts
-                content = generateRemoveAction(data, connection, false)
-                FileGenerator.generateOrUpdateFile(sourceFolder,
-                    folder + "RemoveConnecting" + actionNameInfix + "Action.xtend", content, progressMonitor)
-            }
+        for (connection : data.connections) {
+            val actionNameInfix = connection.connecting.name + "Connects" + connection.connected.name + "Named" + connection.name
+            // reveal connected artifacts
+            content = generateRevealAction(data, connection, true)
+            FileGenerator.generateOrUpdateFile(sourceFolder,
+                folder + "RevealConnected" + actionNameInfix + "Action.xtend", content, progressMonitor)
+            // remove connected artifacts
+            content = generateRemoveAction(data, connection, true)
+            FileGenerator.generateOrUpdateFile(sourceFolder,
+                folder + "RemoveConnected" + actionNameInfix + "Action.xtend", content, progressMonitor)
+            // reveal connecting artifacts
+            content = generateRevealAction(data, connection, false)
+            FileGenerator.generateOrUpdateFile(sourceFolder,
+                folder + "RevealConnecting" + actionNameInfix + "Action.xtend", content, progressMonitor)
+            // remove connecting artifacts
+            content = generateRemoveAction(data, connection, false)
+            FileGenerator.generateOrUpdateFile(sourceFolder,
+                folder + "RemoveConnecting" + actionNameInfix + "Action.xtend", content, progressMonitor)
         }
     }
     
@@ -757,25 +754,22 @@ class GenerateActions {
     def static generateConnectAllAction(DataAccess data) {
         // Map for each artifact to the connections and the names of the reveal actions that they support.
         val Map<Artifact, List<Pair<Connection, String>>> revealActions = new HashMap
-        for (view : data.views) {
-            for (shownConnection : view.shownConnections) {
-                val connection = shownConnection.shownConnection
-                // Reveal connected actions
-                var List<Pair<Connection, String>> connectionActions = revealActions.get(connection.connecting)
-                if (connectionActions === null) {
-                    connectionActions = new ArrayList
-                    revealActions.put(connection.connecting, connectionActions)
-                }
-                connectionActions.add(Pair.of(connection, "RevealConnected"  + connection.connecting.name + "Connects" + connection.connected.name + "Named" + connection.name + "Action"))
-                
-                // Reveal connecting actions
-                connectionActions = revealActions.get(connection.connected)
-                if (connectionActions === null) {
-                    connectionActions = new ArrayList
-                    revealActions.put(connection.connected, connectionActions)
-                }
-                connectionActions.add(Pair.of(connection, "RevealConnecting" + connection.connecting.name + "Connects" + connection.connected.name + "Named" + connection.name + "Action"))
+        for (connection : data.connections) {
+            // Reveal connected actions
+            var List<Pair<Connection, String>> connectionActions = revealActions.get(connection.connecting)
+            if (connectionActions === null) {
+                connectionActions = new ArrayList
+                revealActions.put(connection.connecting, connectionActions)
             }
+            connectionActions.add(Pair.of(connection, "RevealConnected"  + connection.connecting.name + "Connects" + connection.connected.name + "Named" + connection.name + "Action"))
+            
+            // Reveal connecting actions
+            connectionActions = revealActions.get(connection.connected)
+            if (connectionActions === null) {
+                connectionActions = new ArrayList
+                revealActions.put(connection.connected, connectionActions)
+            }
+            connectionActions.add(Pair.of(connection, "RevealConnecting" + connection.connecting.name + "Connects" + connection.connected.name + "Named" + connection.name + "Action"))
         }
         
         

@@ -3,7 +3,7 @@
  *
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2021-2022 by
+ * Copyright 2021-2023 by
  * + Kiel University
  *   + Department of Computer Science
  *   + Real-Time and Embedded Systems Group
@@ -377,13 +377,11 @@ class GenerateSyntheses {
             import «data.getBundleNamePrefix».viz.actions.DefocusAction
             import «data.getBundleNamePrefix».viz.actions.FocusAction
             import «data.getBundleNamePrefix».viz.actions.OverviewContextCollapseExpandAction
-            «FOR view : data.views»
-                «FOR connection : view.shownConnections»
-                    import «data.getBundleNamePrefix».viz.actions.RevealConnected«connection.shownConnection.connecting.name»Connects«connection.shownConnection.connected.name»Named«connection.shownConnection.name»Action
-                    import «data.getBundleNamePrefix».viz.actions.RemoveConnected«connection.shownConnection.connecting.name»Connects«connection.shownConnection.connected.name»Named«connection.shownConnection.name»Action
-                    import «data.getBundleNamePrefix».viz.actions.RevealConnecting«connection.shownConnection.connecting.name»Connects«connection.shownConnection.connected.name»Named«connection.shownConnection.name»Action
-                    import «data.getBundleNamePrefix».viz.actions.RemoveConnecting«connection.shownConnection.connecting.name»Connects«connection.shownConnection.connected.name»Named«connection.shownConnection.name»Action
-                «ENDFOR»
+            «FOR connection : data.connections»
+                import «data.getBundleNamePrefix».viz.actions.RevealConnected«connection.connecting.name»Connects«connection.connected.name»Named«connection.name»Action
+                import «data.getBundleNamePrefix».viz.actions.RemoveConnected«connection.connecting.name»Connects«connection.connected.name»Named«connection.name»Action
+                import «data.getBundleNamePrefix».viz.actions.RevealConnecting«connection.connecting.name»Connects«connection.connected.name»Named«connection.name»Action
+                import «data.getBundleNamePrefix».viz.actions.RemoveConnecting«connection.connecting.name»Connects«connection.connected.name»Named«connection.name»Action
             «ENDFOR»
             import «data.getBundleNamePrefix».viz.actions.SelectRelatedAction
             import «data.getBundleNamePrefix».viz.actions.ShowHideCollapsedAction
@@ -411,15 +409,13 @@ class GenerateSyntheses {
                     .registerAction(OverviewContextCollapseExpandAction.ID, new OverviewContextCollapseExpandAction)
                     .registerAction(ConnectAllAction.ID, new ConnectAllAction)
                     .registerAction(ShowHideCollapsedAction.ID, new ShowHideCollapsedAction)
-                    «FOR view : data.views»
-                        «FOR connection : view.shownConnections»
-                            .registerAction(RevealConnected«connection.shownConnection.connecting.name»Connects«connection.shownConnection.connected.name»Named«connection.shownConnection.name»Action.ID, new RevealConnected«connection.shownConnection.connecting.name»Connects«connection.shownConnection.connected.name»Named«connection.shownConnection.name»Action)
-                            .registerAction(RevealConnected«connection.shownConnection.connecting.name»Connects«connection.shownConnection.connected.name»Named«connection.shownConnection.name»Action.Recursive.ID, new RevealConnected«connection.shownConnection.connecting.name»Connects«connection.shownConnection.connected.name»Named«connection.shownConnection.name»Action.Recursive)
-                            .registerAction(RemoveConnected«connection.shownConnection.connecting.name»Connects«connection.shownConnection.connected.name»Named«connection.shownConnection.name»Action.ID, new RemoveConnected«connection.shownConnection.connecting.name»Connects«connection.shownConnection.connected.name»Named«connection.shownConnection.name»Action)
-                            .registerAction(RevealConnecting«connection.shownConnection.connecting.name»Connects«connection.shownConnection.connected.name»Named«connection.shownConnection.name»Action.ID, new RevealConnecting«connection.shownConnection.connecting.name»Connects«connection.shownConnection.connected.name»Named«connection.shownConnection.name»Action)
-                            .registerAction(RevealConnecting«connection.shownConnection.connecting.name»Connects«connection.shownConnection.connected.name»Named«connection.shownConnection.name»Action.Recursive.ID, new RevealConnecting«connection.shownConnection.connecting.name»Connects«connection.shownConnection.connected.name»Named«connection.shownConnection.name»Action.Recursive)
-                            .registerAction(RemoveConnecting«connection.shownConnection.connecting.name»Connects«connection.shownConnection.connected.name»Named«connection.shownConnection.name»Action.ID, new RemoveConnecting«connection.shownConnection.connecting.name»Connects«connection.shownConnection.connected.name»Named«connection.shownConnection.name»Action)
-                        «ENDFOR»
+                    «FOR connection : data.connections»
+                        .registerAction(RevealConnected«connection.connecting.name»Connects«connection.connected.name»Named«connection.name»Action.ID, new RevealConnected«connection.connecting.name»Connects«connection.connected.name»Named«connection.name»Action)
+                        .registerAction(RevealConnected«connection.connecting.name»Connects«connection.connected.name»Named«connection.name»Action.Recursive.ID, new RevealConnected«connection.connecting.name»Connects«connection.connected.name»Named«connection.name»Action.Recursive)
+                        .registerAction(RemoveConnected«connection.connecting.name»Connects«connection.connected.name»Named«connection.name»Action.ID, new RemoveConnected«connection.connecting.name»Connects«connection.connected.name»Named«connection.name»Action)
+                        .registerAction(RevealConnecting«connection.connecting.name»Connects«connection.connected.name»Named«connection.name»Action.ID, new RevealConnecting«connection.connecting.name»Connects«connection.connected.name»Named«connection.name»Action)
+                        .registerAction(RevealConnecting«connection.connecting.name»Connects«connection.connected.name»Named«connection.name»Action.Recursive.ID, new RevealConnecting«connection.connecting.name»Connects«connection.connected.name»Named«connection.name»Action.Recursive)
+                        .registerAction(RemoveConnecting«connection.connecting.name»Connects«connection.connected.name»Named«connection.name»Action.ID, new RemoveConnecting«connection.connecting.name»Connects«connection.connected.name»Named«connection.name»Action)
                     «ENDFOR»
                     .registerDiagramSynthesisClass(«data.projectName.toFirstUpper»DiagramSynthesis.name, «data.projectName.toFirstUpper»DiagramSynthesis)
                     .registerDiagramSynthesisClass(«data.visualizationName.toFirstUpper»DiagramSynthesis.name, «data.visualizationName.toFirstUpper»DiagramSynthesis)
@@ -498,13 +494,11 @@ class GenerateSyntheses {
             import «data.getBundleNamePrefix».viz.actions.OverviewContextCollapseExpandAction
             import «data.getBundleNamePrefix».viz.actions.SelectRelatedAction
             import «data.getBundleNamePrefix».viz.actions.ShowHideCollapsedAction
-            «FOR view : data.views»
-                «FOR connection : view.shownConnections»
-                    import «data.getBundleNamePrefix».viz.actions.RevealConnected«connection.shownConnection.connecting.name»Connects«connection.shownConnection.connected.name»Named«connection.shownConnection.name»Action
-                    import «data.getBundleNamePrefix».viz.actions.RemoveConnected«connection.shownConnection.connecting.name»Connects«connection.shownConnection.connected.name»Named«connection.shownConnection.name»Action
-                    import «data.getBundleNamePrefix».viz.actions.RevealConnecting«connection.shownConnection.connecting.name»Connects«connection.shownConnection.connected.name»Named«connection.shownConnection.name»Action
-                    import «data.getBundleNamePrefix».viz.actions.RemoveConnecting«connection.shownConnection.connecting.name»Connects«connection.shownConnection.connected.name»Named«connection.shownConnection.name»Action
-                «ENDFOR»
+            «FOR connection : data.connections»
+                import «data.getBundleNamePrefix».viz.actions.RevealConnected«connection.connecting.name»Connects«connection.connected.name»Named«connection.name»Action
+                import «data.getBundleNamePrefix».viz.actions.RemoveConnected«connection.connecting.name»Connects«connection.connected.name»Named«connection.name»Action
+                import «data.getBundleNamePrefix».viz.actions.RevealConnecting«connection.connecting.name»Connects«connection.connected.name»Named«connection.name»Action
+                import «data.getBundleNamePrefix».viz.actions.RemoveConnecting«connection.connecting.name»Connects«connection.connected.name»Named«connection.name»Action
             «ENDFOR»
             «FOR artifact : data.artifacts»
                 import «data.modelBundleNamePrefix».model.«artifact.name»
@@ -1195,7 +1189,7 @@ class GenerateSyntheses {
              */
             final class SynthesisUtils {
                 /**
-                 * Utils class can not be instanciated.
+                 * Utils class can not be instantiated.
                  */
                 private new() {}
                 

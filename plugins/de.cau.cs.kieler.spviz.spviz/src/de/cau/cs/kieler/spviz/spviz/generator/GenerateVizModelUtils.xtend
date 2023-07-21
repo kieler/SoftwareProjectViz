@@ -3,7 +3,7 @@
  *
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2021-2022 by
+ * Copyright 2021-2023 by
  * + Kiel University
  *   + Department of Computer Science
  *   + Real-Time and Embedded Systems Group
@@ -159,6 +159,9 @@ class GenerateVizModelUtils {
             import «data.getBundleNamePrefix».model.«data.visualizationName»
             «FOR artifact : data.artifacts»
                 import «data.getBundleNamePrefix».model.«artifact.name»Context
+            «ENDFOR»
+            «FOR connection : data.connections»
+                import «data.getBundleNamePrefix».model.«connection.connecting.name»Connects«connection.connected.name»Named«connection.name»Container
             «ENDFOR»
             import «data.modelBundleNamePrefix».model.«data.projectName»
             «FOR artifact : data.artifacts»
@@ -559,67 +562,65 @@ class GenerateVizModelUtils {
                     
                 «ENDFOR»
                 
-                «FOR view : data.views»
-                    «FOR shownConnection : view.shownConnections»
-                        /**
-                         * Adds a connected edge to the parent overview context of the two given contexts.
-                         * The direction of the edge indicates that the «shownConnection.shownConnection.connecting.name.toFirstLower» of the {@code connectingContext} connectes the «shownConnection.shownConnection.connected.name.toFirstLower» of the
-                         * {@code connectedContext}.
-                         * [connecting] ---connects---> [connected]
-                         * 
-                         * @param connectingContext The «shownConnection.shownConnection.connecting.name.toFirstLower» context with the «shownConnection.shownConnection.connecting.name.toFirstLower» connecting the other «shownConnection.shownConnection.connected.name.toFirstLower».
-                         * @param connectedContext The «shownConnection.shownConnection.connected.name.toFirstLower» context with the «shownConnection.shownConnection.connected.name.toFirstLower» connected by the other «shownConnection.shownConnection.connecting.name.toFirstLower».
-                         */
-                        def static void add«shownConnection.shownConnection.name»«shownConnection.shownConnection.connected.name»Edge(«shownConnection.shownConnection.connecting.name»Context connectingContext, «shownConnection.shownConnection.connected.name»Context connectedContext) {
-                            val parentContext = connectingContext.parent as «view.name»OverviewContext
-                            if (connectedContext.parent !== parentContext) {
-                                throw new IllegalArgumentException("The connecting and the connected context both have to have the same " +
-                                    "parent context!")
-                            }
-                            // Only if this edge does not exist yet, add it to the list of connected «shownConnection.shownConnection.connected.name.toFirstLower» edges.
-                            if (!parentContext.«shownConnection.shownConnection.connecting.name.toFirstLower»Connects«shownConnection.shownConnection.connected.name»Named«shownConnection.shownConnection.name»Edges.exists [ key === connectingContext && value === connectedContext ]) {
-                                parentContext.«shownConnection.shownConnection.connecting.name.toFirstLower»Connects«shownConnection.shownConnection.connected.name»Named«shownConnection.shownConnection.name»Edges += VizModelUtil.createPair(connectingContext, connectedContext)
-                                
-                                // Check for both the connecting «shownConnection.shownConnection.connecting.name.toFirstLower» and the connected «shownConnection.shownConnection.connected.name.toFirstLower» if all connections are now shown in the 
-                                // parent context. If they are, remember it in the corresponding «shownConnection.shownConnection.connecting.name.toFirstLower» context.
-                                // Connecting context:
-                                if (connectingContext.modelElement.connected«shownConnection.shownConnection.name»«shownConnection.shownConnection.connected.name»s.forall [ connected |
-                                    !parentContext.modelElements.contains(connected) ||
-                                    parentContext.«shownConnection.shownConnection.connecting.name.toFirstLower»Connects«shownConnection.shownConnection.connected.name»Named«shownConnection.shownConnection.name»Edges.exists [ key === connectingContext && value.modelElement === connected ]
-                                ]) {
-                                    connectingContext.allConnected«shownConnection.shownConnection.connecting.name»Connects«shownConnection.shownConnection.connected.name»Named«shownConnection.shownConnection.name»Shown = true
-                                }
-                                // Connected context:
-                                if (connectedContext.modelElement.connecting«shownConnection.shownConnection.name»«shownConnection.shownConnection.connecting.name»s.forall [ connecting |
-                                    !parentContext.modelElements.contains(connecting) ||
-                                    parentContext.«shownConnection.shownConnection.connecting.name.toFirstLower»Connects«shownConnection.shownConnection.connected.name»Named«shownConnection.shownConnection.name»Edges.exists [ key.modelElement === connecting && value === connectedContext ]
-                                ]) {
-                                    connectedContext.allConnecting«shownConnection.shownConnection.connecting.name»Connects«shownConnection.shownConnection.connected.name»Named«shownConnection.shownConnection.name»Shown = true
-                                }
-                            }
+                «FOR connection : data.connections»
+                    /**
+                     * Adds a connected edge to the parent overview context of the two given contexts.
+                     * The direction of the edge indicates that the «connection.connecting.name.toFirstLower» of the {@code connectingContext} connects the «connection.connected.name.toFirstLower» of the
+                     * {@code connectedContext}.
+                     * [connecting] ---connects---> [connected]
+                     * 
+                     * @param connectingContext The «connection.connecting.name.toFirstLower» context with the «connection.connecting.name.toFirstLower» connecting the other «connection.connected.name.toFirstLower».
+                     * @param connectedContext The «connection.connected.name.toFirstLower» context with the «connection.connected.name.toFirstLower» connected by the other «connection.connecting.name.toFirstLower».
+                     */
+                    def static void add«connection.name»«connection.connected.name»Edge(«connection.connecting.name»Context connectingContext, «connection.connected.name»Context connectedContext) {
+                        val parentContext = connectingContext.parent as «connection.connecting.name»Connects«connection.connected.name»Named«connection.name»Container
+                        if (connectedContext.parent !== parentContext) {
+                            throw new IllegalArgumentException("The connecting and the connected context both have to have the same " +
+                                "parent context!")
                         }
-                        
-                        /**
-                         * Removes a connected edge to the parent overview context of the two given contexts.
-                         * 
-                         * @param connectingContext The «shownConnection.shownConnection.connecting.name.toFirstLower» context with the «shownConnection.shownConnection.connecting.name.toFirstLower» connecting the other «shownConnection.shownConnection.connected.name.toFirstLower».
-                         * @param connectedContext The «shownConnection.shownConnection.connected.name.toFirstLower» context with the «shownConnection.shownConnection.connected.name.toFirstLower» connected by the other «shownConnection.shownConnection.connecting.name.toFirstLower».
-                         */
-                        def static void remove«shownConnection.shownConnection.name»«shownConnection.shownConnection.connected.name»Edge(«shownConnection.shownConnection.connecting.name»Context connectingContext, «shownConnection.shownConnection.connected.name»Context connectedContext) {
-                            val parentContext = connectingContext.parent as «view.name»OverviewContext
-                            if (connectedContext.parent !== parentContext) {
-                                throw new IllegalArgumentException("The connecting and the connected context both have to have the same " +
-                                    "parent context!")
-                            }
-                            parentContext.«shownConnection.shownConnection.connecting.name.toFirstLower»Connects«shownConnection.shownConnection.connected.name»Named«shownConnection.shownConnection.name»Edges.removeIf [ key === connectingContext && value === connectedContext ]
+                        // Only if this edge does not exist yet, add it to the list of connected «connection.connected.name.toFirstLower» edges.
+                        if (!parentContext.«connection.connecting.name.toFirstLower»Connects«connection.connected.name»Named«connection.name»Edges.exists [ key === connectingContext && value === connectedContext ]) {
+                            parentContext.«connection.connecting.name.toFirstLower»Connects«connection.connected.name»Named«connection.name»Edges += VizModelUtil.createPair(connectingContext, connectedContext)
                             
-                            // Mark for both the connecting and connected context that not all connections are shown in the 
-                            // parent context anymore. Remember that in the corresponding context.
-                            connectingContext.allConnected«shownConnection.shownConnection.connecting.name»Connects«shownConnection.shownConnection.connected.name»Named«shownConnection.shownConnection.name»Shown = false
-                            connectedContext.allConnecting«shownConnection.shownConnection.connecting.name»Connects«shownConnection.shownConnection.connected.name»Named«shownConnection.shownConnection.name»Shown = false
+                            // Check for both the connecting «connection.connecting.name.toFirstLower» and the connected «connection.connected.name.toFirstLower» if all connections are now shown in the 
+                            // parent context. If they are, remember it in the corresponding «connection.connecting.name.toFirstLower» context.
+                            // Connecting context:
+                            if (connectingContext.modelElement.connected«connection.name»«connection.connected.name»s.forall [ connected |
+                                !parentContext.modelElements.contains(connected) ||
+                                parentContext.«connection.connecting.name.toFirstLower»Connects«connection.connected.name»Named«connection.name»Edges.exists [ key === connectingContext && value.modelElement === connected ]
+                            ]) {
+                                connectingContext.allConnected«connection.connecting.name»Connects«connection.connected.name»Named«connection.name»Shown = true
+                            }
+                            // Connected context:
+                            if (connectedContext.modelElement.connecting«connection.name»«connection.connecting.name»s.forall [ connecting |
+                                !parentContext.modelElements.contains(connecting) ||
+                                parentContext.«connection.connecting.name.toFirstLower»Connects«connection.connected.name»Named«connection.name»Edges.exists [ key.modelElement === connecting && value === connectedContext ]
+                            ]) {
+                                connectedContext.allConnecting«connection.connecting.name»Connects«connection.connected.name»Named«connection.name»Shown = true
+                            }
                         }
+                    }
+
+                    /**
+                     * Removes a connected edge to the parent overview context of the two given contexts.
+                     * 
+                     * @param connectingContext The «connection.connecting.name.toFirstLower» context with the «connection.connecting.name.toFirstLower» connecting the other «connection.connected.name.toFirstLower».
+                     * @param connectedContext The «connection.connected.name.toFirstLower» context with the «connection.connected.name.toFirstLower» connected by the other «connection.connecting.name.toFirstLower».
+                     */
+                    def static void remove«connection.name»«connection.connected.name»Edge(«connection.connecting.name»Context connectingContext, «connection.connected.name»Context connectedContext) {
+                        val parentContext = connectingContext.parent as «connection.connecting.name»Connects«connection.connected.name»Named«connection.name»Container
+                        if (connectedContext.parent !== parentContext) {
+                            throw new IllegalArgumentException("The connecting and the connected context both have to have the same " +
+                                "parent context!")
+                        }
+                        parentContext.«connection.connecting.name.toFirstLower»Connects«connection.connected.name»Named«connection.name»Edges.removeIf [ key === connectingContext && value === connectedContext ]
                         
-                    «ENDFOR»
+                        // Mark for both the connecting and connected context that not all connections are shown in the 
+                        // parent context anymore. Remember that in the corresponding context.
+                        connectingContext.allConnected«connection.connecting.name»Connects«connection.connected.name»Named«connection.name»Shown = false
+                        connectedContext.allConnecting«connection.connecting.name»Connects«connection.connected.name»Named«connection.name»Shown = false
+                    }
+                    
                 «ENDFOR»
                 
                 // Method to let Xtend create the needed generic super type.

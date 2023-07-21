@@ -3,7 +3,7 @@
  *
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2021-2022 by
+ * Copyright 2021-2023 by
  * + Kiel University
  *   + Department of Computer Science
  *   + Real-Time and Embedded Systems Group
@@ -59,6 +59,9 @@ class DataAccess {
      * A convenient map to show all {@link Connection}s with the key of the map as the connected {@link Artifact}.
      */
     Map<Artifact, List<Connection>> connectingArtifacts
+    /** All connections displayable in this SPViz. */
+    @Accessors(PUBLIC_GETTER)
+    List<Connection> connections
     /** A convenient map to show all {@link ArtifactView}s that may be shown within the key {@link Artifact}. */
     Map<Artifact, List<ArtifactView>> containedViews
     /** A convenient map to show all {@link Artifact}s that show the key {@link View}. */
@@ -87,6 +90,7 @@ class DataAccess {
         connectingArtifacts = newHashMap
         containedViews = newHashMap
         artifactsShowing = newHashMap
+        connections = newArrayList
         
         for (view : spviz.views) {
             // find all connections between artifacts
@@ -98,12 +102,21 @@ class DataAccess {
                 if (!connectedArtifacts.containsKey(connecting)) {
                     connectedArtifacts.put(connecting, newArrayList)
                 }
-                connectedArtifacts.get(connecting).add(connection)
+                // Make sure to not include the same connection twice (if shown in multiple views).
+                if (!connectedArtifacts.get(connecting).exists[equals(it, connection)]) {
+                    connectedArtifacts.get(connecting).add(connection)
+                }
                 
                 if (!connectingArtifacts.containsKey(connected)) {
                     connectingArtifacts.put(connected, newArrayList)
                 }
-                connectingArtifacts.get(connected).add(connection)
+                if (!connectingArtifacts.get(connected).exists[equals(it, connection)]) {
+                    connectingArtifacts.get(connected).add(connection)
+                }
+                
+                if (!connections.exists[equals(it, connection)]) {
+                    connections.add(connection)
+                }
             }
         }
         

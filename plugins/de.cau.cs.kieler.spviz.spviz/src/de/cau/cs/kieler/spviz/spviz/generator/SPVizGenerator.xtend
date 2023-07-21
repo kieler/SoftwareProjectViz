@@ -453,12 +453,18 @@ class SPVizGenerator extends AbstractGenerator {
                 }
                 
             «ENDFOR»
+            
+            «FOR connection : data.connections»
+                class «connection.connecting.name»Connects«connection.connected.name»Named«connection.name»Container extends IOverviewVisualizationContext<Object> {
+                    contains Pair<«connection.connecting.name»Context, «connection.connected.name»Context>[] «connection.connecting.name.toFirstLower»Connects«connection.connected.name»Named«connection.name»Edges
+                }
+            «ENDFOR»
 
             «FOR view : data.views»
-                class «view.name»OverviewContext extends IOverviewVisualizationContext<Object> {
-                    «FOR connection : view.shownConnections»
-                        contains Pair<«connection.shownConnection.connecting.name»Context, «connection.shownConnection.connected.name»Context>[] «connection.shownConnection.connecting.name.toFirstLower»Connects«connection.shownConnection.connected.name»Named«connection.shownConnection.name»Edges
-                    «ENDFOR»
+                class «view.name»OverviewContext extends IOverviewVisualizationContext<Object>«««
+«                  »«FOR connection : view.shownConnections.map[shownConnection] BEFORE ", " SEPARATOR ", "»«««
+«                      »«connection.connecting.name»Connects«connection.connected.name»Named«connection.name»Container«««
+«                  »«ENDFOR» {
                     «FOR shownElement : view.shownElements»
                         refers «shownElement.shownElement.name»Context[] collapsed«shownElement.shownElement.name»Contexts
                         refers «shownElement.shownElement.name»Context[] detailed«shownElement.shownElement.name»Contexts
