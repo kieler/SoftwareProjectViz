@@ -17,6 +17,8 @@
         eType="#//ShownElement" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="shownConnections" upperBound="-1"
         eType="#//ShownConnection" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="shownCategoryConnections"
+        upperBound="-1" eType="#//ShownCategoryConnection" containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="ArtifactShows">
     <eStructuralFeatures xsi:type="ecore:EReference" name="artifactShows" eType="ecore:EClass platform:/resource/de.cau.cs.kieler.spviz.spvizmodel/model/generated/SPVizModel.ecore#//Artifact"/>
@@ -44,6 +46,10 @@
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="ShownConnection">
     <eStructuralFeatures xsi:type="ecore:EReference" name="shownConnection" eType="ecore:EClass platform:/resource/de.cau.cs.kieler.spviz.spvizmodel/model/generated/SPVizModel.ecore#//Connection"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="via" eType="ecore:EClass platform:/resource/de.cau.cs.kieler.spviz.spvizmodel/model/generated/SPVizModel.ecore#//Artifact"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ShownCategoryConnection">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="connection" eType="ecore:EClass platform:/resource/de.cau.cs.kieler.spviz.spvizmodel/model/generated/SPVizModel.ecore#//Connection"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="sourceChain" eType="#//ArtifactChain"
+        containment="true"/>
   </eClassifiers>
 </ecore:EPackage>

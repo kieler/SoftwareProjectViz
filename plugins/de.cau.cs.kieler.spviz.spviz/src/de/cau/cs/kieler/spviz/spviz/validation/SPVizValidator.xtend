@@ -3,7 +3,7 @@
  *
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2020-2022 by
+ * Copyright 2020-2023 by
  * + Kiel University
  *   + Department of Computer Science
  *     + Real-Time and Embedded Systems Group
@@ -17,9 +17,11 @@ import de.cau.cs.kieler.spviz.spviz.sPViz.ArtifactShows
 import de.cau.cs.kieler.spviz.spviz.sPViz.ArtifactSource
 import de.cau.cs.kieler.spviz.spviz.sPViz.ArtifactView
 import de.cau.cs.kieler.spviz.spviz.sPViz.SPVizPackage
+import de.cau.cs.kieler.spviz.spviz.sPViz.ShownCategoryConnection
 import de.cau.cs.kieler.spviz.spviz.sPViz.ShownConnection
 import de.cau.cs.kieler.spviz.spviz.sPViz.ShownElement
 import de.cau.cs.kieler.spviz.spviz.sPViz.View
+import de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.Artifact
 import de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.Containment
 import org.eclipse.xtext.validation.Check
 
@@ -45,6 +47,15 @@ class SPVizValidator extends AbstractSPVizValidator {
         if ((shownConnection.eContainer as View).shownConnections
             .filter[ it.shownConnection === shownConnection.shownConnection].size > 1) {
             error('Views cannot contain duplicate connect entries.', shownConnection, SPVizPackage.Literals.SHOWN_CONNECTION__SHOWN_CONNECTION)
+        }
+    }
+    
+    // Views are not allowed to contain the same shown category connection more than once.
+    @Check
+    def checkNoDuplicateViewShownCategoryConnection(ShownCategoryConnection shownCategoryConnection) {
+        if ((shownCategoryConnection.eContainer as View).shownCategoryConnections
+            .filter[ it.connection === shownCategoryConnection.connection].size > 1) {
+            error('Views cannot contain duplicate artifact connect entries.', shownCategoryConnection, SPVizPackage.Literals.SHOWN_CATEGORY_CONNECTION__CONNECTION)
         }
     }
     
@@ -82,12 +93,7 @@ class SPVizValidator extends AbstractSPVizValidator {
     @Check
     def checkArtifactViewMatchingTarget(ArtifactSource artifactSource) {
         val target = artifactSource.artifact
-        var checkTarget = artifactSource.sourceChain.source
-        var next = artifactSource.sourceChain.further
-        while (next !== null) {
-            checkTarget = next.source
-            next = next.further
-        }
+        val checkTarget = artifactSource.sourceChain.target
         if (target !== checkTarget) {
             error('The configuration for this element needs to end at the same artifact that is being configured', artifactSource, SPVizPackage.Literals.ARTIFACT_SOURCE__ARTIFACT)
         }
@@ -101,5 +107,37 @@ class SPVizValidator extends AbstractSPVizValidator {
         if (next !== null && !source.references.filter(Containment).map[ contains ].contains(next)) {
             error('The artifact following in the source chain needs to be contained in this artifact.', chain, SPVizPackage.Literals.ARTIFACT_CHAIN__SOURCE)
         }
+    }
+    
+    // For category connections, the source artifacts needs to match an artifact shown in its view.
+    @Check
+    def checkCategoryConnectionSourceArtifact(ShownCategoryConnection categoryConnection) {
+        val source = categoryConnection.sourceChain.source
+        val view = categoryConnection.eContainer as View
+        if (!view.shownElements.map[ shownElement ].contains(source)) {
+            error('The source artifact needs to match an artifact shown in its view.', categoryConnection.sourceChain, SPVizPackage.Literals.ARTIFACT_CHAIN__SOURCE)
+        }
+    }
+    
+    // For category connections, the connection needs to be part of the target artifact.
+    @Check
+    def checkCategoryConnectionTargetArtifact(ShownCategoryConnection categoryConnection) {
+        val connection = categoryConnection.connection
+        val connectionArtifact = connection.eContainer as Artifact
+        val target = categoryConnection.sourceChain.target
+        if (connectionArtifact !== target) {
+            error('The connection needs to be part of the target artifact in the "via" chain.', categoryConnection, SPVizPackage.Literals.SHOWN_CATEGORY_CONNECTION__CONNECTION)
+        }
+    }
+    
+    /**
+     * Returns the last artifact in an artifact chain.
+     */
+    def Artifact target(ArtifactChain chain) {
+        var currentChain = chain
+        while (currentChain.further !== null) {
+            currentChain = currentChain.further
+        }
+        return currentChain.source
     }
 }
