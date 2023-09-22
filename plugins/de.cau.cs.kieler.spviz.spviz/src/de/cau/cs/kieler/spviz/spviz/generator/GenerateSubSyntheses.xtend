@@ -337,7 +337,7 @@ class GenerateSubSyntheses {
                                             // Connected «artifactName.toFirstLower»s are always shown and expanded to the east with the drawing direction.
                                             addLayoutParam(CoreOptions::PORT_SIDE, PortSide::EAST)
                                             addLayoutParam(CoreOptions::PORT_INDEX, 0)
-                                            addConnected«connected.connecting.name»Connects«connected.connected.name»Named«connected.name»ActionPortRendering(filteredConnected«connected.name»«connected.connected.name»s.size, context.allConnected«connected.connecting.name»Connects«connected.connected.name»Named«connected.name»Shown)
+                                            addConnected«connected.connecting.name»Connects«connected.connected.name»Named«connected.name»PortRendering(filteredConnected«connected.name»«connected.connected.name»s.size, context.allConnected«connected.connecting.name»Connects«connected.connected.name»Named«connected.name»Shown)
                                             width = 12
                                             height = 12
                                         ]
@@ -357,7 +357,7 @@ class GenerateSubSyntheses {
                                             // Connecting «artifactName.toFirstLower»s are always shown and expanded to the west against the drawing direction.
                                             addLayoutParam(CoreOptions::PORT_SIDE, PortSide::WEST)
                                             addLayoutParam(CoreOptions::PORT_INDEX, 1)
-                                            addConnecting«connecting.connecting.name»Connects«connecting.connected.name»Named«connecting.name»ActionPortRendering(filteredConnecting«connecting.name»«connecting.connecting.name»s.size, context.allConnecting«connecting.connecting.name»Connects«connecting.connected.name»Named«connecting.name»Shown)
+                                            addConnecting«connecting.connecting.name»Connects«connecting.connected.name»Named«connecting.name»PortRendering(filteredConnecting«connecting.name»«connecting.connecting.name»s.size, context.allConnecting«connecting.connecting.name»Connects«connecting.connected.name»Named«connecting.name»Shown)
                                             width = 12
                                             height = 12
                                         ]
