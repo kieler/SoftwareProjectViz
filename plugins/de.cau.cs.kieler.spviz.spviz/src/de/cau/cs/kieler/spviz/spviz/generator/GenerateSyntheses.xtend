@@ -1077,7 +1077,7 @@ class GenerateSyntheses {
                          * clicked when not all connected «connected.connected.name»s are shown, or the {@link RemoveConnected«connected.connecting.name»Connects«connected.connected.name»Named«connected.name»Action}
                          * if all are already shown.
                          */
-                        def KRectangle addConnected«connected.connecting.name»Connects«connected.connected.name»Named«connected.name»ActionPortRendering(KPort port, int numReferences, boolean allShown) {
+                        def KRectangle addConnected«connected.connecting.name»Connects«connected.connected.name»Named«connected.name»PortRendering(KPort port, int numReferences, boolean allShown) {
                             return port.addRectangle => [
                                 if (allShown) {
                                     background = ALL_SHOWN_COLOR.color
@@ -1125,7 +1125,7 @@ class GenerateSyntheses {
                          * clicked when not all connecting «connecting.connecting.name»s are shown, or the {@link RemoveConnecting«connecting.connecting.name»Connects«connecting.connected.name»Named«connecting.name»Action}
                          * if all are already shown.
                          */
-                        def KRectangle addConnecting«connecting.connecting.name»Connects«connecting.connected.name»Named«connecting.name»ActionPortRendering(KPort port, int numReferences, boolean allShown) {
+                        def KRectangle addConnecting«connecting.connecting.name»Connects«connecting.connected.name»Named«connecting.name»PortRendering(KPort port, int numReferences, boolean allShown) {
                             return port.addRectangle => [
                                 if (allShown) {
                                     background = ALL_SHOWN_COLOR.color
