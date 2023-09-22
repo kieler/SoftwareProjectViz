@@ -119,14 +119,25 @@ class SPVizValidator extends AbstractSPVizValidator {
         }
     }
     
-    // For category connections, the connection needs to be part of the target artifact.
+    // For category connections, the connection source needs to be part of the target artifact.
     @Check
-    def checkCategoryConnectionTargetArtifact(ShownCategoryConnection categoryConnection) {
+    def checkCategoryConnectionSourceTargetArtifact(ShownCategoryConnection categoryConnection) {
         val connection = categoryConnection.connection
         val connectionArtifact = connection.eContainer as Artifact
         val target = categoryConnection.sourceChain.target
-        if (connectionArtifact !== target) {
-            error('The connection needs to be part of the target artifact in the "via" chain.', categoryConnection, SPVizPackage.Literals.SHOWN_CATEGORY_CONNECTION__CONNECTION)
+        if (!target.references.filter(Containment).map[ contains ].contains(connectionArtifact)) {
+            error('The connection source needs to be part of the target artifact in the "via" chain.', categoryConnection, SPVizPackage.Literals.SHOWN_CATEGORY_CONNECTION__CONNECTION)
+        }
+    }
+    
+    // For category connections, the connection target needs to be part of the target artifact.
+    @Check
+    def checkCategoryConnectionTargetTargetArtifact(ShownCategoryConnection categoryConnection) {
+        val connection = categoryConnection.connection
+        val connectionArtifact = connection.connects
+        val target = categoryConnection.sourceChain.target
+        if (!target.references.filter(Containment).map[ contains ].contains(connectionArtifact)) {
+            error('The connection target needs to be part of the target artifact in the "via" chain.', categoryConnection, SPVizPackage.Literals.SHOWN_CATEGORY_CONNECTION__CONNECTION)
         }
     }
     
