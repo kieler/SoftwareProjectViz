@@ -33,6 +33,7 @@ import org.eclipse.emf.ecore.EObject;
  * <ul>
  *   <li>{@link de.cau.cs.kieler.spviz.spviz.sPViz.ShownCategoryConnection#getConnection <em>Connection</em>}</li>
  *   <li>{@link de.cau.cs.kieler.spviz.spviz.sPViz.ShownCategoryConnection#getSourceChain <em>Source Chain</em>}</li>
+ *   <li>{@link de.cau.cs.kieler.spviz.spviz.sPViz.ShownCategoryConnection#getInnerView <em>Inner View</em>}</li>
  * </ul>
  *
  * @see de.cau.cs.kieler.spviz.spviz.sPViz.SPVizPackage#getShownCategoryConnection()
@@ -84,5 +85,27 @@ public interface ShownCategoryConnection extends EObject
    * @generated
    */
   void setSourceChain(ArtifactChain value);
+
+  /**
+   * Returns the value of the '<em><b>Inner View</b></em>' reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the value of the '<em>Inner View</em>' reference.
+   * @see #setInnerView(View)
+   * @see de.cau.cs.kieler.spviz.spviz.sPViz.SPVizPackage#getShownCategoryConnection_InnerView()
+   * @model
+   * @generated
+   */
+  View getInnerView();
+
+  /**
+   * Sets the value of the '{@link de.cau.cs.kieler.spviz.spviz.sPViz.ShownCategoryConnection#getInnerView <em>Inner View</em>}' reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @param value the new value of the '<em>Inner View</em>' reference.
+   * @see #getInnerView()
+   * @generated
+   */
+  void setInnerView(View value);
 
 } // ShownCategoryConnection

@@ -21,6 +21,7 @@ package de.cau.cs.kieler.spviz.spviz.sPViz.impl;
 import de.cau.cs.kieler.spviz.spviz.sPViz.ArtifactChain;
 import de.cau.cs.kieler.spviz.spviz.sPViz.SPVizPackage;
 import de.cau.cs.kieler.spviz.spviz.sPViz.ShownCategoryConnection;
+import de.cau.cs.kieler.spviz.spviz.sPViz.View;
 
 import de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.Connection;
 
@@ -43,6 +44,7 @@ import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
  * <ul>
  *   <li>{@link de.cau.cs.kieler.spviz.spviz.sPViz.impl.ShownCategoryConnectionImpl#getConnection <em>Connection</em>}</li>
  *   <li>{@link de.cau.cs.kieler.spviz.spviz.sPViz.impl.ShownCategoryConnectionImpl#getSourceChain <em>Source Chain</em>}</li>
+ *   <li>{@link de.cau.cs.kieler.spviz.spviz.sPViz.impl.ShownCategoryConnectionImpl#getInnerView <em>Inner View</em>}</li>
  * </ul>
  *
  * @generated
@@ -68,6 +70,16 @@ public class ShownCategoryConnectionImpl extends MinimalEObjectImpl.Container im
    * @ordered
    */
   protected ArtifactChain sourceChain;
+
+  /**
+   * The cached value of the '{@link #getInnerView() <em>Inner View</em>}' reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @see #getInnerView()
+   * @generated
+   * @ordered
+   */
+  protected View innerView;
 
   /**
    * <!-- begin-user-doc -->
@@ -191,6 +203,51 @@ public class ShownCategoryConnectionImpl extends MinimalEObjectImpl.Container im
    * @generated
    */
   @Override
+  public View getInnerView()
+  {
+    if (innerView != null && innerView.eIsProxy())
+    {
+      InternalEObject oldInnerView = (InternalEObject)innerView;
+      innerView = (View)eResolveProxy(oldInnerView);
+      if (innerView != oldInnerView)
+      {
+        if (eNotificationRequired())
+          eNotify(new ENotificationImpl(this, Notification.RESOLVE, SPVizPackage.SHOWN_CATEGORY_CONNECTION__INNER_VIEW, oldInnerView, innerView));
+      }
+    }
+    return innerView;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  public View basicGetInnerView()
+  {
+    return innerView;
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
+  public void setInnerView(View newInnerView)
+  {
+    View oldInnerView = innerView;
+    innerView = newInnerView;
+    if (eNotificationRequired())
+      eNotify(new ENotificationImpl(this, Notification.SET, SPVizPackage.SHOWN_CATEGORY_CONNECTION__INNER_VIEW, oldInnerView, innerView));
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
   public NotificationChain eInverseRemove(InternalEObject otherEnd, int featureID, NotificationChain msgs)
   {
     switch (featureID)
@@ -216,6 +273,9 @@ public class ShownCategoryConnectionImpl extends MinimalEObjectImpl.Container im
         return basicGetConnection();
       case SPVizPackage.SHOWN_CATEGORY_CONNECTION__SOURCE_CHAIN:
         return getSourceChain();
+      case SPVizPackage.SHOWN_CATEGORY_CONNECTION__INNER_VIEW:
+        if (resolve) return getInnerView();
+        return basicGetInnerView();
     }
     return super.eGet(featureID, resolve, coreType);
   }
@@ -235,6 +295,9 @@ public class ShownCategoryConnectionImpl extends MinimalEObjectImpl.Container im
         return;
       case SPVizPackage.SHOWN_CATEGORY_CONNECTION__SOURCE_CHAIN:
         setSourceChain((ArtifactChain)newValue);
+        return;
+      case SPVizPackage.SHOWN_CATEGORY_CONNECTION__INNER_VIEW:
+        setInnerView((View)newValue);
         return;
     }
     super.eSet(featureID, newValue);
@@ -256,6 +319,9 @@ public class ShownCategoryConnectionImpl extends MinimalEObjectImpl.Container im
       case SPVizPackage.SHOWN_CATEGORY_CONNECTION__SOURCE_CHAIN:
         setSourceChain((ArtifactChain)null);
         return;
+      case SPVizPackage.SHOWN_CATEGORY_CONNECTION__INNER_VIEW:
+        setInnerView((View)null);
+        return;
     }
     super.eUnset(featureID);
   }
@@ -274,6 +340,8 @@ public class ShownCategoryConnectionImpl extends MinimalEObjectImpl.Container im
         return connection != null;
       case SPVizPackage.SHOWN_CATEGORY_CONNECTION__SOURCE_CHAIN:
         return sourceChain != null;
+      case SPVizPackage.SHOWN_CATEGORY_CONNECTION__INNER_VIEW:
+        return innerView != null;
     }
     return super.eIsSet(featureID);
   }

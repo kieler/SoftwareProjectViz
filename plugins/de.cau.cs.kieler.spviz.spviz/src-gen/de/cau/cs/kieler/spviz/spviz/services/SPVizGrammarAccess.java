@@ -450,10 +450,15 @@ public class SPVizGrammarAccess extends AbstractElementFinder.AbstractGrammarEle
 		private final Keyword cViaKeyword_2 = (Keyword)cGroup.eContents().get(2);
 		private final Assignment cSourceChainAssignment_3 = (Assignment)cGroup.eContents().get(3);
 		private final RuleCall cSourceChainArtifactChainParserRuleCall_3_0 = (RuleCall)cSourceChainAssignment_3.eContents().get(0);
+		private final Keyword cInKeyword_4 = (Keyword)cGroup.eContents().get(4);
+		private final Assignment cInnerViewAssignment_5 = (Assignment)cGroup.eContents().get(5);
+		private final CrossReference cInnerViewViewCrossReference_5_0 = (CrossReference)cInnerViewAssignment_5.eContents().get(0);
+		private final RuleCall cInnerViewViewQualifiedNameParserRuleCall_5_0_1 = (RuleCall)cInnerViewViewCrossReference_5_0.eContents().get(1);
 		
 		//ShownCategoryConnection:
 		//    'connect' connection=[spvizmodel::Connection|QualifiedName]
 		//    'via' sourceChain=ArtifactChain
+		//    'in' innerView=[View|QualifiedName]
 		//    // TODO: we may need an alternative syntax for category connections, where the source/target element is not clear,
 		//    // e.g. by writing connect Feature to Feature via source Feature>Bundle and target Feature>Bundle and connection Dependency
 		//;
@@ -461,6 +466,7 @@ public class SPVizGrammarAccess extends AbstractElementFinder.AbstractGrammarEle
 		
 		//'connect' connection=[spvizmodel::Connection|QualifiedName]
 		//'via' sourceChain=ArtifactChain
+		//'in' innerView=[View|QualifiedName]
 		public Group getGroup() { return cGroup; }
 		
 		//'connect'
@@ -483,6 +489,18 @@ public class SPVizGrammarAccess extends AbstractElementFinder.AbstractGrammarEle
 		
 		//ArtifactChain
 		public RuleCall getSourceChainArtifactChainParserRuleCall_3_0() { return cSourceChainArtifactChainParserRuleCall_3_0; }
+		
+		//'in'
+		public Keyword getInKeyword_4() { return cInKeyword_4; }
+		
+		//innerView=[View|QualifiedName]
+		public Assignment getInnerViewAssignment_5() { return cInnerViewAssignment_5; }
+		
+		//[View|QualifiedName]
+		public CrossReference getInnerViewViewCrossReference_5_0() { return cInnerViewViewCrossReference_5_0; }
+		
+		//QualifiedName
+		public RuleCall getInnerViewViewQualifiedNameParserRuleCall_5_0_1() { return cInnerViewViewQualifiedNameParserRuleCall_5_0_1; }
 	}
 	public class QualifiedNameElements extends AbstractParserRuleElementFinder {
 		private final ParserRule rule = (ParserRule) GrammarUtil.findRuleForName(getGrammar(), "de.cau.cs.kieler.spviz.spviz.SPViz.QualifiedName");
@@ -684,6 +702,7 @@ public class SPVizGrammarAccess extends AbstractElementFinder.AbstractGrammarEle
 	//ShownCategoryConnection:
 	//    'connect' connection=[spvizmodel::Connection|QualifiedName]
 	//    'via' sourceChain=ArtifactChain
+	//    'in' innerView=[View|QualifiedName]
 	//    // TODO: we may need an alternative syntax for category connections, where the source/target element is not clear,
 	//    // e.g. by writing connect Feature to Feature via source Feature>Bundle and target Feature>Bundle and connection Dependency
 	//;

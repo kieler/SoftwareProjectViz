@@ -81,6 +81,7 @@ public class SPVizParser extends AbstractContentAssistParser {
 			builder.put(grammarAccess.getShownConnectionAccess().getShownConnectionAssignment_1(), "rule__ShownConnection__ShownConnectionAssignment_1");
 			builder.put(grammarAccess.getShownCategoryConnectionAccess().getConnectionAssignment_1(), "rule__ShownCategoryConnection__ConnectionAssignment_1");
 			builder.put(grammarAccess.getShownCategoryConnectionAccess().getSourceChainAssignment_3(), "rule__ShownCategoryConnection__SourceChainAssignment_3");
+			builder.put(grammarAccess.getShownCategoryConnectionAccess().getInnerViewAssignment_5(), "rule__ShownCategoryConnection__InnerViewAssignment_5");
 		}
 	}
 	

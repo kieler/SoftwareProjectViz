@@ -51,5 +51,6 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="connection" eType="ecore:EClass platform:/resource/de.cau.cs.kieler.spviz.spvizmodel/model/generated/SPVizModel.ecore#//Connection"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="sourceChain" eType="#//ArtifactChain"
         containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="innerView" eType="#//View"/>
   </eClassifiers>
 </ecore:EPackage>

@@ -523,6 +523,17 @@ public class SPVizPackageImpl extends EPackageImpl implements SPVizPackage
    * @generated
    */
   @Override
+  public EReference getShownCategoryConnection_InnerView()
+  {
+    return (EReference)shownCategoryConnectionEClass.getEStructuralFeatures().get(2);
+  }
+
+  /**
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   */
+  @Override
   public SPVizFactory getSPVizFactory()
   {
     return (SPVizFactory)getEFactoryInstance();
@@ -587,6 +598,7 @@ public class SPVizPackageImpl extends EPackageImpl implements SPVizPackage
     shownCategoryConnectionEClass = createEClass(SHOWN_CATEGORY_CONNECTION);
     createEReference(shownCategoryConnectionEClass, SHOWN_CATEGORY_CONNECTION__CONNECTION);
     createEReference(shownCategoryConnectionEClass, SHOWN_CATEGORY_CONNECTION__SOURCE_CHAIN);
+    createEReference(shownCategoryConnectionEClass, SHOWN_CATEGORY_CONNECTION__INNER_VIEW);
   }
 
   /**
@@ -662,6 +674,7 @@ public class SPVizPackageImpl extends EPackageImpl implements SPVizPackage
     initEClass(shownCategoryConnectionEClass, ShownCategoryConnection.class, "ShownCategoryConnection", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
     initEReference(getShownCategoryConnection_Connection(), theSPVizModelPackage.getConnection(), null, "connection", null, 0, 1, ShownCategoryConnection.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
     initEReference(getShownCategoryConnection_SourceChain(), this.getArtifactChain(), null, "sourceChain", null, 0, 1, ShownCategoryConnection.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+    initEReference(getShownCategoryConnection_InnerView(), this.getView(), null, "innerView", null, 0, 1, ShownCategoryConnection.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
     // Create resource
     createResource(eNS_URI);

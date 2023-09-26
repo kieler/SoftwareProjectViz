@@ -433,13 +433,22 @@ public interface SPVizPackage extends EPackage
   int SHOWN_CATEGORY_CONNECTION__SOURCE_CHAIN = 1;
 
   /**
+   * The feature id for the '<em><b>Inner View</b></em>' reference.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @generated
+   * @ordered
+   */
+  int SHOWN_CATEGORY_CONNECTION__INNER_VIEW = 2;
+
+  /**
    * The number of structural features of the '<em>Shown Category Connection</em>' class.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
    * @generated
    * @ordered
    */
-  int SHOWN_CATEGORY_CONNECTION_FEATURE_COUNT = 2;
+  int SHOWN_CATEGORY_CONNECTION_FEATURE_COUNT = 3;
 
 
   /**
@@ -775,6 +784,17 @@ public interface SPVizPackage extends EPackage
   EReference getShownCategoryConnection_SourceChain();
 
   /**
+   * Returns the meta object for the reference '{@link de.cau.cs.kieler.spviz.spviz.sPViz.ShownCategoryConnection#getInnerView <em>Inner View</em>}'.
+   * <!-- begin-user-doc -->
+   * <!-- end-user-doc -->
+   * @return the meta object for the reference '<em>Inner View</em>'.
+   * @see de.cau.cs.kieler.spviz.spviz.sPViz.ShownCategoryConnection#getInnerView()
+   * @see #getShownCategoryConnection()
+   * @generated
+   */
+  EReference getShownCategoryConnection_InnerView();
+
+  /**
    * Returns the factory that creates the instances of the model.
    * <!-- begin-user-doc -->
    * <!-- end-user-doc -->
@@ -1062,6 +1082,14 @@ public interface SPVizPackage extends EPackage
      * @generated
      */
     EReference SHOWN_CATEGORY_CONNECTION__SOURCE_CHAIN = eINSTANCE.getShownCategoryConnection_SourceChain();
+
+    /**
+     * The meta object literal for the '<em><b>Inner View</b></em>' reference feature.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    EReference SHOWN_CATEGORY_CONNECTION__INNER_VIEW = eINSTANCE.getShownCategoryConnection_InnerView();
 
   }
 
