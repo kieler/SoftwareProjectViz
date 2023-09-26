@@ -71,6 +71,8 @@ ShownConnection:
 ShownCategoryConnection:
     'connect' connection=[spvizmodel::Connection|QualifiedName]
     'via' sourceChain=ArtifactChain
+    'in' innerView=View
+    
     
     // TODO: we may need an alternative syntax for category connections, where the source/target element is not clear,
     // e.g. by writing connect Feature to Feature via source Feature>Bundle and target Feature>Bundle and connection Dependency
