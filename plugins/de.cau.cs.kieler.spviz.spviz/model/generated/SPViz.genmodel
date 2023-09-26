@@ -45,6 +45,7 @@
     <genClasses ecoreClass="SPViz.ecore#//ShownCategoryConnection">
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference SPViz.ecore#//ShownCategoryConnection/connection"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference SPViz.ecore#//ShownCategoryConnection/sourceChain"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference SPViz.ecore#//ShownCategoryConnection/innerView"/>
     </genClasses>
   </genPackages>
 </genmodel:GenModel>

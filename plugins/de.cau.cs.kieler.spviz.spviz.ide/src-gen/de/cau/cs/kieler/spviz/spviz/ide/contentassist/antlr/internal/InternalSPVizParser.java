@@ -4406,17 +4406,22 @@ public class InternalSPVizParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__ShownCategoryConnection__Group__3"
-    // InternalSPViz.g:1478:1: rule__ShownCategoryConnection__Group__3 : rule__ShownCategoryConnection__Group__3__Impl ;
+    // InternalSPViz.g:1478:1: rule__ShownCategoryConnection__Group__3 : rule__ShownCategoryConnection__Group__3__Impl rule__ShownCategoryConnection__Group__4 ;
     public final void rule__ShownCategoryConnection__Group__3() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPViz.g:1482:1: ( rule__ShownCategoryConnection__Group__3__Impl )
-            // InternalSPViz.g:1483:2: rule__ShownCategoryConnection__Group__3__Impl
+            // InternalSPViz.g:1482:1: ( rule__ShownCategoryConnection__Group__3__Impl rule__ShownCategoryConnection__Group__4 )
+            // InternalSPViz.g:1483:2: rule__ShownCategoryConnection__Group__3__Impl rule__ShownCategoryConnection__Group__4
             {
-            pushFollow(FOLLOW_2);
+            pushFollow(FOLLOW_17);
             rule__ShownCategoryConnection__Group__3__Impl();
+
+            state._fsp--;
+
+            pushFollow(FOLLOW_2);
+            rule__ShownCategoryConnection__Group__4();
 
             state._fsp--;
 
@@ -4439,21 +4444,21 @@ public class InternalSPVizParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__ShownCategoryConnection__Group__3__Impl"
-    // InternalSPViz.g:1489:1: rule__ShownCategoryConnection__Group__3__Impl : ( ( rule__ShownCategoryConnection__SourceChainAssignment_3 ) ) ;
+    // InternalSPViz.g:1490:1: rule__ShownCategoryConnection__Group__3__Impl : ( ( rule__ShownCategoryConnection__SourceChainAssignment_3 ) ) ;
     public final void rule__ShownCategoryConnection__Group__3__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPViz.g:1493:1: ( ( ( rule__ShownCategoryConnection__SourceChainAssignment_3 ) ) )
-            // InternalSPViz.g:1494:1: ( ( rule__ShownCategoryConnection__SourceChainAssignment_3 ) )
+            // InternalSPViz.g:1494:1: ( ( ( rule__ShownCategoryConnection__SourceChainAssignment_3 ) ) )
+            // InternalSPViz.g:1495:1: ( ( rule__ShownCategoryConnection__SourceChainAssignment_3 ) )
             {
-            // InternalSPViz.g:1494:1: ( ( rule__ShownCategoryConnection__SourceChainAssignment_3 ) )
-            // InternalSPViz.g:1495:2: ( rule__ShownCategoryConnection__SourceChainAssignment_3 )
+            // InternalSPViz.g:1495:1: ( ( rule__ShownCategoryConnection__SourceChainAssignment_3 ) )
+            // InternalSPViz.g:1496:2: ( rule__ShownCategoryConnection__SourceChainAssignment_3 )
             {
              before(grammarAccess.getShownCategoryConnectionAccess().getSourceChainAssignment_3()); 
-            // InternalSPViz.g:1496:2: ( rule__ShownCategoryConnection__SourceChainAssignment_3 )
-            // InternalSPViz.g:1496:3: rule__ShownCategoryConnection__SourceChainAssignment_3
+            // InternalSPViz.g:1497:2: ( rule__ShownCategoryConnection__SourceChainAssignment_3 )
+            // InternalSPViz.g:1497:3: rule__ShownCategoryConnection__SourceChainAssignment_3
             {
             pushFollow(FOLLOW_2);
             rule__ShownCategoryConnection__SourceChainAssignment_3();
@@ -4485,15 +4490,170 @@ public class InternalSPVizParser extends AbstractInternalContentAssistParser {
     // $ANTLR end "rule__ShownCategoryConnection__Group__3__Impl"
 
 
+    // $ANTLR start "rule__ShownCategoryConnection__Group__4"
+    // InternalSPViz.g:1505:1: rule__ShownCategoryConnection__Group__4 : rule__ShownCategoryConnection__Group__4__Impl rule__ShownCategoryConnection__Group__5 ;
+    public final void rule__ShownCategoryConnection__Group__4() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+        	
+        try {
+            // InternalSPViz.g:1509:1: ( rule__ShownCategoryConnection__Group__4__Impl rule__ShownCategoryConnection__Group__5 )
+            // InternalSPViz.g:1510:2: rule__ShownCategoryConnection__Group__4__Impl rule__ShownCategoryConnection__Group__5
+            {
+            pushFollow(FOLLOW_3);
+            rule__ShownCategoryConnection__Group__4__Impl();
+
+            state._fsp--;
+
+            pushFollow(FOLLOW_2);
+            rule__ShownCategoryConnection__Group__5();
+
+            state._fsp--;
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end "rule__ShownCategoryConnection__Group__4"
+
+
+    // $ANTLR start "rule__ShownCategoryConnection__Group__4__Impl"
+    // InternalSPViz.g:1517:1: rule__ShownCategoryConnection__Group__4__Impl : ( 'in' ) ;
+    public final void rule__ShownCategoryConnection__Group__4__Impl() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+        	
+        try {
+            // InternalSPViz.g:1521:1: ( ( 'in' ) )
+            // InternalSPViz.g:1522:1: ( 'in' )
+            {
+            // InternalSPViz.g:1522:1: ( 'in' )
+            // InternalSPViz.g:1523:2: 'in'
+            {
+             before(grammarAccess.getShownCategoryConnectionAccess().getInKeyword_4()); 
+            match(input,21,FOLLOW_2); 
+             after(grammarAccess.getShownCategoryConnectionAccess().getInKeyword_4()); 
+
+            }
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end "rule__ShownCategoryConnection__Group__4__Impl"
+
+
+    // $ANTLR start "rule__ShownCategoryConnection__Group__5"
+    // InternalSPViz.g:1532:1: rule__ShownCategoryConnection__Group__5 : rule__ShownCategoryConnection__Group__5__Impl ;
+    public final void rule__ShownCategoryConnection__Group__5() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+        	
+        try {
+            // InternalSPViz.g:1536:1: ( rule__ShownCategoryConnection__Group__5__Impl )
+            // InternalSPViz.g:1537:2: rule__ShownCategoryConnection__Group__5__Impl
+            {
+            pushFollow(FOLLOW_2);
+            rule__ShownCategoryConnection__Group__5__Impl();
+
+            state._fsp--;
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end "rule__ShownCategoryConnection__Group__5"
+
+
+    // $ANTLR start "rule__ShownCategoryConnection__Group__5__Impl"
+    // InternalSPViz.g:1543:1: rule__ShownCategoryConnection__Group__5__Impl : ( ( rule__ShownCategoryConnection__InnerViewAssignment_5 ) ) ;
+    public final void rule__ShownCategoryConnection__Group__5__Impl() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+        	
+        try {
+            // InternalSPViz.g:1547:1: ( ( ( rule__ShownCategoryConnection__InnerViewAssignment_5 ) ) )
+            // InternalSPViz.g:1548:1: ( ( rule__ShownCategoryConnection__InnerViewAssignment_5 ) )
+            {
+            // InternalSPViz.g:1548:1: ( ( rule__ShownCategoryConnection__InnerViewAssignment_5 ) )
+            // InternalSPViz.g:1549:2: ( rule__ShownCategoryConnection__InnerViewAssignment_5 )
+            {
+             before(grammarAccess.getShownCategoryConnectionAccess().getInnerViewAssignment_5()); 
+            // InternalSPViz.g:1550:2: ( rule__ShownCategoryConnection__InnerViewAssignment_5 )
+            // InternalSPViz.g:1550:3: rule__ShownCategoryConnection__InnerViewAssignment_5
+            {
+            pushFollow(FOLLOW_2);
+            rule__ShownCategoryConnection__InnerViewAssignment_5();
+
+            state._fsp--;
+
+
+            }
+
+             after(grammarAccess.getShownCategoryConnectionAccess().getInnerViewAssignment_5()); 
+
+            }
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end "rule__ShownCategoryConnection__Group__5__Impl"
+
+
     // $ANTLR start "rule__QualifiedName__Group__0"
-    // InternalSPViz.g:1505:1: rule__QualifiedName__Group__0 : rule__QualifiedName__Group__0__Impl rule__QualifiedName__Group__1 ;
+    // InternalSPViz.g:1559:1: rule__QualifiedName__Group__0 : rule__QualifiedName__Group__0__Impl rule__QualifiedName__Group__1 ;
     public final void rule__QualifiedName__Group__0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPViz.g:1509:1: ( rule__QualifiedName__Group__0__Impl rule__QualifiedName__Group__1 )
-            // InternalSPViz.g:1510:2: rule__QualifiedName__Group__0__Impl rule__QualifiedName__Group__1
+            // InternalSPViz.g:1563:1: ( rule__QualifiedName__Group__0__Impl rule__QualifiedName__Group__1 )
+            // InternalSPViz.g:1564:2: rule__QualifiedName__Group__0__Impl rule__QualifiedName__Group__1
             {
             pushFollow(FOLLOW_19);
             rule__QualifiedName__Group__0__Impl();
@@ -4524,17 +4684,17 @@ public class InternalSPVizParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__QualifiedName__Group__0__Impl"
-    // InternalSPViz.g:1517:1: rule__QualifiedName__Group__0__Impl : ( RULE_ID ) ;
+    // InternalSPViz.g:1571:1: rule__QualifiedName__Group__0__Impl : ( RULE_ID ) ;
     public final void rule__QualifiedName__Group__0__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPViz.g:1521:1: ( ( RULE_ID ) )
-            // InternalSPViz.g:1522:1: ( RULE_ID )
+            // InternalSPViz.g:1575:1: ( ( RULE_ID ) )
+            // InternalSPViz.g:1576:1: ( RULE_ID )
             {
-            // InternalSPViz.g:1522:1: ( RULE_ID )
-            // InternalSPViz.g:1523:2: RULE_ID
+            // InternalSPViz.g:1576:1: ( RULE_ID )
+            // InternalSPViz.g:1577:2: RULE_ID
             {
              before(grammarAccess.getQualifiedNameAccess().getIDTerminalRuleCall_0()); 
             match(input,RULE_ID,FOLLOW_2); 
@@ -4561,14 +4721,14 @@ public class InternalSPVizParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__QualifiedName__Group__1"
-    // InternalSPViz.g:1532:1: rule__QualifiedName__Group__1 : rule__QualifiedName__Group__1__Impl ;
+    // InternalSPViz.g:1586:1: rule__QualifiedName__Group__1 : rule__QualifiedName__Group__1__Impl ;
     public final void rule__QualifiedName__Group__1() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPViz.g:1536:1: ( rule__QualifiedName__Group__1__Impl )
-            // InternalSPViz.g:1537:2: rule__QualifiedName__Group__1__Impl
+            // InternalSPViz.g:1590:1: ( rule__QualifiedName__Group__1__Impl )
+            // InternalSPViz.g:1591:2: rule__QualifiedName__Group__1__Impl
             {
             pushFollow(FOLLOW_2);
             rule__QualifiedName__Group__1__Impl();
@@ -4594,20 +4754,20 @@ public class InternalSPVizParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__QualifiedName__Group__1__Impl"
-    // InternalSPViz.g:1543:1: rule__QualifiedName__Group__1__Impl : ( ( rule__QualifiedName__Group_1__0 )* ) ;
+    // InternalSPViz.g:1597:1: rule__QualifiedName__Group__1__Impl : ( ( rule__QualifiedName__Group_1__0 )* ) ;
     public final void rule__QualifiedName__Group__1__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPViz.g:1547:1: ( ( ( rule__QualifiedName__Group_1__0 )* ) )
-            // InternalSPViz.g:1548:1: ( ( rule__QualifiedName__Group_1__0 )* )
+            // InternalSPViz.g:1601:1: ( ( ( rule__QualifiedName__Group_1__0 )* ) )
+            // InternalSPViz.g:1602:1: ( ( rule__QualifiedName__Group_1__0 )* )
             {
-            // InternalSPViz.g:1548:1: ( ( rule__QualifiedName__Group_1__0 )* )
-            // InternalSPViz.g:1549:2: ( rule__QualifiedName__Group_1__0 )*
+            // InternalSPViz.g:1602:1: ( ( rule__QualifiedName__Group_1__0 )* )
+            // InternalSPViz.g:1603:2: ( rule__QualifiedName__Group_1__0 )*
             {
              before(grammarAccess.getQualifiedNameAccess().getGroup_1()); 
-            // InternalSPViz.g:1550:2: ( rule__QualifiedName__Group_1__0 )*
+            // InternalSPViz.g:1604:2: ( rule__QualifiedName__Group_1__0 )*
             loop10:
             do {
                 int alt10=2;
@@ -4620,7 +4780,7 @@ public class InternalSPVizParser extends AbstractInternalContentAssistParser {
 
                 switch (alt10) {
             	case 1 :
-            	    // InternalSPViz.g:1550:3: rule__QualifiedName__Group_1__0
+            	    // InternalSPViz.g:1604:3: rule__QualifiedName__Group_1__0
             	    {
             	    pushFollow(FOLLOW_20);
             	    rule__QualifiedName__Group_1__0();
@@ -4659,14 +4819,14 @@ public class InternalSPVizParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__QualifiedName__Group_1__0"
-    // InternalSPViz.g:1559:1: rule__QualifiedName__Group_1__0 : rule__QualifiedName__Group_1__0__Impl rule__QualifiedName__Group_1__1 ;
+    // InternalSPViz.g:1613:1: rule__QualifiedName__Group_1__0 : rule__QualifiedName__Group_1__0__Impl rule__QualifiedName__Group_1__1 ;
     public final void rule__QualifiedName__Group_1__0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPViz.g:1563:1: ( rule__QualifiedName__Group_1__0__Impl rule__QualifiedName__Group_1__1 )
-            // InternalSPViz.g:1564:2: rule__QualifiedName__Group_1__0__Impl rule__QualifiedName__Group_1__1
+            // InternalSPViz.g:1617:1: ( rule__QualifiedName__Group_1__0__Impl rule__QualifiedName__Group_1__1 )
+            // InternalSPViz.g:1618:2: rule__QualifiedName__Group_1__0__Impl rule__QualifiedName__Group_1__1
             {
             pushFollow(FOLLOW_3);
             rule__QualifiedName__Group_1__0__Impl();
@@ -4697,17 +4857,17 @@ public class InternalSPVizParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__QualifiedName__Group_1__0__Impl"
-    // InternalSPViz.g:1571:1: rule__QualifiedName__Group_1__0__Impl : ( '.' ) ;
+    // InternalSPViz.g:1625:1: rule__QualifiedName__Group_1__0__Impl : ( '.' ) ;
     public final void rule__QualifiedName__Group_1__0__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPViz.g:1575:1: ( ( '.' ) )
-            // InternalSPViz.g:1576:1: ( '.' )
+            // InternalSPViz.g:1629:1: ( ( '.' ) )
+            // InternalSPViz.g:1630:1: ( '.' )
             {
-            // InternalSPViz.g:1576:1: ( '.' )
-            // InternalSPViz.g:1577:2: '.'
+            // InternalSPViz.g:1630:1: ( '.' )
+            // InternalSPViz.g:1631:2: '.'
             {
              before(grammarAccess.getQualifiedNameAccess().getFullStopKeyword_1_0()); 
             match(input,24,FOLLOW_2); 
@@ -4734,14 +4894,14 @@ public class InternalSPVizParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__QualifiedName__Group_1__1"
-    // InternalSPViz.g:1586:1: rule__QualifiedName__Group_1__1 : rule__QualifiedName__Group_1__1__Impl ;
+    // InternalSPViz.g:1640:1: rule__QualifiedName__Group_1__1 : rule__QualifiedName__Group_1__1__Impl ;
     public final void rule__QualifiedName__Group_1__1() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPViz.g:1590:1: ( rule__QualifiedName__Group_1__1__Impl )
-            // InternalSPViz.g:1591:2: rule__QualifiedName__Group_1__1__Impl
+            // InternalSPViz.g:1644:1: ( rule__QualifiedName__Group_1__1__Impl )
+            // InternalSPViz.g:1645:2: rule__QualifiedName__Group_1__1__Impl
             {
             pushFollow(FOLLOW_2);
             rule__QualifiedName__Group_1__1__Impl();
@@ -4767,17 +4927,17 @@ public class InternalSPVizParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__QualifiedName__Group_1__1__Impl"
-    // InternalSPViz.g:1597:1: rule__QualifiedName__Group_1__1__Impl : ( RULE_ID ) ;
+    // InternalSPViz.g:1651:1: rule__QualifiedName__Group_1__1__Impl : ( RULE_ID ) ;
     public final void rule__QualifiedName__Group_1__1__Impl() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPViz.g:1601:1: ( ( RULE_ID ) )
-            // InternalSPViz.g:1602:1: ( RULE_ID )
+            // InternalSPViz.g:1655:1: ( ( RULE_ID ) )
+            // InternalSPViz.g:1656:1: ( RULE_ID )
             {
-            // InternalSPViz.g:1602:1: ( RULE_ID )
-            // InternalSPViz.g:1603:2: RULE_ID
+            // InternalSPViz.g:1656:1: ( RULE_ID )
+            // InternalSPViz.g:1657:2: RULE_ID
             {
              before(grammarAccess.getQualifiedNameAccess().getIDTerminalRuleCall_1_1()); 
             match(input,RULE_ID,FOLLOW_2); 
@@ -4804,17 +4964,17 @@ public class InternalSPVizParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__SPViz__PackageAssignment_1"
-    // InternalSPViz.g:1613:1: rule__SPViz__PackageAssignment_1 : ( ruleQualifiedName ) ;
+    // InternalSPViz.g:1667:1: rule__SPViz__PackageAssignment_1 : ( ruleQualifiedName ) ;
     public final void rule__SPViz__PackageAssignment_1() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPViz.g:1617:1: ( ( ruleQualifiedName ) )
-            // InternalSPViz.g:1618:2: ( ruleQualifiedName )
+            // InternalSPViz.g:1671:1: ( ( ruleQualifiedName ) )
+            // InternalSPViz.g:1672:2: ( ruleQualifiedName )
             {
-            // InternalSPViz.g:1618:2: ( ruleQualifiedName )
-            // InternalSPViz.g:1619:3: ruleQualifiedName
+            // InternalSPViz.g:1672:2: ( ruleQualifiedName )
+            // InternalSPViz.g:1673:3: ruleQualifiedName
             {
              before(grammarAccess.getSPVizAccess().getPackageQualifiedNameParserRuleCall_1_0()); 
             pushFollow(FOLLOW_2);
@@ -4845,17 +5005,17 @@ public class InternalSPVizParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__SPViz__ImportURIAssignment_3"
-    // InternalSPViz.g:1628:1: rule__SPViz__ImportURIAssignment_3 : ( RULE_STRING ) ;
+    // InternalSPViz.g:1682:1: rule__SPViz__ImportURIAssignment_3 : ( RULE_STRING ) ;
     public final void rule__SPViz__ImportURIAssignment_3() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPViz.g:1632:1: ( ( RULE_STRING ) )
-            // InternalSPViz.g:1633:2: ( RULE_STRING )
+            // InternalSPViz.g:1686:1: ( ( RULE_STRING ) )
+            // InternalSPViz.g:1687:2: ( RULE_STRING )
             {
-            // InternalSPViz.g:1633:2: ( RULE_STRING )
-            // InternalSPViz.g:1634:3: RULE_STRING
+            // InternalSPViz.g:1687:2: ( RULE_STRING )
+            // InternalSPViz.g:1688:3: RULE_STRING
             {
              before(grammarAccess.getSPVizAccess().getImportURISTRINGTerminalRuleCall_3_0()); 
             match(input,RULE_STRING,FOLLOW_2); 
@@ -4882,17 +5042,17 @@ public class InternalSPVizParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__SPViz__NameAssignment_5"
-    // InternalSPViz.g:1643:1: rule__SPViz__NameAssignment_5 : ( RULE_ID ) ;
+    // InternalSPViz.g:1697:1: rule__SPViz__NameAssignment_5 : ( RULE_ID ) ;
     public final void rule__SPViz__NameAssignment_5() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPViz.g:1647:1: ( ( RULE_ID ) )
-            // InternalSPViz.g:1648:2: ( RULE_ID )
+            // InternalSPViz.g:1701:1: ( ( RULE_ID ) )
+            // InternalSPViz.g:1702:2: ( RULE_ID )
             {
-            // InternalSPViz.g:1648:2: ( RULE_ID )
-            // InternalSPViz.g:1649:3: RULE_ID
+            // InternalSPViz.g:1702:2: ( RULE_ID )
+            // InternalSPViz.g:1703:3: RULE_ID
             {
              before(grammarAccess.getSPVizAccess().getNameIDTerminalRuleCall_5_0()); 
             match(input,RULE_ID,FOLLOW_2); 
@@ -4919,17 +5079,17 @@ public class InternalSPVizParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__SPViz__ViewsAssignment_7"
-    // InternalSPViz.g:1658:1: rule__SPViz__ViewsAssignment_7 : ( ruleView ) ;
+    // InternalSPViz.g:1712:1: rule__SPViz__ViewsAssignment_7 : ( ruleView ) ;
     public final void rule__SPViz__ViewsAssignment_7() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPViz.g:1662:1: ( ( ruleView ) )
-            // InternalSPViz.g:1663:2: ( ruleView )
+            // InternalSPViz.g:1716:1: ( ( ruleView ) )
+            // InternalSPViz.g:1717:2: ( ruleView )
             {
-            // InternalSPViz.g:1663:2: ( ruleView )
-            // InternalSPViz.g:1664:3: ruleView
+            // InternalSPViz.g:1717:2: ( ruleView )
+            // InternalSPViz.g:1718:3: ruleView
             {
              before(grammarAccess.getSPVizAccess().getViewsViewParserRuleCall_7_0()); 
             pushFollow(FOLLOW_2);
@@ -4960,17 +5120,17 @@ public class InternalSPVizParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__SPViz__ArtifactShowsAssignment_8"
-    // InternalSPViz.g:1673:1: rule__SPViz__ArtifactShowsAssignment_8 : ( ruleArtifactShows ) ;
+    // InternalSPViz.g:1727:1: rule__SPViz__ArtifactShowsAssignment_8 : ( ruleArtifactShows ) ;
     public final void rule__SPViz__ArtifactShowsAssignment_8() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPViz.g:1677:1: ( ( ruleArtifactShows ) )
-            // InternalSPViz.g:1678:2: ( ruleArtifactShows )
+            // InternalSPViz.g:1731:1: ( ( ruleArtifactShows ) )
+            // InternalSPViz.g:1732:2: ( ruleArtifactShows )
             {
-            // InternalSPViz.g:1678:2: ( ruleArtifactShows )
-            // InternalSPViz.g:1679:3: ruleArtifactShows
+            // InternalSPViz.g:1732:2: ( ruleArtifactShows )
+            // InternalSPViz.g:1733:3: ruleArtifactShows
             {
              before(grammarAccess.getSPVizAccess().getArtifactShowsArtifactShowsParserRuleCall_8_0()); 
             pushFollow(FOLLOW_2);
@@ -5001,17 +5161,17 @@ public class InternalSPVizParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__View__NameAssignment_0"
-    // InternalSPViz.g:1688:1: rule__View__NameAssignment_0 : ( RULE_ID ) ;
+    // InternalSPViz.g:1742:1: rule__View__NameAssignment_0 : ( RULE_ID ) ;
     public final void rule__View__NameAssignment_0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPViz.g:1692:1: ( ( RULE_ID ) )
-            // InternalSPViz.g:1693:2: ( RULE_ID )
+            // InternalSPViz.g:1746:1: ( ( RULE_ID ) )
+            // InternalSPViz.g:1747:2: ( RULE_ID )
             {
-            // InternalSPViz.g:1693:2: ( RULE_ID )
-            // InternalSPViz.g:1694:3: RULE_ID
+            // InternalSPViz.g:1747:2: ( RULE_ID )
+            // InternalSPViz.g:1748:3: RULE_ID
             {
              before(grammarAccess.getViewAccess().getNameIDTerminalRuleCall_0_0()); 
             match(input,RULE_ID,FOLLOW_2); 
@@ -5038,17 +5198,17 @@ public class InternalSPVizParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__View__ShownElementsAssignment_2"
-    // InternalSPViz.g:1703:1: rule__View__ShownElementsAssignment_2 : ( ruleShownElement ) ;
+    // InternalSPViz.g:1757:1: rule__View__ShownElementsAssignment_2 : ( ruleShownElement ) ;
     public final void rule__View__ShownElementsAssignment_2() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPViz.g:1707:1: ( ( ruleShownElement ) )
-            // InternalSPViz.g:1708:2: ( ruleShownElement )
+            // InternalSPViz.g:1761:1: ( ( ruleShownElement ) )
+            // InternalSPViz.g:1762:2: ( ruleShownElement )
             {
-            // InternalSPViz.g:1708:2: ( ruleShownElement )
-            // InternalSPViz.g:1709:3: ruleShownElement
+            // InternalSPViz.g:1762:2: ( ruleShownElement )
+            // InternalSPViz.g:1763:3: ruleShownElement
             {
              before(grammarAccess.getViewAccess().getShownElementsShownElementParserRuleCall_2_0()); 
             pushFollow(FOLLOW_2);
@@ -5079,17 +5239,17 @@ public class InternalSPVizParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__View__ShownConnectionsAssignment_3"
-    // InternalSPViz.g:1718:1: rule__View__ShownConnectionsAssignment_3 : ( ruleShownConnection ) ;
+    // InternalSPViz.g:1772:1: rule__View__ShownConnectionsAssignment_3 : ( ruleShownConnection ) ;
     public final void rule__View__ShownConnectionsAssignment_3() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPViz.g:1722:1: ( ( ruleShownConnection ) )
-            // InternalSPViz.g:1723:2: ( ruleShownConnection )
+            // InternalSPViz.g:1776:1: ( ( ruleShownConnection ) )
+            // InternalSPViz.g:1777:2: ( ruleShownConnection )
             {
-            // InternalSPViz.g:1723:2: ( ruleShownConnection )
-            // InternalSPViz.g:1724:3: ruleShownConnection
+            // InternalSPViz.g:1777:2: ( ruleShownConnection )
+            // InternalSPViz.g:1778:3: ruleShownConnection
             {
              before(grammarAccess.getViewAccess().getShownConnectionsShownConnectionParserRuleCall_3_0()); 
             pushFollow(FOLLOW_2);
@@ -5120,17 +5280,17 @@ public class InternalSPVizParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__View__ShownCategoryConnectionsAssignment_4"
-    // InternalSPViz.g:1733:1: rule__View__ShownCategoryConnectionsAssignment_4 : ( ruleShownCategoryConnection ) ;
+    // InternalSPViz.g:1787:1: rule__View__ShownCategoryConnectionsAssignment_4 : ( ruleShownCategoryConnection ) ;
     public final void rule__View__ShownCategoryConnectionsAssignment_4() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPViz.g:1737:1: ( ( ruleShownCategoryConnection ) )
-            // InternalSPViz.g:1738:2: ( ruleShownCategoryConnection )
+            // InternalSPViz.g:1791:1: ( ( ruleShownCategoryConnection ) )
+            // InternalSPViz.g:1792:2: ( ruleShownCategoryConnection )
             {
-            // InternalSPViz.g:1738:2: ( ruleShownCategoryConnection )
-            // InternalSPViz.g:1739:3: ruleShownCategoryConnection
+            // InternalSPViz.g:1792:2: ( ruleShownCategoryConnection )
+            // InternalSPViz.g:1793:3: ruleShownCategoryConnection
             {
              before(grammarAccess.getViewAccess().getShownCategoryConnectionsShownCategoryConnectionParserRuleCall_4_0()); 
             pushFollow(FOLLOW_2);
@@ -5161,21 +5321,21 @@ public class InternalSPVizParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__ArtifactShows__ArtifactShowsAssignment_0"
-    // InternalSPViz.g:1748:1: rule__ArtifactShows__ArtifactShowsAssignment_0 : ( ( ruleQualifiedName ) ) ;
+    // InternalSPViz.g:1802:1: rule__ArtifactShows__ArtifactShowsAssignment_0 : ( ( ruleQualifiedName ) ) ;
     public final void rule__ArtifactShows__ArtifactShowsAssignment_0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPViz.g:1752:1: ( ( ( ruleQualifiedName ) ) )
-            // InternalSPViz.g:1753:2: ( ( ruleQualifiedName ) )
+            // InternalSPViz.g:1806:1: ( ( ( ruleQualifiedName ) ) )
+            // InternalSPViz.g:1807:2: ( ( ruleQualifiedName ) )
             {
-            // InternalSPViz.g:1753:2: ( ( ruleQualifiedName ) )
-            // InternalSPViz.g:1754:3: ( ruleQualifiedName )
+            // InternalSPViz.g:1807:2: ( ( ruleQualifiedName ) )
+            // InternalSPViz.g:1808:3: ( ruleQualifiedName )
             {
              before(grammarAccess.getArtifactShowsAccess().getArtifactShowsArtifactCrossReference_0_0()); 
-            // InternalSPViz.g:1755:3: ( ruleQualifiedName )
-            // InternalSPViz.g:1756:4: ruleQualifiedName
+            // InternalSPViz.g:1809:3: ( ruleQualifiedName )
+            // InternalSPViz.g:1810:4: ruleQualifiedName
             {
              before(grammarAccess.getArtifactShowsAccess().getArtifactShowsArtifactQualifiedNameParserRuleCall_0_0_1()); 
             pushFollow(FOLLOW_2);
@@ -5210,17 +5370,17 @@ public class InternalSPVizParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__ArtifactShows__ViewsAssignment_3"
-    // InternalSPViz.g:1767:1: rule__ArtifactShows__ViewsAssignment_3 : ( ruleArtifactView ) ;
+    // InternalSPViz.g:1821:1: rule__ArtifactShows__ViewsAssignment_3 : ( ruleArtifactView ) ;
     public final void rule__ArtifactShows__ViewsAssignment_3() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPViz.g:1771:1: ( ( ruleArtifactView ) )
-            // InternalSPViz.g:1772:2: ( ruleArtifactView )
+            // InternalSPViz.g:1825:1: ( ( ruleArtifactView ) )
+            // InternalSPViz.g:1826:2: ( ruleArtifactView )
             {
-            // InternalSPViz.g:1772:2: ( ruleArtifactView )
-            // InternalSPViz.g:1773:3: ruleArtifactView
+            // InternalSPViz.g:1826:2: ( ruleArtifactView )
+            // InternalSPViz.g:1827:3: ruleArtifactView
             {
              before(grammarAccess.getArtifactShowsAccess().getViewsArtifactViewParserRuleCall_3_0()); 
             pushFollow(FOLLOW_2);
@@ -5251,21 +5411,21 @@ public class InternalSPVizParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__ArtifactView__ViewAssignment_0"
-    // InternalSPViz.g:1782:1: rule__ArtifactView__ViewAssignment_0 : ( ( RULE_ID ) ) ;
+    // InternalSPViz.g:1836:1: rule__ArtifactView__ViewAssignment_0 : ( ( RULE_ID ) ) ;
     public final void rule__ArtifactView__ViewAssignment_0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPViz.g:1786:1: ( ( ( RULE_ID ) ) )
-            // InternalSPViz.g:1787:2: ( ( RULE_ID ) )
+            // InternalSPViz.g:1840:1: ( ( ( RULE_ID ) ) )
+            // InternalSPViz.g:1841:2: ( ( RULE_ID ) )
             {
-            // InternalSPViz.g:1787:2: ( ( RULE_ID ) )
-            // InternalSPViz.g:1788:3: ( RULE_ID )
+            // InternalSPViz.g:1841:2: ( ( RULE_ID ) )
+            // InternalSPViz.g:1842:3: ( RULE_ID )
             {
              before(grammarAccess.getArtifactViewAccess().getViewViewCrossReference_0_0()); 
-            // InternalSPViz.g:1789:3: ( RULE_ID )
-            // InternalSPViz.g:1790:4: RULE_ID
+            // InternalSPViz.g:1843:3: ( RULE_ID )
+            // InternalSPViz.g:1844:4: RULE_ID
             {
              before(grammarAccess.getArtifactViewAccess().getViewViewIDTerminalRuleCall_0_0_1()); 
             match(input,RULE_ID,FOLLOW_2); 
@@ -5296,17 +5456,17 @@ public class InternalSPVizParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__ArtifactView__SourcesAssignment_3"
-    // InternalSPViz.g:1801:1: rule__ArtifactView__SourcesAssignment_3 : ( ruleArtifactSource ) ;
+    // InternalSPViz.g:1855:1: rule__ArtifactView__SourcesAssignment_3 : ( ruleArtifactSource ) ;
     public final void rule__ArtifactView__SourcesAssignment_3() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPViz.g:1805:1: ( ( ruleArtifactSource ) )
-            // InternalSPViz.g:1806:2: ( ruleArtifactSource )
+            // InternalSPViz.g:1859:1: ( ( ruleArtifactSource ) )
+            // InternalSPViz.g:1860:2: ( ruleArtifactSource )
             {
-            // InternalSPViz.g:1806:2: ( ruleArtifactSource )
-            // InternalSPViz.g:1807:3: ruleArtifactSource
+            // InternalSPViz.g:1860:2: ( ruleArtifactSource )
+            // InternalSPViz.g:1861:3: ruleArtifactSource
             {
              before(grammarAccess.getArtifactViewAccess().getSourcesArtifactSourceParserRuleCall_3_0()); 
             pushFollow(FOLLOW_2);
@@ -5337,21 +5497,21 @@ public class InternalSPVizParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__ArtifactSource__ArtifactAssignment_0"
-    // InternalSPViz.g:1816:1: rule__ArtifactSource__ArtifactAssignment_0 : ( ( ruleQualifiedName ) ) ;
+    // InternalSPViz.g:1870:1: rule__ArtifactSource__ArtifactAssignment_0 : ( ( ruleQualifiedName ) ) ;
     public final void rule__ArtifactSource__ArtifactAssignment_0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPViz.g:1820:1: ( ( ( ruleQualifiedName ) ) )
-            // InternalSPViz.g:1821:2: ( ( ruleQualifiedName ) )
+            // InternalSPViz.g:1874:1: ( ( ( ruleQualifiedName ) ) )
+            // InternalSPViz.g:1875:2: ( ( ruleQualifiedName ) )
             {
-            // InternalSPViz.g:1821:2: ( ( ruleQualifiedName ) )
-            // InternalSPViz.g:1822:3: ( ruleQualifiedName )
+            // InternalSPViz.g:1875:2: ( ( ruleQualifiedName ) )
+            // InternalSPViz.g:1876:3: ( ruleQualifiedName )
             {
              before(grammarAccess.getArtifactSourceAccess().getArtifactArtifactCrossReference_0_0()); 
-            // InternalSPViz.g:1823:3: ( ruleQualifiedName )
-            // InternalSPViz.g:1824:4: ruleQualifiedName
+            // InternalSPViz.g:1877:3: ( ruleQualifiedName )
+            // InternalSPViz.g:1878:4: ruleQualifiedName
             {
              before(grammarAccess.getArtifactSourceAccess().getArtifactArtifactQualifiedNameParserRuleCall_0_0_1()); 
             pushFollow(FOLLOW_2);
@@ -5386,17 +5546,17 @@ public class InternalSPVizParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__ArtifactSource__SourceChainAssignment_2"
-    // InternalSPViz.g:1835:1: rule__ArtifactSource__SourceChainAssignment_2 : ( ruleArtifactChain ) ;
+    // InternalSPViz.g:1889:1: rule__ArtifactSource__SourceChainAssignment_2 : ( ruleArtifactChain ) ;
     public final void rule__ArtifactSource__SourceChainAssignment_2() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPViz.g:1839:1: ( ( ruleArtifactChain ) )
-            // InternalSPViz.g:1840:2: ( ruleArtifactChain )
+            // InternalSPViz.g:1893:1: ( ( ruleArtifactChain ) )
+            // InternalSPViz.g:1894:2: ( ruleArtifactChain )
             {
-            // InternalSPViz.g:1840:2: ( ruleArtifactChain )
-            // InternalSPViz.g:1841:3: ruleArtifactChain
+            // InternalSPViz.g:1894:2: ( ruleArtifactChain )
+            // InternalSPViz.g:1895:3: ruleArtifactChain
             {
              before(grammarAccess.getArtifactSourceAccess().getSourceChainArtifactChainParserRuleCall_2_0()); 
             pushFollow(FOLLOW_2);
@@ -5427,21 +5587,21 @@ public class InternalSPVizParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__ArtifactChain__SourceAssignment_0"
-    // InternalSPViz.g:1850:1: rule__ArtifactChain__SourceAssignment_0 : ( ( ruleQualifiedName ) ) ;
+    // InternalSPViz.g:1904:1: rule__ArtifactChain__SourceAssignment_0 : ( ( ruleQualifiedName ) ) ;
     public final void rule__ArtifactChain__SourceAssignment_0() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPViz.g:1854:1: ( ( ( ruleQualifiedName ) ) )
-            // InternalSPViz.g:1855:2: ( ( ruleQualifiedName ) )
+            // InternalSPViz.g:1908:1: ( ( ( ruleQualifiedName ) ) )
+            // InternalSPViz.g:1909:2: ( ( ruleQualifiedName ) )
             {
-            // InternalSPViz.g:1855:2: ( ( ruleQualifiedName ) )
-            // InternalSPViz.g:1856:3: ( ruleQualifiedName )
+            // InternalSPViz.g:1909:2: ( ( ruleQualifiedName ) )
+            // InternalSPViz.g:1910:3: ( ruleQualifiedName )
             {
              before(grammarAccess.getArtifactChainAccess().getSourceArtifactCrossReference_0_0()); 
-            // InternalSPViz.g:1857:3: ( ruleQualifiedName )
-            // InternalSPViz.g:1858:4: ruleQualifiedName
+            // InternalSPViz.g:1911:3: ( ruleQualifiedName )
+            // InternalSPViz.g:1912:4: ruleQualifiedName
             {
              before(grammarAccess.getArtifactChainAccess().getSourceArtifactQualifiedNameParserRuleCall_0_0_1()); 
             pushFollow(FOLLOW_2);
@@ -5476,17 +5636,17 @@ public class InternalSPVizParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__ArtifactChain__FurtherAssignment_1_1"
-    // InternalSPViz.g:1869:1: rule__ArtifactChain__FurtherAssignment_1_1 : ( ruleArtifactChain ) ;
+    // InternalSPViz.g:1923:1: rule__ArtifactChain__FurtherAssignment_1_1 : ( ruleArtifactChain ) ;
     public final void rule__ArtifactChain__FurtherAssignment_1_1() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPViz.g:1873:1: ( ( ruleArtifactChain ) )
-            // InternalSPViz.g:1874:2: ( ruleArtifactChain )
+            // InternalSPViz.g:1927:1: ( ( ruleArtifactChain ) )
+            // InternalSPViz.g:1928:2: ( ruleArtifactChain )
             {
-            // InternalSPViz.g:1874:2: ( ruleArtifactChain )
-            // InternalSPViz.g:1875:3: ruleArtifactChain
+            // InternalSPViz.g:1928:2: ( ruleArtifactChain )
+            // InternalSPViz.g:1929:3: ruleArtifactChain
             {
              before(grammarAccess.getArtifactChainAccess().getFurtherArtifactChainParserRuleCall_1_1_0()); 
             pushFollow(FOLLOW_2);
@@ -5517,21 +5677,21 @@ public class InternalSPVizParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__ShownElement__ShownElementAssignment_1"
-    // InternalSPViz.g:1884:1: rule__ShownElement__ShownElementAssignment_1 : ( ( ruleQualifiedName ) ) ;
+    // InternalSPViz.g:1938:1: rule__ShownElement__ShownElementAssignment_1 : ( ( ruleQualifiedName ) ) ;
     public final void rule__ShownElement__ShownElementAssignment_1() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPViz.g:1888:1: ( ( ( ruleQualifiedName ) ) )
-            // InternalSPViz.g:1889:2: ( ( ruleQualifiedName ) )
+            // InternalSPViz.g:1942:1: ( ( ( ruleQualifiedName ) ) )
+            // InternalSPViz.g:1943:2: ( ( ruleQualifiedName ) )
             {
-            // InternalSPViz.g:1889:2: ( ( ruleQualifiedName ) )
-            // InternalSPViz.g:1890:3: ( ruleQualifiedName )
+            // InternalSPViz.g:1943:2: ( ( ruleQualifiedName ) )
+            // InternalSPViz.g:1944:3: ( ruleQualifiedName )
             {
              before(grammarAccess.getShownElementAccess().getShownElementArtifactCrossReference_1_0()); 
-            // InternalSPViz.g:1891:3: ( ruleQualifiedName )
-            // InternalSPViz.g:1892:4: ruleQualifiedName
+            // InternalSPViz.g:1945:3: ( ruleQualifiedName )
+            // InternalSPViz.g:1946:4: ruleQualifiedName
             {
              before(grammarAccess.getShownElementAccess().getShownElementArtifactQualifiedNameParserRuleCall_1_0_1()); 
             pushFollow(FOLLOW_2);
@@ -5566,21 +5726,21 @@ public class InternalSPVizParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__ShownElement__ContainedInAssignment_2_1"
-    // InternalSPViz.g:1903:1: rule__ShownElement__ContainedInAssignment_2_1 : ( ( ruleQualifiedName ) ) ;
+    // InternalSPViz.g:1957:1: rule__ShownElement__ContainedInAssignment_2_1 : ( ( ruleQualifiedName ) ) ;
     public final void rule__ShownElement__ContainedInAssignment_2_1() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPViz.g:1907:1: ( ( ( ruleQualifiedName ) ) )
-            // InternalSPViz.g:1908:2: ( ( ruleQualifiedName ) )
+            // InternalSPViz.g:1961:1: ( ( ( ruleQualifiedName ) ) )
+            // InternalSPViz.g:1962:2: ( ( ruleQualifiedName ) )
             {
-            // InternalSPViz.g:1908:2: ( ( ruleQualifiedName ) )
-            // InternalSPViz.g:1909:3: ( ruleQualifiedName )
+            // InternalSPViz.g:1962:2: ( ( ruleQualifiedName ) )
+            // InternalSPViz.g:1963:3: ( ruleQualifiedName )
             {
              before(grammarAccess.getShownElementAccess().getContainedInArtifactCrossReference_2_1_0()); 
-            // InternalSPViz.g:1910:3: ( ruleQualifiedName )
-            // InternalSPViz.g:1911:4: ruleQualifiedName
+            // InternalSPViz.g:1964:3: ( ruleQualifiedName )
+            // InternalSPViz.g:1965:4: ruleQualifiedName
             {
              before(grammarAccess.getShownElementAccess().getContainedInArtifactQualifiedNameParserRuleCall_2_1_0_1()); 
             pushFollow(FOLLOW_2);
@@ -5615,21 +5775,21 @@ public class InternalSPVizParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__ShownConnection__ShownConnectionAssignment_1"
-    // InternalSPViz.g:1922:1: rule__ShownConnection__ShownConnectionAssignment_1 : ( ( ruleQualifiedName ) ) ;
+    // InternalSPViz.g:1976:1: rule__ShownConnection__ShownConnectionAssignment_1 : ( ( ruleQualifiedName ) ) ;
     public final void rule__ShownConnection__ShownConnectionAssignment_1() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPViz.g:1926:1: ( ( ( ruleQualifiedName ) ) )
-            // InternalSPViz.g:1927:2: ( ( ruleQualifiedName ) )
+            // InternalSPViz.g:1980:1: ( ( ( ruleQualifiedName ) ) )
+            // InternalSPViz.g:1981:2: ( ( ruleQualifiedName ) )
             {
-            // InternalSPViz.g:1927:2: ( ( ruleQualifiedName ) )
-            // InternalSPViz.g:1928:3: ( ruleQualifiedName )
+            // InternalSPViz.g:1981:2: ( ( ruleQualifiedName ) )
+            // InternalSPViz.g:1982:3: ( ruleQualifiedName )
             {
              before(grammarAccess.getShownConnectionAccess().getShownConnectionConnectionCrossReference_1_0()); 
-            // InternalSPViz.g:1929:3: ( ruleQualifiedName )
-            // InternalSPViz.g:1930:4: ruleQualifiedName
+            // InternalSPViz.g:1983:3: ( ruleQualifiedName )
+            // InternalSPViz.g:1984:4: ruleQualifiedName
             {
              before(grammarAccess.getShownConnectionAccess().getShownConnectionConnectionQualifiedNameParserRuleCall_1_0_1()); 
             pushFollow(FOLLOW_2);
@@ -5664,21 +5824,21 @@ public class InternalSPVizParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__ShownCategoryConnection__ConnectionAssignment_1"
-    // InternalSPViz.g:1941:1: rule__ShownCategoryConnection__ConnectionAssignment_1 : ( ( ruleQualifiedName ) ) ;
+    // InternalSPViz.g:1995:1: rule__ShownCategoryConnection__ConnectionAssignment_1 : ( ( ruleQualifiedName ) ) ;
     public final void rule__ShownCategoryConnection__ConnectionAssignment_1() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPViz.g:1945:1: ( ( ( ruleQualifiedName ) ) )
-            // InternalSPViz.g:1946:2: ( ( ruleQualifiedName ) )
+            // InternalSPViz.g:1999:1: ( ( ( ruleQualifiedName ) ) )
+            // InternalSPViz.g:2000:2: ( ( ruleQualifiedName ) )
             {
-            // InternalSPViz.g:1946:2: ( ( ruleQualifiedName ) )
-            // InternalSPViz.g:1947:3: ( ruleQualifiedName )
+            // InternalSPViz.g:2000:2: ( ( ruleQualifiedName ) )
+            // InternalSPViz.g:2001:3: ( ruleQualifiedName )
             {
              before(grammarAccess.getShownCategoryConnectionAccess().getConnectionConnectionCrossReference_1_0()); 
-            // InternalSPViz.g:1948:3: ( ruleQualifiedName )
-            // InternalSPViz.g:1949:4: ruleQualifiedName
+            // InternalSPViz.g:2002:3: ( ruleQualifiedName )
+            // InternalSPViz.g:2003:4: ruleQualifiedName
             {
              before(grammarAccess.getShownCategoryConnectionAccess().getConnectionConnectionQualifiedNameParserRuleCall_1_0_1()); 
             pushFollow(FOLLOW_2);
@@ -5713,17 +5873,17 @@ public class InternalSPVizParser extends AbstractInternalContentAssistParser {
 
 
     // $ANTLR start "rule__ShownCategoryConnection__SourceChainAssignment_3"
-    // InternalSPViz.g:1960:1: rule__ShownCategoryConnection__SourceChainAssignment_3 : ( ruleArtifactChain ) ;
+    // InternalSPViz.g:2014:1: rule__ShownCategoryConnection__SourceChainAssignment_3 : ( ruleArtifactChain ) ;
     public final void rule__ShownCategoryConnection__SourceChainAssignment_3() throws RecognitionException {
 
         		int stackSize = keepStackSize();
         	
         try {
-            // InternalSPViz.g:1964:1: ( ( ruleArtifactChain ) )
-            // InternalSPViz.g:1965:2: ( ruleArtifactChain )
+            // InternalSPViz.g:2018:1: ( ( ruleArtifactChain ) )
+            // InternalSPViz.g:2019:2: ( ruleArtifactChain )
             {
-            // InternalSPViz.g:1965:2: ( ruleArtifactChain )
-            // InternalSPViz.g:1966:3: ruleArtifactChain
+            // InternalSPViz.g:2019:2: ( ruleArtifactChain )
+            // InternalSPViz.g:2020:3: ruleArtifactChain
             {
              before(grammarAccess.getShownCategoryConnectionAccess().getSourceChainArtifactChainParserRuleCall_3_0()); 
             pushFollow(FOLLOW_2);
@@ -5751,6 +5911,55 @@ public class InternalSPVizParser extends AbstractInternalContentAssistParser {
         return ;
     }
     // $ANTLR end "rule__ShownCategoryConnection__SourceChainAssignment_3"
+
+
+    // $ANTLR start "rule__ShownCategoryConnection__InnerViewAssignment_5"
+    // InternalSPViz.g:2029:1: rule__ShownCategoryConnection__InnerViewAssignment_5 : ( ( ruleQualifiedName ) ) ;
+    public final void rule__ShownCategoryConnection__InnerViewAssignment_5() throws RecognitionException {
+
+        		int stackSize = keepStackSize();
+        	
+        try {
+            // InternalSPViz.g:2033:1: ( ( ( ruleQualifiedName ) ) )
+            // InternalSPViz.g:2034:2: ( ( ruleQualifiedName ) )
+            {
+            // InternalSPViz.g:2034:2: ( ( ruleQualifiedName ) )
+            // InternalSPViz.g:2035:3: ( ruleQualifiedName )
+            {
+             before(grammarAccess.getShownCategoryConnectionAccess().getInnerViewViewCrossReference_5_0()); 
+            // InternalSPViz.g:2036:3: ( ruleQualifiedName )
+            // InternalSPViz.g:2037:4: ruleQualifiedName
+            {
+             before(grammarAccess.getShownCategoryConnectionAccess().getInnerViewViewQualifiedNameParserRuleCall_5_0_1()); 
+            pushFollow(FOLLOW_2);
+            ruleQualifiedName();
+
+            state._fsp--;
+
+             after(grammarAccess.getShownCategoryConnectionAccess().getInnerViewViewQualifiedNameParserRuleCall_5_0_1()); 
+
+            }
+
+             after(grammarAccess.getShownCategoryConnectionAccess().getInnerViewViewCrossReference_5_0()); 
+
+            }
+
+
+            }
+
+        }
+        catch (RecognitionException re) {
+            reportError(re);
+            recover(input,re);
+        }
+        finally {
+
+            	restoreStackSize(stackSize);
+
+        }
+        return ;
+    }
+    // $ANTLR end "rule__ShownCategoryConnection__InnerViewAssignment_5"
 
     // Delegated rules
 

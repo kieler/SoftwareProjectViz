@@ -715,6 +715,26 @@ ruleShownCategoryConnection returns [EObject current=null]
 				}
 			)
 		)
+		otherlv_4='in'
+		{
+			newLeafNode(otherlv_4, grammarAccess.getShownCategoryConnectionAccess().getInKeyword_4());
+		}
+		(
+			(
+				{
+					if ($current==null) {
+						$current = createModelElement(grammarAccess.getShownCategoryConnectionRule());
+					}
+				}
+				{
+					newCompositeNode(grammarAccess.getShownCategoryConnectionAccess().getInnerViewViewCrossReference_5_0());
+				}
+				ruleQualifiedName
+				{
+					afterParserOrEnumRuleCall();
+				}
+			)
+		)
 	)
 ;
 

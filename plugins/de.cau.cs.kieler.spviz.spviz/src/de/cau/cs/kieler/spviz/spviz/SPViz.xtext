@@ -71,7 +71,7 @@ ShownConnection:
 ShownCategoryConnection:
     'connect' connection=[spvizmodel::Connection|QualifiedName]
     'via' sourceChain=ArtifactChain
-    'in' innerView=View
+    'in' innerView=[View|QualifiedName]
     
     
     // TODO: we may need an alternative syntax for category connections, where the source/target element is not clear,

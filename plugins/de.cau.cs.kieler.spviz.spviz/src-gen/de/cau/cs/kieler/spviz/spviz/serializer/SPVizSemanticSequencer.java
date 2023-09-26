@@ -172,7 +172,7 @@ public class SPVizSemanticSequencer extends AbstractDelegatingSemanticSequencer 
 	 *     ShownCategoryConnection returns ShownCategoryConnection
 	 *
 	 * Constraint:
-	 *     (connection=[Connection|QualifiedName] sourceChain=ArtifactChain)
+	 *     (connection=[Connection|QualifiedName] sourceChain=ArtifactChain innerView=[View|QualifiedName])
 	 * </pre>
 	 */
 	protected void sequence_ShownCategoryConnection(ISerializationContext context, ShownCategoryConnection semanticObject) {
@@ -181,10 +181,13 @@ public class SPVizSemanticSequencer extends AbstractDelegatingSemanticSequencer 
 				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, SPVizPackage.Literals.SHOWN_CATEGORY_CONNECTION__CONNECTION));
 			if (transientValues.isValueTransient(semanticObject, SPVizPackage.Literals.SHOWN_CATEGORY_CONNECTION__SOURCE_CHAIN) == ValueTransient.YES)
 				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, SPVizPackage.Literals.SHOWN_CATEGORY_CONNECTION__SOURCE_CHAIN));
+			if (transientValues.isValueTransient(semanticObject, SPVizPackage.Literals.SHOWN_CATEGORY_CONNECTION__INNER_VIEW) == ValueTransient.YES)
+				errorAcceptor.accept(diagnosticProvider.createFeatureValueMissing(semanticObject, SPVizPackage.Literals.SHOWN_CATEGORY_CONNECTION__INNER_VIEW));
 		}
 		SequenceFeeder feeder = createSequencerFeeder(context, semanticObject);
 		feeder.accept(grammarAccess.getShownCategoryConnectionAccess().getConnectionConnectionQualifiedNameParserRuleCall_1_0_1(), semanticObject.eGet(SPVizPackage.Literals.SHOWN_CATEGORY_CONNECTION__CONNECTION, false));
 		feeder.accept(grammarAccess.getShownCategoryConnectionAccess().getSourceChainArtifactChainParserRuleCall_3_0(), semanticObject.getSourceChain());
+		feeder.accept(grammarAccess.getShownCategoryConnectionAccess().getInnerViewViewQualifiedNameParserRuleCall_5_0_1(), semanticObject.eGet(SPVizPackage.Literals.SHOWN_CATEGORY_CONNECTION__INNER_VIEW, false));
 		feeder.finish();
 	}
 	
