@@ -141,6 +141,16 @@ class SPVizValidator extends AbstractSPVizValidator {
         }
     }
     
+    // For category connections, check if the inner view supports the connection.
+    @Check
+    def checkCategoryConnectionInnerViewConnection(ShownCategoryConnection categoryConnection) {
+        if (!categoryConnection.innerView.shownConnections.map[
+            shownConnection
+        ].contains(categoryConnection.connection)) {
+            error('The connection needs to be shown in the given view', categoryConnection, SPVizPackage.Literals.SHOWN_CATEGORY_CONNECTION__INNER_VIEW)
+        }
+    }
+    
     /**
      * Returns the last artifact in an artifact chain.
      */

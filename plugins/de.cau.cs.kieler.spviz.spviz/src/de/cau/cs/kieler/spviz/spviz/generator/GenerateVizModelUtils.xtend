@@ -18,6 +18,7 @@ import java.util.List
 import org.eclipse.core.resources.IFolder
 import org.eclipse.core.runtime.IProgressMonitor
 
+import static extension de.cau.cs.kieler.spviz.spviz.util.SPVizExtension.*
 import static extension de.cau.cs.kieler.spviz.spvizmodel.util.SPVizModelExtension.*
 
 /**
@@ -163,11 +164,15 @@ class GenerateVizModelUtils {
             «FOR connection : data.connections»
                 import «data.getBundleNamePrefix».model.«connection.connecting.name»Connects«connection.connected.name»Named«connection.name»Container
             «ENDFOR»
+            «FOR categoryConnection : data.categoryConnections»
+                import «data.getBundleNamePrefix».model.«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Container
+            «ENDFOR»
             import «data.modelBundleNamePrefix».model.«data.projectName»
             «FOR artifact : data.artifacts»
                 import «data.modelBundleNamePrefix».model.«artifact.name»
             «ENDFOR»
             import java.util.List
+            import java.util.Map
             
             import static extension org.eclipse.emf.common.util.ECollections.*
             
@@ -190,6 +195,17 @@ class GenerateVizModelUtils {
                         «artifact.name.toFirstLower»Context.parent = parent
                         «artifact.name.toFirstLower»Context.modelElement = the«artifact.name»
                         
+                        ««« If this artifact context may connect via a container connection, the children may need to be
+                        ««« initialized as well already.
+                        «IF data.categoryConnectingArtifacts.contains(artifact)»
+                            // If this «artifact.name» context is shown in an Overview context with a category connection for this artifact,
+                            // we need to also initialize its bundles to allow to prepare the possible category connections.
+                            «FOR view : data.viewsCategoryConnecting(artifact) BEFORE "if (" SEPARATOR " || " AFTER ") {"»«««
+«                              »«artifact.name.toFirstLower»Context.parent instanceof «view.name»OverviewContext«««
+«                           »«ENDFOR»
+                                «artifact.name.toFirstLower»Context.initializeChildVisualizationContexts
+                            }
+                        «ENDIF»
                         return «artifact.name.toFirstLower»Context
                     }
                     
@@ -199,20 +215,63 @@ class GenerateVizModelUtils {
                      * Initializes this context as if this was a constructor initializing the given parameters. Workaround as XCore does
                      * not support individual class constructors with parameters in the generated factory.
                      */
-                    def static «view.name»OverviewContext initialize(«view.name»OverviewContext overviewContext,
-                        «FOR shownElement : view.shownElements»List<«shownElement.shownElement.name»> «shownElement.shownElement.name.toFirstLower»s, «ENDFOR»
-                        IVisualizationContext<?> parent) {
-                        «FOR shownElement : view.shownElements BEFORE "if (" SEPARATOR " && " AFTER ") {"»
-                            overviewContext.«shownElement.shownElement.name.toFirstLower»s.empty
-                        «ENDFOR»
+                    def static «view.name»OverviewContext initialize(«view.name»OverviewContext overviewContext, «««
+«                      »«FOR shownElement : view.shownElements»List<«shownElement.shownElement.name»> «shownElement.shownElement.name.toFirstLower»s, «ENDFOR»«««
+«                      »IVisualizationContext<?> parent) {
+                        «««
+«                      »«FOR shownElement : view.shownElements BEFORE "if (" SEPARATOR " || " AFTER ") {"»«««
+«                          »!overviewContext.«shownElement.shownElement.name.toFirstLower»s.empty«««
+«                      »«ENDFOR»
+                            throw new RuntimeException(ALREADY_INITIALIZED_ERROR_MSG)
+                        }
                         «FOR shownElement : view.shownElements»
                             overviewContext.«shownElement.shownElement.name.toFirstLower»s += «shownElement.shownElement.name.toFirstLower»s
                         «ENDFOR»
-                        } else {
-                            throw new RuntimeException(ALREADY_INITIALIZED_ERROR_MSG)
-                        }
                         overviewContext.parent = parent
                         overviewContext.initializeChildVisualizationContexts
+                        
+                        «FOR categoryConnection : view.shownCategoryConnections»
+                            {
+                                // Create a mapping between the child «categoryConnection.connectedCategory.name.toFirstLower»s and their contexts.
+                                val Map<«categoryConnection.connectedCategory.name.toFirstUpper», «categoryConnection.connectedCategory.name.toFirstUpper»Context> «categoryConnection.connectedCategory.name.toFirstLower»ToContext = newHashMap
+                                overviewContext.childContexts.filter(«categoryConnection.connectedCategory.name.toFirstUpper»Context).forEach [ «categoryConnection.connectedCategory.name.toFirstLower»Context |
+                                    «categoryConnection.connectedCategory.name.toFirstLower»ToContext.put(«categoryConnection.connectedCategory.name.toFirstLower»Context.modelElement, «categoryConnection.connectedCategory.name.toFirstLower»Context)
+                                ]
+                                
+                                // Pre-calculate the possible container connections for the child «categoryConnection.connectingArtifact.name.toFirstLower» and «categoryConnection.connectedArtifact.name.toFirstLower».
+                                overviewContext.childContexts.filter(«categoryConnection.connectedCategory.name.toFirstUpper»Context).forEach [ source«categoryConnection.connectedCategory.name.toFirstUpper»Context |
+                                    val source«categoryConnection.connectedCategory.name.toFirstUpper» = source«categoryConnection.connectedCategory.name.toFirstUpper»Context.modelElement
+                                    if (source«categoryConnection.connectedCategory.name.toFirstUpper».«categoryConnection.connectingArtifact.name.toFirstLower»s.empty || source«categoryConnection.connectedCategory.name.toFirstUpper».«categoryConnection.connectedArtifact.name.toFirstLower»s.empty) {
+                                        return
+                                    }
+                                    source«categoryConnection.connectedCategory.name.toFirstUpper»Context.«categoryConnection.innerView.name.toFirstLower»OverviewContext.childContexts.filter(«categoryConnection.connectingArtifact.name.toFirstUpper»Context).forEach [ source«categoryConnection.connectingArtifact.name.toFirstUpper»Context |
+                                        val source«categoryConnection.connectingArtifact.name.toFirstUpper» = source«categoryConnection.connectingArtifact.name.toFirstUpper»Context.modelElement
+                                        source«categoryConnection.connectingArtifact.name.toFirstUpper».connected«categoryConnection.connection.name.toFirstUpper»«categoryConnection.connectedArtifact.name.toFirstUpper»s.forEach [ target«categoryConnection.connectedArtifact.name.toFirstUpper» |
+                                            // «categoryConnection.connectedArtifact.name.toFirstUpper» connections within the same «categoryConnection.connectedCategory.name.toFirstLower» do not need a category connection.
+                                            if (source«categoryConnection.connectedCategory.name.toFirstUpper».«categoryConnection.connectedArtifact.name.toFirstLower»s.contains(target«categoryConnection.connectedArtifact.name.toFirstUpper»)) {
+                                                return
+                                            }
+                                            target«categoryConnection.connectedArtifact.name.toFirstUpper».«categoryConnection.connectedCategory.name.toFirstLower»s.forEach [ target«categoryConnection.connectedCategory.name.toFirstUpper» |
+                                                val target«categoryConnection.connectedCategory.name.toFirstUpper»Context = «categoryConnection.connectedCategory.name.toFirstLower»ToContext.get(target«categoryConnection.connectedCategory.name.toFirstUpper»)
+                                                // Ignore this target «categoryConnection.connectedCategory.name.toFirstLower» if it is not shown in the overview or is the same as the source.
+                                                if (target«categoryConnection.connectedCategory.name.toFirstUpper»Context === null || target«categoryConnection.connectedCategory.name.toFirstUpper»Context === source«categoryConnection.connectedCategory.name.toFirstUpper»Context || target«categoryConnection.connectedCategory.name.toFirstUpper»Context.«categoryConnection.innerView.name.toFirstLower»OverviewContext === null) {
+                                                    return
+                                                }
+                                                // Create the information for the possible «categoryConnection.connectingArtifact.name.toFirstLower»-«categoryConnection.connectedArtifact.name.toFirstLower»connection
+                                                val target«categoryConnection.connectedArtifact.name.toFirstUpper»Context = target«categoryConnection.connectedCategory.name.toFirstUpper»Context.«categoryConnection.innerView.name.toFirstLower»OverviewContext.childContexts.filter(«categoryConnection.connectedArtifact.name.toFirstUpper»Context).findFirst [ it.modelElement === target«categoryConnection.connectedArtifact.name.toFirstUpper» ]
+                                                overviewContext.possible«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges.add(VizModelUtil.createPair(source«categoryConnection.connectingArtifact.name.toFirstUpper»Context, target«categoryConnection.connectedArtifact.name.toFirstUpper»Context))
+                                                // Also create the information for the possible container «categoryConnection.connectedCategory.name.toFirstLower»-«categoryConnection.connectedCategory.name.toFirstLower» connection, if it does not exist already.
+                                                if (!overviewContext.possible«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges.exists[ possibleEdge |
+                                                    possibleEdge.key === source«categoryConnection.connectedCategory.name.toFirstUpper»Context && possibleEdge.value === target«categoryConnection.connectedCategory.name.toFirstUpper»Context
+                                                ]) {
+                                                    overviewContext.possible«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges.add(VizModelUtil.createPair(source«categoryConnection.connectedCategory.name.toFirstUpper»Context, target«categoryConnection.connectedCategory.name.toFirstUpper»Context))
+                                                }
+                                            ]
+                                        ]
+                                    ]
+                                ]
+                            }
+                        «ENDFOR»
                         
                         return overviewContext
                     }
@@ -235,6 +294,10 @@ class GenerateVizModelUtils {
                      * Initializes all child contexts needed for this element, once it is displayed in a detailed fashion.
                      */
                     def static dispatch void initializeChildVisualizationContexts(«artifact.name»Context the«artifact.name»Context) {
+                        // don't initialize if it's already done.
+                        if (the«artifact.name»Context.childrenInitialized) {
+                            return
+                        }
                         «FOR containedView : data.getContainedViews(artifact)»
                            «FOR artifactSource : containedView.sources»
                                val «containedView.view.name.toFirstLower»«artifactSource.artifact.name.toFirstUpper»s = the«artifact.name»Context.modelElement«artifactSource.sourceChain.followToArtifact».toSet.toEList
@@ -325,7 +388,7 @@ class GenerateVizModelUtils {
                 }
                 
                 «FOR view : data.views»
-                    «IF view.shownConnections.empty»
+                    «IF view.shownConnections.empty && view.shownCategoryConnections.empty»
                         /**
                          * Removes all edges incident to the context.
                          * 
@@ -358,6 +421,43 @@ class GenerateVizModelUtils {
                                         }
                                     ]
                                     
+                                «ENDFOR»
+                                «FOR categoryConnection : (data.getCategoryConnectedArtifactsInOverview(shownElement.shownElement, view) + data.getCategoryConnectingArtifactsInOverview(shownElement.shownElement, view)).toSet»
+                                    {
+                                        val grandParentContext = overviewContext.parent
+                                        val grandGrandParentContext = grandParentContext?.parent
+                                        // If the «shownElement.shownElement.name.toFirstLower»/«categoryConnection.connectedArtifact.name.toFirstLower» also connects to a «categoryConnection.connectedArtifact.name.toFirstLower»/«shownElement.shownElement.name.toFirstLower» in a different «categoryConnection.innerView.name.toFirstLower» overview in a «categoryConnection.connectedCategory.name.toFirstLower», also remove those edges.
+                                        if (grandParentContext instanceof «categoryConnection.connectedCategory.name.toFirstUpper»Context && grandGrandParentContext instanceof «categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Container) {
+                                            val «categoryConnection.connectedCategory.name.toFirstLower»Context = grandParentContext as «categoryConnection.connectedCategory.name.toFirstUpper»Context
+                                            val «categoryConnection.connectingCategory.name.toFirstLower»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Container = grandGrandParentContext as «categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Container
+                                            «categoryConnection.connectingCategory.name.toFirstLower»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Container.«categoryConnection.connectingArtifact.name.toFirstLower»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges.removeIf [ «categoryConnection.connection.name.toFirstLower»Edge |
+                                                «categoryConnection.connection.name.toFirstLower»Edge.key === (context as Object) || «categoryConnection.connection.name.toFirstLower»Edge.value === (context as Object)
+                                            ]
+                                            // if this is the last connection of a «shownElement.shownElement.name.toFirstLower»/«categoryConnection.connectedArtifact.name.toFirstLower» connecting two «categoryConnection.connectedCategory.name.toFirstLower»s, that needs to be removed as well.
+                                            // First, find out if the removed «shownElement.shownElement.name.toFirstLower»/«categoryConnection.connectedArtifact.name.toFirstLower» is in a source and/or target «categoryConnection.connectedCategory.name.toFirstLower».
+                                            «categoryConnection.connectingCategory.name.toFirstLower»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Container.«categoryConnection.connectingCategory.name.toFirstLower»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges.removeIf [ «categoryConnection.connectedCategory.name.toFirstLower»Edge |
+                                                if («categoryConnection.connectedCategory.name.toFirstLower»Context !== «categoryConnection.connectedCategory.name.toFirstLower»Edge.key && «categoryConnection.connectedCategory.name.toFirstLower»Context !== «categoryConnection.connectedCategory.name.toFirstLower»Edge.value) {
+                                                    // if the «categoryConnection.connectedCategory.name.toFirstLower» edge has nothing to do with the now-removed «categoryConnection.connectedCategory.name.toFirstLower», there is nothing to do here.
+                                                    return false
+                                                }
+                                                // The «categoryConnection.connectedCategory.name.toFirstLower» is now unconnected, if the «categoryConnection.connectedCategory.name.toFirstLower» overview context has no more active «shownElement.shownElement.name.toFirstLower»-«categoryConnection.connectedArtifact.name.toFirstLower» edges
+                                                // where the parent «categoryConnection.connectedCategory.name.toFirstLower» contexts of one of the edges are the «shownElement.shownElement.name.toFirstLower»/«categoryConnection.connectedArtifact.name.toFirstLower»'s «categoryConnection.connectedCategory.name.toFirstLower»s.
+                                                return !«categoryConnection.connectingCategory.name.toFirstLower»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Container.«categoryConnection.connectingArtifact.name.toFirstLower»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges.exists [ «categoryConnection.connection.name.toFirstLower»Edge |
+                                                    «categoryConnection.connection.name.toFirstLower»Edge.key.parent?.parent === «categoryConnection.connectedCategory.name.toFirstLower»Edge.key
+                                                    && «categoryConnection.connection.name.toFirstLower»Edge.value.parent?.parent === «categoryConnection.connectedCategory.name.toFirstLower»Edge.value
+                                                ]
+                                            ]
+                                        }
+                                    }
+                                «ENDFOR»
+                                «FOR categoryConnection : data.categoryConnections.filter[ it.connectedCategory === shownElement.shownElement && it.eContainer === view ].toSet»
+                                    overviewContext.«categoryConnection.connectingCategory.name.toFirstLower»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges.removeIf[ «categoryConnection.connectedCategory.name.toFirstLower»Edge |
+                                        «categoryConnection.connectedCategory.name.toFirstLower»Edge.key === context || «categoryConnection.connectedCategory.name.toFirstLower»Edge.value === context
+                                    ]
+                                    
+                                    overviewContext.«categoryConnection.connectingArtifact.name.toFirstLower»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges.removeIf [ «categoryConnection.connectingArtifact.name.toFirstLower»«categoryConnection.connectedArtifact.name.toFirstUpper»Edge |
+                                        «categoryConnection.connectingArtifact.name.toFirstLower»«categoryConnection.connectedArtifact.name.toFirstUpper»Edge.key.parent?.parent === context || «categoryConnection.connectingArtifact.name.toFirstLower»«categoryConnection.connectedArtifact.name.toFirstUpper»Edge.value.parent?.parent === context
+                                    ]
                                 «ENDFOR»
                             }
                             
@@ -621,6 +721,96 @@ class GenerateVizModelUtils {
                         connectedContext.allConnecting«connection.connecting.name»Connects«connection.connected.name»Named«connection.name»Shown = false
                     }
                     
+                «ENDFOR»
+                
+                «FOR categoryConnection : data.categoryConnections»
+                    /**
+                     * Adds a container connection edge to the parent overview context of the two given contexts.
+                     * The direction of the edge indicates that the «categoryConnection.connectingArtifact.name.toFirstLower» of the {@code connecting«categoryConnection.connectingArtifact.name.toFirstUpper»Context} connects the «categoryConnection.connectedArtifact.name.toFirstLower» of the
+                     * {@code connected«categoryConnection.connectedArtifact.name.toFirstLower»Context}.
+                     * [connecting] ---connects---> [connected]
+                     * 
+                     * @param connecting«categoryConnection.connectingArtifact.name.toFirstUpper»Context The «categoryConnection.connectingArtifact.name.toFirstLower» context with the «categoryConnection.connectingArtifact.name.toFirstLower» connecting the other «categoryConnection.connectedArtifact.name.toFirstLower».
+                     * @param connected«categoryConnection.connectedArtifact.name.toFirstUpper»Context The «categoryConnection.connectedArtifact.name.toFirstLower» context with the «categoryConnection.connectedArtifact.name.toFirstLower» connected by the other «categoryConnection.connectingArtifact.name.toFirstLower».
+                     */
+                    def static void add«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edge(«categoryConnection.connectingArtifact.name.toFirstUpper»Context connecting«categoryConnection.connectingArtifact.name.toFirstUpper»Context, «categoryConnection.connectedArtifact.name.toFirstUpper»Context connected«categoryConnection.connectedArtifact.name.toFirstUpper»Context) {
+                        val source«categoryConnection.connectedCategory.name.toFirstUpper»Context = connecting«categoryConnection.connectingArtifact.name.toFirstUpper»Context.parent?.parent
+                        if (source«categoryConnection.connectedCategory.name.toFirstUpper»Context === null || !(source«categoryConnection.connectedCategory.name.toFirstUpper»Context instanceof «categoryConnection.connectedCategory.name.toFirstUpper»Context)) {
+                           throw new IllegalArgumentException("The connecting «categoryConnection.connectingArtifact.name.toFirstLower» context needs to be in a «categoryConnection.connectedCategory.name.toFirstLower» container.")
+                        }
+                        val target«categoryConnection.connectedCategory.name.toFirstUpper»Context = connected«categoryConnection.connectedArtifact.name.toFirstUpper»Context.parent?.parent
+                        if (target«categoryConnection.connectedCategory.name.toFirstUpper»Context === null || !(target«categoryConnection.connectedCategory.name.toFirstUpper»Context instanceof «categoryConnection.connectedCategory.name.toFirstUpper»Context)) {
+                           throw new IllegalArgumentException("The connected «categoryConnection.connectedArtifact.name.toFirstLower» context needs to be in a «categoryConnection.connectedCategory.name.toFirstLower» container.")
+                        }
+                        
+                        val _parentContext = source«categoryConnection.connectedCategory.name.toFirstUpper»Context.parent
+                        if (_parentContext === null || !(_parentContext instanceof «categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Container) || target«categoryConnection.connectedCategory.name.toFirstUpper»Context.parent !== _parentContext) {
+                            throw new IllegalArgumentException("The connecting and the connected context both have to have the same " +
+                                "parent context!")
+                        }
+                        val parentContext = _parentContext as «categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Container
+                        // Only if this edge does not exist yet, add it to the list of connected «categoryConnection.connectingArtifact.name.toFirstLower»-«categoryConnection.connectedArtifact.name.toFirstLower» edges.
+                        if (!parentContext.«categoryConnection.connectingArtifact.name.toFirstLower»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges.exists [ key === connecting«categoryConnection.connectingArtifact.name.toFirstUpper»Context && value === connected«categoryConnection.connectedArtifact.name.toFirstUpper»Context ]) {
+                            parentContext.«categoryConnection.connectingArtifact.name.toFirstLower»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges += VizModelUtil.createPair(connecting«categoryConnection.connectingArtifact.name.toFirstUpper»Context, connected«categoryConnection.connectedArtifact.name.toFirstUpper»Context)
+                            
+                            // Also add the container «categoryConnection.connectedCategory.name.toFirstLower» edge, if that does not exist yet either.
+                            if (!parentContext.«categoryConnection.connectingCategory.name.toFirstLower»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges.exists [ key === source«categoryConnection.connectedCategory.name.toFirstUpper»Context && value === target«categoryConnection.connectedCategory.name.toFirstUpper»Context ]) {
+                                parentContext.«categoryConnection.connectingCategory.name.toFirstLower»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges += VizModelUtil.createPair(source«categoryConnection.connectedCategory.name.toFirstUpper»Context as «categoryConnection.connectedCategory.name.toFirstUpper»Context, target«categoryConnection.connectedCategory.name.toFirstUpper»Context as «categoryConnection.connectedCategory.name.toFirstUpper»Context)
+                            }
+                            
+                    //        // TODO: not sure if black/white ports should be a feature for the container edges as well, maybe not as it is not shown in the context directly.
+                    //        // Check for both the connecting bundle and the connected bundle if all connections are now shown in the 
+                    //        // parent context. If they are, remember it in the corresponding bundle context.
+                    //        // Connecting context:
+                    //        if (connectingContext.modelElement.connectedDependencyBundles.forall [ connected |
+                    //            !parentContext.modelElements.contains(connected) ||
+                    //            parentContext.bundleConnectsBundleNamedDependencyEdges.exists [ key === connectingContext && value.modelElement === connected ]
+                    //        ]) {
+                    //            connectingContext.allConnectedBundleConnectsBundleNamedDependencyShown = true
+                    //        }
+                    //        // Connected context:
+                    //        if (connectedContext.modelElement.connectingDependencyBundles.forall [ connecting |
+                    //            !parentContext.modelElements.contains(connecting) ||
+                    //            parentContext.bundleConnectsBundleNamedDependencyEdges.exists [ key.modelElement === connecting && value === connectedContext ]
+                    //        ]) {
+                    //            connectedContext.allConnectingBundleConnectsBundleNamedDependencyShown = true
+                    //        }
+                        }
+                        
+                    }
+                
+                    /**
+                     * Removes a connected container edge in the parent overview context of the two given contexts.
+                     * 
+                     * @param connecting«categoryConnection.connectingArtifact.name.toFirstUpper»Context The «categoryConnection.connectingArtifact.name.toFirstLower» context with the «categoryConnection.connectingArtifact.name.toFirstLower» connecting the other «categoryConnection.connectedArtifact.name.toFirstLower».
+                     * @param connected«categoryConnection.connectedArtifact.name.toFirstUpper»Context The «categoryConnection.connectedArtifact.name.toFirstLower» context with the «categoryConnection.connectedArtifact.name.toFirstLower» connected by the other «categoryConnection.connectingArtifact.name.toFirstLower».
+                     */
+                    def static void remove«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edge(«categoryConnection.connectingArtifact.name.toFirstUpper»Context connecting«categoryConnection.connectingArtifact.name.toFirstUpper»Context, «categoryConnection.connectedArtifact.name.toFirstUpper»Context connected«categoryConnection.connectedArtifact.name.toFirstUpper»Context) {
+                        val source«categoryConnection.connectedCategory.name.toFirstUpper»Context = connecting«categoryConnection.connectingArtifact.name.toFirstUpper»Context.parent?.parent
+                        if (source«categoryConnection.connectedCategory.name.toFirstUpper»Context === null || !(source«categoryConnection.connectedCategory.name.toFirstUpper»Context instanceof «categoryConnection.connectedCategory.name.toFirstUpper»Context)) {
+                           throw new IllegalArgumentException("The connecting «categoryConnection.connectingArtifact.name.toFirstLower» context needs to be in a «categoryConnection.connectedCategory.name.toFirstLower» container.")
+                        }
+                        val target«categoryConnection.connectedCategory.name.toFirstUpper»Context = connected«categoryConnection.connectedArtifact.name.toFirstUpper»Context.parent?.parent
+                        if (target«categoryConnection.connectedCategory.name.toFirstUpper»Context === null || !(target«categoryConnection.connectedCategory.name.toFirstUpper»Context instanceof «categoryConnection.connectedCategory.name.toFirstUpper»Context)) {
+                           throw new IllegalArgumentException("The connected «categoryConnection.connectedArtifact.name.toFirstLower» context needs to be in a «categoryConnection.connectedCategory.name.toFirstLower» container.")
+                        }
+                        
+                        val _parentContext = source«categoryConnection.connectedCategory.name.toFirstUpper»Context.parent
+                        if (_parentContext === null || !(_parentContext instanceof «categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Container) || target«categoryConnection.connectedCategory.name.toFirstUpper»Context.parent !== _parentContext) {
+                            throw new IllegalArgumentException("The connecting and the connected context both have to have the same " +
+                                "parent context!")
+                        }
+                        val parentContext = _parentContext as «categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Container
+                        
+                        // TODO: this. And when this should be called. Is it even sensible anymore to remove an element like this?
+                    //    parentContext.bundleConnectsBundleNamedDependencyEdges.removeIf [ key === connectingContext && value === connectedContext ]
+                        
+                    //    // Mark for both the connecting and connected context that not all connections are shown in the 
+                    //    // parent context anymore. Remember that in the corresponding context.
+                    //    connectingContext.allConnectedBundleConnectsBundleNamedDependencyShown = false
+                    //    connectedContext.allConnectingBundleConnectsBundleNamedDependencyShown = false
+                    }
+                
                 «ENDFOR»
                 
                 // Method to let Xtend create the needed generic super type.

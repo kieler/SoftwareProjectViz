@@ -14,6 +14,7 @@ package de.cau.cs.kieler.spviz.spviz.generator
 
 import de.cau.cs.kieler.spviz.spviz.sPViz.ArtifactView
 import de.cau.cs.kieler.spviz.spviz.sPViz.SPViz
+import de.cau.cs.kieler.spviz.spviz.sPViz.ShownCategoryConnection
 import de.cau.cs.kieler.spviz.spviz.sPViz.View
 import de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.Artifact
 import de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.Connection
@@ -23,6 +24,7 @@ import java.util.Map
 import org.eclipse.emf.ecore.resource.Resource
 import org.eclipse.xtend.lib.annotations.Accessors
 
+import static extension de.cau.cs.kieler.spviz.spviz.util.SPVizExtension.*
 import static extension de.cau.cs.kieler.spviz.spvizmodel.util.SPVizModelExtension.*
 
 /**
@@ -62,8 +64,16 @@ class DataAccess {
     /** All connections displayable in this SPViz. */
     @Accessors(PUBLIC_GETTER)
     List<Connection> connections
+    /** All category connections displayable in this SPViz. */
+    @Accessors(PUBLIC_GETTER)
+    List<ShownCategoryConnection> categoryConnections
     /** A convenient map to show all {@link ArtifactView}s that may be shown within the key {@link Artifact}. */
     Map<Artifact, List<ArtifactView>> containedViews
+    /**
+     * A convenient map to show all category connections that are related to a categorized view,
+     * i.e. the view that shows the plain connection.
+     */
+    Map<View, List<ShownCategoryConnection>> categorizedConnections
     /** A convenient map to show all {@link Artifact}s that show the key {@link View}. */
     Map<View, List<Artifact>> artifactsShowing
     
@@ -91,6 +101,8 @@ class DataAccess {
         containedViews = newHashMap
         artifactsShowing = newHashMap
         connections = newArrayList
+        categoryConnections = newArrayList
+        categorizedConnections = newHashMap
         
         for (view : spviz.views) {
             // find all connections between artifacts
@@ -117,6 +129,14 @@ class DataAccess {
                 if (!connections.exists[equals(it, connection)]) {
                     connections.add(connection)
                 }
+            }
+            for (categoryConnection : view.shownCategoryConnections) {
+                val catConnectionView = categoryConnection.innerView
+                categoryConnections.add(categoryConnection)
+                if (!categorizedConnections.containsKey(catConnectionView)) {
+                    categorizedConnections.put(catConnectionView, newArrayList)
+                }
+                categorizedConnections.get(catConnectionView).add(categoryConnection)
             }
         }
         
@@ -228,6 +248,48 @@ class DataAccess {
         return connections
     }
     
+    /**
+     * Returns all category connections with the connected artifacts for a given connecting artifact, if this view, when
+     * put in a category connection, can show this connection.
+     * 
+     * @param connecting
+     *          the artifact which is connecting to other artifacts.
+     * @param view
+     *          the view showing that can show all the category connections.
+     * @return
+     *          List of the category connections.
+     */
+    def List<ShownCategoryConnection> getCategoryConnectedArtifactsInOverview(Artifact connecting, View view) {
+        val List<ShownCategoryConnection> connections = newArrayList
+        for (categorizedConnection : categorizedConnections.get(view) ?: #[]) {
+            if (categorizedConnection.connection.connecting === connecting) {
+                connections.add(categorizedConnection)
+            }
+        }
+        return connections
+    }
+    
+    /**
+     * Returns all category connections with the connecting artifacts for a given connected artifact, if this view, when
+     * put in a category connection, can show this connection.
+     * 
+     * @param connected
+     *          the artifact which is connected by other artifacts.
+     * @param view
+     *          the view showing that can show all the category connections.
+     * @return
+     *          List of the category connections.
+     */
+    def List<ShownCategoryConnection> getCategoryConnectingArtifactsInOverview(Artifact connected, View view) {
+        val List<ShownCategoryConnection> connections = newArrayList
+        for (categorizedConnection : categorizedConnections.get(view) ?: #[]) {
+            if (categorizedConnection.connection.connected === connected) {
+                connections.add(categorizedConnection)
+            }
+        }
+        return connections
+    }
+    
     /** 
      * For a given artifact, finds the overviews, it can be contained in.
      * 
@@ -284,6 +346,37 @@ class DataAccess {
      */
     def List<Artifact> getArtifactsShowing(View view) {
         return artifactsShowing.get(view) ?: #[]
+    }
+    
+    /**
+     * returns all artifacts that connect via some category connection.
+     * 
+     * @return the artifacts connected via category connections.
+     */
+    def List<Artifact> categoryConnectingArtifacts() {
+        return views.flatMap[
+            it.shownCategoryConnections
+        ].map[
+            it.sourceChain.target
+        ].toList
+    }
+    
+    def List<ShownCategoryConnection> categoryConnectionsFor(Connection connection) {
+        return categoryConnections.filter[it.connection === connection].toList
+    }
+    
+    /**
+     * All views that contain a category connection connecting this category artifact.
+     * 
+     * @param artifact the artifact to find the views for.
+     * @return the views that list a category connection for the given category artifact.
+     */
+    def List<View> viewsCategoryConnecting(Artifact artifact) {
+        return views.filter[
+            it.shownCategoryConnections.map[
+                it.sourceChain.target
+            ].contains(artifact)
+        ].toList
     }
     
 }

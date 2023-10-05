@@ -22,6 +22,7 @@ import java.util.Map
 import org.eclipse.core.resources.IFolder
 import org.eclipse.core.runtime.IProgressMonitor
 
+import static extension de.cau.cs.kieler.spviz.spviz.util.SPVizExtension.*
 import static extension de.cau.cs.kieler.spviz.spvizmodel.util.SPVizModelExtension.*
 
 /**
@@ -248,12 +249,17 @@ class GenerateActions {
      */
     def static generateRevealAction(DataAccess data, Connection connection, boolean isConnected) {
         val String connectingOrConnected = isConnected ? "Connected" : "Connecting"
-        val connectionName = connection.name
+        val connectionName = connection.name.toFirstUpper
         val artifactFrom = isConnected ? connection.connecting  : connection.connected
         val artifactTo   = isConnected ? connection.connected : connection.connecting
-        val artifactFromName = artifactFrom.name
-        val artifactToName = artifactTo.name
-        val className = "Reveal" + connectingOrConnected + connection.connecting.name + "Connects" + connection.connected.name + "Named" + connection.name + "Action"
+        val artifactFromName = artifactFrom.name.toFirstUpper
+        val artifactToName = artifactTo.name.toFirstUpper
+        val className = "Reveal" + connectingOrConnected + connection.connecting.name.toFirstUpper + "Connects" + connection.connected.name.toFirstUpper + "Named" + connection.name.toFirstUpper + "Action"
+        
+        // data for all category connections related to this connection
+        val categoryConnections = data.categoryConnectionsFor(connection)
+        val categoryArtifacts = categoryConnections.map[sourceChain.target]
+        val innerCategoryViews = categoryConnections.map[innerView]
         
         return '''
             package «data.getBundleNamePrefix».viz.actions
@@ -264,6 +270,16 @@ class GenerateActions {
                 import «data.getBundleNamePrefix».model.«artifactToName»Context
             «ENDIF»
             import «data.getBundleNamePrefix».model.IVisualizationContext
+            «FOR artifact : categoryArtifacts»
+                import «data.getBundleNamePrefix».model.«artifact.name.toFirstUpper»Context
+            «ENDFOR»
+            «FOR categoryConnection : categoryConnections»
+                import «data.getBundleNamePrefix».model.«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Container
+            «ENDFOR»
+            «FOR view : innerCategoryViews»
+                import «data.getBundleNamePrefix».model.«view.name.toFirstUpper»OverviewContext
+            «ENDFOR»
+            import java.util.List
             
             import static extension «data.getBundleNamePrefix».model.util.ContextExtensions.*
             
@@ -292,25 +308,80 @@ class GenerateActions {
                     
                     // The «connectingOrConnected.toFirstLower» «artifactToName.toFirstLower»s that are currently not yet in their detailed view need to be put in that state first.
                     val collapsed«connectingOrConnected»«artifactToName»Contexts = overviewContext.collapsedElements.filter [
-                        «artifactFromName.toFirstLower».«connectingOrConnected.toFirstLower + connectionName + artifactToName»s.contains(it.modelElement)
+                        «artifactFromName.toFirstLower».«connectingOrConnected.toFirstLower»«connectionName»«artifactToName»s.contains(it.modelElement)
                     ].toList
                     collapsed«connectingOrConnected»«artifactToName»Contexts.forEach [
                         overviewContext.makeDetailed(it)
                     ]
                     
+                    val List<«artifactToName»Context> «connectingOrConnected.toFirstLower»InternalContexts = newArrayList
+                    val List<«artifactToName»Context> «connectingOrConnected.toFirstLower»ExternalContexts = newArrayList
+                    
+                    «artifactFromName.toFirstLower».«connectingOrConnected.toFirstLower»«connectionName»«artifactToName»s.forEach [ «connectingOrConnected.toFirstLower»«artifactToName» |
+                        val «connectingOrConnected.toFirstLower»Inner«artifactToName»Context = overviewContext.detailedElements.findFirst[ it.modelElement === «connectingOrConnected.toFirstLower»«artifactToName» ] as «artifactToName»Context
+                        
+                        // If there is an inner context for this «artifactToName.toFirstLower», connect that.
+                        if («connectingOrConnected.toFirstLower»Inner«artifactToName»Context !== null) {
+                            «connectingOrConnected.toFirstLower»InternalContexts.add(«connectingOrConnected.toFirstLower»Inner«artifactToName»Context)
+                            return
+                        }
+                        «FOR categoryConnection : categoryConnections»
+                            // If there is no inner context for this «artifactToName.toFirstLower», look if the «artifactToName.toFirstLower» is shown in a «categoryConnection.connectedCategory.name.toFirstLower» and that «categoryConnection.connectedCategory.name.toFirstLower»
+                            // has this connection to the «artifactToName.toFirstLower» shown in another «categoryConnection.connectedCategory.name.toFirstLower».
+                            if (overviewContext.parent instanceof «categoryConnection.connectedCategory.name.toFirstUpper»Context && overviewContext.parent.parent instanceof «categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Container) {
+                                val containerOverviewContext = overviewContext.parent.parent as «categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Container
+                                // Look for the connection in the container overview
+                                containerOverviewContext.possible«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges.filter[
+                                    «isConnected ? "key" : "value"» === «artifactFromName.toFirstLower»Context
+                                    && «isConnected ? "value" : "key"».modelElement === «connectingOrConnected.toFirstLower»«artifactToName»
+                                ].forEach [
+                                    // The «isConnected ? "target" : "source"» «categoryConnection.connectedCategory.name.toFirstLower», «categoryConnection.innerView.name.toFirstLower» overview and «artifactToName.toFirstLower» need to be expanded first.
+                                    val «isConnected ? "target" : "source"»«artifactToName.toFirstLower»Context = it.«isConnected ? "value" : "key"»
+                                    val «isConnected ? "target" : "source"»«categoryConnection.innerView.name.toFirstUpper»OverviewContext = «isConnected ? "target" : "source"»«artifactToName.toFirstLower»Context?.parent as «categoryConnection.innerView.name.toFirstUpper»OverviewContext
+                                    val «isConnected ? "target" : "source"»«categoryConnection.connectedCategory.name.toFirstUpper»Context = «isConnected ? "target" : "source"»«categoryConnection.innerView.name.toFirstUpper»OverviewContext?.parent as «categoryConnection.connectedCategory.name.toFirstUpper»Context
+                                    val «categoryConnection.connectingCategory.name.toFirstLower»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Context = «isConnected ? "target" : "source"»«categoryConnection.connectedCategory.name.toFirstUpper»Context?.parent as «categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Container
+                                    «categoryConnection.connectingCategory.name.toFirstLower»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Context.makeDetailed(«isConnected ? "target" : "source"»«categoryConnection.connectedCategory.name.toFirstUpper»Context)
+                                    «isConnected ? "target" : "source"»«categoryConnection.innerView.name.toFirstUpper»OverviewContext.expanded = true
+                                    «isConnected ? "target" : "source"»«categoryConnection.innerView.name.toFirstUpper»OverviewContext.makeDetailed(«isConnected ? "target" : "source"»«artifactToName.toFirstLower»Context)
+                                    
+                                    // configure to connect via an edge.
+                                    add«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edge(«isConnected ? "it.key, target" + artifactToName.toFirstLower + "Context" : "source" + artifactToName.toFirstLower + "Context, it.value"»)
+                                    «connectingOrConnected.toFirstLower»ExternalContexts.add(«isConnected ? "target" : "source"»«artifactToName.toFirstLower»Context)
+                                ]
+                            }
+                        «ENDFOR»
+                    ]
+                    
                     // The «artifactToName.toFirstLower» contexts in the overview that the «connectionName.toFirstLower» connection can connect to.
                     // Use the detailed «artifactToName.toFirstLower» contexts only, as they are all made detailed above.
-                    newlyConnectedContexts = overviewContext.detailedElements.filter [
-                        «artifactFromName.toFirstLower».«connectingOrConnected.toFirstLower + connectionName + artifactToName»s.contains(it.modelElement)
-                    ].toList
+            //        «connectingOrConnected.toFirstLower»InternalContexts = overviewContext.detailedElements.filter [
+            //            «artifactFromName.toFirstLower».«connectingOrConnected.toFirstLower»«connectionName»«artifactToName»s.contains(it.modelElement)
+            //        ].toList
                     
-                    newlyConnectedContexts.forEach [ «connectingOrConnected.toFirstLower»«artifactToName»Context |
-                        «IF isConnected»
-                            «artifactFromName.toFirstLower»Context.add«connectionName»«artifactToName»Edge(«connectingOrConnected.toFirstLower»«artifactToName»Context as «artifactToName»Context)
-                        «ELSE»
-                            («connectingOrConnected.toFirstLower»«artifactToName»Context as «artifactToName»Context).add«connectionName»«artifactFromName»Edge(«artifactFromName.toFirstLower»Context)
-                        «ENDIF»
+                    «connectingOrConnected.toFirstLower»InternalContexts.forEach [ «connectingOrConnected.toFirstLower»«artifactToName»Context |
+                        add«connectionName»«connection.connected.name.toFirstUpper»Edge(«isConnected ? artifactFromName.toFirstLower + "Context, connected" + artifactToName + "Context as " + artifactToName + "Context" : "connecting" + artifactToName + "Context as " + artifactToName + "Context, " + artifactFromName.toFirstLower + "Context"»)
                     ]
+                    
+            //        «connectingOrConnected.toFirstLower»ExternalContexts.forEach [ «connectingOrConnected.toFirstLower»«artifactToName»Context |
+            ////            TODO:
+            //        ]
+                    
+                    // TODO: handle this for disconnection as well.
+                    newlyConnectedContexts = («connectingOrConnected.toFirstLower»InternalContexts + «connectingOrConnected.toFirstLower»ExternalContexts).toList
+                    
+«««                    // The «artifactToName.toFirstLower» contexts in the overview that the «connectionName.toFirstLower» connection can connect to.
+«««                    // Use the detailed «artifactToName.toFirstLower» contexts only, as they are all made detailed above.
+«««                    newlyConnectedContexts = overviewContext.detailedElements.filter [
+«««                        «artifactFromName.toFirstLower».«connectingOrConnected.toFirstLower + connectionName + artifactToName»s.contains(it.modelElement)
+«««                    ].toList
+«««                    
+«««                    newlyConnectedContexts.forEach [ «connectingOrConnected.toFirstLower»«artifactToName»Context |
+«««                        «IF isConnected»
+«««                            «artifactFromName.toFirstLower»Context.add«connectionName»«artifactToName»Edge(«connectingOrConnected.toFirstLower»«artifactToName»Context as «artifactToName»Context)
+«««                        «ELSE»
+«««                            («connectingOrConnected.toFirstLower»«artifactToName»Context as «artifactToName»Context).add«connectionName»«artifactFromName»Edge(«artifactFromName.toFirstLower»Context)
+«««                        «ENDIF»
+«««                    ]
                 }
                     
                 override applicableContext() {
@@ -614,9 +685,6 @@ class GenerateActions {
                     // Just invert the expanded state.
                     val c = modelVisualizationContext as IOverviewVisualizationContext<?>
                     c.expanded = !c.expanded
-                    
-                    // Also, toggle the expansion state in the viewer.
-                    actionContext.getActiveViewer().toggleExpansion(actionContext.getKNode());
                 }
                 
             }
@@ -780,10 +848,18 @@ class GenerateActions {
 
             import «data.getBundleNamePrefix».model.IOverviewVisualizationContext
             import «data.getBundleNamePrefix».model.IVisualizationContext
-            «FOR artifact : revealActions.keySet»
-                import «data.bundleNamePrefix».model.«artifact.name»Context
+            «FOR artifact : data.artifacts»
+                «IF revealActions.keySet.contains(artifact) || data.categoryConnectingArtifacts.contains(artifact)»
+                    import «data.bundleNamePrefix».model.«artifact.name»Context
+                «ENDIF»
             «ENDFOR»
-            import «data.getBundleNamePrefix».viz.SynthesisUtils
+            «FOR connection : data.connections»
+                ««« BundleConnectsBundleNamedDependencyContainer
+                import «data.bundleNamePrefix».model.«connection.connecting.name.toFirstUpper»Connects«connection.connected.name.toFirstUpper»Named«connection.name.toFirstUpper»Container
+            «ENDFOR»
+            «FOR categoryConnection : data.categoryConnections»
+                import «data.bundleNamePrefix».model.«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Container
+            «ENDFOR»
             
             import static extension «data.bundleNamePrefix».model.util.ContextExtensions.*
             
@@ -822,16 +898,42 @@ class GenerateActions {
                     // For each child context, call actions on all their connections.
                     ovc.childContexts.clone.forEach [ childContext |
                         switch (childContext) {
-                            «FOR artifact : revealActions.keySet»
-                                «artifact.name»Context: {
-                                    // Connect all artifacts that may connect to this one.
-                                    «FOR connectionAction : revealActions.get(artifact)»
-                                        // Only try to connect using this connection type if the parent overview context supports it.
-                                        if (SynthesisUtils.overviewContainsConnection(ovc, "«connectionAction.key.name»")) {
-                                            «connectionAction.value.toFirstLower».changeVisualization(childContext, actionContext)
-                                        }
-                                    «ENDFOR»
-                                }
+                            
+                            «FOR artifact : data.artifacts»
+                                «IF revealActions.keySet.contains(artifact) || data.categoryConnectingArtifacts.contains(artifact)»
+                                    «artifact.name»Context: {
+                                        «IF revealActions.keySet.contains(artifact)»
+                                            // Connect all artifacts that may connect to this one.
+                                            «FOR connectionAction : revealActions.get(artifact)»
+                                                // Only try to connect using this connection type if the parent overview context supports it.
+                                                if (ovc instanceof «connectionAction.key.connecting.name.toFirstUpper»Connects«connectionAction.key.connected.name.toFirstUpper»Named«connectionAction.key.name.toFirstUpper»Container) {
+                                                    «connectionAction.value.toFirstLower».changeVisualization(childContext, actionContext)
+                                                }
+                                            «ENDFOR»
+                                        «ENDIF»
+                                        «IF data.categoryConnectingArtifacts.contains(artifact)»
+                                            «FOR categoryConnection : data.categoryConnections.filter[it.sourceChain.target === artifact]»
+                                                // Connect all container connections of the «categoryConnection.connectedCategory.name.toFirstLower»'s «categoryConnection.connectingArtifact.name.toFirstLower»'s and «categoryConnection.connectedArtifact.name.toFirstLower»'s «categoryConnection.connection.name.toFirstLower»s.
+                                                // Only try to connect using this connection type if the parent overview context supports it.
+                                                if (ovc instanceof «categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Container && childContext.«categoryConnection.innerView.name.toFirstLower»OverviewContext !== null) {
+                                                    val inner«categoryConnection.innerView.name.toFirstUpper»Context = childContext.«categoryConnection.innerView.name.toFirstLower»OverviewContext
+                                                    // Expand all contexts that are not yet in their detailed form.
+                                                    inner«categoryConnection.innerView.name.toFirstUpper»Context.expanded = true
+                                                    val collapsedGrandChildContexts = inner«categoryConnection.innerView.name.toFirstUpper»Context.collapsedElements.clone
+                                                    collapsedGrandChildContexts.forEach [ collapsed |
+                                                        if (collapsed instanceof «categoryConnection.connectingArtifact.name.toFirstUpper»Context) {
+                                                            inner«categoryConnection.innerView.name.toFirstUpper»Context.makeDetailed(collapsed as IVisualizationContext<Object>)
+                                                        }
+                                                    ]
+                                                    // Connect all inner elements.
+                                                    inner«categoryConnection.innerView.name.toFirstUpper»Context.childContexts.clone.filter(«categoryConnection.connectingArtifact.name.toFirstUpper»Context).forEach [ grandChildContext |
+                                                        revealConnected«categoryConnection.connectingArtifact.name.toFirstUpper»Connects«categoryConnection.connectedArtifact.name.toFirstUpper»Named«categoryConnection.connection.name.toFirstUpper»Action.changeVisualization(grandChildContext, actionContext)
+                                                    ]
+                                                }
+                                            «ENDFOR»
+                                        «ENDIF»
+                                    }
+                                «ENDIF»
                             «ENDFOR»
                             default: {
                                 throw new IllegalStateException("Unknown child context. " + childContext.class)
@@ -966,6 +1068,7 @@ class GenerateActions {
                     val elementsToSelect = new ArrayList<EObject>
                     val clickedElement = context.KGraphElement
                     elementsToSelect.add(clickedElement)
+«««                    // TODO: look how to fix this for the new use case of split edges.
                     
                     // If the element is an edge, also select all incident nodes and labels.
                     switch clickedElement {
