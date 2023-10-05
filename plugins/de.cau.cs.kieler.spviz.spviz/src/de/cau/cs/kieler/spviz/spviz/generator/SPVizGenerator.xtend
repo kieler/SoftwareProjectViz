@@ -32,6 +32,7 @@ import org.eclipse.xtext.generator.IFileSystemAccess2
 import org.eclipse.xtext.generator.IGeneratorContext
 
 import static extension de.cau.cs.kieler.spviz.spvizmodel.util.SPVizModelExtension.*
+import static extension de.cau.cs.kieler.spviz.spviz.util.SPVizExtension.*
 
 /**
  * Generates code from your model files on save.
@@ -459,11 +460,30 @@ class SPVizGenerator extends AbstractGenerator {
                     contains Pair<«connection.connecting.name»Context, «connection.connected.name»Context>[] «connection.connecting.name.toFirstLower»Connects«connection.connected.name»Named«connection.name»Edges
                 }
             «ENDFOR»
+            
+            «FOR categoryConnection : data.categoryConnections»
+                class «categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Container extends IOverviewVisualizationContext<Object> {
+                    // For the category connection between «categoryConnection.connectingCategory.name.toFirstLower»s to connect via their «categoryConnection.connection.name.toFirstLower»s, define some relations for
+                    // pre-calculating which connected «categoryConnection.connectedArtifact.name.toFirstLower»s, connecting «categoryConnection.connectingArtifact.name.toFirstLower»s, and which «categoryConnection.connectedCategory.name.toFirstLower»s are connected in this way.
+                    
+                    /** All «categoryConnection.connectedCategory.name.toFirstLower» category edges related to «categoryConnection.connection.name.toFirstLower»s that are possible. */
+                    contains Pair<«categoryConnection.connectedCategory.name.toFirstUpper»Context, «categoryConnection.connectedCategory.name.toFirstUpper»Context>[] possible«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges
+                    /** All «categoryConnection.connectedCategory.name.toFirstLower» category edges related to «categoryConnection.connection.name.toFirstLower»s that are currently connected. */
+                    contains Pair<«categoryConnection.connectedCategory.name.toFirstUpper»Context, «categoryConnection.connectedCategory.name.toFirstUpper»Context>[] «categoryConnection.connectingCategory.name.toFirstLower»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges
+                    /** All inner «categoryConnection.connectedCategory.name.toFirstLower» category edges related to «categoryConnection.connection.name.toFirstLower»s that are possible. */
+                    contains Pair<«categoryConnection.connectingArtifact.name.toFirstUpper»Context, «categoryConnection.connectedArtifact.name.toFirstUpper»Context>[] possible«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges
+                    /** All inner «categoryConnection.connectedCategory.name.toFirstLower» category edges related to «categoryConnection.connection.name.toFirstLower»s that are currently connected. */
+                    contains Pair<«categoryConnection.connectingArtifact.name.toFirstUpper»Context, «categoryConnection.connectedArtifact.name.toFirstUpper»Context>[] «categoryConnection.connectingArtifact.name.toFirstLower»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges
+                }
+            «ENDFOR»
 
             «FOR view : data.views»
                 class «view.name»OverviewContext extends IOverviewVisualizationContext<Object>«««
 «                  »«FOR connection : view.shownConnections.map[shownConnection] BEFORE ", " SEPARATOR ", "»«««
 «                      »«connection.connecting.name»Connects«connection.connected.name»Named«connection.name»Container«««
+«                  »«ENDFOR»«««
+«                  »«FOR categoryConnection : view.shownCategoryConnections BEFORE ", " SEPARATOR ", "»«««
+«                      »«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Container«««
 «                  »«ENDFOR» {
                     «FOR shownElement : view.shownElements»
                         refers «shownElement.shownElement.name»Context[] collapsed«shownElement.shownElement.name»Contexts

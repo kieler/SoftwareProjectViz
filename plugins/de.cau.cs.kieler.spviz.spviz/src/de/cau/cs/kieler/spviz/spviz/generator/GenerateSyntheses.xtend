@@ -12,15 +12,18 @@
  */
 package de.cau.cs.kieler.spviz.spviz.generator
 
+import de.cau.cs.kieler.spviz.spviz.sPViz.View
 import de.cau.cs.kieler.spviz.spvizmodel.generator.FileGenerator
 import de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.Artifact
 import java.awt.Color
 import java.util.HashMap
 import java.util.Locale
 import java.util.Map
+import java.util.Set
 import org.eclipse.core.resources.IFolder
 import org.eclipse.core.runtime.IProgressMonitor
 
+import static extension de.cau.cs.kieler.spviz.spviz.util.SPVizExtension.*
 import static extension de.cau.cs.kieler.spviz.spvizmodel.util.SPVizModelExtension.*
 
 /**
@@ -134,6 +137,8 @@ class GenerateSyntheses {
                 override getDisplayedSynthesisOptions() {
                     val options = new LinkedHashSet()
                     
+                    options.add(CONTAINER_CONNECTION_STYLE)        
+                    
                     // Add category options.
                     options.addAll(FILTER_CATEGORY, TEXT_FILTER_CATEGORY, VIEW_FILTER_CATEGORY, PERFORMANCE)
                     
@@ -143,7 +148,7 @@ class GenerateSyntheses {
                     «ENDFOR»
                     
                     // Add all view filter options.
-                    options.addAll(SHOW_EXTERNAL, SHORTEN_BY, INTERACTIVE_BUTTONS)
+                    options.addAll(SHOW_EXTERNAL, CONTAINER_EDGES_WHEN_FOCUSED, SHORTEN_BY, INTERACTIVE_BUTTONS)
                     
                     // Add all artifact view filters.
                     «FOR artifact : data.artifacts»
@@ -571,84 +576,85 @@ class GenerateSyntheses {
                  * @param node The KNode to add the rendering to.
                  * @param headlineText The headline presenting this overview.
                  * @param tooltipText What should be shown in a tooltip when hovering this overview.
+                 * @param isExpanded if the overview rendering should show its children.
                  * @param isConnectable if the overview rendering contains connectable elements
                  * @param isFocused if the overview is currently focused
                  * @param context The used ViewContext.
                  */
-                def void addOverviewRendering(KNode node, String headlineText, String tooltipText, boolean isConnectable,
-                    boolean isFocused, ViewContext context) {
-                    // Expanded
-                    node.addRoundedRectangle(ROUNDNESS, ROUNDNESS) => [
-                        setAsExpandedView
-                        setGridPlacement(1)
-                        addDoubleClickAction(OverviewContextCollapseExpandAction.ID)
-                        addRectangle => [
-                            var columns = 1
-                            val interactiveButtons = context.getOptionValue(INTERACTIVE_BUTTONS) as Boolean
-                            if (interactiveButtons) {
-                                columns += 4
-                                if (isConnectable) {
-                                    columns += 1
-                                }
-                            } 
-                            setGridPlacement(columns)
-                            invisible = true
+                def void addOverviewRendering(KNode node, String headlineText, String tooltipText, boolean isExpanded,
+                    boolean isConnectable, boolean isFocused, ViewContext context) {
+                    if (isExpanded) {
+                        // Expanded
+                        node.addRoundedRectangle(ROUNDNESS, ROUNDNESS) => [
+                            setGridPlacement(1)
+                            addDoubleClickAction(OverviewContextCollapseExpandAction.ID)
                             addRectangle => [
+                                var columns = 1
+                                val interactiveButtons = context.getOptionValue(INTERACTIVE_BUTTONS) as Boolean
+                                if (interactiveButtons) {
+                                    columns += 4
+                                    if (isConnectable) {
+                                        columns += 1
+                                    }
+                                } 
+                                setGridPlacement(columns)
                                 invisible = true
-                                addSimpleLabel(headlineText) => [
-                                    fontBold = true
-                                    selectionFontBold = true
+                                addRectangle => [
+                                    invisible = true
+                                    addSimpleLabel(headlineText) => [
+                                        fontBold = true
+                                        selectionFontBold = true
+                                    ]
                                 ]
+                                if (interactiveButtons) {
+                                    addVerticalLine
+                                    if (isFocused) {
+                                        addDefocusButton(context)
+                                    } else {
+                                        addFocusButton(context)
+                                    }
+                                    addExpandAllButton(context)
+                                    if (isConnectable) {
+                                        addConnectAllButton(context)
+                                    }
+                                    addOverviewContextCollapseExpandButton(false, context)
+                                }
                             ]
-                            if (interactiveButtons) {
-                                addVerticalLine
-                                if (isFocused) {
-                                    addDefocusButton(context)
-                                } else {
-                                    addFocusButton(context)
-                                }
-                                addExpandAllButton(context)
-                                if (isConnectable) {
-                                    addConnectAllButton(context)
-                                }
-                                addOverviewContextCollapseExpandButton(false, context)
-                            }
+                            addHorizontalSeperatorLine(1, 0)
+                            addChildArea
+                            setShadow(SHADOW_COLOR.color, 4, 4)
+                            background = DEFAULT_BACKGROUND_COLOR.color
+                            tooltip = tooltipText
+                            setSelectionStyle
                         ]
-                        addHorizontalSeperatorLine(1, 0)
-                        addChildArea
-                        setShadow(SHADOW_COLOR.color, 4, 4)
-                        background = DEFAULT_BACKGROUND_COLOR.color
-                        tooltip = tooltipText
-                        setSelectionStyle
-                    ]
-                    
-                    // Collapsed
-                    node.addRoundedRectangle(ROUNDNESS, ROUNDNESS) => [
-                        setAsCollapsedView
-                        setGridPlacement(1)
-                        addDoubleClickAction(OverviewContextCollapseExpandAction.ID)
-                        addRectangle => [
-                            val interactiveButtons = context.getOptionValue(INTERACTIVE_BUTTONS) as Boolean
-                            var columns = 1
-                            if (interactiveButtons) {
-                                columns += 2
-                            }
-                            setGridPlacement(columns)
-                            invisible = true
+                    } else {
+                        // Collapsed
+                        node.addRoundedRectangle(ROUNDNESS, ROUNDNESS) => [
+                            setGridPlacement(1)
+                            addDoubleClickAction(OverviewContextCollapseExpandAction.ID)
                             addRectangle => [
+                                val interactiveButtons = context.getOptionValue(INTERACTIVE_BUTTONS) as Boolean
+                                var columns = 1
+                                if (interactiveButtons) {
+                                    columns += 2
+                                }
+                                setGridPlacement(columns)
                                 invisible = true
-                                addSimpleLabel(headlineText)
+                                addRectangle => [
+                                    invisible = true
+                                    addSimpleLabel(headlineText)
+                                ]
+                                if (interactiveButtons) {
+                                    addVerticalLine
+                                    addOverviewContextCollapseExpandButton(true, context)
+                                }
                             ]
-                            if (interactiveButtons) {
-                                addVerticalLine
-                                addOverviewContextCollapseExpandButton(true, context)
-                            }
+                            setShadow(SHADOW_COLOR.color, 4, 4)
+                            background = DEFAULT_BACKGROUND_COLOR.color
+                            tooltip = tooltipText
+                            setSelectionStyle
                         ]
-                        setShadow(SHADOW_COLOR.color, 4, 4)
-                        background = DEFAULT_BACKGROUND_COLOR.color
-                        tooltip = tooltipText
-                        setSelectionStyle
-                    ]
+                    }
                 }
                 
                 /**
@@ -656,9 +662,10 @@ class GenerateSyntheses {
                  * 
                  * @param node The node representing and containing all collapsed elements in an overview.
                  * @param shown If the collapsed elements are currently shown
+                 * @param showButton If the collapse/expand button is to be shown
                  * @param context The used ViewContext.
                  */
-                def KContainerRendering addOverviewOfCollapsedRendering(KNode node, boolean shown, ViewContext context) {
+                def KContainerRendering addOverviewOfCollapsedRendering(KNode node, boolean shown, boolean showButton, ViewContext context) {
                     val actionId = ShowHideCollapsedAction::ID
                     val doWhat = shown ? "Hide" : "Show"
                     node.addInvisibleContainerRendering => [
@@ -669,24 +676,26 @@ class GenerateSyntheses {
                                 tooltip = doWhat + " the collapsed elements"
                                 setPointPlacementData(RIGHT, 2f, 0f, TOP, 2f, 0f, H_RIGHT, V_TOP, 4f, 4f, 0f, 0f)
                                 
-                                // Either add an icon button or a text button, depending on its option.
-                                val showIcons = context.getOptionValue(SHOW_ICONS) as Boolean
-                                if (showIcons) {
-                                    val imagePath = if (shown) "icons/minimize128.png" else "icons/restore128.png"
-                                    addImage("«data.bundleNamePrefix».viz", imagePath) => [
-                                        setPointPlacementData(RIGHT, 0, 0.5f, TOP, 0, 0.5f, H_CENTRAL, V_CENTRAL, 4f, 4f, 12, 12)
-                                        addSingleOrMultiClickAction(actionId)
-                                    ]
-                                } else {
-                                    addText(doWhat) => [
-                                        suppressSelectability
-                                        fontSize = 8
-                                        fontBold = true
-                                        selectionFontBold = true
-                                        val size = estimateTextSize
-                                        setPointPlacementData(RIGHT, 0, 0.5f, TOP, 0, 0.5f, H_CENTRAL, V_CENTRAL, 4f, 4f, size.width, size.height)
-                                        addSingleOrMultiClickAction(actionId)
-                                    ]
+                                if (showButton) {
+                                    // Either add an icon button or a text button, depending on its option.
+                                    val showIcons = context.getOptionValue(SHOW_ICONS) as Boolean
+                                    if (showIcons) {
+                                        val imagePath = if (shown) "icons/minimize128.png" else "icons/restore128.png"
+                                        addImage("«data.bundleNamePrefix».viz", imagePath) => [
+                                            setPointPlacementData(RIGHT, 0, 0.5f, TOP, 0, 0.5f, H_CENTRAL, V_CENTRAL, 4f, 4f, 12, 12)
+                                            addSingleOrMultiClickAction(actionId)
+                                        ]
+                                    } else {
+                                        addText(doWhat) => [
+                                            suppressSelectability
+                                            fontSize = 8
+                                            fontBold = true
+                                            selectionFontBold = true
+                                            val size = estimateTextSize
+                                            setPointPlacementData(RIGHT, 0, 0.5f, TOP, 0, 0.5f, H_CENTRAL, V_CENTRAL, 4f, 4f, size.width, size.height)
+                                            addSingleOrMultiClickAction(actionId)
+                                        ]
+                                    }
                                 }
                             ]
                         }
@@ -950,6 +959,12 @@ class GenerateSyntheses {
                     ]
                 }
                 
+                def KRectangle addGenericInvisiblePortRendering(KPort port) {
+                    return port.addRectangle => [
+                        invisible = true
+                    ]
+                }
+                
                 «FOR artifact : data.artifacts»
                     // ------------------------------------- «artifact.name» renderings -------------------------------------
                     
@@ -1094,23 +1109,28 @@ class GenerateSyntheses {
                         
                         /**
                          * Adds the rendering for an edge showing a «connected.connected.name.toFirstLower» connection.
+                         * 
+                         * @param head if this edge shold render an arrow head.
+                         * @param thick if this edge shold be rendered thicker.
                          */
-                        def addConnected«connected.connecting.name»Connects«connected.connected.name»Named«connected.name»EdgeRendering(KEdge edge) {
+                        def addConnected«connected.connecting.name»Connects«connected.connected.name»Named«connected.name»EdgeRendering(KEdge edge, boolean head, boolean thick) {
                             edge.addPolyline => [
-                                lineWidth = 2
-                                addHeadArrowDecorator => [
-                                    lineWidth = 1
-                                    background = "black".color
-                                    foreground = "black".color
-                                    selectionLineWidth = 1.5f
-                                    selectionForeground = SELECTION_COLOR.color
-                                    selectionBackground = SELECTION_COLOR.color
-                                    addSingleClickAction(SelectRelatedAction::ID, ModifierState.NOT_PRESSED, ModifierState.NOT_PRESSED,
-                                        ModifierState.NOT_PRESSED)
-                                    suppressSelectablility
-                                ]
+                                lineWidth = thick ? 4 : 2
+                                if (head) {
+                                    addHeadArrowDecorator => [
+                                        lineWidth = thick ? 2 : 1
+                                        background = "black".color
+                                        foreground = "black".color
+                                        selectionLineWidth = thick ? 3 : 1.5f
+                                        selectionForeground = SELECTION_COLOR.color
+                                        selectionBackground = SELECTION_COLOR.color
+                                        addSingleClickAction(SelectRelatedAction::ID, ModifierState.NOT_PRESSED, ModifierState.NOT_PRESSED,
+                                            ModifierState.NOT_PRESSED)
+                                        suppressSelectablility
+                                    ]
+                                }
                                 lineStyle = LineStyle.DASH
-                                selectionLineWidth = 3
+                                selectionLineWidth = thick ? 6 : 3
                                 selectionForeground = SELECTION_COLOR.color
                                 addSingleClickAction(SelectRelatedAction::ID, ModifierState.NOT_PRESSED, ModifierState.NOT_PRESSED,
                                     ModifierState.NOT_PRESSED)
@@ -1142,6 +1162,22 @@ class GenerateSyntheses {
                     «ENDFOR»
 
                 «ENDFOR»
+                
+                «FOR categoryConnection : data.categoryConnections»
+                    /**
+                     * Adds the rendering for a category edge showing a «categoryConnection.connectedCategory.name.toFirstLower» connection via their «categoryConnection.connectingArtifact.name.toFirstLower» to «categoryConnection.connectedArtifact.name.toFirstLower» «categoryConnection.connection.name.toFirstLower».
+                     */
+                    def addConnected«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»EdgeRendering(KEdge edge) {
+                        edge.addPolyline => [
+                            lineWidth = 4
+                            lineStyle = LineStyle.DASH
+                            selectionLineWidth = 6
+                            selectionForeground = SELECTION_COLOR.color
+                            addSingleClickAction(SelectRelatedAction::ID, ModifierState.NOT_PRESSED, ModifierState.NOT_PRESSED,
+                                ModifierState.NOT_PRESSED)
+                        ]
+                    }
+                «ENDFOR»
             }
             
         '''
@@ -1156,6 +1192,18 @@ class GenerateSyntheses {
      *         the generated file content as a string
      */
     def static String generateSynthesisUtils(DataAccess data) {
+        val Set<Artifact> categoryArtifacts = newHashSet
+        val Set<View> categoryViews = newHashSet
+        
+        for (categoryConnection : data.categoryConnections) {
+            categoryArtifacts.add(categoryConnection.connectedArtifact)
+            categoryArtifacts.add(categoryConnection.connectingArtifact)
+            categoryArtifacts.add(categoryConnection.connectedCategory)
+            categoryArtifacts.add(categoryConnection.connectingCategory)
+            
+            categoryViews.add(categoryConnection.innerView)
+        }
+        
         return '''
             package «data.getBundleNamePrefix».viz
             
@@ -1165,16 +1213,27 @@ class GenerateSyntheses {
             import de.cau.cs.kieler.klighd.syntheses.DiagramSyntheses
             import «data.getBundleNamePrefix».model.IOverviewVisualizationContext
             import «data.getBundleNamePrefix».model.IVisualizationContext
-            «FOR view : data.views»
-                import «data.bundleNamePrefix».model.impl.«view.name»OverviewContextImpl
-            «ENDFOR»
             import java.util.List
+            import java.util.Set
+            import org.eclipse.elk.alg.layered.components.ComponentOrderingStrategy
+            import org.eclipse.elk.alg.layered.options.LayeredOptions
+            import org.eclipse.elk.alg.layered.options.OrderingStrategy
             import org.eclipse.elk.core.options.CoreOptions
             import org.eclipse.elk.core.options.Direction
             import org.eclipse.elk.core.options.EdgeRouting
+            import org.eclipse.elk.core.options.PortConstraints
             
             «FOR artifact : data.artifacts»
-                import «data.modelBundleNamePrefix».model.«artifact.name»
+                import «data.modelBundleNamePrefix».model.«artifact.name.toFirstUpper»
+            «ENDFOR»
+            «FOR artifact : categoryArtifacts»
+                import «data.bundleNamePrefix».model.«artifact.name.toFirstUpper»Context
+            «ENDFOR»
+            «FOR view : categoryViews»
+                import «data.bundleNamePrefix».model.«view.name.toFirstUpper»OverviewContext
+            «ENDFOR»
+            «FOR categoryConnection : data.categoryConnections»
+                import «data.bundleNamePrefix».model.«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Container
             «ENDFOR»
             
             import static «data.bundleNamePrefix».viz.Options.*
@@ -1206,15 +1265,6 @@ class GenerateSyntheses {
                         return "..." + id.substring(prefix.length)
                     }
                     return id
-                }
-                
-                def static boolean overviewContainsConnection(IOverviewVisualizationContext<?> parentContext, String connectionName) {
-                    return false
-                    «FOR view : data.views»
-                        «FOR connection : view.shownConnections»
-                            || (parentContext.class.isAssignableFrom(«view.name.toFirstUpper»OverviewContextImpl) && connectionName.equals("«connection.shownConnection.name»"))
-                        «ENDFOR»
-                    «ENDFOR»
                 }
                 
                 def static <M> Iterable<M> filteredElements(List<M> elements, IOverviewVisualizationContext<M> oc,
@@ -1290,12 +1340,73 @@ class GenerateSyntheses {
                     }
                 }
                 
+                «FOR categoryConnection : data.categoryConnections»
+                    /**
+                     * For a category connection between «categoryConnection.connectedCategory.name.toFirstLower» based on their «categoryConnection.connectingArtifact.name.toFirstLower»->«categoryConnection.connectedArtifact.name.toFirstLower» «categoryConnection.connection.name.toFirstLower» in «(categoryConnection.connection.connecting).name.toFirstLower»Dot«categoryConnection.connection.name.toFirstUpper» and given a such «categoryConnection.connectedCategory.name.toFirstLower» category container and a «categoryConnection.connectedCategory.name.toFirstLower»,
+                     * returns all «categoryConnection.connectedCategory.name.toFirstLower» that are connected to the given «categoryConnection.connectedCategory.name.toFirstLower» in the container.
+                     * 
+                     * @param parentContext The «categoryConnection.connectedCategory.name.toFirstLower» category container.
+                     * @param «categoryConnection.connectedCategory.name.toFirstLower» The connecting «categoryConnection.connectedCategory.name.toFirstLower».
+                     * @return The connected «categoryConnection.connectedCategory.name.toFirstLower»s.
+                     */
+                    def static Iterable<«categoryConnection.connectedCategory.name.toFirstUpper»Context> shownConnectedCategoryConnections«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»(«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Container parentContext, «categoryConnection.connectedCategory.name.toFirstUpper» «categoryConnection.connectedCategory.name.toFirstLower») {
+                        val allConnections = shownCategoryConnections«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»(parentContext, «categoryConnection.connectedCategory.name.toFirstLower»)
+                        return allConnections.filter[it.key.modelElement === «categoryConnection.connectedCategory.name.toFirstLower»].map[it.value]
+                    }
+                    
+                    /**
+                     * For a category connection between «categoryConnection.connectedCategory.name.toFirstLower» based on their «categoryConnection.connectingArtifact.name.toFirstLower»->«categoryConnection.connectedArtifact.name.toFirstLower» «categoryConnection.connection.name.toFirstLower» in «(categoryConnection.connection.connecting).name.toFirstLower»Dot«categoryConnection.connection.name.toFirstUpper» and given a such «categoryConnection.connectedCategory.name.toFirstLower» category container and a «categoryConnection.connectedCategory.name.toFirstLower»,
+                     * returns all «categoryConnection.connectedCategory.name.toFirstLower» that are connecting to the given «categoryConnection.connectedCategory.name.toFirstLower» in the container.
+                     * 
+                     * @param parentContext The «categoryConnection.connectedCategory.name.toFirstLower» category container.
+                     * @param «categoryConnection.connectedCategory.name.toFirstLower» The connected «categoryConnection.connectedCategory.name.toFirstLower».
+                     * @return The connecting «categoryConnection.connectedCategory.name.toFirstLower»s.
+                     */
+                    def static Iterable<«categoryConnection.connectedCategory.name.toFirstUpper»Context> shownConnectingCategoryConnections«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»(«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Container parentContext, «categoryConnection.connectedCategory.name.toFirstUpper» «categoryConnection.connectedCategory.name.toFirstLower») {
+                        val allConnections = shownCategoryConnections«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»(parentContext, «categoryConnection.connectedCategory.name.toFirstLower»)
+                        return allConnections.filter[it.value.modelElement === «categoryConnection.connectedCategory.name.toFirstLower»].map[it.key]
+                    }
+                    
+                    def static Iterable<«data.bundleNamePrefix».model.Pair<«categoryConnection.connectedCategory.name.toFirstUpper»Context, «categoryConnection.connectedCategory.name.toFirstUpper»Context>> shownCategoryConnections«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»(«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Container parentContext, «categoryConnection.connectedCategory.name.toFirstUpper» «categoryConnection.connectedCategory.name.toFirstLower») {
+                        val allConnections = parentContext.«categoryConnection.connectingCategory.name.toFirstLower»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges
+                        return allConnections.filter[it.key.modelElement === «categoryConnection.connectedCategory.name.toFirstLower» || it.value.modelElement === «categoryConnection.connectedCategory.name.toFirstLower»]
+                    }
+                    
+                    /**
+                     * For a category connection between «categoryConnection.connectedCategory.name.toFirstLower» based on their «categoryConnection.connectingArtifact.name.toFirstLower»->«categoryConnection.connectedArtifact.name.toFirstLower» «categoryConnection.connection.name.toFirstLower» in «categoryConnection.innerView.name.toFirstLower» and given a such «categoryConnection.connectedCategory.name.toFirstLower» category container and a «categoryConnection.innerView.name.toFirstLower» container,
+                     * returns all «categoryConnection.connectingArtifact.name.toFirstLower»->«categoryConnection.connectedArtifact.name.toFirstLower» connections that are connected to one of the «categoryConnection.connectedArtifact.name.toFirstLower» in the «categoryConnection.innerView.name.toFirstLower» container related to the «categoryConnection.connectedCategory.name.toFirstLower» cat container.
+                     * 
+                     * @param containerContext The «categoryConnection.connectedCategory.name.toFirstLower» cat container.
+                     * @param parentContext The «categoryConnection.innerView.name.toFirstLower» container.
+                     * @return The outgoing «categoryConnection.connectingArtifact.name.toFirstLower»->«categoryConnection.connectedArtifact.name.toFirstLower» «categoryConnection.connection.name.toFirstLower» connections.
+                     */
+                    def static Iterable<«data.bundleNamePrefix».model.Pair<«categoryConnection.connectingArtifact.name.toFirstUpper»Context, «categoryConnection.connectedArtifact.name.toFirstUpper»Context>> shownConnected«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»(«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Container containerContext, «categoryConnection.innerView.name.toFirstUpper»OverviewContext parentContext) {
+                        val allConnections = containerContext.«categoryConnection.connectingArtifact.name.toFirstLower»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges
+                        val all«categoryConnection.connectingArtifact.name.toFirstUpper»Contexts = parentContext.childContexts.filter(«categoryConnection.connectingArtifact.name.toFirstUpper»Context)
+                        return allConnections.filter[ all«categoryConnection.connectingArtifact.name.toFirstUpper»Contexts.contains(it.key) ]
+                    }
+                    
+                    /**
+                     * For a category connection between «categoryConnection.connectedCategory.name.toFirstLower» based on their «categoryConnection.connectingArtifact.name.toFirstLower»->«categoryConnection.connectedArtifact.name.toFirstLower» «categoryConnection.connection.name.toFirstLower» in «categoryConnection.innerView.name.toFirstLower» and given a such «categoryConnection.connectedCategory.name.toFirstLower» category container and a «categoryConnection.innerView.name.toFirstLower» container,
+                     * returns all «categoryConnection.connectingArtifact.name.toFirstLower»->«categoryConnection.connectedArtifact.name.toFirstLower» connections that are connecting to one of the «categoryConnection.connectedArtifact.name.toFirstLower» in the «categoryConnection.innerView.name.toFirstLower» container related to the «categoryConnection.connectedCategory.name.toFirstLower» cat container.
+                     * 
+                     * @param containerContext The «categoryConnection.connectedCategory.name.toFirstLower» cat container.
+                     * @param parentContext The «categoryConnection.innerView.name.toFirstLower» container.
+                     * @return The incoming «categoryConnection.connectingArtifact.name.toFirstLower»->«categoryConnection.connectedArtifact.name.toFirstLower» «categoryConnection.connection.name.toFirstLower» connections.
+                     */
+                    def static Iterable<«data.bundleNamePrefix».model.Pair<«categoryConnection.connectingArtifact.name.toFirstUpper»Context, «categoryConnection.connectedArtifact.name.toFirstUpper»Context>> shownConnecting«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»(«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Container containerContext, «categoryConnection.innerView.name.toFirstUpper»OverviewContext parentContext) {
+                        val allConnections = containerContext.«categoryConnection.connectingArtifact.name.toFirstLower»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges
+                        val all«categoryConnection.connectedArtifact.name.toFirstUpper»Contexts = parentContext.childContexts.filter(«categoryConnection.connectedArtifact.name.toFirstUpper»Context)
+                        return allConnections.filter[ all«categoryConnection.connectedArtifact.name.toFirstUpper»Contexts.contains(it.value) ]
+                    }
+                «ENDFOR»
+                
                 /**
                  * Configures the layout of any overview node. Configures the box layout algorithm of elk.
                  */
                 def static void configureBoxLayout(KNode node) {
                     node => [
-                        DiagramSyntheses.setLayoutOption(node, CoreOptions::ALGORITHM, "org.eclipse.elk.box")
+                        DiagramSyntheses.setLayoutOption(node, CoreOptions::ALGORITHM, "org.eclipse.elk.rectpacking")
 «««                        // setLayoutOption(CoreOptions::EXPAND_NODES, true)
                     ]
                 }
@@ -1309,8 +1420,13 @@ class GenerateSyntheses {
                 def static void configureOverviewLayout(KNode node) {
                     node => [
                         setLayoutOption(CoreOptions::ALGORITHM, "org.eclipse.elk.layered")
+                        setLayoutOption(LayeredOptions.CONSIDER_MODEL_ORDER_COMPONENTS, ComponentOrderingStrategy.FORCE_MODEL_ORDER)
                         setLayoutOption(CoreOptions::DIRECTION, Direction.RIGHT)
                         setLayoutOption(CoreOptions::EDGE_ROUTING, EdgeRouting.POLYLINE)
+                        setLayoutOption(CoreOptions::PORT_CONSTRAINTS, PortConstraints::FIXED_SIDE)
+            //            setLayoutOption(CoreOptions::SEPARATE_CONNECTED_COMPONENTS, false)
+                        setLayoutOption(CoreOptions::SEPARATE_CONNECTED_COMPONENTS, true)
+                        setLayoutOption(LayeredOptions::CONSIDER_MODEL_ORDER_STRATEGY, OrderingStrategy::NODES_AND_EDGES)
                     ]
                 }
                 
@@ -1354,7 +1470,79 @@ class GenerateSyntheses {
                         // Do nothing, separators cannot be configured.
                     }
                 }
+                
+                «FOR categoryConnection : data.categoryConnections»
+                    /**
+                     * Helper method to find find all «categoryConnection.connectingArtifact.name.toFirstLower» to «categoryConnection.connectedArtifact.name.toFirstLower» connections with equal source «categoryConnection.connectingArtifact.name.toFirstLower» and target «categoryConnection.connectedCategory.name.toFirstLower». Writes the index of
+                     * each first occurrence of a duplicate into the {@code firstDuplicateIndices} list and all indices of other
+                     * occurrences of duplicates in the {@code otherDuplicateIndices} list.
+                     * 
+                     * @param pairList The list of pairs to find the duplicates in. Will not be changed.
+                     * @param firstDuplicateIndices a list as that returns the indices of the first duplicates in the list. The list
+                     *      will be cleared and filled with new indices as calculated by this method.
+                     * @param otherDuplicateIndices a list as that returns the indices of the other duplicates in the list. The list
+                     *      will be cleared and filled with new indices as calculated by this method.
+                     */
+                    def static void indicesOfEqual«categoryConnection.connectingArtifact.name.toFirstUpper»To«categoryConnection.connectedCategory.name.toFirstUpper»In«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»(List<«data.bundleNamePrefix».model.Pair<«categoryConnection.connectingArtifact.name.toFirstUpper»Context, «categoryConnection.connectedArtifact.name.toFirstUpper»Context>> pairList, Set<Integer> firstDuplicateIndices, List<Integer> otherDuplicateIndices) {
+                        firstDuplicateIndices.clear
+                        otherDuplicateIndices.clear
+                        for (var int i = 0; i < pairList.size; i++) {
+                            val thisIndex = i // make the lambda happy with a final variable
+                            if (!otherDuplicateIndices.contains(thisIndex)) {
+                                val connection = pairList.get(thisIndex)
+                                pairList.forEach [ otherPair, otherIndex |
+                                    if (otherIndex !== thisIndex
+                                        // both sources are the same
+                                        && otherPair.key === connection.key
+                                        // both targets are leading to the same overview
+                                        && otherPair.value.parent === connection.value.parent
+                                    ) {
+                                        // found another pair with the same key and value.
+                                        firstDuplicateIndices.add(thisIndex)
+                                        otherDuplicateIndices.add(otherIndex)
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                    
+                    /**
+                     * Helper method to find find all «categoryConnection.connectingArtifact.name.toFirstLower» to «categoryConnection.connectedArtifact.name.toFirstLower» connections with equal source «categoryConnection.connectedCategory.name.toFirstUpper» and target «categoryConnection.connectedArtifact.name.toFirstUpper». Writes the index of
+                     * each first occurrence of a duplicate into the {@code firstDuplicateIndices} list and all indices of other
+                     * occurrences of duplicates in the {@code otherDuplicateIndices} list.
+                     * 
+                     * @param pairList The list of pairs to find the duplicates in. Will not be changed.
+                     * @param firstDuplicateIndices a list as that returns the indices of the first duplicates in the list. The list
+                     *      will be cleared and filled with new indices as calculated by this method.
+                     * @param otherDuplicateIndices a list as that returns the indices of the other duplicates in the list. The list
+                     *      will be cleared and filled with new indices as calculated by this method.
+                     */
+                    def static void indicesOfEqual«categoryConnection.connectedCategory.name.toFirstUpper»To«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»(List<«data.bundleNamePrefix».model.Pair<«categoryConnection.connectingArtifact.name.toFirstUpper»Context, «categoryConnection.connectedArtifact.name.toFirstUpper»Context>> pairList, Set<Integer> firstDuplicateIndices, List<Integer> otherDuplicateIndices) {
+                        firstDuplicateIndices.clear
+                        otherDuplicateIndices.clear
+                        for (var int i = 0; i < pairList.size; i++) {
+                            val thisIndex = i // make the lambda happy with a final variable
+                            if (!otherDuplicateIndices.contains(thisIndex)) {
+                                val connection = pairList.get(thisIndex)
+                                pairList.forEach [ otherPair, otherIndex |
+                                    if (otherIndex !== thisIndex
+                                        // both sources are leading to the same overview
+                                        && otherPair.key.parent === connection.key.parent
+                                        // both targets are the same
+                                        && otherPair.value === connection.value
+                                    ) {
+                                        // found another pair with the same key and value.
+                                        firstDuplicateIndices.add(thisIndex)
+                                        otherDuplicateIndices.add(otherIndex)
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                    
+                «ENDFOR»
             }
+            
             
         '''
     }
@@ -1438,6 +1626,10 @@ class GenerateSyntheses {
                     #[SimpleTextType.Id, SimpleTextType.Name], SimpleTextType.Id)
                     .description = "Set the main text to be shown in unexpanded objects."
                 
+                /** Debug option to toggle the display style of container connection edges. */
+                public static final SynthesisOption CONTAINER_CONNECTION_STYLE = SynthesisOption.createCheckOption("DEBUG: Container Connection Style", true)
+                    .description = "Set the container connection style: true (on) for splitting at the artifact->inner overview border, false (off) for splitting at the outer overview->artifact border."
+                
                 /** Category option containing options for filtering. */
                 public static final SynthesisOption FILTER_CATEGORY = SynthesisOption.createCategory("Filter", true)
                     .description = "Category containing options for filtering."
@@ -1468,6 +1660,10 @@ class GenerateSyntheses {
                 public static final SynthesisOption SHOW_EXTERNAL = SynthesisOption.createCheckOption(
                     "External elements", true).setCategory(VIEW_FILTER_CATEGORY)
                     .description = "Changes whether elements not directly defined in the model should be shown."
+                
+                public static final SynthesisOption CONTAINER_EDGES_WHEN_FOCUSED = SynthesisOption.createCheckOption(
+                    "Container edges when focused", true).setCategory(VIEW_FILTER_CATEGORY)
+                    .description = "Changes whether overviews that are shown in categories and have container edges should show their edges going out of the overview."
                 
                 /** Category option containing options for filtering artifact views. */
                 public static final SynthesisOption ARTIFACT_VIEW_FILTER_CATEGORY = SynthesisOption.createCategory("Artifact overview filter", false)
@@ -1926,6 +2122,27 @@ class GenerateSyntheses {
                                     val connectingContext = newContext.childContexts.findFirst [ connecting === it.modelElement ] as «connection.shownConnection.connecting.name»Context
                                     val connectedContext  = newContext.childContexts.findFirst [ connected  === it.modelElement ] as «connection.shownConnection.connected.name»Context
                                     connectingContext.add«connection.shownConnection.name»«connection.shownConnection.connected.name»Edge(connectedContext)
+                                }
+                            }
+                        «ENDFOR»
+                        «FOR categoryConnection : view.shownCategoryConnections»
+                            // The possible category connections for «categoryConnection.innerView.name.toFirstLower» have already been initialized, so
+                            // re-connect the category edges for «categoryConnection.innerView.name.toFirstLower» from that.
+                            for (oldEdge : oldContext.«categoryConnection.connectingArtifact.name.toFirstLower»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges) {
+                                // Check if the source and target of the connection still exist, if they still can be, and if they still are connected.
+                                val connecting«categoryConnection.connectingArtifact.name.toFirstUpper» = oldEdge.key.modelElement
+                                val connecting«categoryConnection.connectedCategory.name.toFirstUpper» = oldEdge.key.parent?.parent?.modelElement
+                                val connected«categoryConnection.connectedArtifact.name.toFirstUpper» = oldEdge.value.modelElement
+                                val connected«categoryConnection.connectedCategory.name.toFirstUpper» = oldEdge.value.parent?.parent?.modelElement
+                                
+                                if (newContext.«categoryConnection.connectedCategory.name.toFirstLower»s.contains(connecting«categoryConnection.connectedCategory.name.toFirstUpper»)
+                                    && newContext.«categoryConnection.connectedCategory.name.toFirstLower»s.contains(connected«categoryConnection.connectedCategory.name.toFirstUpper»)
+                                ) {
+                                    val matchedEdge = newContext.possible«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges.findFirst [ connecting«categoryConnection.connectingArtifact.name.toFirstUpper» === it.key.modelElement && connected«categoryConnection.connectedArtifact.name.toFirstUpper» === it.value.modelElement ]
+                                    if (matchedEdge !== null) {
+                                        // This method also connects the «categoryConnection.connectedCategory.name.toFirstLower»->«categoryConnection.connectedCategory.name.toFirstLower» container alongside the «categoryConnection.connectingArtifact.name.toFirstLower»->«categoryConnection.connectedArtifact.name.toFirstLower»
+                                        add«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edge(matchedEdge.key, matchedEdge.value)
+                                    }
                                 }
                             }
                         «ENDFOR»
