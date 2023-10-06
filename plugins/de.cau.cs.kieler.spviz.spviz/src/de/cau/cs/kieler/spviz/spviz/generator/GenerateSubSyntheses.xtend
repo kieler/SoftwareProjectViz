@@ -137,7 +137,7 @@ class GenerateSubSyntheses {
                             setLayoutOption(CoreOptions::DIRECTION, Direction.RIGHT)
                             setLayoutOption(CoreOptions::NODE_SIZE_CONSTRAINTS, EnumSet.of(SizeConstraint.MINIMUM_SIZE))
                             val isFocus = context.rootVisualization.focus === context
-                            addOverviewRendering("«viewName»", context.overviewText, context.isExpanded, «!view.shownConnections.empty», isFocus, usedContext)
+                            addOverviewRendering("«viewName»", context.overviewText, context.isExpanded, «!view.shownConnections.empty || !view.shownCategoryConnections.empty», isFocus, usedContext)
                             
                             // add no children if it is not expanded.
                             if (!context.isExpanded) {
