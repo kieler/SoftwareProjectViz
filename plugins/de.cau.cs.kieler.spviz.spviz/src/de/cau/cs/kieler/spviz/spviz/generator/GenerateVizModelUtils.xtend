@@ -164,7 +164,7 @@ class GenerateVizModelUtils {
             «FOR connection : data.connections»
                 import «data.getBundleNamePrefix».model.«connection.connecting.name»Connects«connection.connected.name»Named«connection.name»Container
             «ENDFOR»
-            «FOR categoryConnection : data.categoryConnections»
+            «FOR categoryConnection : data.getUniqueCategoryConnections»
                 import «data.getBundleNamePrefix».model.«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Container
             «ENDFOR»
             import «data.modelBundleNamePrefix».model.«data.projectName»
@@ -450,7 +450,7 @@ class GenerateVizModelUtils {
                                         }
                                     }
                                 «ENDFOR»
-                                «FOR categoryConnection : data.categoryConnections.filter[ it.connectedCategory === shownElement.shownElement && it.eContainer === view ].toSet»
+                                «FOR categoryConnection : data.getCategoryConnections.filter[ it.connectedCategory === shownElement.shownElement && it.eContainer === view ].toSet»
                                     overviewContext.«categoryConnection.connectingCategory.name.toFirstLower»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges.removeIf[ «categoryConnection.connectedCategory.name.toFirstLower»Edge |
                                         «categoryConnection.connectedCategory.name.toFirstLower»Edge.key === context || «categoryConnection.connectedCategory.name.toFirstLower»Edge.value === context
                                     ]
@@ -723,7 +723,7 @@ class GenerateVizModelUtils {
                     
                 «ENDFOR»
                 
-                «FOR categoryConnection : data.categoryConnections»
+                «FOR categoryConnection : data.getUniqueCategoryConnections»
                     /**
                      * Adds a container connection edge to the parent overview context of the two given contexts.
                      * The direction of the edge indicates that the «categoryConnection.connectingArtifact.name.toFirstLower» of the {@code connecting«categoryConnection.connectingArtifact.name.toFirstUpper»Context} connects the «categoryConnection.connectedArtifact.name.toFirstLower» of the

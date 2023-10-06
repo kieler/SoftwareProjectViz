@@ -461,7 +461,7 @@ class SPVizGenerator extends AbstractGenerator {
                 }
             «ENDFOR»
             
-            «FOR categoryConnection : data.categoryConnections»
+            «FOR categoryConnection : data.getUniqueCategoryConnections»
                 class «categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Container extends IOverviewVisualizationContext<Object> {
                     // For the category connection between «categoryConnection.connectingCategory.name.toFirstLower»s to connect via their «categoryConnection.connection.name.toFirstLower»s, define some relations for
                     // pre-calculating which connected «categoryConnection.connectedArtifact.name.toFirstLower»s, connecting «categoryConnection.connectingArtifact.name.toFirstLower»s, and which «categoryConnection.connectedCategory.name.toFirstLower»s are connected in this way.
