@@ -265,7 +265,7 @@ class GenerateSubSyntheses {
                     createNode => [
                         associateWith(«viewName.toFirstLower»OverviewContext)
                         configureBoxLayout
-                        «FOR shownElement : view.shownElements BEFORE "addOverviewOfCollapsedRendering(shown, " SEPARATOR " && " AFTER ", usedContext)"»«««
+                        «FOR shownElement : view.shownElements BEFORE "addOverviewOfCollapsedRendering(shown, " SEPARATOR " || " AFTER ", usedContext)"»«««
 «                          »!«viewName.toFirstLower»OverviewContext.collapsed«shownElement.shownElement.name.toFirstUpper»Contexts.isEmpty«««
 «                      »«ENDFOR»
                         tooltip = «viewName.toFirstLower»OverviewContext.overviewText
