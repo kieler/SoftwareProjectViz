@@ -857,7 +857,7 @@ class GenerateActions {
                 ««« BundleConnectsBundleNamedDependencyContainer
                 import «data.bundleNamePrefix».model.«connection.connecting.name.toFirstUpper»Connects«connection.connected.name.toFirstUpper»Named«connection.name.toFirstUpper»Container
             «ENDFOR»
-            «FOR categoryConnection : data.categoryConnections»
+            «FOR categoryConnection : data.getUniqueCategoryConnections»
                 import «data.bundleNamePrefix».model.«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Container
             «ENDFOR»
             
@@ -912,7 +912,7 @@ class GenerateActions {
                                             «ENDFOR»
                                         «ENDIF»
                                         «IF data.categoryConnectingArtifacts.contains(artifact)»
-                                            «FOR categoryConnection : data.categoryConnections.filter[it.sourceChain.target === artifact]»
+                                            «FOR categoryConnection : data.getUniqueCategoryConnections.filter[it.sourceChain.target === artifact]»
                                                 // Connect all container connections of the «categoryConnection.connectedCategory.name.toFirstLower»'s «categoryConnection.connectingArtifact.name.toFirstLower»'s and «categoryConnection.connectedArtifact.name.toFirstLower»'s «categoryConnection.connection.name.toFirstLower»s.
                                                 // Only try to connect using this connection type if the parent overview context supports it.
                                                 if (ovc instanceof «categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Container && childContext.«categoryConnection.innerView.name.toFirstLower»OverviewContext !== null) {

@@ -65,11 +65,17 @@ class DataAccess {
     @Accessors(PUBLIC_GETTER)
     List<Connection> connections
     /** 
+     * All category connections displayable in this SPViz. Equal category connections with different containing
+     * overviews are all contained.
+     */
+    @Accessors(PUBLIC_GETTER)
+    List<ShownCategoryConnection> categoryConnections
+    /** 
      * All unique category connections displayable in this SPViz. Equal category connections with different containing
      * overviews are only included once.
      */
     @Accessors(PUBLIC_GETTER)
-    List<ShownCategoryConnection> categoryConnections
+    List<ShownCategoryConnection> uniqueCategoryConnections
     /** A convenient map to show all {@link ArtifactView}s that may be shown within the key {@link Artifact}. */
     Map<Artifact, List<ArtifactView>> containedViews
     /**
@@ -105,6 +111,7 @@ class DataAccess {
         artifactsShowing = newHashMap
         connections = newArrayList
         categoryConnections = newArrayList
+        uniqueCategoryConnections = newArrayList
         categorizedConnections = newHashMap
         
         for (view : spviz.views) {
@@ -135,8 +142,9 @@ class DataAccess {
             }
             for (categoryConnection : view.shownCategoryConnections) {
                 val catConnectionView = categoryConnection.innerView
-                if (!categoryConnections.exists[equals(it, categoryConnection)]) {
-                    categoryConnections.add(categoryConnection)
+                categoryConnections.add(categoryConnection)
+                if (!uniqueCategoryConnections.exists[equals(it, categoryConnection)]) {
+                    uniqueCategoryConnections.add(categoryConnection)
                     if (!categorizedConnections.containsKey(catConnectionView)) {
                         categorizedConnections.put(catConnectionView, newArrayList)
                     }
@@ -367,7 +375,7 @@ class DataAccess {
     }
     
     def List<ShownCategoryConnection> categoryConnectionsFor(Connection connection) {
-        return categoryConnections.filter[it.connection === connection].toList
+        return uniqueCategoryConnections.filter[it.connection === connection].toList
     }
     
     /**

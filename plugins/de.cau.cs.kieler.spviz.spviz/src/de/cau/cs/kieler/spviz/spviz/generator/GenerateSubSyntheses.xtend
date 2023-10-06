@@ -66,7 +66,7 @@ class GenerateSubSyntheses {
         // the category connections defined in this view
         val innerCategoryConnections = view.shownCategoryConnections
         // the category connections connecting connections from this view
-        val List<ShownCategoryConnection> outerCategoryConnections = data.categoryConnections.filter[it.innerView === view].toList
+        val List<ShownCategoryConnection> outerCategoryConnections = data.getUniqueCategoryConnections.filter[it.innerView === view].toList
         val Set<Artifact> categories = outerCategoryConnections.map[it.connectedCategory].toSet
         return '''
             package «data.getBundleNamePrefix».viz.subsyntheses
@@ -674,7 +674,7 @@ class GenerateSubSyntheses {
             importedArtifacts.add(connecting.connecting.name)
         }
         // The connections for which this artifact is the category.
-        val categories = data.categoryConnections.filter[artifact === it.sourceChain.source]
+        val categories = data.getUniqueCategoryConnections.filter[artifact === it.sourceChain.source]
         
         return '''
             package «data.getBundleNamePrefix».viz.subsyntheses

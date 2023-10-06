@@ -1163,7 +1163,7 @@ class GenerateSyntheses {
 
                 «ENDFOR»
                 
-                «FOR categoryConnection : data.categoryConnections»
+                «FOR categoryConnection : data.getUniqueCategoryConnections»
                     /**
                      * Adds the rendering for a category edge showing a «categoryConnection.connectedCategory.name.toFirstLower» connection via their «categoryConnection.connectingArtifact.name.toFirstLower» to «categoryConnection.connectedArtifact.name.toFirstLower» «categoryConnection.connection.name.toFirstLower».
                      */
@@ -1195,7 +1195,7 @@ class GenerateSyntheses {
         val Set<Artifact> categoryArtifacts = newHashSet
         val Set<View> categoryViews = newHashSet
         
-        for (categoryConnection : data.categoryConnections) {
+        for (categoryConnection : data.getUniqueCategoryConnections) {
             categoryArtifacts.add(categoryConnection.connectedArtifact)
             categoryArtifacts.add(categoryConnection.connectingArtifact)
             categoryArtifacts.add(categoryConnection.connectedCategory)
@@ -1232,7 +1232,7 @@ class GenerateSyntheses {
             «FOR view : categoryViews»
                 import «data.bundleNamePrefix».model.«view.name.toFirstUpper»OverviewContext
             «ENDFOR»
-            «FOR categoryConnection : data.categoryConnections»
+            «FOR categoryConnection : data.getUniqueCategoryConnections»
                 import «data.bundleNamePrefix».model.«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Container
             «ENDFOR»
             
@@ -1340,7 +1340,7 @@ class GenerateSyntheses {
                     }
                 }
                 
-                «FOR categoryConnection : data.categoryConnections»
+                «FOR categoryConnection : data.getUniqueCategoryConnections»
                     /**
                      * For a category connection between «categoryConnection.connectedCategory.name.toFirstLower» based on their «categoryConnection.connectingArtifact.name.toFirstLower»->«categoryConnection.connectedArtifact.name.toFirstLower» «categoryConnection.connection.name.toFirstLower» in «(categoryConnection.connection.connecting).name.toFirstLower»Dot«categoryConnection.connection.name.toFirstUpper» and given a such «categoryConnection.connectedCategory.name.toFirstLower» category container and a «categoryConnection.connectedCategory.name.toFirstLower»,
                      * returns all «categoryConnection.connectedCategory.name.toFirstLower» that are connected to the given «categoryConnection.connectedCategory.name.toFirstLower» in the container.
@@ -1471,7 +1471,7 @@ class GenerateSyntheses {
                     }
                 }
                 
-                «FOR categoryConnection : data.categoryConnections»
+                «FOR categoryConnection : data.getUniqueCategoryConnections»
                     /**
                      * Helper method to find find all «categoryConnection.connectingArtifact.name.toFirstLower» to «categoryConnection.connectedArtifact.name.toFirstLower» connections with equal source «categoryConnection.connectingArtifact.name.toFirstLower» and target «categoryConnection.connectedCategory.name.toFirstLower». Writes the index of
                      * each first occurrence of a duplicate into the {@code firstDuplicateIndices} list and all indices of other
