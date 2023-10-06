@@ -19,6 +19,7 @@ package de.cau.cs.kieler.spviz.spviz.util
 import de.cau.cs.kieler.spviz.spviz.sPViz.ArtifactChain
 import de.cau.cs.kieler.spviz.spviz.sPViz.ShownCategoryConnection
 import de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.Artifact
+import java.util.List
 
 import static extension de.cau.cs.kieler.spviz.spvizmodel.util.SPVizModelExtension.*
 
@@ -86,6 +87,23 @@ class SPVizExtension {
     }
     
     /**
+     * Filters the category connections by uniqueness. Category connections with a different container, but equal
+     * connection, inner view etc. are seen as equal. 
+     * 
+     * @param unfiltered a list of the unfiltered and possibly non-unique category connections.
+     * @return a new, filtered list.
+     */
+    static def List<ShownCategoryConnection> uniqueCategoryConnections(List<ShownCategoryConnection> unfiltered) {
+        val List<ShownCategoryConnection> filtered = newArrayList
+        for (categoryConnection : unfiltered) {
+            if (!filtered.exists[equals(it, categoryConnection)]) {
+                filtered.add(categoryConnection)
+            }
+        }
+        return filtered
+    }
+    
+    /**
      * Default equals method for category connections.
      * 
      * @param c1 The first category connection
@@ -98,6 +116,7 @@ class SPVizExtension {
         }
         return equals(c1.connection, c2.connection)
             && equals(c1.sourceChain, c2.sourceChain)
+            && c1.innerView ==  c2.innerView
     }
     
     /**
@@ -108,6 +127,9 @@ class SPVizExtension {
      * @return whether the artifact chains are equal.
      */
     static def boolean equals(ArtifactChain a1, ArtifactChain a2) {
+        if (a1 === null && a2 === null) {
+            return true
+        }
         if (a1 === null || a2 === null) {
             return false
         }

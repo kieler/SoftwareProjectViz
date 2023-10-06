@@ -64,7 +64,10 @@ class DataAccess {
     /** All connections displayable in this SPViz. */
     @Accessors(PUBLIC_GETTER)
     List<Connection> connections
-    /** All category connections displayable in this SPViz. */
+    /** 
+     * All unique category connections displayable in this SPViz. Equal category connections with different containing
+     * overviews are only included once.
+     */
     @Accessors(PUBLIC_GETTER)
     List<ShownCategoryConnection> categoryConnections
     /** A convenient map to show all {@link ArtifactView}s that may be shown within the key {@link Artifact}. */
@@ -132,11 +135,13 @@ class DataAccess {
             }
             for (categoryConnection : view.shownCategoryConnections) {
                 val catConnectionView = categoryConnection.innerView
-                categoryConnections.add(categoryConnection)
-                if (!categorizedConnections.containsKey(catConnectionView)) {
-                    categorizedConnections.put(catConnectionView, newArrayList)
+                if (!categoryConnections.exists[equals(it, categoryConnection)]) {
+                    categoryConnections.add(categoryConnection)
+                    if (!categorizedConnections.containsKey(catConnectionView)) {
+                        categorizedConnections.put(catConnectionView, newArrayList)
+                    }
+                    categorizedConnections.get(catConnectionView).add(categoryConnection)
                 }
-                categorizedConnections.get(catConnectionView).add(categoryConnection)
             }
         }
         
