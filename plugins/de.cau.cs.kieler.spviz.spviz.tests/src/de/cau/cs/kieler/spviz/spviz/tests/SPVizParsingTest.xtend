@@ -38,12 +38,48 @@ class SPVizParsingTest {
                     show OSGi.ServiceInterface
                     show OSGi.ServiceComponent
                     connect OSGi.ServiceComponent.Required
-                    connect OSGi.ServiceInterface.Required
+                    connect OSGi.ServiceInterface.ProvidedBy
                 }
-                BundleDependencies { 
+                BundleServices {
+                    show OSGi.Bundle
+                    
+                    connect OSGi.ServiceComponent.Required via OSGi.Bundle in Services
+                    connect OSGi.ServiceInterface.ProvidedBy via OSGi.Bundle in Services
+                }
+                BundleDependencies {
                     show OSGi.Bundle
                     connect OSGi.Bundle.Dependency
-                    connect OSGi.Bundle via OSGi.Bundle.PackageDependency
+                }
+                Products {
+                    show OSGi.Product
+                }
+                Features {
+                    show OSGi.Feature
+                    connect OSGi.Bundle.Dependency via OSGi.Feature in BundleDependencies
+                    // connect Feature to Feature via source Feature>Bundle and target Feature>Bundle >Dep
+                }
+                
+                OSGi.Product shows {
+                    Services with {
+                        OSGi.ServiceInterface from OSGi.Product>OSGi.Bundle>OSGi.ServiceInterface
+                        OSGi.ServiceComponent from OSGi.Product>OSGi.Bundle>OSGi.ServiceComponent
+                    }
+                    BundleDependencies with {
+                        OSGi.Bundle from OSGi.Product>OSGi.Bundle
+                    }
+                }
+                
+                OSGi.Feature shows {
+                    BundleDependencies with {
+                        OSGi.Bundle from OSGi.Feature>OSGi.Bundle
+                    }
+                }
+                
+                OSGi.Bundle shows {
+                    Services with {
+                        OSGi.ServiceInterface from OSGi.Bundle>OSGi.ServiceInterface
+                        OSGi.ServiceComponent from OSGi.Bundle>OSGi.ServiceComponent
+                    }
                 }
             }
         ''')
