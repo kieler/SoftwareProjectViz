@@ -184,7 +184,7 @@ class FileGenerator {
         Bundle-Name: «identifier»
         Bundle-SymbolicName: «CodeGenUtil.validPluginID(identifier)»; singleton:=true
         Bundle-Version: 0.1.0.qualifier
-        Bundle-RequiredExecutionEnvironment: JavaSE-11
+        Bundle-RequiredExecutionEnvironment: JavaSE-17
         «FOR exportedPackage : exportedPackages BEFORE "Export-Package:" SEPARATOR ','»
             «" " + exportedPackage»
         «ENDFOR»

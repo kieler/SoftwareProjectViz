@@ -20,12 +20,8 @@
       <category name="spviz"/>
    </feature>
 
-   <repository-reference location="https://download.eclipse.org/releases/2022-06/" enabled="true" />
-   <repository-reference location="https://download.eclipse.org/lsp4j/updates/releases/0.14.0/" enabled="true" />
-   <repository-reference location="https://download.eclipse.org/tools/orbit/downloads/drops/R20220531185310/repository/" enabled="true" />
-   <repository-reference location="https://download.eclipse.org/modeling/tmf/xtext/updates/releases/2.27.0/" enabled="true" />
-   <repository-reference location="https://download.eclipse.org/elk/updates/releases/0.8.1/" enabled="true" />
-   <repository-reference location="https://kieler.github.io/KLighD/v2.2.0/" enabled="true" />
-   <repository-reference location="https://rtsys.informatik.uni-kiel.de/~kieler/updatesite/sprotty/0.9.0/" enabled="true" />
-   <repository-reference location="https://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-tycho/0.8.1/N/0.8.1.201704211436/" enabled="true" />
+   <repository-reference location="https://download.eclipse.org/releases/2023-12" enabled="true" />
+   <repository-reference location="https://download.eclipse.org/tools/orbit/simrel/orbit-aggregation/release/4.30.0/" enabled="true" />
+   <repository-reference location="https://download.eclipse.org/elk/updates/releases/0.9.1/" enabled="true" />
+   <repository-reference location="https://kieler.github.io/KLighD/v3.0.1/" enabled="true" />
 </site>

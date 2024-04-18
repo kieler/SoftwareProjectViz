@@ -186,7 +186,7 @@ class JavaMavenProjectGenerator {
         
         // Configure classpath
         val entries = <IClasspathEntry>newArrayList
-        entries.add(JavaCore.newContainerEntry(new Path("org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-11")));
+        entries.add(JavaCore.newContainerEntry(new Path("org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-17")));
         entries.add(JavaCore.newContainerEntry(new Path("org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER")))
         
         // The source folders
@@ -255,8 +255,8 @@ class JavaMavenProjectGenerator {
                             <artifactId>maven-compiler-plugin</artifactId>
                             <version>3.10.0</version>
                             <configuration>
-                                <source>11</source>
-                                <target>11</target>
+                                <source>17</source>
+                                <target>17</target>
                             </configuration>
                         </plugin>
                         «IF xtendSources»

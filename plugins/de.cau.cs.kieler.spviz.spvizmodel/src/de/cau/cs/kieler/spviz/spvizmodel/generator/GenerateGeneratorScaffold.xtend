@@ -422,8 +422,8 @@ class GenerateGeneratorScaffold {
     
     def static requiredBundles(SPVizModel model) {
         return #[
-            new Dependency("info.picocli", "picocli" , "4.6.3"),
-            new Dependency("org.eclipse.emf", "org.eclipse.emf.ecore.xmi", "2.16.0"),
+            new Dependency("info.picocli", "picocli" , "4.7.5"),
+            new Dependency("org.eclipse.emf", "org.eclipse.emf.ecore.xmi", "2.36.0"),
             new Dependency(model.package, model.package + ".model", "0.1.0-SNAPSHOT")
         ]
     }

@@ -149,7 +149,7 @@ class JavaProjectGenerator {
         // Configure classpath
         val entries = <IClasspathEntry>newArrayList
         entries.add(JavaCore.newContainerEntry(new Path("org.eclipse.xtend.XTEND_CONTAINER")))
-        entries.add(JavaCore.newContainerEntry(new Path("org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-11")));
+        entries.add(JavaCore.newContainerEntry(new Path("org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-17")));
         entries.add(JavaCore.newContainerEntry(new Path("org.eclipse.pde.core.requiredPlugins")))
         
         // The source and xtend-gen folders

@@ -1420,7 +1420,7 @@ class GenerateSyntheses {
                 def static void configureOverviewLayout(KNode node) {
                     node => [
                         setLayoutOption(CoreOptions::ALGORITHM, "org.eclipse.elk.layered")
-                        setLayoutOption(LayeredOptions.CONSIDER_MODEL_ORDER_COMPONENTS, ComponentOrderingStrategy.FORCE_MODEL_ORDER)
+                        setLayoutOption(LayeredOptions.CONSIDER_MODEL_ORDER_COMPONENTS, ComponentOrderingStrategy.GROUP_MODEL_ORDER)
                         setLayoutOption(CoreOptions::DIRECTION, Direction.RIGHT)
                         setLayoutOption(CoreOptions::EDGE_ROUTING, EdgeRouting.POLYLINE)
                         setLayoutOption(CoreOptions::PORT_CONSTRAINTS, PortConstraints::FIXED_SIDE)

@@ -21,7 +21,7 @@ Require-Bundle: de.cau.cs.kieler.spviz.spviz,
  org.eclipse.xtext.ui.codetemplates.ui,
  org.eclipse.xtext.xbase.lib;bundle-version="2.14.0"
 Import-Package: org.apache.log4j
-Bundle-RequiredExecutionEnvironment: JavaSE-11
+Bundle-RequiredExecutionEnvironment: JavaSE-17
 Export-Package: de.cau.cs.kieler.spviz.spviz.ui.quickfix,
  de.cau.cs.kieler.spviz.spviz.ui.internal,
  de.cau.cs.kieler.spviz.spviz.ui.contentassist

@@ -181,9 +181,7 @@ class GenerateMavenBuild {
                 <relativePath>../«vizArtifactIdPrefix».build/pom.xml</relativePath>
               </parent>
             
-              <groupId>«vizArtifactIdPrefix»</groupId>
               <artifactId>«vizArtifactIdPrefix».«bundleSuffix»</artifactId>
-              <version>«version»-SNAPSHOT</version>
               <packaging>eclipse-plugin</packaging>
             
               <build>
@@ -215,24 +213,24 @@ class GenerateMavenBuild {
                </description>
             
                <requires>
-                  <import plugin="org.eclipse.core.runtime" version="3.12.0" match="compatible"/>
+                  <import plugin="org.eclipse.core.runtime"/>
                   <import plugin="org.eclipse.emf.ecore"/>
-                  <import plugin="org.eclipse.xtext.xbase.lib" version="2.16.0" match="greaterOrEqual"/>
+                  <import plugin="org.eclipse.xtext.xbase.lib"/>
                   <import plugin="org.eclipse.emf.ecore.xcore.lib"/>
                   <import plugin="org.eclipse.emf.edit"/>
                   <import plugin="org.eclipse.emf.ecore.edit"/>
-                  <import plugin="org.eclipse.osgi" version="3.7.0" match="compatible"/>
+                  <import plugin="org.eclipse.osgi"/>
                   <import plugin="org.eclipse.core.resources"/>
-                  <import plugin="org.eclipse.emf.ecore.xmi" version="2.11.0" match="greaterOrEqual"/>
+                  <import plugin="org.eclipse.emf.ecore.xmi"/>
                   <import plugin="org.eclipse.emf.edit.ui"/>
-                  <import plugin="org.eclipse.jface.text" version="3.2.0" match="compatible"/>
+                  <import plugin="org.eclipse.jface.text"/>
                   <import plugin="org.eclipse.ui.ide"/>
-                  <import plugin="de.cau.cs.kieler.klighd" version="0.45.0" match="greaterOrEqual"/>
-                  <import plugin="«modelId»" version="0.1.0" match="greaterOrEqual"/>
-                  <import plugin="de.cau.cs.kieler.klighd.krendering.extensions" version="0.45.0" match="greaterOrEqual"/>
-                  <import plugin="com.google.inject" version="3.0.0" match="greaterOrEqual"/>
-                  <import plugin="org.eclipse.elk.core" version="0.5.0" match="greaterOrEqual"/>
-                  <import plugin="org.eclipse.elk.alg.layered" version="0.6.0" match="greaterOrEqual"/>
+                  <import plugin="de.cau.cs.kieler.klighd"/>
+                  <import plugin="«modelId»"/>
+                  <import plugin="de.cau.cs.kieler.klighd.krendering.extensions"/>
+                  <import plugin="com.google.inject"/>
+                  <import plugin="org.eclipse.elk.core"/>
+                  <import plugin="org.eclipse.elk.alg.layered"/>
                </requires>
             
                <plugin
@@ -281,9 +279,7 @@ class GenerateMavenBuild {
                 <relativePath>../pom.xml</relativePath>
               </parent>
               
-              <groupId>«artifactIdPrefix»</groupId>
               <artifactId>«artifactIdPrefix».feature</artifactId>
-              <version>«version»-SNAPSHOT</version>
               <packaging>eclipse-feature</packaging>
             </project>
             
@@ -316,11 +312,10 @@ class GenerateMavenBuild {
                     <category name="viz"/>
                 </feature>
                
-                <repository-reference location="https://download.eclipse.org/releases/2022-09/" enabled="true" />
-                <repository-reference location="https://download.eclipse.org/tools/orbit/downloads/drops/R20220830213456/repository/" enabled="true" />
-                <repository-reference location="https://download.eclipse.org/modeling/tmf/xtext/updates/releases/2.28.0/" enabled="true" />
-                <repository-reference location="https://download.eclipse.org/elk/updates/releases/0.8.1/" enabled="true" />
-                <repository-reference location="https://kieler.github.io/KLighD/v2.3.0/" enabled="true" />
+                <repository-reference location="https://download.eclipse.org/releases/2023-12" enabled="true" />
+                <repository-reference location="https://download.eclipse.org/tools/orbit/simrel/orbit-aggregation/release/4.30.0/" enabled="true" />
+                <repository-reference location="https://download.eclipse.org/elk/updates/releases/0.9.1/" enabled="true" />
+                <repository-reference location="https://kieler.github.io/KLighD/v3.0.1/" enabled="true" />
             
             </site>
             

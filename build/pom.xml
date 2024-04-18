@@ -11,8 +11,8 @@
   <!-- Define a few properties used throughout all build profiles. -->
   <properties>
     <tycho-version>2.7.3</tycho-version>
-    <xtext-version>2.27.0</xtext-version>
-    <targetJdk>11</targetJdk>
+    <xtext-version>2.33.0</xtext-version>
+    <targetJdk>17</targetJdk>
     
     <!-- Non-breakable space, as normal spaces are trimmed. -->
     <sourceFeatureLabelSuffix>&#xA0;(Sources)</sourceFeatureLabelSuffix>
@@ -41,9 +41,9 @@
         <module>../plugins/de.cau.cs.kieler.spviz.spvizmodel.ui</module>
         <module>../features/de.cau.cs.kieler.spviz.feature</module>
         <module>../features/de.cau.cs.kieler.spviz.ui.feature</module>
-        <module>../plugins/de.cau.cs.kieler.spviz.spviz.tests</module>
+        <!-- <module>../plugins/de.cau.cs.kieler.spviz.spviz.tests</module> --> <!-- You requested to install 'org.eclipse.equinox.p2.iu; org.junit.jupiter.api [5.0.0,6.0.0)' but it could not be found -->
         <!-- <module>../plugins/de.cau.cs.kieler.spviz.spviz.ui.tests</module> -->
-        <module>../plugins/de.cau.cs.kieler.spviz.spvizmodel.tests</module>
+        <!-- <module>../plugins/de.cau.cs.kieler.spviz.spvizmodel.tests</module> -->
         <!-- <module>../plugins/de.cau.cs.kieler.spviz.spvizmodel.ui.tests</module> -->
         <module>de.cau.cs.kieler.spviz.repository</module>
       </modules>
@@ -167,6 +167,77 @@
                 </includes>
               </fileset>
             </filesets>
+          </configuration>
+        </plugin>
+
+        <!-- Configure Eclipse m2e to ignore certain plugin goals when integrating Maven build
+          settings into Eclipse. -->
+        <plugin>
+          <groupId>org.eclipse.m2e</groupId>
+          <artifactId>lifecycle-mapping</artifactId>
+          <version>1.0.0</version>
+          <configuration>
+            <lifecycleMappingMetadata>
+              <pluginExecutions>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>org.eclipse.tycho</groupId>
+                    <artifactId>tycho-compiler-plugin</artifactId>
+                    <versionRange>${tycho-version}</versionRange>
+                    <goals>
+                      <goal>compile</goal>
+                      <goal>testCompile</goal>
+                      <goal>validate-classpath</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore/>
+                  </action>
+                </pluginExecution>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>org.eclipse.tycho</groupId>
+                    <artifactId>tycho-packaging-plugin</artifactId>
+                    <versionRange>${tycho-version}</versionRange>
+                    <goals>
+                      <goal>build-qualifier</goal>
+                      <goal>build-qualifier-aggregator</goal>
+                      <goal>validate-id</goal>
+                      <goal>validate-version</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore/>
+                  </action>
+                </pluginExecution>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <versionRange>[3.0.0,)</versionRange>
+                    <goals>
+                      <goal>clean</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore/>
+                  </action>
+                </pluginExecution>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>org.eclipse.tycho</groupId>
+                    <artifactId>target-platform-configuration</artifactId>
+                    <versionRange>[2.7.3,)</versionRange>
+                    <goals>
+                      <goal>target-platform</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore></ignore>
+                  </action>
+                </pluginExecution>
+              </pluginExecutions>
+            </lifecycleMappingMetadata>
           </configuration>
         </plugin>
 

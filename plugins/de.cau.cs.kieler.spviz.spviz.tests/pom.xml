@@ -9,9 +9,7 @@
     <relativePath>../../build/pom.xml</relativePath>
   </parent>
 
-  <groupId>de.cau.cs.kieler.spviz</groupId>
   <artifactId>de.cau.cs.kieler.spviz.spviz.tests</artifactId>
-  <version>0.2.1-SNAPSHOT</version>
   <packaging>eclipse-test-plugin</packaging>
 
   <build>
@@ -27,11 +25,6 @@
         <groupId>org.eclipse.tycho</groupId>
         <artifactId>tycho-surefire-plugin</artifactId>
         <version>${tycho-version}</version>
-        <configuration>
-          <excludes>
-            <exclude>de.cau.cs.kieler.klighd.test.SizeEstimationTestWithFailings</exclude>
-          </excludes>
-        </configuration>
       </plugin>
     </plugins>
   </build>

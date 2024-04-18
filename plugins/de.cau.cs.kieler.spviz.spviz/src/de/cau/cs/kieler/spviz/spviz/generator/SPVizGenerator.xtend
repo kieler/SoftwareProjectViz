@@ -200,17 +200,6 @@ class SPVizGenerator extends AbstractGenerator {
                 </dependency>
                 <dependency>
                   <groupId>de.cau.cs.kieler.klighd</groupId>
-                  <artifactId>de.cau.cs.kieler.klighd.incremental</artifactId>
-                  <version>${klighd-version}</version>
-                  <exclusions>
-                    <exclusion>
-                      <groupId>org.eclipse.platform</groupId>
-                      <artifactId>org.eclipse.swt</artifactId>
-                    </exclusion>
-                  </exclusions>
-                </dependency>
-                <dependency>
-                  <groupId>de.cau.cs.kieler.klighd</groupId>
                   <artifactId>de.cau.cs.kieler.klighd.lsp</artifactId>
                   <version>${klighd-version}</version>
                   <exclusions>
@@ -260,7 +249,6 @@ class SPVizGenerator extends AbstractGenerator {
            new Dependency("de.cau.cs.kieler.klighd", "de.cau.cs.kieler.kgraph.text.ide", "${klighd-version}"),
            new Dependency("de.cau.cs.kieler.klighd", "de.cau.cs.kieler.klighd", "${klighd-version}"),
            new Dependency("de.cau.cs.kieler.klighd", "de.cau.cs.kieler.klighd.ide", "${klighd-version}"),
-           new Dependency("de.cau.cs.kieler.klighd", "de.cau.cs.kieler.klighd.incremental", "${klighd-version}"),
            new Dependency("de.cau.cs.kieler.klighd", "de.cau.cs.kieler.klighd.krendering.extensions", "${klighd-version}"),
            new Dependency("de.cau.cs.kieler.klighd", "de.cau.cs.kieler.klighd.lsp", "${klighd-version}"),
            new Dependency("de.cau.cs.kieler.klighd", "de.cau.cs.kieler.klighd.standalone", "${klighd-version}"),
