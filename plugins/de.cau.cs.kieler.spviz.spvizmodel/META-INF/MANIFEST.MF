@@ -3,7 +3,7 @@ Automatic-Module-Name: de.cau.cs.kieler.spviz.spvizmodel
 Bundle-ManifestVersion: 2
 Bundle-Name: de.cau.cs.kieler.spviz.spvizmodel
 Bundle-Vendor: Kiel University
-Bundle-Version: 0.2.1.qualifier
+Bundle-Version: 0.3.1.qualifier
 Bundle-SymbolicName: de.cau.cs.kieler.spviz.spvizmodel; singleton:=true
 Bundle-ActivationPolicy: lazy
 Require-Bundle: org.antlr.runtime;bundle-version="[3.2.0,3.2.1)",
