@@ -231,6 +231,7 @@ class GenerateMavenBuild {
                   <import plugin="com.google.inject"/>
                   <import plugin="org.eclipse.elk.core"/>
                   <import plugin="org.eclipse.elk.alg.layered"/>
+                  <import plugin="org.eclipse.elk.alg.rectpacking"/>
                </requires>
             
                <plugin
