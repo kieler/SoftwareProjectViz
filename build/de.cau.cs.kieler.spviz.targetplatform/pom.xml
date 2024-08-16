@@ -8,8 +8,8 @@
   <name>Software Project Visualization Target Platform</name>
 
   <parent>
-    <groupId>de.cau.cs.kieler.spviz</groupId>
-    <artifactId>parent</artifactId>
+    <groupId>de.cau.cs.kieler</groupId>
+    <artifactId>spviz-parent</artifactId>
     <version>0.3.1-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>

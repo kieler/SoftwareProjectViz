@@ -3,7 +3,7 @@
  *
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2021-2023 by
+ * Copyright 2021-2024 by
  * + Kiel University
  *   + Department of Computer Science
  *   + Real-Time and Embedded Systems Group
@@ -15,12 +15,11 @@ package de.cau.cs.kieler.spviz.spviz.generator
 import de.cau.cs.kieler.spviz.spvizmodel.generator.FileGenerator
 import de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.Artifact
 import de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.Connection
+import java.io.File
 import java.util.ArrayList
 import java.util.HashMap
 import java.util.List
 import java.util.Map
-import org.eclipse.core.resources.IFolder
-import org.eclipse.core.runtime.IProgressMonitor
 
 import static extension de.cau.cs.kieler.spviz.spviz.util.SPVizExtension.*
 import static extension de.cau.cs.kieler.spviz.spvizmodel.util.SPVizModelExtension.*
@@ -28,65 +27,61 @@ import static extension de.cau.cs.kieler.spviz.spvizmodel.util.SPVizModelExtensi
 /**
  * Generates action classes for the visualization.
  * 
- * @author leo, nre
+ * @author nre, leo
  */
 class GenerateActions {
     
-    def static void generate(IFolder sourceFolder, DataAccess data, IProgressMonitor progressMonitor) {
+    def static void generate(File sourceFolder, DataAccess data) {
         
         val String bundleNamePrefix = data.getBundleNamePrefix
-        val String folder = bundleNamePrefix.replace('.','/') + "/viz/actions/"
+        val File folder = FileGenerator.createDirectory(sourceFolder, bundleNamePrefix.replace('.','/') + "/viz/actions")
         
         var String content = generateAbstractVisualizationContextChangingAction(data)
-        FileGenerator.generateOrUpdateFile(sourceFolder, folder + "AbstractVisualizationContextChangingAction.xtend", content, progressMonitor)
+        FileGenerator.updateFile(folder, "AbstractVisualizationContextChangingAction.xtend", content)
         content = generateContextCollapseExpandAction(data)
-        FileGenerator.generateOrUpdateFile(sourceFolder, folder + "ContextCollapseExpandAction.xtend", content, progressMonitor)
+        FileGenerator.updateFile(folder, "ContextCollapseExpandAction.xtend", content)
         content = generateOverviewContextCollapseExpandAction(data)
-        FileGenerator.generateOrUpdateFile(sourceFolder, folder + "OverviewContextCollapseExpandAction.xtend", content, progressMonitor)
+        FileGenerator.updateFile(folder, "OverviewContextCollapseExpandAction.xtend", content)
         content = generateUndoAction(data)
-        FileGenerator.generateOrUpdateFile(sourceFolder, folder + "UndoAction.xtend", content, progressMonitor)
+        FileGenerator.updateFile(folder, "UndoAction.xtend", content)
         content = generateRedoAction(data)
-        FileGenerator.generateOrUpdateFile(sourceFolder, folder + "RedoAction.xtend", content, progressMonitor)
+        FileGenerator.updateFile(folder, "RedoAction.xtend", content)
         content = generateResetViewAction(data)
-        FileGenerator.generateOrUpdateFile(sourceFolder, folder + "ResetViewAction.xtend", content, progressMonitor)
+        FileGenerator.updateFile(folder, "ResetViewAction.xtend", content)
         content = generateContextExpandAllAction(data)
-        FileGenerator.generateOrUpdateFile(sourceFolder, folder + "ContextExpandAllAction.xtend", content, progressMonitor)
+        FileGenerator.updateFile(folder, "ContextExpandAllAction.xtend", content)
         content = generateConnectAllAction(data)
-        FileGenerator.generateOrUpdateFile(sourceFolder, folder + "ConnectAllAction.xtend", content, progressMonitor)
+        FileGenerator.updateFile(folder, "ConnectAllAction.xtend", content)
         content = generateFocusAction(data)
-        FileGenerator.generateOrUpdateFile(sourceFolder, folder + "FocusAction.xtend", content, progressMonitor)
+        FileGenerator.updateFile(folder, "FocusAction.xtend", content)
         content = generateDefocusAction(data)
-        FileGenerator.generateOrUpdateFile(sourceFolder, folder + "DefocusAction.xtend", content, progressMonitor)
+        FileGenerator.updateFile(folder, "DefocusAction.xtend", content)
         content = generateSelectRelatedAction(data)
-        FileGenerator.generateOrUpdateFile(sourceFolder, folder + "SelectRelatedAction.xtend", content, progressMonitor)
+        FileGenerator.updateFile(folder, "SelectRelatedAction.xtend", content)
         content = generateShowHideCollapsedAction(data)
-        FileGenerator.generateOrUpdateFile(sourceFolder, folder + "ShowHideCollapsedAction.xtend", content, progressMonitor)
+        FileGenerator.updateFile(folder, "ShowHideCollapsedAction.xtend", content)
         content = generateStoreModelAction(data)
-        FileGenerator.generateOrUpdateFile(sourceFolder, folder + "StoreModelAction.xtend", content, progressMonitor)
+        FileGenerator.updateFile(folder, "StoreModelAction.xtend", content)
         
         content = generateRecursiveRevealAction(data)
-        FileGenerator.generateOrUpdateFile(sourceFolder, folder + "RecursiveRevealAction.xtend", content, progressMonitor)
+        FileGenerator.updateFile(folder, "RecursiveRevealAction.xtend", content)
         content = generateRevealAction(data)
-        FileGenerator.generateOrUpdateFile(sourceFolder, folder + "RevealAction.xtend", content, progressMonitor)
+        FileGenerator.updateFile(folder, "RevealAction.xtend", content)
         
         for (connection : data.connections) {
             val actionNameInfix = connection.connecting.name + "Connects" + connection.connected.name + "Named" + connection.name
             // reveal connected artifacts
             content = generateRevealAction(data, connection, true)
-            FileGenerator.generateOrUpdateFile(sourceFolder,
-                folder + "RevealConnected" + actionNameInfix + "Action.xtend", content, progressMonitor)
+            FileGenerator.updateFile(folder, "RevealConnected" + actionNameInfix + "Action.xtend", content)
             // remove connected artifacts
             content = generateRemoveAction(data, connection, true)
-            FileGenerator.generateOrUpdateFile(sourceFolder,
-                folder + "RemoveConnected" + actionNameInfix + "Action.xtend", content, progressMonitor)
+            FileGenerator.updateFile(folder, "RemoveConnected" + actionNameInfix + "Action.xtend", content)
             // reveal connecting artifacts
             content = generateRevealAction(data, connection, false)
-            FileGenerator.generateOrUpdateFile(sourceFolder,
-                folder + "RevealConnecting" + actionNameInfix + "Action.xtend", content, progressMonitor)
+            FileGenerator.updateFile(folder, "RevealConnecting" + actionNameInfix + "Action.xtend", content)
             // remove connecting artifacts
             content = generateRemoveAction(data, connection, false)
-            FileGenerator.generateOrUpdateFile(sourceFolder,
-                folder + "RemoveConnecting" + actionNameInfix + "Action.xtend", content, progressMonitor)
+            FileGenerator.updateFile(folder, "RemoveConnecting" + actionNameInfix + "Action.xtend", content)
         }
     }
     

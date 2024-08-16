@@ -3,7 +3,7 @@
  *
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2022-2023 by
+ * Copyright 2022-2024 by
  * + Kiel University
  *   + Department of Computer Science
  *   + Real-Time and Embedded Systems Group
@@ -13,8 +13,7 @@
 package de.cau.cs.kieler.spviz.spviz.generator
 
 import de.cau.cs.kieler.spviz.spvizmodel.generator.FileGenerator
-import org.eclipse.core.resources.IFolder
-import org.eclipse.core.runtime.IProgressMonitor
+import java.io.File
 
 /**
  * Generates language server classes for the visualization.
@@ -23,21 +22,21 @@ import org.eclipse.core.runtime.IProgressMonitor
  */
 class GenerateLanguageServer {
     
-    def static void generate(IFolder sourceFolder, IFolder launchFolder, DataAccess data, IProgressMonitor progressMonitor) {
+    def static void generate(File sourceFolder, File launchFolder, DataAccess data) {
         
         val String bundleNamePrefix = data.getBundleNamePrefix
-        val String folder = bundleNamePrefix.replace('.','/') + "/language/server/"
+        val File folder = FileGenerator.createDirectory(sourceFolder, bundleNamePrefix.replace('.','/') + "/language/server")
         
         var String content = generateLanguageRegistration(data)
-        FileGenerator.generateOrUpdateFile(sourceFolder, folder + data.visualizationName + "LanguageRegistration.xtend", content, progressMonitor)
+        FileGenerator.updateFile(folder, data.visualizationName + "LanguageRegistration.xtend", content)
         content = generateLanguageServer(data)
-        FileGenerator.generateOrUpdateFile(sourceFolder, folder + data.visualizationName + "LanguageServer.xtend", content, progressMonitor)
+        FileGenerator.updateFile(folder, data.visualizationName + "LanguageServer.xtend", content)
         content = generateLsCreator(data)
-        FileGenerator.generateOrUpdateFile(sourceFolder, folder + data.visualizationName + "LsCreator.xtend", content, progressMonitor)
+        FileGenerator.updateFile(folder, data.visualizationName + "LsCreator.xtend", content)
         content = generateRegistrationLsExt(data)
-        FileGenerator.generateOrUpdateFile(sourceFolder, folder + data.visualizationName + "RegistrationLsExt.xtend", content, progressMonitor)
+        FileGenerator.updateFile(folder, data.visualizationName + "RegistrationLsExt.xtend", content)
         content = generateLaunchConfig(data)
-        FileGenerator.generateFile(launchFolder, data.visualizationName + " Launguage Server.launch", content, progressMonitor)
+        FileGenerator.generateFile(launchFolder, data.visualizationName + " Launguage Server.launch", content)
     }
     
     /**

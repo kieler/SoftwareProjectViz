@@ -14,38 +14,42 @@ package de.cau.cs.kieler.spviz.spviz.generator
 
 import de.cau.cs.kieler.spviz.spvizmodel.generator.FileGenerator
 import de.cau.cs.kieler.spviz.spvizmodel.generator.JavaMavenProjectGenerator
-import de.cau.cs.kieler.spviz.spvizmodel.generator.XCoreProjectGenerator
+import de.cau.cs.kieler.spviz.spvizmodel.generator.ProjectGenerator
 import de.cau.cs.kieler.spviz.spvizmodel.generator.maven.Dependency
-import java.util.Arrays
-import java.util.Collections
+import java.io.File
+import java.nio.file.Path
+import java.nio.file.Paths
 import java.util.List
-import org.eclipse.core.resources.IProject
-import org.eclipse.core.resources.IProjectDescription
-import org.eclipse.core.runtime.IPath
-import org.eclipse.core.runtime.NullProgressMonitor
-import org.eclipse.core.runtime.Path
-import org.eclipse.emf.codegen.ecore.Generator
+import org.eclipse.core.resources.ResourcesPlugin
 import org.eclipse.emf.ecore.resource.Resource
-import org.eclipse.jdt.core.JavaCore
 import org.eclipse.xtext.generator.AbstractGenerator
 import org.eclipse.xtext.generator.IFileSystemAccess2
 import org.eclipse.xtext.generator.IGeneratorContext
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
-import static extension de.cau.cs.kieler.spviz.spvizmodel.util.SPVizModelExtension.*
 import static extension de.cau.cs.kieler.spviz.spviz.util.SPVizExtension.*
+import static extension de.cau.cs.kieler.spviz.spvizmodel.util.SPVizModelExtension.*
 
 /**
  * Generates code from your model files on save.
  * 
- * @author leo, nre
+ * @author nre, leo
  * @see https://www.eclipse.org/Xtext/documentation/303_runtime_concepts.html#code-generation
  */
 class SPVizGenerator extends AbstractGenerator {
     
+    static final Logger LOGGER = LoggerFactory.getLogger(SPVizGenerator)
+    
+    override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
+        val workspace = ResourcesPlugin.workspace
+        val output = Paths.get(workspace.root.location.toString)
+        SPVizGenerator.generate(resource, output)
+    }
     
 //    TODO: add flags and a class for each 'via' connection (look at 'UsedPackagesOfBundleEdgeConnection' for reference) 
     
-    val String[] CLASHING_NAMES = #[
+    static val String[] CLASHING_NAMES = #[
         "Appendable", "AutoCloseable", "CharSequence", "Cloneable", "Comparable", "Iterable", "ProcessHandle", "ProcessHandle.Info", "Readable", "Runnable", "StackWalker.StackFrame", "System.Logger", "Thread.UncaughtExceptionHandler",
         "Boolean", "Byte", "Character", "Character.Subset", "Character.UnicodeBlock", "Class", "ClassLoader", "ClassValue", "Compiler", "Double", "Enum", "Float", "InheritableThreadLocal", "Integer", "Long", "Math", "Module", "ModuleLayer", "ModuleLayer.Controller", "Number", "Object", "Package", "Process", "ProcessBuilder", "ProcessBuilder.Redirect", "Runtime", "Runtime.Version", "RuntimePermission", "SecurityManager", "Short", "StackTraceElement", "StrictMath", "String", "StringBuffer", "StringBuilder", "System", "System.LoggerFinder", "Thread", "ThreadGroup", "ThreadLocal", "Throwable", "Void",
         "Character.UnicodeScript", "ProcessBuilder.Redirect.Type", "StackWalker.Option", "System.Logger.Level", "Thread.State",
@@ -53,126 +57,92 @@ class SPVizGenerator extends AbstractGenerator {
         "AbstractMethodError", "AssertionError", "BootstrapMethodError", "ClassCircularityError", "ClassFormatError", "Error", "ExceptionInInitializerError", "IllegalAccessError", "IncompatibleClassChangeError", "InstantiationError", "InternalError", "LinkageError", "NoClassDefFoundError", "NoSuchFieldError", "NoSuchMethodError", "OutOfMemoryError", "StackOverflowError", "ThreadDeath", "UnknownError", "UnsatisfiedLinkError", "UnsupportedClassVersionError", "VerifyError", "VirtualMachineError"
     ]
     
-    override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
-        println("Generate visualization for " + resource.contents.head?.class)
+    static def void generate(Resource resource, Path rootPath) {
         
         val DataAccess data = new DataAccess(resource)
+        val root = rootPath.toAbsolutePath.toString + "/"
         
         // Generate the -viz.model XCore project
         val String xcoreContent = xcoreContent(data)
-        val progressMonitor = new NullProgressMonitor
-        val project = new XCoreProjectGenerator(data.getBundleNamePrefix + ".model")
-            .configureXCoreFile(data.visualizationName + 'Model.xcore', xcoreContent)
+        val vizModelProjectName = data.getBundleNamePrefix + ".model"
+        val vizModelProjectPath = root + vizModelProjectName
+        if (new File(vizModelProjectPath).isDirectory) {
+            LOGGER.info("Updating sources of project {}", vizModelProjectPath)
+        } else {
+            LOGGER.info("Generating project {}", vizModelProjectPath)
+        }
+        val vizModelProjectDirectory = FileGenerator.createDirectory(vizModelProjectPath)
+        new ProjectGenerator(vizModelProjectName, vizModelProjectPath)
+            .configureXCoreFile(data.visualizationName, xcoreContent)
             .configureRequiredBundles(#[data.modelBundleNamePrefix + ".model"])
             .configureExportedPackages(exportedVizModelPackages(data))
             .configureMaven(true)
-            .generate(progressMonitor)
+            .additionalSourceFolder("xtend-gen")
+            .generate()
         
-        // Add the xtend-gen folder to the classpath
-        val xtendGenFolder = project.getFolder("xtend-gen")
-        if (!xtendGenFolder.exists()) {
-            xtendGenFolder.create(false, true, progressMonitor)
-        }
-        val javaProject = JavaCore.create(project);
-        val oldClasspathEntries = javaProject.getRawClasspath
-        if (!oldClasspathEntries.contains(JavaCore.newSourceEntry(xtendGenFolder.getFullPath()))) {        
-            val classpathEntries = Arrays.copyOf(oldClasspathEntries, oldClasspathEntries.size + 1)
-            classpathEntries.set(oldClasspathEntries.size, JavaCore.newSourceEntry(xtendGenFolder.getFullPath()))
-            javaProject.setRawClasspath(classpathEntries, progressMonitor)
-        }
         
-        val sourceFolder = project.getFolder("src-gen")
+        val sourceVizModelFolder = FileGenerator.createDirectory(vizModelProjectDirectory, "src-gen")
         // Generate further source files for the project
-        GenerateVizModelUtils.generate(sourceFolder, data, progressMonitor)
-        
-        // Generate the build.properties file
-        FileGenerator.generateFile(project, "/build.properties",
-            FileGenerator.modelBuildPropertiesContent(), progressMonitor)
+        GenerateVizModelUtils.generate(sourceVizModelFolder, data)
         
         
         // Generate the -viz.viz model Plug-In Java project
-        val projectPath = new Path("/" + data.getBundleNamePrefix + ".viz/src-gen")
-        val vizProject = Generator.createEMFProject(projectPath, null as IPath,
-            Collections.<IProject>emptyList(), progressMonitor,
-            Generator.EMF_MODEL_PROJECT_STYLE.bitwiseOr(Generator.EMF_PLUGIN_PROJECT_STYLE))
-        XCoreProjectGenerator.addNatures(vizProject, true, progressMonitor)
+        val vizProjectName = data.getBundleNamePrefix + ".viz"
+        val vizProjectPath = root + vizProjectName
+        if (new File(vizProjectPath).isDirectory) {
+            LOGGER.info("Updating sources of project {}", vizProjectPath)
+        } else {
+            LOGGER.info("Generating project {}", vizProjectPath)
+        }
+        val vizProjectDirectory = FileGenerator.createDirectory(vizProjectPath)
+        new ProjectGenerator(vizProjectName, vizProjectPath)
+            .configureMaven(true)
+            .configureKlighd(true)
+            .configureIcons(true)
+            .additionalSourceFolder("xtend-gen")
+            .configureRequiredBundles(requiredVizBundles(data))
+            .configureExportedPackages(exportedVizPackages(data))
+            .generate()
             
-            
-        val sourceVizFolder = vizProject.getFolder("src-gen")
-        
-        // Generate the manifest
-        FileGenerator.generateFile(vizProject, "/META-INF/MANIFEST.MF",
-            FileGenerator.manifestContent(data.getBundleNamePrefix + '.viz', requiredVizBundles(data), exportedVizPackages(data)), progressMonitor)
-        
-        // Generate the services file
-        FileGenerator.generateFile(vizProject,
-            "/META-INF/services/de.cau.cs.kieler.klighd.IKlighdStartupHook", serviceFileContent(data), progressMonitor)
-        
-        // Generate the plugin.xml file
-        FileGenerator.generateFile(vizProject, "/plugin.xml", pluginXmlContent(data), progressMonitor)
-        
-        // Generate the build.properties file
-        FileGenerator.generateFile(vizProject, "/build.properties", 
-            FileGenerator.buildPropertiesContent(true), progressMonitor
-        )
+        val sourceVizFolder = new File(vizProjectPath, "src-gen")
         
         // Generate further source files for the project
-        GenerateSyntheses.generate(sourceVizFolder, data, progressMonitor)
-        GenerateSubSyntheses.generate(sourceVizFolder, data, progressMonitor)
-        GenerateActions.generate(sourceVizFolder, data, progressMonitor)
+        GenerateSyntheses.generate(sourceVizFolder, data)
+        GenerateSubSyntheses.generate(sourceVizFolder, data)
+        GenerateActions.generate(sourceVizFolder, data)
         
         // Copy icons over into the project
-        FileGenerator.copyFiles("de.cau.cs.kieler.spviz.spviz",
-            "/icons/",
-            vizProject.getFolder("icons"),
-            progressMonitor
-        )
-        
-        // Add the Xtext and Plugin natures to the project
-        val IProjectDescription projectDescription = vizProject.getDescription();
-        var String[] natureIds = projectDescription.getNatureIds()
-        if (natureIds === null) {
-            natureIds = #[ "org.eclipse.xtext.ui.shared.xtextNature", "org.eclipse.pde.PluginNature" ]
-        } else {
-            if (!project.hasNature("org.eclipse.xtext.ui.shared.xtextNature")) {
-                val oldNatureIds = natureIds
-                natureIds = newArrayOfSize(oldNatureIds.length + 1)
-                System.arraycopy(oldNatureIds, 0, natureIds, 0, oldNatureIds.length)
-                natureIds.set(oldNatureIds.length, "org.eclipse.xtext.ui.shared.xtextNature")
-            }
-            if (!project.hasNature("org.eclipse.pde.PluginNature")) {
-                val oldNatureIds = natureIds
-                natureIds = newArrayOfSize(oldNatureIds.length + 1 )
-                System.arraycopy(oldNatureIds, 0, natureIds, 0, oldNatureIds.length)
-                natureIds.set(oldNatureIds.length, "org.eclipse.pde.PluginNature")
-            }
-        }
-        projectDescription.setNatureIds(natureIds);
-        vizProject.setDescription(projectDescription, progressMonitor);
+        FileGenerator.copyIcons(FileGenerator.createDirectory(vizProjectDirectory, "icons"))
         
         
         // Generate the .language.server Maven project
-        val lsProject = new JavaMavenProjectGenerator(data.getBundleNamePrefix, data.getBundleNamePrefix + ".language.server")
+        val lsProjectName = data.bundleNamePrefix + ".language.server"
+        val lsProjectPath = root + lsProjectName
+        if (new File(lsProjectPath).isDirectory) {
+            LOGGER.info("Updating sources of project {}", lsProjectPath)
+        } else {
+            LOGGER.info("Generating project {}", lsProjectPath)
+        }
+        val lsProjectDirectory = FileGenerator.createDirectory(lsProjectPath)
+        new JavaMavenProjectGenerator(data.bundleNamePrefix, lsProjectName, lsProjectPath)
             .configureDependencies(requiredLSDependencies(data))
             .configureDependencyManagement(lsDependencyManagement)
             .configureXtendSources(true)
             .configureSourceFolderName("src-gen")
             .configureGenerateShadedJar(true)
             .configureMainClass(data.visualizationName + "LanguageServer")
-            .generate(progressMonitor)
+            .generate()
         
         // Generate further source files for the java project
-        val launchFolder = lsProject.getFolder("launch")
-        if (!launchFolder.exists) {
-            launchFolder.create(false, true, progressMonitor)
-        }
-        GenerateLanguageServer.generate(lsProject.getFolder("src-gen"), launchFolder, data, progressMonitor)
+        val launchFolder = FileGenerator.createDirectory(lsProjectDirectory, "launch")
+        val lsSourceFolder = FileGenerator.createDirectory(lsProjectDirectory, "src-gen")
+        GenerateLanguageServer.generate(lsSourceFolder, launchFolder, data)
         
         // Generate the Maven build framework for this visualization.
-        GenerateMavenBuild.generate(data.bundleNamePrefix, data.visualizationName.toFirstUpper, data.modelBundleNamePrefix, "0.1.0", progressMonitor)
+        GenerateMavenBuild.generate(root, data.bundleNamePrefix, data.visualizationName.toFirstUpper, data.modelBundleNamePrefix, "0.1.0")
     }
     
-    def lsDependencyManagement() {
+    static def lsDependencyManagement() {
         return '''
             <dependencyManagement>
               <dependencies>
@@ -233,7 +203,7 @@ class SPVizGenerator extends AbstractGenerator {
         '''
     }
     
-    protected def List<String> exportedVizModelPackages(DataAccess data) {
+    protected static def List<String> exportedVizModelPackages(DataAccess data) {
         return #[
             data.bundleNamePrefix + ".model",
             data.bundleNamePrefix + ".model.impl",
@@ -241,7 +211,7 @@ class SPVizGenerator extends AbstractGenerator {
         ]
     }
     
-    protected def List<Dependency> requiredLSDependencies(DataAccess data) {
+    protected static def List<Dependency> requiredLSDependencies(DataAccess data) {
         return #[
            new Dependency("com.google.code.gson", "gson", "${gson-version}"),
            new Dependency("com.google.inject", "guice", "${guice-version}"),
@@ -269,7 +239,7 @@ class SPVizGenerator extends AbstractGenerator {
         ]
     }
     
-    protected def List<String> requiredVizBundles(DataAccess data) {
+    protected static def List<String> requiredVizBundles(DataAccess data) {
         return #[
             "de.cau.cs.kieler.klighd",
             "de.cau.cs.kieler.klighd.krendering.extensions",
@@ -285,47 +255,10 @@ class SPVizGenerator extends AbstractGenerator {
         ]
     }
     
-    protected def List<String> exportedVizPackages(DataAccess data) {
+    protected static def List<String> exportedVizPackages(DataAccess data) {
         return #[
            data.bundleNamePrefix + ".viz"
         ]
-    }
-    
-    /**
-     * Generates the content for the plugin.xml file
-     * 
-     * @param data
-     *      a DataAccess instance for the Spviz data
-     * @return
-     *      the generated content for the plugin configuration as a String.
-     */
-    private def String pluginXmlContent(DataAccess data) {
-        return '''
-            <?xml version="1.0" encoding="UTF-8"?>
-            <?eclipse version=\"3.4\"?>
-            <plugin>
-                <extension
-                    point="de.cau.cs.kieler.klighd.extensions">
-                    <startupHook
-                        class="«data.getBundleNamePrefix».viz.KlighdSetup">
-                    </startupHook>
-                </extension>
-            </plugin>
-        '''
-    }
-    
-    /**
-     * Generates the content for the IKLighdStartupHook service file
-     * 
-     * @param data
-     *      a DataAccess instance for the Spviz data
-     * @return
-     *      the generated content for the service configuration as a String.
-     */
-    private def String serviceFileContent(DataAccess data) {
-        return '''
-        «data.getBundleNamePrefix».viz.KlighdSetup
-        '''
     }
     
     /**
@@ -336,7 +269,7 @@ class SPVizGenerator extends AbstractGenerator {
      * @return 
      *         the generated content for the visualization model XCore file as a String
      */
-    private def String xcoreContent(DataAccess data) {
+    private static def String xcoreContent(DataAccess data) {
         return '''
             @GenModel(
                 fileExtensions="«data.visualizationName.toLowerCase»",
@@ -522,7 +455,7 @@ class SPVizGenerator extends AbstractGenerator {
     /**
      * Corrects the artifact name if it clashes with the auto-imported public java.lang classes.
      */
-    def correctArtifactName(String string, DataAccess data) {
+    static def correctArtifactName(String string, DataAccess data) {
         if (!CLASHING_NAMES.contains(string)) {
             return string
         }

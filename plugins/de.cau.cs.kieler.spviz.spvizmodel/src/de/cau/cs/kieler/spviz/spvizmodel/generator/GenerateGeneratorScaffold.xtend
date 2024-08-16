@@ -3,7 +3,7 @@
  *
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2022-2023 by
+ * Copyright 2022-2024 by
  * + Kiel University
  *   + Department of Computer Science
  *   + Real-Time and Embedded Systems Group
@@ -16,43 +16,46 @@ import de.cau.cs.kieler.spviz.spvizmodel.generator.maven.Dependency
 import de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.Connection
 import de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.Containment
 import de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.SPVizModel
-import org.eclipse.core.resources.IProject
-import org.eclipse.core.resources.IWorkspace
-import org.eclipse.core.resources.ResourcesPlugin
-import org.eclipse.core.runtime.IProgressMonitor
+import java.io.File
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 /**
  * Helper methods to generate Maven build artifacts for plugins.
  */
 class GenerateGeneratorScaffold {
     
-    def static generate(SPVizModel model, String version, IProgressMonitor progressMonitor) {
-        val generatorBundleName = model.package + ".generate"
-
-        // Check if the project does already exist.
-        val IWorkspace workspace = ResourcesPlugin.getWorkspace()
-        val IProject project = workspace.getRoot().getProject(generatorBundleName)
+    static final Logger LOGGER = LoggerFactory.getLogger(GenerateGeneratorScaffold)
+    
+    def static generate(File rootDirectory, SPVizModel model, String version) {
+        val projectName = model.package + ".generate"
         
-        // Do not overwrite an existing project.
-        if (project.exists()) {
+        val existingDirectory = new File(rootDirectory, projectName)
+        if (existingDirectory.isDirectory) {
+            LOGGER.info("Skipped generating generator scaffold project, folder already exists. {}", existingDirectory.absolutePath)
             return
+        } else {
+            LOGGER.info("Generating project {}", existingDirectory.absolutePath)
         }
         
+        val projectPath = rootDirectory.absolutePath + "/" + projectName
+        val File projectDirectory = FileGenerator.createDirectory(rootDirectory, projectName)
+        
         // Generate a new Java project 
-        val generateProject = new JavaMavenProjectGenerator(model.package, generatorBundleName)
+        new JavaMavenProjectGenerator(model.package, projectName, projectPath)
             .configureDependencies(requiredBundles(model))
             .configureSourceFolderName("src")
             .configureGenerateShadedJar(true)
             .configureMainClass("ConfigAndExecuteCli")
-            .generate(progressMonitor)
+            .generate()
         
-        val packageFolder = generateProject.getFolder(generatorBundleName.split('\\.').fold("src", [l, r | l + '/' + r]))
+        val packageFolder = FileGenerator.createDirectory(projectDirectory, "src/" + projectName.replace('.', '/'))
         
         // Generate the scaffold Java files
-        FileGenerator.generateFile(packageFolder, "ConfigAndExecuteCli.java", configAndExecute(model), progressMonitor)
-        FileGenerator.generateFile(packageFolder, model.name + "ModelDataGenerator.java", modelDataGenerator(model), progressMonitor)
-        FileGenerator.generateFile(packageFolder, model.name + "ModelSaveAndLoadUtility.java", modelSaveAndLoadUtility(model), progressMonitor)
-        FileGenerator.generateFile(packageFolder, "ReadProjectFiles.java", readProjectFilesScaffold(model), progressMonitor)
+        FileGenerator.generateFile(packageFolder, "ConfigAndExecuteCli.java", configAndExecute(model))
+        FileGenerator.generateFile(packageFolder, model.name + "ModelDataGenerator.java", modelDataGenerator(model))
+        FileGenerator.generateFile(packageFolder, model.name + "ModelSaveAndLoadUtility.java", modelSaveAndLoadUtility(model))
+        FileGenerator.generateFile(packageFolder, "ReadProjectFiles.java", readProjectFilesScaffold(model))
     }
     
     def static configAndExecute(SPVizModel model) {

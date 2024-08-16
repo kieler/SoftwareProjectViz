@@ -3,7 +3,7 @@
  *
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2021-2022 by
+ * Copyright 2021-2024 by
  * + Kiel University
  *   + Department of Computer Science
  *   + Real-Time and Embedded Systems Group
@@ -16,11 +16,10 @@ import de.cau.cs.kieler.spviz.spviz.sPViz.ShownCategoryConnection
 import de.cau.cs.kieler.spviz.spviz.sPViz.View
 import de.cau.cs.kieler.spviz.spvizmodel.generator.FileGenerator
 import de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.Artifact
+import java.io.File
 import java.util.HashSet
 import java.util.List
 import java.util.Set
-import org.eclipse.core.resources.IFolder
-import org.eclipse.core.runtime.IProgressMonitor
 
 import static extension de.cau.cs.kieler.spviz.spviz.util.SPVizExtension.*
 import static extension de.cau.cs.kieler.spviz.spvizmodel.util.SPVizModelExtension.*
@@ -28,26 +27,23 @@ import static extension de.cau.cs.kieler.spviz.spvizmodel.util.SPVizModelExtensi
 /**
  * Generates sub syntheses classes for overviews and their contained artifacts.
  * 
- * @author leo, nre
+ * @author nre, leo
  */
 class GenerateSubSyntheses {
-    def static void generate(IFolder sourceFolder, DataAccess data, IProgressMonitor progressMonitor) {
+    def static void generate(File sourceFolder, DataAccess data) {
         
         val bundleNamePrefix = data.getBundleNamePrefix
-        val folder = bundleNamePrefix.replace('.', '/') + "/viz/subsyntheses/"
+        val folder = FileGenerator.createDirectory(sourceFolder, bundleNamePrefix.replace('.', '/') + "/viz/subsyntheses")
         for (artifact : data.artifacts) {
             var content = generateSimpleSynthesis(bundleNamePrefix, artifact.name)
-            FileGenerator.generateOrUpdateFile(sourceFolder, folder + "Simple" + artifact.name + "Synthesis.xtend", content,
-                progressMonitor)
+            FileGenerator.updateFile(folder, "Simple" + artifact.name + "Synthesis.xtend", content)
 
             content = generateSynthesis(artifact, data)
-            FileGenerator.generateOrUpdateFile(sourceFolder, folder + artifact.name + "Synthesis.xtend", content,
-                progressMonitor)
+            FileGenerator.updateFile(folder, artifact.name + "Synthesis.xtend", content)
         }
         for (view : data.views) {
             val content = generateOverviewSythesis(view, data)
-            FileGenerator.generateOrUpdateFile(sourceFolder, folder + view.name + "OverviewSynthesis.xtend", content,
-                progressMonitor)
+            FileGenerator.updateFile(folder, view.name + "OverviewSynthesis.xtend", content)
         }
     }
 

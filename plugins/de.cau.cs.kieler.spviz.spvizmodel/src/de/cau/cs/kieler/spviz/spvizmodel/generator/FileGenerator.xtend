@@ -3,7 +3,7 @@
  *
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2021-2022 by
+ * Copyright 2021-2024 by
  * + Kiel University
  *   + Department of Computer Science
  *   + Real-Time and Embedded Systems Group
@@ -12,18 +12,10 @@
  */
 package de.cau.cs.kieler.spviz.spvizmodel.generator
 
-import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.InputStream
 import java.nio.file.Files
-import org.eclipse.core.resources.IFile
-import org.eclipse.core.resources.IFolder
-import org.eclipse.core.resources.IProject
-import org.eclipse.core.resources.IResource
-import org.eclipse.core.runtime.FileLocator
-import org.eclipse.core.runtime.IProgressMonitor
-import org.eclipse.core.runtime.Platform
-import org.eclipse.emf.codegen.util.CodeGenUtil
+import java.nio.file.Paths
 
 /**
  * Utility for generating files in Eclipse projects.
@@ -33,198 +25,122 @@ import org.eclipse.emf.codegen.util.CodeGenUtil
 class FileGenerator {
     
     /**
+     * Updates the file with the given content. Generates it first if it does not exist yet.
+     * 
+     * @param base The directory to write to.
+     * @param fileName the name of the file.
+     * @param fileContent The content to write to the file.
+     */
+    def static void updateFile(File base, String fileName, String fileContent) {
+        generateOrUpdateFile(base, fileName, fileContent, true)
+    }
+    
+    /**
+     * Updates the file with the given content. Generates it first if it does not exist yet.
+     * 
+     * @param file The file to write to.
+     * @param fileContent The content to write to the file.
+     */
+    def static void updateFile(File file, String fileContent) {
+        generateOrUpdateFile(file, fileContent, true)
+    }
+    
+    /**
+     * Generates the file with the given content. Does not update the file if it already exists.
+     * 
+     * @param base The directory to write to.
+     * @param fileName the name of the file.
+     * @param fileContent The content to write to the file.
+     */
+    def static void generateFile(File base, String fileName, String fileContent) {
+        generateOrUpdateFile(base, fileName, fileContent, false)
+    }
+    
+    /**
+     * Generates the file with the given content. Does not update the file if it already exists.
+     * 
+     * @param file The file to write to.
+     * @param fileContent The content to write to the file.
+     */
+    def static void generateFile(File file, String fileContent) {
+        generateOrUpdateFile(file, fileContent, false)
+    }
+    
+    /**
      * Generates or updates the file with the given content.
      * 
-     * @param sourceFolder The Java source folder where all sources need to be placed.
-     * @param filePath The relative file path to the file that should be generated or updated.
-     * @param fileContent The new file content.
+     * @param base The directory to write to.
+     * @param fileName the name of the file.
+     * @param fileContent The content to write to the file.
+     * @param force If existing content should be overwritten.
      */
-    def static void generateOrUpdateFile(IFolder sourceFolder, String filePath, String fileContent,
-        IProgressMonitor progressMonitor) {
-        val file = sourceFolder.getFile(filePath);
-        generateOrUpdateFile(file, fileContent, progressMonitor, true)
-    }
-    
-    /**
-     * Generates the file with the given content, if it does not already exist.
-     * 
-     * @param sourceFolder The Java source folder where all sources need to be placed.
-     * @param filePath The relative file path to the file that should be generated.
-     * @param fileContent The file content.
-     */
-    def static void generateFile(IFolder sourceProject, String filePath, String fileContent,
-        IProgressMonitor progressMonitor) {
-        val file = sourceProject.getFile(filePath);
-        generateOrUpdateFile(file, fileContent, progressMonitor, false)
+    def static void generateOrUpdateFile(File base, String fileName, String fileContent, boolean force) {
+        generateOrUpdateFile(new File(base, fileName), fileContent, force)
     }
     
     /**
      * Generates or updates the file with the given content.
      * 
-     * @param sourceProject The project where the file needs to be placed.
-     * @param filePath The relative file path to the file that should be generated or updated.
-     * @param fileContent The new file content.
+     * @param file The file to write to.
+     * @param fileContent The content to write to the file.
+     * @param force If existing content should be overwritten.
      */
-    def static void generateOrUpdateFile(IProject sourceProject, String filePath, String fileContent,
-        IProgressMonitor progressMonitor) {
-        val file = sourceProject.getFile(filePath);
-        generateOrUpdateFile(file, fileContent, progressMonitor, true)
-    }
-    
-    /**
-     * Generates the file with the given content, if it does not already exist.
-     * 
-     * @param sourceProject The project where the file needs to be placed.
-     * @param filePath The relative file path to the file that should be generated.
-     * @param fileContent The file content.
-     */
-    def static void generateFile(IProject sourceProject, String filePath, String fileContent,
-        IProgressMonitor progressMonitor) {
-        val file = sourceProject.getFile(filePath);
-        generateOrUpdateFile(file, fileContent, progressMonitor, false)
-    }
-    
-    def private static void generateOrUpdateFile(IFile file, String fileContent,
-        IProgressMonitor progressMonitor, boolean overwriteExisting) {
-        val inputStream = new ByteArrayInputStream(fileContent.bytes)
-        if (!file.exists) {
-            create(file, progressMonitor)
-        } else if (!overwriteExisting) {
-            // If the file exists already and we should not overwrite it, don't do so.
+    def static void generateOrUpdateFile(File file, String fileContent, boolean force) {
+        // Only overwrite the file if `force` is true.
+        if (file.exists && !force) {
             return
         }
-        file.setContents(inputStream, IResource.NONE, progressMonitor)
+        Files.write(Paths.get(file.path), fileContent.bytes)
     }
     
     /**
      * Copies the files at the source location to the target folder.
      * 
-     * @param sourceBundle The bundle containing the folder to copy the files from.
-     * @param sourceFolder The sub-folder ini the bundle to copy from.
+     * @param sourceFolder The folder to copy the files from.
      * @param targetFolder The folder to copy the files to.
      */
-    def static void copyFiles(String sourceBundle, String sourceFolder, IFolder targetFolder,
-        IProgressMonitor progressMonitor) {
-        if (!targetFolder.exists) {
-            targetFolder.create(progressMonitor)
+    def static void copyIcons(File targetFolder) {
+        targetFolder.mkdirs
+        // The file path is searched on the classpath directly
+        // TODO: this has to be tested.
+        val fileNames = #["connect.svg", "connect128.png",
+            "expand.svg", "expand128.png",
+            "loupe.svg", "loupe128.png",
+            "loupe-crossed.svg", "loupe-crossed128.png",
+            "minimize.svg", "minimize128.png",
+            "restore.svg", "restore128.png"]
+        for (fileName : fileNames) {
+            val InputStream source = FileGenerator.classLoader.getResourceAsStream("icons/" + fileName)
+            val newFile = new File(targetFolder, fileName)
+            if (!newFile.exists) {
+                Files.copy(source, newFile.toPath)
+            }
         }
-        if (Platform.isRunning()) {
-            // If the platform is running, the folder can be found in the bundle under the resource path.
-            val url = Platform.getBundle(sourceBundle)
-                ?.getEntry(sourceFolder)
-            val folder = new File(FileLocator.toFileURL(url).toURI.path)
-            for (file : folder.listFiles) {
-                val fileName = file.name
-                val newFile = new File(targetFolder.rawLocation.toString + "/" + fileName)
-                if (!newFile.exists) {
-                    Files.copy(file.toPath, newFile.toPath)
-                }
-            }
-            
-            
-        } else {
-            // In the jar or plain Java application case, the bundle is ignored and the file path
-            // is searched on the classpath directly
-            val fileNames = #["icons/connect.svg", "icons/connect128.png",
-                "icons/expand.svg", "icons/expand128.png",
-                "icons/loupe.svg", "icons/loupe128.png",
-                "icons/minimize.svg", "icons/minimize128.png",
-                "icons/restore.svg", "icons/restore128.png"]
-            // TODO: this has to be tested from a standalone application.
-            for (fileName : fileNames) {
-                val InputStream source = FileGenerator.getResourceAsStream("/" + sourceFolder + "/" + fileName)
-                val newFile = new File(targetFolder.rawLocation.toString + "/" + fileName)
-                if (!newFile.exists) {
-                    Files.copy(source, newFile.toPath)
-                }
-            }
-        }   
+    }
+
+    /**
+     * Creates a directory under the given filePath.
+     * 
+     * @param filePath the path to the directory
+     * @return The file object for that directory.
+     */
+    def static File createDirectory(String filePath) {
+        val directory = new File(filePath)
+        directory.mkdirs
+        return directory
     }
     
     /**
-     * Creates the given resource recursively up, so this resource and any parent folders not yet created are created.
+     * Creates a directory under the given filePath based on the given base.
      * 
-     * @param resource The resource to create
-     * @param progressMonitor The progressMonitor
+     * @param base the base path where to create this directory.
+     * @param filePath the path to the directory
+     * @return The file object for that directory.
      */
-    def static void create(IResource resource, IProgressMonitor progressMonitor) {
-        if (resource === null || resource.exists()) {
-            return;
-        }
-        if (!resource.parent.exists()) {
-            create(resource.parent, progressMonitor);
-        }
-        switch (resource.type) {
-            case IResource.FILE: {
-                (resource as IFile).create(new ByteArrayInputStream(#[]), false, progressMonitor)
-            }
-            case IResource.FOLDER: {
-                (resource as IFolder).create(IResource.NONE, true, progressMonitor)
-            }
-        }
-    }
-    
-    /**
-     * Generates the content for the MANIFEST.MF file
-     * 
-     * @param identifier
-     *      the fully qualified identifier of the generated bundle.
-     * @param requiredBundles
-     *      the Bundles this bundle requires and should be added to the manifest.
-     * @param exportedPackages
-     *      the Packages this bundle exports and should be added to the manifest.
-     * @return
-     *      the generated content for the manifest as a String.
-     */
-    def static String manifestContent(String identifier, Iterable<String> requiredBundles, Iterable<String> exportedPackages) {
-        return '''
-        Manifest-Version: 1.0
-        Bundle-ManifestVersion: 2
-        Automatic-Module-Name: «CodeGenUtil.validPluginID(identifier)»
-        Bundle-Name: «identifier»
-        Bundle-SymbolicName: «CodeGenUtil.validPluginID(identifier)»; singleton:=true
-        Bundle-Version: 0.1.0.qualifier
-        Bundle-RequiredExecutionEnvironment: JavaSE-17
-        «FOR exportedPackage : exportedPackages BEFORE "Export-Package:" SEPARATOR ','»
-            «" " + exportedPackage»
-        «ENDFOR»
-        «FOR requiredBundle : requiredBundles BEFORE "Require-Bundle:" SEPARATOR ','»
-            «" " + requiredBundle»
-        «ENDFOR»
-        '''
-    }
-    
-    def static String buildPropertiesContent(boolean isViz) {
-        return '''
-            source.. = src/,\
-                       src-gen/,\
-                       xtend-gen/
-            bin.includes = META-INF/,\
-                           «IF isViz»
-                               .,\
-                               plugin.xml,\
-                               icons/
-                           «ELSE»
-                               .
-                           «ENDIF»
-            
-        '''
-    }
-    
-    def static modelBuildPropertiesContent() {
-        return '''
-            bin.includes = .,\
-                           model/,\
-                           META-INF/,\
-                           plugin.xml,\
-                           plugin.properties
-            jars.compile.order = .
-            source.. = src/,\
-                       src-gen/,\
-                       xtend-gen/
-            output.. = bin/
-            
-        '''
+    def static File createDirectory(File base, String path) {
+        val File directory = new File(base, path)
+        directory.mkdirs
+        return directory
     }
     
 }

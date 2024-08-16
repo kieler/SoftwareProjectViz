@@ -2,20 +2,25 @@
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>de.cau.cs.kieler.spviz</groupId>
-  <artifactId>parent</artifactId>
+  <groupId>de.cau.cs.kieler</groupId>
+  <artifactId>spviz-parent</artifactId>
   <version>0.3.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   
   
   <!-- Define a few properties used throughout all build profiles. -->
   <properties>
-    <tycho-version>2.7.3</tycho-version>
+    <tycho-version>2.7.5</tycho-version>
     <xtext-version>2.33.0</xtext-version>
+    <xtend-version>2.33.0</xtend-version>
     <targetJdk>17</targetJdk>
     
     <!-- Non-breakable space, as normal spaces are trimmed. -->
     <sourceFeatureLabelSuffix>&#xA0;(Sources)</sourceFeatureLabelSuffix>
+
+    <maven.compiler.source>17</maven.compiler.source>
+
+    <maven.compiler.target>17</maven.compiler.target>
     
     <!-- guarantee that we use utf8 for compilation, this is especially required due to xtend's template symbols («) when running maven on windows. -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -25,7 +30,7 @@
   
   <profiles>
     <profile>
-      <id>repo</id>
+      <id>all</id>
 
       <activation>
         <activeByDefault>true</activeByDefault>
@@ -39,6 +44,7 @@
         <module>../plugins/de.cau.cs.kieler.spviz.spvizmodel</module>
         <module>../plugins/de.cau.cs.kieler.spviz.spvizmodel.ide</module>
         <module>../plugins/de.cau.cs.kieler.spviz.spvizmodel.ui</module>
+        <module>../cli/de.cau.cs.kieler.spviz.cli</module>
         <module>../features/de.cau.cs.kieler.spviz.feature</module>
         <module>../features/de.cau.cs.kieler.spviz.ui.feature</module>
         <!-- <module>../plugins/de.cau.cs.kieler.spviz.spviz.tests</module> --> <!-- You requested to install 'org.eclipse.equinox.p2.iu; org.junit.jupiter.api [5.0.0,6.0.0)' but it could not be found -->
@@ -70,7 +76,7 @@
         <configuration>
           <target>
             <artifact>
-              <groupId>de.cau.cs.kieler.spviz</groupId>
+              <groupId>de.cau.cs.kieler</groupId>
               <artifactId>de.cau.cs.kieler.spviz.targetplatform</artifactId>
               <version>${project.version}</version>
             </artifact>

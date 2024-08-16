@@ -3,7 +3,7 @@
  *
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2022-2023 by
+ * Copyright 2022-2024 by
  * + Kiel University
  *   + Department of Computer Science
  *   + Real-Time and Embedded Systems Group
@@ -13,26 +13,19 @@
 package de.cau.cs.kieler.spviz.spvizmodel.generator
 
 import de.cau.cs.kieler.spviz.spvizmodel.generator.maven.Dependency
+import java.io.File
 import java.util.List
-import org.eclipse.core.resources.IProject
-import org.eclipse.core.resources.IProjectDescription
-import org.eclipse.core.resources.IWorkspace
-import org.eclipse.core.resources.ResourcesPlugin
-import org.eclipse.core.runtime.IProgressMonitor
-import org.eclipse.core.runtime.Path
-import org.eclipse.emf.common.util.BasicMonitor
-import org.eclipse.jdt.core.IClasspathEntry
-import org.eclipse.jdt.core.IJavaProject
-import org.eclipse.jdt.core.JavaCore
-import org.eclipse.m2e.core.internal.IMavenConstants
 
 /**
  * Generator for Java projects using Maven dependencies. Configure it with chained configure[...] methods and start with
- * {@link #generate(IProgressMonitor)}.
+ * {@link #generate()}.
  * 
  * @author nre
  */
 class JavaMavenProjectGenerator {
+    
+    /** directory of the project to be generated */
+    val File projectDirectory
     
     /** Group ID of the project to be generated. */
     val String groupId
@@ -46,7 +39,7 @@ class JavaMavenProjectGenerator {
     /** Additional dependency management to be added to the project pom, as formatted String. */
     var String dependencyManagement = ""
     
-    /** The subfolder name of the source folder */
+    /** The sub-folder name of the source folder */
     var String sourceFolderName = "src-gen"
     
     /**
@@ -64,9 +57,10 @@ class JavaMavenProjectGenerator {
     /**
      * Create a new generator.
      */
-    new(String groupId, String artifactId) {
+    new(String groupId, String projectName, String projectPath) {
         this.groupId = groupId
-        this.artifactId = artifactId
+        this.artifactId = projectName
+        this.projectDirectory = FileGenerator.createDirectory(projectPath)
     }
     
     /**
@@ -142,76 +136,80 @@ class JavaMavenProjectGenerator {
 
     /**
      * Starts the generation of this generator and returns the fully generated Java project.
-     * 
-     * @param progressMonitor The progressMonitor
-     * @returns The new Java project that was generated on the file system.
      */
-    def IProject generate(IProgressMonitor progressMonitor) {
-        // Create the project.
-        val IWorkspace workspace = ResourcesPlugin.getWorkspace()
-        val IProject project = workspace.getRoot().getProject(artifactId)
-        var IProjectDescription projectDescription = null
+    def void generate() {
+        val File settingsDirectory = FileGenerator.createDirectory(projectDirectory, ".settings")
         
-        if (!project.exists()) {
-            projectDescription = ResourcesPlugin.getWorkspace().newProjectDescription(artifactId)
-            project.create(projectDescription, BasicMonitor.subProgress(progressMonitor, 1))
-        } else {
-            projectDescription = project.description
-        }
-        project.open(BasicMonitor.subProgress(progressMonitor, 1))
-
-        // Add the Java nature to the project
-        var String[] natureIds = projectDescription.getNatureIds()
-        if (natureIds === null) {
-            natureIds = #[ JavaCore.NATURE_ID, IMavenConstants.NATURE_ID ]
-        } else {
-            if (!project.hasNature(JavaCore.NATURE_ID)) {
-                val oldNatureIds = natureIds
-                natureIds = newArrayOfSize(oldNatureIds.length + 1)
-                System.arraycopy(oldNatureIds, 0, natureIds, 0, oldNatureIds.length)
-                natureIds.set(oldNatureIds.length, JavaCore.NATURE_ID)
-            }
-            if (!project.hasNature(IMavenConstants.NATURE_ID)) {
-                val oldNatureIds = natureIds
-                natureIds = newArrayOfSize(oldNatureIds.length + 1)
-                System.arraycopy(oldNatureIds, 0, natureIds, 0, oldNatureIds.length)
-                natureIds.set(oldNatureIds.length, IMavenConstants.NATURE_ID)
-            }
-        }
-        projectDescription.setNatureIds(natureIds)
-        project.setDescription(projectDescription, BasicMonitor.subProgress(progressMonitor, 1));
+        // Create the .classpath file
+        FileGenerator.generateFile(new File(projectDirectory,  ".classpath"), classpathContent)
         
-        // Configure the Java project 
-        val IJavaProject javaProject = JavaCore.create(project)
+        // Create the .project file
+        FileGenerator.generateFile(new File(projectDirectory, ".project"), projectContent)
         
-        // Configure classpath
-        val entries = <IClasspathEntry>newArrayList
-        entries.add(JavaCore.newContainerEntry(new Path("org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-17")));
-        entries.add(JavaCore.newContainerEntry(new Path("org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER")))
-        
-        // The source folders
-        val sourceFolder = project.getFolder(sourceFolderName)
-        if (!sourceFolder.exists) {
-            sourceFolder.create(false, true, BasicMonitor.subProgress(progressMonitor, 1))
-        }
-        val sourceFolderRoot = javaProject.getPackageFragmentRoot(sourceFolder)
-        entries.add(JavaCore.newSourceEntry(sourceFolderRoot.path))
-        
-        if (xtendSources) {
-            val xtendGenFolder = project.getFolder("xtend-gen")
-            if (!xtendGenFolder.exists) {
-                xtendGenFolder.create(false, true, BasicMonitor.subProgress(progressMonitor, 1))
-            }
-            val xtendGenFolderRoot = javaProject.getPackageFragmentRoot(xtendGenFolder)
-            entries.add(JavaCore.newSourceEntry(xtendGenFolderRoot.path))
-        }
-        
-        javaProject.setRawClasspath(entries.toArray(<IClasspathEntry>newArrayOfSize(entries.size)), null)
+        // Create the settings/org.eclipse.core.resources.prefs file
+        FileGenerator.generateFile(new File(settingsDirectory, "org.eclipse.core.resources.prefs"), eclipseCoreResourcesPrefsContent)
         
         // Generate the pom.xml file
-        FileGenerator.generateFile(project, "/pom.xml", pomXmlContent, progressMonitor)
+        FileGenerator.generateFile(new File(projectDirectory, "pom.xml"), pomXmlContent)
         
-        return project
+        // The source folders
+        FileGenerator.createDirectory(projectDirectory, sourceFolderName)
+        if (xtendSources) {
+            FileGenerator.createDirectory(projectDirectory, "xtend-gen")
+        }
+    }
+    
+    private def classpathContent() {
+        return '''
+            <?xml version="1.0" encoding="UTF-8"?>
+            <classpath>
+                <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-17"/>
+                <classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER"/>
+                <classpathentry kind="src" path="«sourceFolderName»"/>
+                «IF xtendSources»
+                    <classpathentry kind="src" path="xtend-gen"/>
+                «ENDIF»
+                <classpathentry kind="output" path="bin"/>
+            </classpath>
+            
+        '''
+    }
+    
+    private def projectContent() {
+        return '''
+            <?xml version="1.0" encoding="UTF-8"?>
+            <projectDescription>
+                <name>«artifactId»</name>
+                <comment></comment>
+                <projects>
+                </projects>
+                <buildSpec>
+                    <buildCommand>
+                        <name>org.eclipse.jdt.core.javabuilder</name>
+                        <arguments>
+                        </arguments>
+                    </buildCommand>
+                    <buildCommand>
+                        <name>org.eclipse.m2e.core.maven2Builder</name>
+                        <arguments>
+                        </arguments>
+                    </buildCommand>
+                </buildSpec>
+                <natures>
+                    <nature>org.eclipse.jdt.core.javanature</nature>
+                    <nature>org.eclipse.m2e.core.maven2Nature</nature>
+                </natures>
+            </projectDescription>
+            
+        '''
+    }
+    
+    private def eclipseCoreResourcesPrefsContent() {
+        return '''
+            eclipse.preferences.version=1
+            encoding/<project>=UTF-8
+            
+        '''
     }
     
     private def getPomXmlContent() {
@@ -242,14 +240,6 @@ class JavaMavenProjectGenerator {
             
                 <build>
                     <sourceDirectory>«sourceFolderName»</sourceDirectory>
-                    <resources>
-                        <resource>
-                            <directory>«sourceFolderName»</directory>
-                            <excludes>
-                                <exclude>**/*.java</exclude>
-                            </excludes>
-                        </resource>
-                    </resources>
                     <plugins>
                         <plugin>
                             <artifactId>maven-compiler-plugin</artifactId>

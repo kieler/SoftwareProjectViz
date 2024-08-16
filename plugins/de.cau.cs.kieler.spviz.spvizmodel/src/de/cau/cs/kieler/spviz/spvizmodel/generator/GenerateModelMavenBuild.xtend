@@ -3,7 +3,7 @@
  *
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2022-2023 by
+ * Copyright 2022-2024 by
  * + Kiel University
  *   + Department of Computer Science
  *   + Real-Time and Embedded Systems Group
@@ -13,14 +13,19 @@
 package de.cau.cs.kieler.spviz.spvizmodel.generator
 
 import de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.SPVizModel
-import org.eclipse.core.resources.IProject
-import org.eclipse.core.resources.ResourcesPlugin
-import org.eclipse.core.runtime.IProgressMonitor
+import java.io.File
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 /**
  * Helper methods to generate Maven build artifacts for plugins.
+ * 
+ * @author nre
  */
 class GenerateModelMavenBuild {
+    
+    static final Logger LOGGER = LoggerFactory.getLogger(GenerateModelMavenBuild)
+    
     /* 
      * TODO:
      * - generate a full .gitignore for an easier build process (/bin, /target, dependencies.txt, ...)
@@ -29,48 +34,42 @@ class GenerateModelMavenBuild {
     /**
      * Generates a pom.xml file for the given project and model.
      * 
-     * @param project The generated Eclipse project for that the pom.xml file should be added.
+     * @param projectDirectory The generated project directory for that the pom.xml file should be added.
      * @param model The source model
      */
-    static def addPluginPom(IProject project, SPVizModel model, String version, IProgressMonitor progressMonitor) {
-        val groupId = model.package
-        val content = pomXmlContent(groupId, "model", version)
-        FileGenerator.generateOrUpdateFile(project, "pom.xml", content, progressMonitor)
+    static def addPluginPom(File projectDirectory, SPVizModel model, String version) {
+        FileGenerator.generateFile(projectDirectory, "pom.xml", pomXmlContent(model.package, "model", version))
     }
     
     /**
      * Generates the pom.xml in an own folder, working as the parent pom configuration for all
      * builds of projects using SPViz. Also adds a general target platform for all SPViz projects
      */
-    static def addSpvizBuildProjectPom(String version, IProgressMonitor progressMonitor) {
+    static def addSpvizBuildProject(File rootDirectoy, String version) {
         val spvizPath = "spviz.build"
         // Create a project to hold the build pom.
-        val workspace = ResourcesPlugin.getWorkspace()
-        val IProject project = workspace.getRoot().getProject(spvizPath)
-        if (!project.exists()) {
-            val projectDescription = ResourcesPlugin.getWorkspace().newProjectDescription(spvizPath)
-            project.create(projectDescription, progressMonitor)
+        val existingDirectory = new File(rootDirectoy, spvizPath)
+        if (existingDirectory.isDirectory) {
+            LOGGER.info("Skipped generating build project, folder already exists. {}", existingDirectory.absolutePath)
+            return
+        } else {
+            LOGGER.info("Generating project {}", existingDirectory.absolutePath)
         }
-        project.open(progressMonitor)
+        val buildDirectory = FileGenerator.createDirectory(rootDirectoy, spvizPath)
         
         // Put the pom.xml in the project.
         val content = spvizPomXmlContent(version)
-        FileGenerator.generateOrUpdateFile(project, "pom.xml", content, progressMonitor)
+        FileGenerator.generateFile(buildDirectory, "pom.xml", content)
         
         // Generate the P2 update site config
-        addP2Config(project, version, progressMonitor)
+        addP2Config(buildDirectory, version)
     }
     
-    private static def addP2Config(IProject project, String version, IProgressMonitor progressMonitor) {
-        val targetPlatformFolder = project.getFolder("de.cau.cs.kieler.spviz.targetplatform")
-        if (!targetPlatformFolder.exists) {
-            targetPlatformFolder.create(false, true, progressMonitor)
-        }
+    private static def addP2Config(File buildDirectory, String version) {
+        val targetPlatformDirectory = FileGenerator.createDirectory(buildDirectory, "de.cau.cs.kieler.spviz.targetplatform")
         
-        var String content = targetContent
-        FileGenerator.generateOrUpdateFile(targetPlatformFolder, "de.cau.cs.kieler.spviz.targetplatform.target", content, progressMonitor)
-        content = targetPlatformPomXmlContent(version)
-        FileGenerator.generateOrUpdateFile(targetPlatformFolder, "pom.xml", content, progressMonitor)
+        FileGenerator.generateFile(targetPlatformDirectory, "de.cau.cs.kieler.spviz.targetplatform.target", targetContent)
+        FileGenerator.generateFile(targetPlatformDirectory, "pom.xml", targetPlatformPomXmlContent(version))
     }
     
     private static def pomXmlContent(String groupId, String artifactId, String version) {
@@ -93,6 +92,109 @@ class GenerateModelMavenBuild {
             
               <build>
                 <sourceDirectory>src-gen</sourceDirectory>
+                <plugins>
+                  <plugin>
+                    <groupId>org.eclipse.xtext</groupId>
+                    <artifactId>xtext-maven-plugin</artifactId>
+                    <version>${xtext-version}</version>
+                    <executions>
+                        <execution>
+                            <phase>generate-sources</phase>
+                            <goals>
+                                <goal>generate</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <languages>
+                            <language>
+                                <setup>org.eclipse.xtext.ecore.EcoreSupport</setup>
+                            </language>
+                            <language>
+                                <setup>org.eclipse.emf.codegen.ecore.xtext.GenModelSupport</setup>
+                            </language>
+                            <language>
+                                <setup>org.eclipse.emf.ecore.xcore.XcoreStandaloneSetup</setup>
+                                <outputConfigurations>
+                                    <outputConfiguration>
+                                        <outputDirectory>${project.basedir}/src-gen</outputDirectory>
+                                    </outputConfiguration>
+                                </outputConfigurations>
+                            </language>
+                        </languages>
+                        <sourceRoots>
+                            <root>${basedir}/model</root>
+                        </sourceRoots>
+                    </configuration>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.eclipse.platform</groupId>
+                            <artifactId>org.eclipse.text</artifactId>
+                            <version>3.14.100</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.eclipse.platform</groupId>
+                            <artifactId>org.eclipse.core.resources</artifactId>
+                            <version>3.20.200</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.eclipse.xtext</groupId>
+                            <artifactId>org.eclipse.xtext.ecore</artifactId>
+                            <version>${xtext-version}</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.eclipse.xtext</groupId>
+                            <artifactId>org.eclipse.xtext.xtext.generator</artifactId>
+                            <version>${xtext-version}</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.eclipse.xtext</groupId>
+                            <artifactId>org.eclipse.xtext.builder.standalone</artifactId>
+                            <version>${xtext-version}</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.eclipse.emf</groupId>
+                            <artifactId>org.eclipse.emf.codegen.ecore.xtext</artifactId>
+                            <version>1.8.0</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.eclipse.emf</groupId>
+                            <artifactId>org.eclipse.emf.common</artifactId>
+                            <version>2.30.0</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.eclipse.emf</groupId>
+                            <artifactId>org.eclipse.emf.ecore</artifactId>
+                            <version>2.36.0</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.eclipse.emf</groupId>
+                            <artifactId>org.eclipse.emf.ecore.xmi</artifactId>
+                            <version>2.37.0</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.eclipse.emf</groupId>
+                            <artifactId>org.eclipse.emf.codegen</artifactId>
+                            <version>2.14.0</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.eclipse.emf</groupId>
+                            <artifactId>org.eclipse.emf.codegen.ecore</artifactId>
+                            <version>2.23.0</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.eclipse.emf</groupId>
+                            <artifactId>org.eclipse.emf.ecore.xcore</artifactId>
+                            <version>1.29.0</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.eclipse.emf</groupId>
+                            <artifactId>org.eclipse.emf.ecore.xcore.lib</artifactId>
+                            <version>1.7.0</version>
+                        </dependency>
+                    </dependencies>
+                  </plugin>
+                </plugins>
               </build>
             </project>
             
@@ -121,9 +223,9 @@ class GenerateModelMavenBuild {
                 <elk-version>0.9.1</elk-version>
                 <gson-version>2.10.1</gson-version>
                 <guice-version>7.0.0</guice-version>
-                <klighd-version>3.0.1.v20240410</klighd-version>
+                <klighd-version>3.0.2.v20240507</klighd-version>
                 <lsp4j-version>0.22.0</lsp4j-version>
-                <tycho-version>2.7.3</tycho-version>
+                <tycho-version>2.7.5</tycho-version>
                 <xtext-version>2.33.0</xtext-version>
                 <xtend-version>2.33.0</xtend-version>
                 
@@ -348,7 +450,7 @@ class GenerateModelMavenBuild {
                               <pluginExecutionFilter>
                                 <groupId>org.eclipse.tycho</groupId>
                                 <artifactId>target-platform-configuration</artifactId>
-                                <versionRange>[2.7.3,)</versionRange>
+                                <versionRange>[2.7.5,)</versionRange>
                                 <goals>
                                   <goal>target-platform</goal>
                                 </goals>

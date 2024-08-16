@@ -3,7 +3,7 @@
  *
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2021-2023 by
+ * Copyright 2021-2024 by
  * + Kiel University
  *   + Department of Computer Science
  *   + Real-Time and Embedded Systems Group
@@ -14,9 +14,8 @@ package de.cau.cs.kieler.spviz.spviz.generator
 
 import de.cau.cs.kieler.spviz.spviz.sPViz.ArtifactChain
 import de.cau.cs.kieler.spviz.spvizmodel.generator.FileGenerator
+import java.io.File
 import java.util.List
-import org.eclipse.core.resources.IFolder
-import org.eclipse.core.runtime.IProgressMonitor
 
 import static extension de.cau.cs.kieler.spviz.spviz.util.SPVizExtension.*
 import static extension de.cau.cs.kieler.spviz.spvizmodel.util.SPVizModelExtension.*
@@ -24,16 +23,14 @@ import static extension de.cau.cs.kieler.spviz.spvizmodel.util.SPVizModelExtensi
 /**
  * Generates utility classes for the visualization model.
  * 
- * @author leo, nre
+ * @author nre, leo
  */
 class GenerateVizModelUtils {
     
-    def static void generate(IFolder sourceFolder, DataAccess spviz, IProgressMonitor progressMonitor) {
-        val folder = spviz.getBundleNamePrefix.replace('.', '/') + "/model/util/"
-        FileGenerator.generateOrUpdateFile(sourceFolder, folder + "VizModelUtil.xtend", generateVizModelUtil(spviz),
-            progressMonitor)
-        FileGenerator.generateOrUpdateFile(sourceFolder, folder + "ContextExtensions.xtend",
-            generateContextExtensions(spviz), progressMonitor)
+    def static void generate(File sourceFolder, DataAccess spviz) {
+        val utilFolder = FileGenerator.createDirectory(sourceFolder, spviz.getBundleNamePrefix.replace('.', '/') + "/model/util/")
+        FileGenerator.updateFile(new File(utilFolder, "VizModelUtil.xtend"), generateVizModelUtil(spviz))
+        FileGenerator.updateFile(new File(utilFolder, "ContextExtensions.xtend"),generateContextExtensions(spviz))
     }
     
     /**
@@ -778,7 +775,7 @@ class GenerateVizModelUtils {
                         }
                         
                     }
-                
+                    
                     /**
                      * Removes a connected container edge in the parent overview context of the two given contexts.
                      * 
@@ -810,7 +807,7 @@ class GenerateVizModelUtils {
                     //    connectingContext.allConnectedBundleConnectsBundleNamedDependencyShown = false
                     //    connectedContext.allConnectingBundleConnectsBundleNamedDependencyShown = false
                     }
-                
+                    
                 «ENDFOR»
                 
                 // Method to let Xtend create the needed generic super type.

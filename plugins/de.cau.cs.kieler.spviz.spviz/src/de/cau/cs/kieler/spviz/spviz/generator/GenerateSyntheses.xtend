@@ -3,7 +3,7 @@
  *
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2021-2023 by
+ * Copyright 2021-2024 by
  * + Kiel University
  *   + Department of Computer Science
  *   + Real-Time and Embedded Systems Group
@@ -16,12 +16,11 @@ import de.cau.cs.kieler.spviz.spviz.sPViz.View
 import de.cau.cs.kieler.spviz.spvizmodel.generator.FileGenerator
 import de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.Artifact
 import java.awt.Color
+import java.io.File
 import java.util.HashMap
 import java.util.Locale
 import java.util.Map
 import java.util.Set
-import org.eclipse.core.resources.IFolder
-import org.eclipse.core.runtime.IProgressMonitor
 
 import static extension de.cau.cs.kieler.spviz.spviz.util.SPVizExtension.*
 import static extension de.cau.cs.kieler.spviz.spvizmodel.util.SPVizModelExtension.*
@@ -29,28 +28,23 @@ import static extension de.cau.cs.kieler.spviz.spvizmodel.util.SPVizModelExtensi
 /**
  * Generates classes for the syntheses of the visualization.
  * 
- * @author leo, nre
+ * @author nre, leo
  */
 class GenerateSyntheses {
-    def static void generate(IFolder sourceFolder, DataAccess data, IProgressMonitor progressMonitor) {
-        val folder = data.getBundleNamePrefix.replace('.','/') + "/viz/"
+    def static void generate(File sourceFolder, DataAccess data) {
+        val File folder = FileGenerator.createDirectory(sourceFolder, data.getBundleNamePrefix.replace('.','/') + "/viz")
         
-        FileGenerator.generateOrUpdateFile(sourceFolder, folder + data.projectName.toFirstUpper + "DiagramSynthesis.xtend",
-            generateDiagramSynthesis(data), progressMonitor)
-        FileGenerator.generateOrUpdateFile(sourceFolder, folder + data.visualizationName.toFirstUpper + "DiagramSynthesis.xtend",
-            generateVizDiagramSynthesis(data), progressMonitor)
-        FileGenerator.generateOrUpdateFile(sourceFolder, folder + "KlighdSetup.xtend", generateKlighdSetup(data),
-            progressMonitor)
-        FileGenerator.generateOrUpdateFile(sourceFolder, folder + "Styles.xtend", generateStyles(data),
-            progressMonitor)
-        FileGenerator.generateOrUpdateFile(sourceFolder, folder + "SynthesisUtils.xtend", generateSynthesisUtils(data),
-            progressMonitor)
-        FileGenerator.generateOrUpdateFile(sourceFolder, folder + "SynthesisProperties.xtend",
-            generateSynthesisProperties(data), progressMonitor)
-        FileGenerator.generateOrUpdateFile(sourceFolder, folder + "Options.xtend", generateOptions(data), progressMonitor)
-        FileGenerator.generateOrUpdateFile(sourceFolder, folder + "FileHandler.xtend", generateFileHandler(data), progressMonitor)
-        FileGenerator.generateOrUpdateFile(sourceFolder, folder + "VisualizationReInitializer.xtend",
-            generateVisualizationReInitializer(data), progressMonitor)
+        FileGenerator.updateFile(folder, data.projectName.toFirstUpper + "DiagramSynthesis.xtend",
+            generateDiagramSynthesis(data))
+        FileGenerator.updateFile(folder, data.visualizationName.toFirstUpper + "DiagramSynthesis.xtend",
+            generateVizDiagramSynthesis(data))
+        FileGenerator.updateFile(folder, "KlighdSetup.xtend", generateKlighdSetup(data))
+        FileGenerator.updateFile(folder, "Styles.xtend", generateStyles(data))
+        FileGenerator.updateFile(folder, "SynthesisUtils.xtend", generateSynthesisUtils(data))
+        FileGenerator.updateFile(folder, "SynthesisProperties.xtend", generateSynthesisProperties(data))
+        FileGenerator.updateFile(folder, "Options.xtend", generateOptions(data))
+        FileGenerator.updateFile(folder, "FileHandler.xtend", generateFileHandler(data))
+        FileGenerator.updateFile(folder, "VisualizationReInitializer.xtend", generateVisualizationReInitializer(data))
     }
     
     /**

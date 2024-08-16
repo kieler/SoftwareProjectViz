@@ -3,7 +3,7 @@
  *
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2021 by
+ * Copyright 2021-2024 by
  * + Kiel University
  *   + Department of Computer Science
  *   + Real-Time and Embedded Systems Group
@@ -13,23 +13,21 @@
 package de.cau.cs.kieler.spviz.spvizmodel.generator
 
 import de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.SPVizModel
-import org.eclipse.core.resources.IFolder
-import org.eclipse.core.runtime.IProgressMonitor
+import java.io.File
 
 /**
  * Generates utility classes for the model.
  * 
- * @author leo, nre
+ * @author nre, leo
  */
 class GenerateModelUtils {
-    def static void generate(IFolder sourceFolder, SPVizModel spvizModel, IProgressMonitor progressMonitor) {
-        var folder = spvizModel.package.replace('.', '/') + "/model/util/"
-        FileGenerator.generateOrUpdateFile(sourceFolder, folder + "ModelUtil.java",
-            generateModelUtil(spvizModel.name + "Project", spvizModel.package), progressMonitor)
+    def static void generate(File sourceFolder, SPVizModel spvizModel) {
+        val folder = FileGenerator.createDirectory(sourceFolder, spvizModel.package.replace('.', '/') + "/model/util/")
+        FileGenerator.updateFile(folder, "ModelUtil.java", generateModelUtil(spvizModel.name + "Project", spvizModel.package))
     }
     
     /**
-     * Generates the contend for the ModelUtil.java file contained inside the model package
+     * Generates the content for the ModelUtil.java file contained inside the model package
      * 
      * @param projectName
      *      the model project name
