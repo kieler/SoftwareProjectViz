@@ -41,3 +41,9 @@ jobs:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               with:
                   args: "build/de.cau.cs.kieler.spviz.repository/target/de.cau.cs.kieler.spviz.repository-${{ steps.release-tag.outputs.SHORTENED_GITHUB_REF }}.zip application/zip"
+            - name: Upload CLI
+              uses: JasonEtco/upload-to-release@d648f1babf776de9cad881320bd9e9818fc3b262
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                  args: "cli/de.cau.cs.kieler.spviz.cli/target/spviz-cli.jar"

@@ -33,3 +33,10 @@ jobs:
           path: build/de.cau.cs.kieler.spviz.repository/target/repository/**/*
           retention-days: 14
           if-no-files-found: error
+      - name: Archive CLI
+        uses: actions/upload-artifact@v4
+        with:
+          name: SPViz CLI
+          path: cli/de.cau.cs.kieler.spviz.cli/target/spviz-cli.jar
+          retention-days: 14
+          if-no-files-found: error
