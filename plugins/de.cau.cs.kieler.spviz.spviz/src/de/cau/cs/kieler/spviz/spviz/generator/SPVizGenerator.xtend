@@ -3,7 +3,7 @@
  *
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2020-2023 by
+ * Copyright 2020-2024 by
  * + Kiel University
  *   + Department of Computer Science
  *     + Real-Time and Embedded Systems Group
@@ -17,10 +17,14 @@ import de.cau.cs.kieler.spviz.spvizmodel.generator.JavaMavenProjectGenerator
 import de.cau.cs.kieler.spviz.spvizmodel.generator.ProjectGenerator
 import de.cau.cs.kieler.spviz.spvizmodel.generator.maven.Dependency
 import java.io.File
+import java.io.InputStream
+import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.List
 import org.eclipse.core.resources.ResourcesPlugin
+import org.eclipse.core.runtime.FileLocator
+import org.eclipse.core.runtime.Platform
 import org.eclipse.emf.ecore.resource.Resource
 import org.eclipse.xtext.generator.AbstractGenerator
 import org.eclipse.xtext.generator.IFileSystemAccess2
@@ -112,7 +116,7 @@ class SPVizGenerator extends AbstractGenerator {
         GenerateActions.generate(sourceVizFolder, data)
         
         // Copy icons over into the project
-        FileGenerator.copyIcons(FileGenerator.createDirectory(vizProjectDirectory, "icons"))
+        copyIcons(FileGenerator.createDirectory(vizProjectDirectory, "icons"))
         
         
         // Generate the .language.server Maven project
@@ -140,6 +144,43 @@ class SPVizGenerator extends AbstractGenerator {
         
         // Generate the Maven build framework for this visualization.
         GenerateMavenBuild.generate(root, data.bundleNamePrefix, data.visualizationName.toFirstUpper, data.modelBundleNamePrefix, "0.1.0")
+    }
+    
+    /**
+     * Copies the files from the icons/ folder to the target folder.
+     * 
+     * @param targetFolder The folder to copy the files to.
+     */
+    static def void copyIcons(File targetFolder) {
+        targetFolder.mkdirs
+        if (Platform.isRunning) {
+            // If the platform is running, the folder can be found in the bundle under the resource path.
+            val url = Platform.getBundle("de.cau.cs.kieler.spviz.spviz")
+                ?.getEntry("icons")
+            val folder = new File(FileLocator.toFileURL(url).toURI.path)
+            for (file : folder.listFiles) {
+                val fileName = file.name
+                val newFile = new File(targetFolder, fileName)
+                if (!newFile.exists) {
+                    Files.copy(file.toPath, newFile.toPath)
+                }
+            }
+        } else {
+            // The file path is searched on the classpath directly
+            val fileNames = #["connect.svg", "connect128.png",
+                "expand.svg", "expand128.png",
+                "loupe.svg", "loupe128.png",
+                "loupe-crossed.svg", "loupe-crossed128.png",
+                "minimize.svg", "minimize128.png",
+                "restore.svg", "restore128.png"]
+            for (fileName : fileNames) {
+                val InputStream source = SPVizGenerator.classLoader.getResourceAsStream("icons/" + fileName)
+                val newFile = new File(targetFolder, fileName)
+                if (!newFile.exists) {
+                    Files.copy(source, newFile.toPath)
+                }
+            }
+        }
     }
     
     static def lsDependencyManagement() {

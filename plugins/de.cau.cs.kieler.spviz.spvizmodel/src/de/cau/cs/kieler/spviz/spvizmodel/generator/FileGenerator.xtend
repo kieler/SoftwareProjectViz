@@ -13,7 +13,6 @@
 package de.cau.cs.kieler.spviz.spvizmodel.generator
 
 import java.io.File
-import java.io.InputStream
 import java.nio.file.Files
 import java.nio.file.Paths
 
@@ -91,31 +90,6 @@ class FileGenerator {
             return
         }
         Files.write(Paths.get(file.path), fileContent.bytes)
-    }
-    
-    /**
-     * Copies the files at the source location to the target folder.
-     * 
-     * @param sourceFolder The folder to copy the files from.
-     * @param targetFolder The folder to copy the files to.
-     */
-    def static void copyIcons(File targetFolder) {
-        targetFolder.mkdirs
-        // The file path is searched on the classpath directly
-        // TODO: this has to be tested.
-        val fileNames = #["connect.svg", "connect128.png",
-            "expand.svg", "expand128.png",
-            "loupe.svg", "loupe128.png",
-            "loupe-crossed.svg", "loupe-crossed128.png",
-            "minimize.svg", "minimize128.png",
-            "restore.svg", "restore128.png"]
-        for (fileName : fileNames) {
-            val InputStream source = FileGenerator.classLoader.getResourceAsStream("icons/" + fileName)
-            val newFile = new File(targetFolder, fileName)
-            if (!newFile.exists) {
-                Files.copy(source, newFile.toPath)
-            }
-        }
     }
 
     /**
