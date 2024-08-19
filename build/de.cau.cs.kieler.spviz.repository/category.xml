@@ -13,10 +13,10 @@
    </category-def>
 
    <!-- SPViz -->
-   <feature url="features/de.cau.cs.kieler.spviz_0.3.1.qualifier.jar" id="de.cau.cs.kieler.spviz.feature" version="0.3.1.qualifier">
+   <feature url="features/de.cau.cs.kieler.spviz_0.4.1.qualifier.jar" id="de.cau.cs.kieler.spviz.feature" version="0.4.1.qualifier">
       <category name="spviz"/>
    </feature>
-   <feature url="features/de.cau.cs.kieler.spviz.ui_0.3.1.qualifier.jar" id="de.cau.cs.kieler.spviz.ui.feature" version="0.3.1.qualifier">
+   <feature url="features/de.cau.cs.kieler.spviz.ui_0.4.1.qualifier.jar" id="de.cau.cs.kieler.spviz.ui.feature" version="0.4.1.qualifier">
       <category name="spviz"/>
    </feature>
 
