@@ -71,6 +71,7 @@ class GenerateSubSyntheses {
             import de.cau.cs.kieler.klighd.kgraph.KGraphFactory
             import de.cau.cs.kieler.klighd.kgraph.KIdentifier
             import de.cau.cs.kieler.klighd.kgraph.KNode
+            import de.cau.cs.kieler.klighd.krendering.extensions.KContainerRenderingExtensions
             import de.cau.cs.kieler.klighd.krendering.extensions.KEdgeExtensions
             import de.cau.cs.kieler.klighd.krendering.extensions.KNodeExtensions
             import de.cau.cs.kieler.klighd.krendering.extensions.KPortExtensions
@@ -100,9 +101,9 @@ class GenerateSubSyntheses {
                 import «data.bundleNamePrefix».model.«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Container
             «ENDFOR»
 
+            import static «data.getBundleNamePrefix».viz.Options.*
             
             import static extension de.cau.cs.kieler.klighd.syntheses.DiagramSyntheses.*
-            import static extension «data.getBundleNamePrefix».viz.Options.*
             import static extension «data.getBundleNamePrefix».viz.SynthesisUtils.*
             import static extension «data.getBundleNamePrefix».model.util.ContextExtensions.*
             
@@ -110,6 +111,7 @@ class GenerateSubSyntheses {
              * Transformation as an overview of all «viewName.toFirstLower»s in the given list of «viewName.toFirstLower»s.
              */
             class «viewName»OverviewSynthesis extends AbstractSubSynthesis<«viewName»OverviewContext, KNode> {
+                @Inject extension KContainerRenderingExtensions
                 @Inject extension KEdgeExtensions
                 @Inject extension KNodeExtensions
                 @Inject extension KPortExtensions
@@ -132,6 +134,9 @@ class GenerateSubSyntheses {
                             setLayoutOption(LayeredOptions::CONSIDER_MODEL_ORDER_STRATEGY, OrderingStrategy::NODES_AND_EDGES)
                             setLayoutOption(CoreOptions::DIRECTION, Direction.RIGHT)
                             setLayoutOption(CoreOptions::NODE_SIZE_CONSTRAINTS, EnumSet.of(SizeConstraint.MINIMUM_SIZE))
+                            if (TOPDOWN_LAYOUT.booleanValue) {
+                                SynthesisUtils.configureTopdownLayout(it, false)
+                            }
                             val isFocus = context.rootVisualization.focus === context
                             addOverviewRendering("«viewName»", context.overviewText, context.isExpanded, «!view.shownConnections.empty || !view.shownCategoryConnections.empty», isFocus, usedContext)
                             
@@ -261,6 +266,9 @@ class GenerateSubSyntheses {
                     createNode => [
                         associateWith(«viewName.toFirstLower»OverviewContext)
                         configureBoxLayout
+                        if (TOPDOWN_LAYOUT.booleanValue) {
+                            SynthesisUtils.configureTopdownLayout(it, false)
+                        }
                         «FOR shownElement : view.shownElements BEFORE "addOverviewOfCollapsedRendering(shown, " SEPARATOR " || " AFTER ", usedContext)"»«««
 «                          »!«viewName.toFirstLower»OverviewContext.collapsed«shownElement.shownElement.name.toFirstUpper»Contexts.isEmpty«««
 «                      »«ENDFOR»
@@ -305,7 +313,12 @@ class GenerateSubSyntheses {
                     createNode => [
                         associateWith(context)
                         configureOverviewLayout
-                        addInvisibleContainerRendering
+                        if (TOPDOWN_LAYOUT.booleanValue) {
+                            SynthesisUtils.configureTopdownLayout(it, false)
+                        }
+                        addInvisibleContainerRendering => [
+                            addChildArea
+                        ]
                         tooltip = context.overviewText
                         
                         «FOR shownElement : view.shownElements»
@@ -741,6 +754,9 @@ class GenerateSubSyntheses {
                             setLayoutOption(LayeredOptions::CONSIDER_MODEL_ORDER_STRATEGY, OrderingStrategy::NODES_AND_EDGES)
                             setLayoutOption(CoreOptions::DIRECTION, Direction.RIGHT)
                             setLayoutOption(CoreOptions::EDGE_ROUTING, EdgeRouting.POLYLINE)
+                            if (TOPDOWN_LAYOUT.booleanValue) {
+                                SynthesisUtils.configureTopdownLayout(it, false)
+                            }
                             
                             «FOR containedView : containedViews»
                                 // Show a «containedView.view.name.toFirstLower» overview within this «artifactName»

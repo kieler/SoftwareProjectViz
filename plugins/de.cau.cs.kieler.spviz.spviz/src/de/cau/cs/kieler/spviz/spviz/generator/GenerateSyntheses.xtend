@@ -154,11 +154,16 @@ class GenerateSyntheses {
                     // Add all performance options.
                     options.addAll(SHOW_ICONS)
                     
+                    options.add(TOPDOWN_LAYOUT)
+                    
                     return options.toList
                 }
                 
                 override transform(«data.projectName» model) {
                     val modelNode = createNode.associateWith(model)
+                    if (TOPDOWN_LAYOUT.booleanValue) {
+                        SynthesisUtils.configureTopdownLayout(modelNode, true)
+                    }
                     
                     // Create a view with the currently stored visualization context in mind. If there is no current context, create
                     // a new one for the general model overview and store that for later use.
@@ -189,7 +194,9 @@ class GenerateSyntheses {
                             associateWith(model)
                             data += createKIdentifier => [ it.id = visContext.hashCode.toString ]
                             SynthesisUtils.configureBoxLayout(it)
-                            setLayoutOption(BoxLayouterOptions.BOX_PACKING_MODE, PackingMode.GROUP_MIXED)
+                            if (TOPDOWN_LAYOUT.booleanValue) {
+                                SynthesisUtils.configureTopdownLayout(it, false)
+                            }
                             addProjectRendering
                             «FOR view : data.views»
                                 
@@ -663,6 +670,7 @@ class GenerateSyntheses {
                     val actionId = ShowHideCollapsedAction::ID
                     val doWhat = shown ? "Hide" : "Show"
                     node.addInvisibleContainerRendering => [
+                        addChildArea
                         // Button to show/hide this overview
                         val interactiveButtons = context.getOptionValue(INTERACTIVE_BUTTONS) as Boolean
                         if (interactiveButtons) {
@@ -1207,15 +1215,19 @@ class GenerateSyntheses {
             import de.cau.cs.kieler.klighd.syntheses.DiagramSyntheses
             import «data.getBundleNamePrefix».model.IOverviewVisualizationContext
             import «data.getBundleNamePrefix».model.IVisualizationContext
+            import java.util.EnumSet
             import java.util.List
             import java.util.Set
             import org.eclipse.elk.alg.layered.components.ComponentOrderingStrategy
             import org.eclipse.elk.alg.layered.options.LayeredOptions
             import org.eclipse.elk.alg.layered.options.OrderingStrategy
+            import org.eclipse.elk.core.options.ContentAlignment
             import org.eclipse.elk.core.options.CoreOptions
             import org.eclipse.elk.core.options.Direction
             import org.eclipse.elk.core.options.EdgeRouting
             import org.eclipse.elk.core.options.PortConstraints
+            import org.eclipse.elk.core.options.TopdownSizeApproximator
+            import org.eclipse.elk.core.options.TopdownNodeTypes
             
             «FOR artifact : data.artifacts»
                 import «data.modelBundleNamePrefix».model.«artifact.name.toFirstUpper»
@@ -1394,6 +1406,27 @@ class GenerateSyntheses {
                         return allConnections.filter[ all«categoryConnection.connectedArtifact.name.toFirstUpper»Contexts.contains(it.value) ]
                     }
                 «ENDFOR»
+                
+                /**
+                 * Configures top-down layout for the given node.
+                 * 
+                 * @param node The node to configure.
+                 * @param root If the {@code node} is the graph's root node.
+                 
+                 */
+                def static void configureTopdownLayout(KNode node, boolean root) {
+                    node => [
+                        setLayoutOption(CoreOptions::TOPDOWN_LAYOUT, true)
+                        setLayoutOption(CoreOptions::NODE_SIZE_FIXED_GRAPH_SIZE, true)
+                        setLayoutOption(CoreOptions::TOPDOWN_NODE_TYPE, root ? TopdownNodeTypes.ROOT_NODE : TopdownNodeTypes.HIERARCHICAL_NODE)
+                        setLayoutOption(CoreOptions::TOPDOWN_HIERARCHICAL_NODE_WIDTH, 150d)
+                        setLayoutOption(CoreOptions::TOPDOWN_HIERARCHICAL_NODE_ASPECT_RATIO, 1.41d)
+                        setLayoutOption(CoreOptions::TOPDOWN_SCALE_CAP, 1.0)
+                        setLayoutOption(CoreOptions.TOPDOWN_SIZE_APPROXIMATOR, TopdownSizeApproximator.COUNT_CHILDREN)
+                        if (!root) setLayoutOption(CoreOptions.CONTENT_ALIGNMENT, EnumSet.of(ContentAlignment.V_CENTER, ContentAlignment.H_CENTER))
+                    ]
+                }
+
                 
                 /**
                  * Configures the layout of any overview node. Configures the box layout algorithm of elk.
@@ -1697,6 +1730,9 @@ class GenerateSyntheses {
                 public static final SynthesisOption SHOW_ICONS = SynthesisOption.createCheckOption("Icons", true)
                     .setCategory(PERFORMANCE)
                     .description = "Use images as icons for the buttons. Inflates the view model and reduces performance for a cleaner view."
+                
+                public static final SynthesisOption TOPDOWN_LAYOUT = SynthesisOption.createCheckOption("Topdown Layout", false)
+                    .description = "Switch between ELK'S top-down and bottom-up layout."
             }
             
         '''
