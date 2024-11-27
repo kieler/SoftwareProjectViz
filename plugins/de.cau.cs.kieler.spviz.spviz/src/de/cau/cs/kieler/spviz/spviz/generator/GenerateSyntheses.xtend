@@ -197,7 +197,7 @@ class GenerateSyntheses {
                             if (TOPDOWN_LAYOUT.booleanValue) {
                                 SynthesisUtils.configureTopdownLayout(it, false)
                             }
-                            addProjectRendering
+                            addProjectRendering(model.projectName)
                             «FOR view : data.views»
                                 
                                 val overview«view.name»Nodes = «view.name.toFirstLower»OverviewSynthesis.transform(visContext.«view.name.toFirstLower»OverviewContext)
@@ -942,12 +942,12 @@ class GenerateSyntheses {
                 /**
                  * Adds the rendering as a project overview.
                  */
-                def void addProjectRendering(KNode node) {
+                def void addProjectRendering(KNode node, String projectName) {
                     node.addRoundedRectangle(ROUNDNESS, ROUNDNESS) => [
                         setGridPlacement(1)
                         addRectangle => [
                             invisible = true
-                            addSimpleLabel("Overview") => [
+                            addSimpleLabel(projectName) => [
                                 fontBold = true
                                 selectionFontBold = true
                             ]
