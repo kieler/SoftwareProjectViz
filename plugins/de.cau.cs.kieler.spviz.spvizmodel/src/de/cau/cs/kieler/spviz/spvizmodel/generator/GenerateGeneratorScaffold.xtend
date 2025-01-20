@@ -139,9 +139,14 @@ class GenerateGeneratorScaffold {
                         // Read the project Data
                         final Map<String, «model.name.toFirstUpper»Project> projectMap = new HashMap<String, «model.name.toFirstUpper»Project>();
                         for (final Entry<String, File> projectPathEntry : projectPaths.entrySet()) {
-                            LOGGER.log(System.Logger.Level.INFO, "Reading Project Data for " + projectNames.get(projectPathEntry.getKey()));
-                            final String projectKey = projectPathEntry.getKey();
-                            projectMap.put(projectKey, «model.name.toFirstUpper»ModelDataGenerator.generateData(projectPathEntry.getValue().toString(),
+                            String projectKey = projectPathEntry.getKey();
+                            File projectPath = projectPathEntry.getValue();
+                            if (!projectPathEntry.getValue().exists()) {
+                                LOGGER.log(System.Logger.Level.ERROR, projectPath + " does not exist! Skipping generating data for " + projectKey);
+                                continue;
+                            }
+                            LOGGER.log(System.Logger.Level.INFO, "Reading Project Data for " + projectNames.get(projectKey));
+                            projectMap.put(projectKey, «model.name.toFirstUpper»ModelDataGenerator.generateData(projectPath.toString(),
                                     projectNames.get(projectKey), optionalModelSaveFilePath));
                         }
             
@@ -187,6 +192,12 @@ class GenerateGeneratorScaffold {
                     final ReadProjectFiles reader = new ReadProjectFiles();
                     LOGGER.log(System.Logger.Level.INFO, "Generating data for " + projectName);
                     final «model.name.toFirstUpper»Project project = reader.generateData(new File(projectFilePath), projectName);
+                    
+                    «FOR artifact : model.artifacts»
+                        if (project.get«artifact.name.toFirstUpper»s().isEmpty()) {
+                            LOGGER.log(System.Logger.Level.WARNING, "The extractor did not find any «artifact.name.toFirstLower»s in the project named " + projectName + "!");
+                        }
+                    «ENDFOR»
                     
                     if (modelSaveFilePath.isPresent()) {
             
@@ -318,6 +329,8 @@ class GenerateGeneratorScaffold {
                     project.setProjectName(projectName);
                     
                     // TODO: fill this!
+                    LOGGER.log(System.Logger.Level.ERROR, "You executed the generator template. Your next task is to modify the "
+                            + "`ReadProjectFiles.java` file in your generator and program how to extract the artifacts of your project.");
                     // You can start with searching for all files of a specific type that contains your project data like this:
                     // final List<Path> filePaths = new ArrayList<Path>();
                     // findFiles(".someextension", projectPath, filePaths);
