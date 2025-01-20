@@ -384,7 +384,7 @@ class ProjectGenerator {
                        «FOR sourceFolder : additionalSourceFolders SEPARATOR ',\\'»
                            «sourceFolder»/
                        «ENDFOR»
-            output.. = bin/
+            output.. = target/classes/
 
         '''
     }
