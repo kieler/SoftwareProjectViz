@@ -3,7 +3,7 @@
  *
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2021-2024 by
+ * Copyright 2021-2025 by
  * + Kiel University
  *   + Department of Computer Science
  *   + Real-Time and Embedded Systems Group
@@ -152,7 +152,7 @@ class GenerateSyntheses {
                     «ENDFOR»
                     
                     // Add all performance options.
-                    options.addAll(SHOW_ICONS)
+                    options.addAll(SHOW_ICONS, SHOW_SHADOWS)
                     
                     options.add(TOPDOWN_LAYOUT)
                     
@@ -197,7 +197,7 @@ class GenerateSyntheses {
                             if (TOPDOWN_LAYOUT.booleanValue) {
                                 SynthesisUtils.configureTopdownLayout(it, false)
                             }
-                            addProjectRendering(model.projectName)
+                            addProjectRendering(model.projectName, usedContext)
                             «FOR view : data.views»
                                 
                                 val overview«view.name»Nodes = «view.name.toFirstLower»OverviewSynthesis.transform(visContext.«view.name.toFirstLower»OverviewContext)
@@ -562,10 +562,13 @@ class GenerateSyntheses {
                 
                 /**
                  * Adds a simple rendering for any named element to the given node.
+                 * @param context The used ViewContext.
                  */
-                def KRoundedRectangle addGenericRendering(KNode node, String name) {
+                def KRoundedRectangle addGenericRendering(KNode node, String name, ViewContext context) {
                     node.addRoundedRectangle(ROUNDNESS, ROUNDNESS) => [
-                        setShadow(SHADOW_COLOR.color, 4, 4)
+                        if (context.getOptionValue(SHOW_SHADOWS) as Boolean) {
+                            setShadow(SHADOW_COLOR.color, 4, 4)
+                        }
                         addSimpleLabel(name)
                         setSelectionStyle
                     ]
@@ -623,7 +626,9 @@ class GenerateSyntheses {
                             ]
                             addHorizontalSeperatorLine(1, 0)
                             addChildArea
-                            setShadow(SHADOW_COLOR.color, 4, 4)
+                            if (context.getOptionValue(SHOW_SHADOWS) as Boolean) {
+                                setShadow(SHADOW_COLOR.color, 4, 4)
+                            }
                             background = DEFAULT_BACKGROUND_COLOR.color
                             tooltip = tooltipText
                             setSelectionStyle
@@ -650,7 +655,9 @@ class GenerateSyntheses {
                                     addOverviewContextCollapseExpandButton(true, context)
                                 }
                             ]
-                            setShadow(SHADOW_COLOR.color, 4, 4)
+                            if (context.getOptionValue(SHOW_SHADOWS) as Boolean) {
+                                setShadow(SHADOW_COLOR.color, 4, 4)
+                            }
                             background = DEFAULT_BACKGROUND_COLOR.color
                             tooltip = tooltipText
                             setSelectionStyle
@@ -941,8 +948,9 @@ class GenerateSyntheses {
                 // ------------------------------------- Project renderings ------------------------------------
                 /**
                  * Adds the rendering as a project overview.
+                 * @param context The used ViewContext.
                  */
-                def void addProjectRendering(KNode node, String projectName) {
+                def void addProjectRendering(KNode node, String projectName, ViewContext context) {
                     node.addRoundedRectangle(ROUNDNESS, ROUNDNESS) => [
                         setGridPlacement(1)
                         addRectangle => [
@@ -954,7 +962,9 @@ class GenerateSyntheses {
                         ]
                         addHorizontalSeperatorLine(1, 0)
                         addChildArea
-                        setShadow(SHADOW_COLOR.color, 4, 4)
+                        if (context.getOptionValue(SHOW_SHADOWS) as Boolean) {
+                            setShadow(SHADOW_COLOR.color, 4, 4)
+                        }
                         background = DEFAULT_BACKGROUND_COLOR.color
                         tooltip = "The overview of all available views for this project."
                         setSelectionStyle
@@ -1003,7 +1013,9 @@ class GenerateSyntheses {
                             addDoubleClickAction(ContextCollapseExpandAction::ID)
                             addSingleClickAction(SelectRelatedAction::ID, ModifierState.NOT_PRESSED, ModifierState.NOT_PRESSED,
                                 ModifierState.NOT_PRESSED)
-                            setShadow(SHADOW_COLOR.color, 4, 4)
+                            if (context.getOptionValue(SHOW_SHADOWS) as Boolean) {
+                                setShadow(SHADOW_COLOR.color, 4, 4)
+                            }
                             tooltip = "«artifact.name» \"" + artifact.getName + "\""
                             setSelectionStyle
                         ]
@@ -1080,7 +1092,9 @@ class GenerateSyntheses {
                                 addHorizontalSeperatorLine(1, 0)
                                 addChildArea
                             }
-                            setShadow(SHADOW_COLOR.color, 4, 4)
+                            if (context.getOptionValue(SHOW_SHADOWS) as Boolean) {
+                                setShadow(SHADOW_COLOR.color, 4, 4)
+                            }
                             addSingleClickAction(SelectRelatedAction::ID, ModifierState.NOT_PRESSED, ModifierState.NOT_PRESSED,
                                 ModifierState.NOT_PRESSED)
                             setSelectionStyle
@@ -1730,6 +1744,11 @@ class GenerateSyntheses {
                 public static final SynthesisOption SHOW_ICONS = SynthesisOption.createCheckOption("Icons", true)
                     .setCategory(PERFORMANCE)
                     .description = "Use images as icons for the buttons. Inflates the view model and reduces performance for a cleaner view."
+                
+                /** Option for enabling shadow effects on any artifacts. */
+                    public static final SynthesisOption SHOW_SHADOWS = SynthesisOption.createCheckOption("Shadows", false)
+                        .setCategory(PERFORMANCE)
+                        .description = "Show a shadow effect for any artifact."
                 
                 public static final SynthesisOption TOPDOWN_LAYOUT = SynthesisOption.createCheckOption("Topdown Layout", false)
                     .description = "Switch between ELK'S top-down and bottom-up layout."
