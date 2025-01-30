@@ -238,7 +238,7 @@ class GenerateVizModelUtils {
                                 // Pre-calculate the possible container connections for the child «categoryConnection.connectingArtifact.name.toFirstLower» and «categoryConnection.connectedArtifact.name.toFirstLower».
                                 overviewContext.childContexts.filter(«categoryConnection.connectedCategory.name.toFirstUpper»Context).forEach [ source«categoryConnection.connectedCategory.name.toFirstUpper»Context |
                                     val source«categoryConnection.connectedCategory.name.toFirstUpper» = source«categoryConnection.connectedCategory.name.toFirstUpper»Context.modelElement
-                                    if (source«categoryConnection.connectedCategory.name.toFirstUpper».«categoryConnection.connectingArtifact.name.toFirstLower»s.empty || source«categoryConnection.connectedCategory.name.toFirstUpper».«categoryConnection.connectedArtifact.name.toFirstLower»s.empty) {
+                                    if (source«categoryConnection.connectedCategory.name.toFirstUpper».«categoryConnection.connectingArtifact.name.toFirstLower»s.empty) {
                                         return
                                     }
                                     source«categoryConnection.connectedCategory.name.toFirstUpper»Context.«categoryConnection.innerView.name.toFirstLower»OverviewContext.childContexts.filter(«categoryConnection.connectingArtifact.name.toFirstUpper»Context).forEach [ source«categoryConnection.connectingArtifact.name.toFirstUpper»Context |
