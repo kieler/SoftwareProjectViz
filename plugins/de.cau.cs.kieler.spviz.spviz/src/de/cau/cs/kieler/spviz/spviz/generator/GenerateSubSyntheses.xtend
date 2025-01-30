@@ -3,7 +3,7 @@
  *
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2021-2024 by
+ * Copyright 2021-2025 by
  * + Kiel University
  *   + Department of Computer Science
  *   + Real-Time and Embedded Systems Group
@@ -233,7 +233,12 @@ class GenerateSubSyntheses {
                             
                             // Add all simple «viewName.toFirstLower» renderings in a first subgraph (top because of node order)
                             val collapsedOverviewNode = transformCollapsed«viewName»Overview(context)
-                            children += collapsedOverviewNode
+                            // only show the collapsed nodes if there are collapsed nodes or if the hide button would uncover the hidden collapsed ones.
+                            «FOR shownElement : view.shownElements BEFORE "if (!collapsedOverviewNode.children.empty || usedContext.getOptionValue(INTERACTIVE_BUTTONS) as Boolean && (" SEPARATOR " || " AFTER ")) {"»«««
+«                              »!context.collapsed«shownElement.shownElement.name.toFirstUpper»Contexts.isEmpty«««
+«                          »«ENDFOR»
+                                children += collapsedOverviewNode
+                            }
                             
                             // Add all detailed «viewName.toFirstLower» renderings and their connections in a second subgraph (bottom because of node order)
                             val detailedOverviewNode = transformDetailed«viewName»Overview(context, it«««
@@ -243,7 +248,9 @@ class GenerateSubSyntheses {
 «                              »connected«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Connections, «««
 «                              »connecting«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Connections«««
 «                          »«ENDFOR»)
-                            children += detailedOverviewNode
+                            if (!detailedOverviewNode.children.empty) {
+                                children += detailedOverviewNode
+                            }
                         ]
                     ]
                 }
@@ -269,6 +276,7 @@ class GenerateSubSyntheses {
                         if (TOPDOWN_LAYOUT.booleanValue) {
                             SynthesisUtils.configureTopdownLayout(it, false)
                         }
+                        data += createKIdentifier => [ it.id = "collapsed" ]
                         «FOR shownElement : view.shownElements BEFORE "addOverviewOfCollapsedRendering(shown, " SEPARATOR " || " AFTER ", usedContext)"»«««
 «                          »!«viewName.toFirstLower»OverviewContext.collapsed«shownElement.shownElement.name.toFirstUpper»Contexts.isEmpty«««
 «                      »«ENDFOR»
@@ -316,6 +324,7 @@ class GenerateSubSyntheses {
                         if (TOPDOWN_LAYOUT.booleanValue) {
                             SynthesisUtils.configureTopdownLayout(it, false)
                         }
+                        data += createKIdentifier => [ it.id = "expanded" ]
                         addInvisibleContainerRendering => [
                             addChildArea
                         ]
