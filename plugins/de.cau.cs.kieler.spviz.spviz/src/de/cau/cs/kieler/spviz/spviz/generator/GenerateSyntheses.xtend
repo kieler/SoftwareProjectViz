@@ -2067,14 +2067,18 @@ class GenerateSyntheses {
                         newViz.initializeChildVisualizationContexts
                         // First, reinitialize all child contexts to be the same as before.
                         «FOR view : data.views»
-                            reInitialize(oldViz.«view.name.toFirstLower»OverviewContext, newViz.«view.name.toFirstLower»OverviewContext)
-                            if (oldViz.focus === oldViz.«view.name.toFirstLower»OverviewContext) {
-                                newViz.focus = newViz.«view.name.toFirstLower»OverviewContext
+                            if (oldViz.«view.name.toFirstLower»OverviewContext !== null) {
+                                reInitialize(oldViz.«view.name.toFirstLower»OverviewContext, newViz.«view.name.toFirstLower»OverviewContext)
+                                if (oldViz.focus === oldViz.«view.name.toFirstLower»OverviewContext) {
+                                    newViz.focus = newViz.«view.name.toFirstLower»OverviewContext
+                                }
                             }
                         «ENDFOR»
                         // Only after all child contexts are as before, reconnect them as before.
                         «FOR view : data.views»
-                            reConnect(oldViz.«view.name.toFirstLower»OverviewContext, newViz.«view.name.toFirstLower»OverviewContext)
+                            if (oldViz.«view.name.toFirstLower»OverviewContext !== null) {
+                                reConnect(oldViz.«view.name.toFirstLower»OverviewContext, newViz.«view.name.toFirstLower»OverviewContext)
+                            }
                         «ENDFOR»
                     }
                     
