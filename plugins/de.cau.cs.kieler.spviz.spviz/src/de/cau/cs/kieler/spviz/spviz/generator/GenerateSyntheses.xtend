@@ -491,6 +491,7 @@ class GenerateSyntheses {
 «««            import de.cau.cs.kieler.klighd.krendering.extensions.KLabelExtensions
             import de.cau.cs.kieler.klighd.krendering.extensions.KPolylineExtensions
             import de.cau.cs.kieler.klighd.krendering.extensions.KRenderingExtensions
+            import de.cau.cs.kieler.klighd.util.KlighdProperties
             import «data.bundleNamePrefix».viz.actions.ConnectAllAction
             import «data.getBundleNamePrefix».viz.actions.ContextCollapseExpandAction
             import «data.getBundleNamePrefix».viz.actions.ContextExpandAllAction
@@ -569,7 +570,7 @@ class GenerateSyntheses {
                         if (context.getOptionValue(SHOW_SHADOWS) as Boolean) {
                             setShadow(SHADOW_COLOR.color, 4, 4)
                         }
-                        addSimpleLabel(name)
+                        addSimpleLabel(name, false)
                         setSelectionStyle
                     ]
                 }
@@ -605,7 +606,7 @@ class GenerateSyntheses {
                                 invisible = true
                                 addRectangle => [
                                     invisible = true
-                                    addSimpleLabel(headlineText) => [
+                                    addSimpleLabel(headlineText, true) => [
                                         fontBold = true
                                         selectionFontBold = true
                                     ]
@@ -648,7 +649,7 @@ class GenerateSyntheses {
                                 invisible = true
                                 addRectangle => [
                                     invisible = true
-                                    addSimpleLabel(headlineText)
+                                    addSimpleLabel(headlineText, false)
                                 ]
                                 if (interactiveButtons) {
                                     addVerticalLine
@@ -935,13 +936,17 @@ class GenerateSyntheses {
                 /**
                  * Adds a simple text label to any rendering with some surrounding space for better readability.
                  */
-                def KText addSimpleLabel(KContainerRendering rendering, String text) {
+                def KText addSimpleLabel(KContainerRendering rendering, String text, boolean isNodeTitle) {
+                    // Add surrounding space
+                    rendering.setGridPlacementData().from(LEFT, 10, 0, TOP, 8, 0).to(RIGHT, 10, 0, BOTTOM, 8, 0)
                     rendering.addText(text) => [
-                        // Add surrounding space
-                        setGridPlacementData().from(LEFT, 10, 0, TOP, 8, 0).to(RIGHT, 10, 0, BOTTOM, 8, 0)
+                        if (isNodeTitle) {
+                            setProperty(KlighdProperties.IS_NODE_TITLE, true)
+                        }
                         // Remove the default bold property on selected texts.
                         selectionFontBold = false
                         suppressSelectability
+                        setPointPlacementData(createKPosition(LEFT, 0, 0.5f, TOP, 0, 0.5f), H_CENTRAL, V_CENTRAL, 0, 0, 0, 0)
                     ]
                 }
                 
@@ -955,7 +960,7 @@ class GenerateSyntheses {
                         setGridPlacement(1)
                         addRectangle => [
                             invisible = true
-                            addSimpleLabel(projectName) => [
+                            addSimpleLabel(projectName, true) => [
                                 fontBold = true
                                 selectionFontBold = true
                             ]
@@ -999,7 +1004,7 @@ class GenerateSyntheses {
                             setGridPlacement(columns)
                             addRectangle => [
                                 invisible = true
-                                addSimpleLabel(name)
+                                addSimpleLabel(name, false)
                             ]
                             if (interactiveButtons) {
                                 addVerticalLine
@@ -1052,7 +1057,7 @@ class GenerateSyntheses {
                                 invisible = true
                                 addRectangle => [
                                     invisible = true
-                                    addSimpleLabel(SynthesisUtils.getId(artifact.getName, context)) => [
+                                    addSimpleLabel(SynthesisUtils.getId(artifact.getName, context), hasChildren) => [
                                         fontBold = true
                                         selectionFontBold = true
                                     ]
