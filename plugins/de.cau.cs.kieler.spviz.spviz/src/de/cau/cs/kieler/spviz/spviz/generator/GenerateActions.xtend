@@ -499,8 +499,10 @@ class GenerateActions {
             import de.cau.cs.kieler.klighd.kgraph.util.KGraphUtil
             import de.cau.cs.kieler.klighd.Klighd
             import «data.getBundleNamePrefix».viz.SynthesisProperties
+            import «data.getBundleNamePrefix».viz.SynthesisUtils
             import «data.getBundleNamePrefix».model.IVisualizationContext
             import «data.getBundleNamePrefix».model.«data.visualizationName»
+            import java.util.List
             import org.eclipse.core.runtime.Status
             import org.eclipse.emf.ecore.util.EcoreUtil.Copier
             
@@ -519,12 +521,28 @@ class GenerateActions {
             abstract class AbstractVisualizationContextChangingAction implements IAction {
                 
                 final override execute(ActionContext context) {
-                    val visualizationContexts = context.viewContext.getProperty(SynthesisProperties.VISUALIZATION_CONTEXTS)
-                    val index = context.viewContext.getProperty(SynthesisProperties.CURRENT_VISUALIZATION_CONTEXT_INDEX).intValue
+                    var List<«data.visualizationName»> visualizationContexts = null
+                    var index = 0
+                    
+                    // Differentiate source/target model in diff visualization.
+                    var visContextsProperty = SynthesisProperties.VISUALIZATION_CONTEXTS
+                    var otherVisContextsProperty = SynthesisProperties.VISUALIZATION_CONTEXTS_OTHER
+                    var currentVisContextIndexProperty = SynthesisProperties.CURRENT_VISUALIZATION_CONTEXT_INDEX
+                    var otherCurrentVisContextIndexProperty = SynthesisProperties.CURRENT_VISUALIZATION_CONTEXT_INDEX_OTHER
+                    
+                    if (SynthesisUtils.isTargetModel(context.getKNode())) {
+                        visContextsProperty = SynthesisProperties.VISUALIZATION_CONTEXTS_OTHER
+                        otherVisContextsProperty = SynthesisProperties.VISUALIZATION_CONTEXTS
+                        currentVisContextIndexProperty = SynthesisProperties.CURRENT_VISUALIZATION_CONTEXT_INDEX_OTHER
+                        otherCurrentVisContextIndexProperty = SynthesisProperties.CURRENT_VISUALIZATION_CONTEXT_INDEX
+                    }
+                    
+                    visualizationContexts = context.viewContext.getProperty(visContextsProperty)
+                    index = context.viewContext.getProperty(currentVisContextIndexProperty).intValue
                     
                     val currentVisualizationContext = visualizationContexts.get(index)
                     
-                    // Make a deep-copy of the current context and store it for the action to be the next canditate for the undo
+                    // Make a deep-copy of the current context and store it for the action to be the next candidate for the undo
                     // function.
                     
                     // Copy the root context and the currently shown one from the same Copier to guarantee a completely copied
@@ -552,10 +570,18 @@ class GenerateActions {
                     try {
                         changeVisualization(modelVisualizationContext, context)
                         
+                        // FIXME: this is currently a hack that changes the other visualization context, but does no copying and index updating yet, so redo/undo currently is not implemented in diff visualizations.
+                        if (context.viewContext.viewModel.getChildren().get(0).getChildren.get(0).getProperty(SynthesisProperties.SOURCE_MODEL) !== null) {
+                            var targetModelVisualizationContext = SynthesisUtils.getDiffContext(modelVisualizationContext, context.getViewContext().getProperty(otherVisContextsProperty).last())
+                            if (targetModelVisualizationContext !== null) {
+                               changeVisualization(targetModelVisualizationContext, context)
+                            }
+                        }
+                        
                         // Put the old context, that will be updated below at the at index + 1 and remember that new index as the
                         // current index.
                         visualizationContexts.add(index + 1, currentVisualizationContext)
-                        context.viewContext.setProperty(SynthesisProperties.CURRENT_VISUALIZATION_CONTEXT_INDEX, index + 1)
+                        context.viewContext.setProperty(currentVisContextIndexProperty, index + 1)
                         
                         return getActionResult(context)
                         

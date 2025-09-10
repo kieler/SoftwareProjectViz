@@ -54,7 +54,9 @@ class GenerateLanguageServer {
             import de.cau.cs.kieler.kgraph.text.ide.KGraphLSSetup
             import de.cau.cs.kieler.klighd.lsp.launch.ILanguageRegistration
             import «data.getBundleNamePrefix».model.«data.visualizationName.toFirstUpper»Package
+            import «data.getBundleNamePrefix».model.«data.visualizationName.toFirstUpper»DiffDslStandaloneSetup
             import «data.modelBundleNamePrefix».model.«data.spvizModel.name.toFirstUpper»Package
+            import «data.modelBundleNamePrefix».model.«data.spvizModel.name.toFirstUpper»DslStandaloneSetup
             import org.eclipse.emf.ecore.resource.Resource
             import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl
             
@@ -78,8 +80,12 @@ class GenerateLanguageServer {
                     modelPackageInstance = modelPackageInstance
                     vizmodelPackageInstance = vizmodelPackageInstance
                     
-                    Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap.put("«data.spvizModel.name.toLowerCase»", new XMIResourceFactoryImpl);
-                    Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap.put("«data.visualizationName.toLowerCase»", new XMIResourceFactoryImpl);
+                    Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap.put("«data.spvizModel.name.toLowerCase»", new XMIResourceFactoryImpl)
+                    Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap.put("«data.visualizationName.toLowerCase»", new XMIResourceFactoryImpl)
+                    
+                    // Register DSL and Diff DSL languages.
+                    «data.spvizModel.name.toFirstUpper»DslStandaloneSetup.doSetup
+                    «data.visualizationName.toFirstUpper»DiffDslStandaloneSetup.doSetup
                 }
             }
             
@@ -186,7 +192,14 @@ class GenerateLanguageServer {
                 override getLanguageExtensions() {
                     return newArrayList(
                         new Language("«data.spvizModel.name.toLowerCase»", "«data.spvizModel.name» Model", #[]),
-                        new Language("«data.visualizationName.toLowerCase»", "«data.visualizationName» Model", #[])
+                        new Language("«data.visualizationName.toLowerCase»", "«data.visualizationName» Model", #[]),
+                        new Language("«data.spvizModel.name.toLowerCase»dsl", "«data.spvizModel.name» Model DSL", #[
+«««                            // TODO: add all the DSL key words here.
+                        ]),
+                        new Language("«data.visualizationName.toLowerCase»diffdsl", "«data.visualizationName» Diff DSL", #[
+                            "compare",
+                            "to"
+                        ])
                     )
                 }
                 
@@ -213,12 +226,22 @@ class GenerateLanguageServer {
                     <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry containerPath=&quot;org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-17&quot; path=&quot;5&quot; type=&quot;4&quot;/&gt;&#10;"/>
                     <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry path=&quot;5&quot; projectName=&quot;«data.bundleNamePrefix».language.server&quot; type=&quot;1&quot;/&gt;&#10;"/>
                     <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/«data.bundleNamePrefix».language.server&quot; path=&quot;5&quot; type=&quot;2&quot;/&gt;&#10;"/>
-                    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/«data.bundleNamePrefix».viz&quot; path=&quot;5&quot; type=&quot;2&quot;/&gt;&#10;"/>
-                    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/«data.bundleNamePrefix».model&quot; path=&quot;5&quot; type=&quot;2&quot;/&gt;&#10;"/>
-                    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/«data.modelBundleNamePrefix».model&quot; path=&quot;5&quot; type=&quot;2&quot;/&gt;&#10;"/>
-                    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry path=&quot;5&quot; projectName=&quot;«data.bundleNamePrefix».viz&quot; type=&quot;1&quot;/&gt;&#10;"/>
                     <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry path=&quot;5&quot; projectName=&quot;«data.bundleNamePrefix».model&quot; type=&quot;1&quot;/&gt;&#10;"/>
+                    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/«data.bundleNamePrefix».model&quot; path=&quot;5&quot; type=&quot;2&quot;/&gt;&#10;"/>
+                    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry path=&quot;5&quot; projectName=&quot;«data.bundleNamePrefix».viz&quot; type=&quot;1&quot;/&gt;&#10;"/>
+                    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/«data.bundleNamePrefix».viz&quot; path=&quot;5&quot; type=&quot;2&quot;/&gt;&#10;"/>
+                    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry path=&quot;5&quot; projectName=&quot;«data.bundleNamePrefix».diffviz&quot; type=&quot;1&quot;/&gt;&#10;"/>
+                    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/«data.bundleNamePrefix».diffviz&quot; path=&quot;5&quot; type=&quot;2&quot;/&gt;&#10;"/>
                     <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry path=&quot;5&quot; projectName=&quot;«data.modelBundleNamePrefix».model&quot; type=&quot;1&quot;/&gt;&#10;"/>
+                    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/«data.modelBundleNamePrefix».model&quot; path=&quot;5&quot; type=&quot;2&quot;/&gt;&#10;"/>
+                    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry path=&quot;5&quot; projectName=&quot;«data.modelBundleNamePrefix».dsl&quot; type=&quot;1&quot;/&gt;&#10;"/>
+                    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/«data.modelBundleNamePrefix».dsl&quot; path=&quot;5&quot; type=&quot;2&quot;/&gt;&#10;"/>
+                    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry path=&quot;5&quot; projectName=&quot;«data.modelBundleNamePrefix».dsl.ide&quot; type=&quot;1&quot;/&gt;&#10;"/>
+                    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/«data.modelBundleNamePrefix».dsl.ide&quot; path=&quot;5&quot; type=&quot;2&quot;/&gt;&#10;"/>
+                    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry path=&quot;5&quot; projectName=&quot;«data.modelBundleNamePrefix».diff.dsl&quot; type=&quot;1&quot;/&gt;&#10;"/>
+                    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/«data.modelBundleNamePrefix».diff.dsl&quot; path=&quot;5&quot; type=&quot;2&quot;/&gt;&#10;"/>
+                    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry path=&quot;5&quot; projectName=&quot;«data.modelBundleNamePrefix».diff.dsl.ide&quot; type=&quot;1&quot;/&gt;&#10;"/>
+                    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/«data.modelBundleNamePrefix».diff.dsl.ide&quot; path=&quot;5&quot; type=&quot;2&quot;/&gt;&#10;"/>
                     <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry containerPath=&quot;org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER&quot; path=&quot;5&quot; type=&quot;4&quot;/&gt;&#10;"/>
                 </listAttribute>
                 <stringAttribute key="org.eclipse.jdt.launching.CLASSPATH_PROVIDER" value="org.eclipse.m2e.launchconfig.classpathProvider"/>

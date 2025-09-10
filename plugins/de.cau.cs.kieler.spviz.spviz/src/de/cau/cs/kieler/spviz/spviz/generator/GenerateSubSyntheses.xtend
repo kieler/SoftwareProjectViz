@@ -35,7 +35,7 @@ class GenerateSubSyntheses {
         val bundleNamePrefix = data.getBundleNamePrefix
         val folder = FileGenerator.createDirectory(sourceFolder, bundleNamePrefix.replace('.', '/') + "/viz/subsyntheses")
         for (artifact : data.artifacts) {
-            var content = generateSimpleSynthesis(bundleNamePrefix, artifact.name)
+            var content = generateSimpleSynthesis(artifact, data)
             FileGenerator.updateFile(folder, "Simple" + artifact.name + "Synthesis.xtend", content)
 
             content = generateSynthesis(artifact, data)
@@ -93,6 +93,7 @@ class GenerateSubSyntheses {
             «FOR shownElement : view.shownElements»
                 import «data.getBundleNamePrefix».model.«shownElement.shownElement.name»Context
             «ENDFOR»
+            import «data.modelBundleNamePrefix».model.«data.projectName»
             «FOR artifact : categories»
                 import «data.bundleNamePrefix».model.«artifact.name.toFirstUpper»Context
                 import «data.modelBundleNamePrefix».model.«artifact.name.toFirstUpper»
@@ -101,9 +102,8 @@ class GenerateSubSyntheses {
                 import «data.bundleNamePrefix».model.«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Container
             «ENDFOR»
 
-            import static «data.getBundleNamePrefix».viz.Options.*
-            
             import static extension de.cau.cs.kieler.klighd.syntheses.DiagramSyntheses.*
+            import static extension «data.getBundleNamePrefix».viz.Options.*
             import static extension «data.getBundleNamePrefix».viz.SynthesisUtils.*
             import static extension «data.getBundleNamePrefix».model.util.ContextExtensions.*
             
@@ -124,6 +124,10 @@ class GenerateSubSyntheses {
                 extension KGraphFactory = KGraphFactory.eINSTANCE
                 
                 override transform(«viewName»OverviewContext context) {
+                    transform(context, null)
+                }
+                
+                def transform(«viewName»OverviewContext context, «data.projectName» differentModel) {
                     return #[
                         createNode => [
                             associateWith(context)
@@ -232,7 +236,7 @@ class GenerateSubSyntheses {
                             «ENDFOR»
                             
                             // Add all simple «viewName.toFirstLower» renderings in a first subgraph (top because of node order)
-                            val collapsedOverviewNode = transformCollapsed«viewName»Overview(context)
+                            val collapsedOverviewNode = if (differentModel === null) transformCollapsed«viewName»Overview(context) else transformCollapsed«viewName»Overview(context, differentModel)
                             // only show the collapsed nodes if there are collapsed nodes or if the hide button would uncover the hidden collapsed ones.
                             «FOR shownElement : view.shownElements BEFORE "if (!collapsedOverviewNode.children.empty || usedContext.getOptionValue(INTERACTIVE_BUTTONS) as Boolean && (" SEPARATOR " || " AFTER ")) {"»«««
 «                              »!context.collapsed«shownElement.shownElement.name.toFirstUpper»Contexts.isEmpty«««
@@ -241,7 +245,13 @@ class GenerateSubSyntheses {
                             }
                             
                             // Add all detailed «viewName.toFirstLower» renderings and their connections in a second subgraph (bottom because of node order)
-                            val detailedOverviewNode = transformDetailed«viewName»Overview(context, it«««
+                            val detailedOverviewNode = if (differentModel === null) transformDetailed«viewName»Overview(context, it«««
+«                          »«FOR categoryConnection : outerCategoryConnections BEFORE ', ' SEPARATOR ', '»«««
+«                              »connected«categoryConnection.connectedCategory.name.toFirstUpper»From«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»s, «««
+«                              »connecting«categoryConnection.connectedCategory.name.toFirstUpper»From«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»s, «««
+«                              »connected«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Connections, «««
+«                              »connecting«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Connections«««
+«                          »«ENDFOR») else transformDetailed«viewName»Overview(context, it, differentModel«««
 «                          »«FOR categoryConnection : outerCategoryConnections BEFORE ', ' SEPARATOR ', '»«««
 «                              »connected«categoryConnection.connectedCategory.name.toFirstUpper»From«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»s, «««
 «                              »connecting«categoryConnection.connectedCategory.name.toFirstUpper»From«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»s, «««
@@ -261,6 +271,15 @@ class GenerateSubSyntheses {
                  * @param «viewName.toFirstLower»OverviewContext The overview context for all «viewName.toFirstLower»s in this subsynthesis.
                  */
                 private def KNode transformCollapsed«viewName»Overview(«viewName»OverviewContext «viewName.toFirstLower»OverviewContext) {
+                    transformCollapsed«viewName»Overview(«viewName.toFirstLower»OverviewContext, null)
+                }
+                
+                /**
+                 * The top part of the «viewName.toFirstLower» overview rendering containing all collapsed «viewName.toFirstLower» renderings in a box layout.
+                 * 
+                 * @param «viewName.toFirstLower»OverviewContext The overview context for all «viewName.toFirstLower»s in this subsynthesis.
+                 */
+                private def KNode transformCollapsed«viewName»Overview(«viewName»OverviewContext «viewName.toFirstLower»OverviewContext, «data.projectName» differentModel) {
                     val shown = «viewName.toFirstLower»OverviewContext.showCollapsedElements
                     «FOR shownElement : view.shownElements»
                         val filteredCollapsed«shownElement.shownElement.name»Contexts = if (shown) {
@@ -288,7 +307,7 @@ class GenerateSubSyntheses {
                                 SynthesisUtils.getId(modelElement.name, usedContext)
                             ].forEach [ collapsed«shownElement.shownElement.name»Context, index |
                                 children += simple«shownElement.shownElement.name»Synthesis.transform(
-                                    collapsed«shownElement.shownElement.name»Context as «shownElement.shownElement.name»Context, -index)
+                                    collapsed«shownElement.shownElement.name»Context as «shownElement.shownElement.name»Context, -index, differentModel)
                             ]
                         «ENDFOR»
                     ]
@@ -314,6 +333,36 @@ class GenerateSubSyntheses {
 «                   »Iterable<«data.bundleNamePrefix».model.Pair<«categoryConnection.connectingArtifact.name.toFirstUpper»Context, «categoryConnection.connectedArtifact.name.toFirstUpper»Context>> connected«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Connections, «««
 «                   »Iterable<«data.bundleNamePrefix».model.Pair<«categoryConnection.connectingArtifact.name.toFirstUpper»Context, «categoryConnection.connectedArtifact.name.toFirstUpper»Context>> connecting«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Connections«««
 «               »«ENDFOR») {
+                transformDetailed«viewName»Overview(context, parentNode, null«««
+«               »«FOR categoryConnection : outerCategoryConnections BEFORE ', ' SEPARATOR ', '»«««
+«                   »connected«categoryConnection.connectedCategory.name.toFirstUpper»From«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»s, «««
+«                   »connecting«categoryConnection.connectedCategory.name.toFirstUpper»From«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»s, «««
+«                   »connected«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Connections, «««
+«                   »connecting«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Connections«««
+«               »«ENDFOR»)
+            }
+            
+                /**
+                 * The bottom part of the «viewName.toFirstLower» overview rendering containing all detailed «viewName.toFirstLower» renderings and their
+                 * connections in a layered layout.
+                 * 
+                 * @param context The overview context for all «viewName.toFirstLower»s in this sub-synthesis.
+                 * @param parentNode The node that the returned node will be added to later. Important to be able to connect the inner category edge.
+                 * @param differentModel The other project to compare against in a diff visualization.
+                 «FOR categoryConnection : outerCategoryConnections»
+                     * @param connected«categoryConnection.connectedCategory.name.toFirstUpper»From«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»s the category connections going out of this overview («categoryConnection.connectedCategory.name.toFirstUpper»)
+                     * @param connecting«categoryConnection.connectedCategory.name.toFirstUpper»From«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»s the category connections going into this overview («categoryConnection.connectedCategory.name.toFirstUpper»)
+                     * @param connected«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Connections the category connections going out of this overview («categoryConnection.connectingArtifact.name.toFirstUpper»->«categoryConnection.connectedArtifact.name.toFirstUpper»)
+                     * @param connecting«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Connections the category connections going into this overview («categoryConnection.connectingArtifact.name.toFirstUpper»->«categoryConnection.connectedArtifact.name.toFirstUpper»)
+                «ENDFOR»
+                 */
+                 private def KNode transformDetailed«viewName»Overview(«viewName»OverviewContext context, KNode parentNode, «data.projectName» differentModel«««
+«               »«FOR categoryConnection : outerCategoryConnections BEFORE ', ' SEPARATOR ', '»«««
+«                   »Iterable<«categoryConnection.connectedCategory.name.toFirstUpper»Context> connected«categoryConnection.connectedCategory.name.toFirstUpper»From«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»s, «««
+«                   »Iterable<«categoryConnection.connectedCategory.name.toFirstUpper»Context> connecting«categoryConnection.connectedCategory.name.toFirstUpper»From«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»s, «««
+«                   »Iterable<«data.bundleNamePrefix».model.Pair<«categoryConnection.connectingArtifact.name.toFirstUpper»Context, «categoryConnection.connectedArtifact.name.toFirstUpper»Context>> connected«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Connections, «««
+«                   »Iterable<«data.bundleNamePrefix».model.Pair<«categoryConnection.connectingArtifact.name.toFirstUpper»Context, «categoryConnection.connectedArtifact.name.toFirstUpper»Context>> connecting«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Connections«««
+«               »«ENDFOR») {
                     «FOR shownElement : view.shownElements»
                         val filteredDetailed«shownElement.shownElement.name»Contexts = filteredElementContexts(
                             context.detailed«shownElement.shownElement.name»Contexts, usedContext)
@@ -332,7 +381,7 @@ class GenerateSubSyntheses {
                         
                         «FOR shownElement : view.shownElements»
                             children += filteredDetailed«shownElement.shownElement.name»Contexts.flatMap [
-                                return «shownElement.shownElement.name.toFirstLower»Synthesis.transform(it as «shownElement.shownElement.name»Context)
+                                return «shownElement.shownElement.name.toFirstLower»Synthesis.transform(it as «shownElement.shownElement.name»Context, differentModel)
                             ]
                         «ENDFOR»
                         
@@ -341,8 +390,15 @@ class GenerateSubSyntheses {
                             context.«shownConnection.shownConnection.connecting.name.toFirstLower»Connects«shownConnection.shownConnection.connected.name»Named«shownConnection.shownConnection.name»Edges.forEach [
 «««                            // Connects the {@code sourceBundleNode} and the {@code usedByBundleNode} via an arrow in UML style,
 «««                            // so [usedByBundleNode] ----- uses -----> [sourceBundleNode]
+                                // var boolean different = false
                                 val connecting = key
                                 val connected = value
+                                
+«««                                TODO: calculate differences and hand them down like this.
+                                // if (!SynthesisUtils.compare«view.name.toFirstUpper»Connections(differentModel, connecting.modelElement, connected.modelElement)){
+                                //     different = true
+                                // }
+                                
                                 if (!nodeExists(connecting) || !nodeExists(connected)) {
                                     // Only Add edges if the nodes are actually shown.
                                     return
@@ -356,8 +412,11 @@ class GenerateSubSyntheses {
                                     data.filter(KIdentifier).head?.id === "connecting«shownConnection.shownConnection.name»«shownConnection.shownConnection.connecting.name»s"
                                 ]
                                 
+                                // val difference = different
                                 val edge = createEdge(connecting, connected) => [
+                                    // val difference_ = difference
                                     addConnected«shownConnection.shownConnection.connecting.name»Connects«shownConnection.shownConnection.connected.name»Named«shownConnection.shownConnection.name»EdgeRendering(true, false)
+                                    // addConnected«shownConnection.shownConnection.connecting.name»Connects«shownConnection.shownConnection.connected.name»Named«shownConnection.shownConnection.name»EdgeRendering(true, false, difference_, differentModel.projectName.contains("_target"))
                                     sourcePort = connectingPort
                                     targetPort = connectedPort
                                     source = connectingNode
@@ -751,6 +810,10 @@ class GenerateSubSyntheses {
                 extension KGraphFactory = KGraphFactory.eINSTANCE
                 
                 override transform(«artifactName»Context context) {
+                    transform(context, null)
+                }
+                
+                def transform(«artifactName»Context context, «data.projectName» differentModel) {
                     val «artifactName.toFirstLower» = context.modelElement
                     return #[
                         context.createNode() => [
@@ -961,7 +1024,7 @@ class GenerateSubSyntheses {
                                 «FOR view : views SEPARATOR ' || ' AFTER ','»
                                     context.parent instanceof «view.name»OverviewContext
                                 «ENDFOR»
-                                hasChildren, usedContext)
+                                hasChildren, usedContext, differentModel)
                             «ENDIF»
                         ]
                     ]
@@ -981,7 +1044,9 @@ class GenerateSubSyntheses {
      * @return 
      *         the generated file content as a string
      */
-    def static String generateSimpleSynthesis(String packageName, String artifactName) {
+    def static String generateSimpleSynthesis(Artifact artifact, DataAccess data) {
+        val packageName = data.bundleNamePrefix
+        val artifactName = artifact.name
         return '''
             package «packageName».viz.subsyntheses
             
@@ -994,6 +1059,7 @@ class GenerateSubSyntheses {
             import «packageName».viz.SynthesisUtils
             import «packageName».viz.Styles
             import «packageName».model.«artifactName»Context
+            import «data.modelBundleNamePrefix».model.«data.projectName»
             
             import static extension de.cau.cs.kieler.klighd.syntheses.DiagramSyntheses.*
             
@@ -1011,6 +1077,10 @@ class GenerateSubSyntheses {
                 }
                 
                 def transform(«artifactName»Context context, int priority) {
+                    transform(context, priority, null)
+                }
+                
+                def transform(«artifactName»Context context, int priority, «data.projectName» differentModel) {
                     val «artifactName.toFirstLower» = context.modelElement
                     return #[
                         context.createNode() => [
@@ -1018,7 +1088,7 @@ class GenerateSubSyntheses {
                             data += createKIdentifier => [ it.id = context.hashCode.toString ]
                             val label = SynthesisUtils.getId(«artifactName.toFirstLower».name, usedContext) ?: ""
                             setLayoutOption(CoreOptions::PRIORITY, priority)
-                            add«artifactName»InOverviewRendering(«artifactName.toFirstLower», label, usedContext)
+                            add«artifactName»InOverviewRendering(«artifactName.toFirstLower», label, usedContext, differentModel)
                         ]
                     ]
                 }

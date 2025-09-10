@@ -22,7 +22,8 @@ class GenerateMavenBuild {
      *   (/bin, /target, dependencies.txt, ...)
      */
     
-    static String[] bundleSuffixes = #["viz", "model", "language.server"]
+    static String[] vizBundleSuffixes = #["viz", "model", "language.server", "diffviz"]
+    static String[] modelBundleSuffixes = #["model", "model.dsl", "model.dsl.ide", "diff.dsl", "diff.dsl.ide"]
     
     /**
      * Generates the entire Maven build for this visualization.
@@ -36,7 +37,7 @@ class GenerateMavenBuild {
     static def generate(String rootPath, String artifactIdPrefix, String vizName, String modelIdPrefix, String version) {
         val root = new File (rootPath)
         // A pom for each sub-module
-        for (bundleSuffix : bundleSuffixes) {
+        for (bundleSuffix : de.cau.cs.kieler.spviz.spviz.generator.GenerateMavenBuild.vizBundleSuffixes) {
             addProjectPom(root, artifactIdPrefix, bundleSuffix, version)
         }
         // The main build folder with the main pom to build this viz, an Eclipse feature, LS CLI build, and Tycho update site config
@@ -129,10 +130,12 @@ class GenerateMavenBuild {
                   <modules>
                     <module>../spviz.build</module>
                     <module>../spviz.build/de.cau.cs.kieler.spviz.targetplatform</module>
-                    «FOR bundleSuffix : bundleSuffixes»
+                    «FOR bundleSuffix : GenerateMavenBuild.vizBundleSuffixes»
                         <module>../«vizArtifactIdPrefix».«bundleSuffix»</module>
                     «ENDFOR»
-                    <module>../«modelIdPrefix».model</module>
+                    «FOR modelBundleSuffix : GenerateMavenBuild.modelBundleSuffixes»
+                        <module>../«modelIdPrefix».«modelBundleSuffix»</module>
+                    «ENDFOR»
                     <module>feature</module>
                     <module>«vizArtifactIdPrefix».repository</module>
                   </modules>

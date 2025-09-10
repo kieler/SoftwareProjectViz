@@ -492,6 +492,8 @@ class GenerateModelMavenBuild {
                   <unit id="org.eclipse.lsp4j.sdk.feature.group" version="0.0.0"/>
                   <unit id="org.eclipse.wildwebdeveloper.xml.feature.feature.group" version="0.0.0"/>
                   <unit id="org.eclipse.sdk.feature.group" version="0.0.0"/>
+                  <unit id="org.eclipse.xtext.sdk.feature.group" version="0.0.0"/>
+                  <unit id="org.eclipse.emf.ecore.xcore.sdk.feature.group" version="0.0.0"/> 
                   <repository location="https://download.eclipse.org/releases/2023-12"/>
                 </location>
 «««                <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
@@ -510,6 +512,7 @@ class GenerateModelMavenBuild {
                 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
                   <unit id="com.google.gson" version="0.0.0"/>
                   <unit id="com.google.inject" version="0.0.0"/>
+                  <unit id="slf4j.api" version="0.0.0"/> 
                   <repository location="https://download.eclipse.org/tools/orbit/simrel/orbit-aggregation/release/4.30.0/"/>
                 </location>
               </locations>

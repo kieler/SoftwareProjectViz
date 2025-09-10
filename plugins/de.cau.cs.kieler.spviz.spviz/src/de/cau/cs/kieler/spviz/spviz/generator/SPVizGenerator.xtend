@@ -118,6 +118,26 @@ class SPVizGenerator extends AbstractGenerator {
         // Copy icons over into the project
         copyIcons(FileGenerator.createDirectory(vizProjectDirectory, "icons"))
         
+        // Generate the -viz.diffviz project
+        val diffVizProjectName = data.getBundleNamePrefix + ".diffviz"
+        val diffVizProjectPath = root + diffVizProjectName
+        if (new File(diffVizProjectPath).isDirectory) {
+            LOGGER.info("Updating sources of project {}", diffVizProjectPath)
+        } else {
+            LOGGER.info("Generating project {}", diffVizProjectPath)
+        }
+        FileGenerator.createDirectory(diffVizProjectPath)
+        new ProjectGenerator(diffVizProjectName, diffVizProjectPath)
+            .configureMaven(true)
+            .configureKlighd(true)
+            .additionalSourceFolder("xtend-gen")
+            .configureRequiredBundles(requiredDiffVizBundles(data))
+            .configureExportedPackages(exportedDiffVizPackages(data))
+            .generate()
+            
+        val sourceDiffVizFolder = new File(diffVizProjectPath, "src-gen")
+        GenerateDiffViz.generate(sourceDiffVizFolder, data)
+        
         
         // Generate the .language.server Maven project
         val lsProjectName = data.bundleNamePrefix + ".language.server"
@@ -274,9 +294,12 @@ class SPVizGenerator extends AbstractGenerator {
            new Dependency("org.eclipse.xtend", "org.eclipse.xtend.lib", "${xtend-version}"),
            new Dependency("org.eclipse.xtext", "org.eclipse.xtext.ide", "${xtext-version}"),
            new Dependency("org.eclipse.xtext", "org.eclipse.xtext.xbase.lib", "${xtext-version}"),
-           new Dependency(data.bundleNamePrefix, data.bundleNamePrefix + ".viz", "${project.version}"),
            new Dependency(data.bundleNamePrefix, data.bundleNamePrefix + ".model", "${project.version}"),
-           new Dependency(data.modelBundleNamePrefix, data.modelBundleNamePrefix + ".model", "${project.version}")
+           new Dependency(data.bundleNamePrefix, data.bundleNamePrefix + ".viz", "${project.version}"),
+           new Dependency(data.bundleNamePrefix, data.bundleNamePrefix + ".diffviz", "${project.version}"),
+           new Dependency(data.modelBundleNamePrefix, data.modelBundleNamePrefix + ".model", "${project.version}"),
+           new Dependency(data.modelBundleNamePrefix, data.modelBundleNamePrefix + ".dsl", "${project.version}"),
+           new Dependency(data.modelBundleNamePrefix, data.modelBundleNamePrefix + ".diff.dsl", "${project.version}")
         ]
     }
     
@@ -299,6 +322,30 @@ class SPVizGenerator extends AbstractGenerator {
     protected static def List<String> exportedVizPackages(DataAccess data) {
         return #[
            data.bundleNamePrefix + ".viz"
+        ]
+    }
+    
+    protected static def List<String> requiredDiffVizBundles(DataAccess data) {
+        return #[
+            "com.google.inject",
+            "de.cau.cs.kieler.klighd",
+            "de.cau.cs.kieler.klighd.krendering",
+            "de.cau.cs.kieler.klighd.krendering.extensions",
+            "org.eclipse.elk.alg.layered",
+            "org.eclipse.elk.core",
+            "org.eclipse.emf",
+            "org.eclipse.xtext",
+            "org.eclipse.xtext.xbase.lib",
+            "com.google.inject",
+            data.modelBundleNamePrefix + ".model",
+            data.modelBundleNamePrefix + ".diff.dsl",
+            data.bundleNamePrefix + ".viz"
+        ]
+    }
+    
+    protected static def List<String> exportedDiffVizPackages(DataAccess data) {
+        return #[
+           data.bundleNamePrefix + ".diffviz"
         ]
     }
     

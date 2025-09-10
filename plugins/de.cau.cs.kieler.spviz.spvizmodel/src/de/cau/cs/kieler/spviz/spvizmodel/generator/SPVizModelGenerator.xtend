@@ -25,6 +25,8 @@ import org.eclipse.emf.ecore.resource.Resource
 import org.eclipse.xtext.generator.AbstractGenerator
 import org.eclipse.xtext.generator.IFileSystemAccess2
 import org.eclipse.xtext.generator.IGeneratorContext
+import org.eclipse.xtext.xtext.wizard.WizardConfiguration
+import org.eclipse.xtext.xtext.wizard.cli.CliProjectsCreator
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -80,6 +82,33 @@ class SPVizModelGenerator extends AbstractGenerator {
         
         // Generate a .generate scaffold for the model if not already existent.
         GenerateGeneratorScaffold.generate(rootDirectory, model, version)
+        
+        val CliProjectsCreator creator = new CliProjectsCreator()
+        val WizardConfiguration config = new WizardConfiguration() => [
+            // TODO: configure this.
+            baseName = "bla"
+        ]
+//        val File targetLocation = new File("testdata/wizard-expectations", config.getBaseName()) // where it should be generated to
+//        targetLocation.mkdirs();
+        // only if the project should be wiped
+//        Files.sweepFolder(targetLocation);
+//        config.setRootLocation(targetLocation.getPath());
+//        creator.createProjects(config);
+        
+        // TODO: programmatically generate the DSL from the given xcore model.
+        // How it would be done from Eclipse:
+        // 1. create a new project using the "Xtext Project From Existing Ecore Models" wizard
+        // see https://github.com/eclipse-xtext/xtext/blob/997bedb00a8eb43ebfe43576aa1e4a638eaba10f/org.eclipse.xtext.tests/src/org/eclipse/xtext/xtext/wizard/cli/CliWizardIntegrationTest.java#L51
+        // 2. configure and run it:
+        //    - use the model xcore file
+        //    - use the (projectName) model as the entry rule for the grammar
+        //    - give it the proper project name (model.package + ".dsl"), language name (same in CamelCase), and extension (same in lowercase)
+        // 3. fix the dependencies in the newly generated plugin: add the slf4j.api dependency. Xtext needs it, but currently does not add it, seems to be an Xtext bug.
+        // 4. Run the org.eclipse.emf.mew2.launch.runtime.Mwe2Launcher on the new project as configured in the generated run configuration
+        // 5. adapt the dsl resource (and other classes I forgot) as in thesis so that it creates a correct model readable by the synthesis
+        // [or do the alternative: generate all files on your own (not feasible, all classes / parser from Xtext really should be generated)]
+        
+        // TODO: generate the DiffDSL (new Xtext project based on .xtext grammar)
     }
     
     /**
