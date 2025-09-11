@@ -89,8 +89,8 @@ class SPVizModelGenerator extends AbstractGenerator {
         GenerateGeneratorScaffold.generate(rootDirectory, model, version)
         
         // Generate DiffDSL
-        val CliProjectsCreator creator = new CliProjectsCreator()
-        val WizardConfiguration config = new WizardConfiguration() => [
+        var CliProjectsCreator creator = new CliProjectsCreator()
+        var WizardConfiguration config = new WizardConfiguration() => [
             rootLocation = rootPath.toAbsolutePath.toString
             baseName = model.package + ".diff.dsl"
             language.name = baseName + "." + model.name + "DiffDsl"
@@ -123,11 +123,51 @@ class SPVizModelGenerator extends AbstractGenerator {
         content = diffDslTargetPlatformContent(model)
         FileGenerator.updateFile(diffDslTargetSourceFolder, config.baseName + ".target.target", content)
         
-        // generate remaining source files
         
+        // TODO: Generate model DSL
+        // We cannot generate the model DSL from the generated architecture model here easily:
+        // - The generator first needs to load the model package, which it can only do if the model has been compiled first.
+        // - I do not want to build the model code in the generator directly, that is something Maven already does.
+        // - I could split the generator into two parts:
+        // 1. generate model code as abov
+        // 2. trigger Maven build from the generator to only build the model (separate Maven goal)
+        // 3. load model in the generator and generate DSL code (alternative: trigger this generator from Maven instead, CliProjectsCreator is a CLI tool, after all)
+        // see https://github.com/xtext/xtext-reference-projects/tree/74ac80c44fc8b61c7eb38c858769f4247971b09f/launch
+        // and https://github.com/eclipse-xtext/xtext-website/blob/9d54f6538fa42b2a39fd1d27e83ddf4807538165/xtext-website/_posts/releasenotes/2018-09-04-version-2-15-0.md?plain=1#L41
+        // 4. generate remaining files / changed files into the new DSL code
+        // (5. build the entire project via Maven, now with the DSL code) 
         
-        // TODO: programmatically generate the DSL from the given xcore model.
-        // use this one here? org.eclipse.xtext.xtext.wizard.ecore2xtext
+        // Mock of Step 3:
+        // First, we need to load the class/package of the previously generated architecture model.
+//        val classLoader = new URLClassLoader(#[java.net.URI.create("file://" + rootPath.toAbsolutePath.toString + "/" + model.package + ".model").toURL])
+//        val Class<?> thePackage = classLoader.loadClass(model.package + ".model." + model.name + "Package")
+//        val Object modelPackage = thePackage.fields.findFirst[name.equals("eINSTANCE")]?.get(thePackage)
+//        if (modelPackage instanceof EPackage) { // or is this an EClass?
+//            println("yay!")
+//        }
+//        val LanguageDescriptor modelLanguage = new LanguageDescriptor()
+//        modelLanguage.name = model.package
+//        modelLanguage.fileExtensions = FileExtensions.fromString(model.name.toLowerCase)
+//        creator = new CliProjectsCreator()
+//        config = new WizardConfiguration() => [
+//            rootLocation = rootPath.toAbsolutePath.toString
+//            baseName = model.package + ".dsl"
+//            language.name = baseName + "." + model.name + "Dsl"
+//            language.fileExtensions = FileExtensions.fromString(model.name.toLowerCase + "dsl")
+//            preferredBuildSystem = BuildSystem.MAVEN
+//            javaVersion = JavaVersion.JAVA17
+//            ideProject.enabled = true
+//            // ensures that META-INF/MANIFEST.MF will be generated for all projects
+//            uiProject.enabled = true
+//            // cannot find a way to also auto-generate .project files for Eclipse
+//            ecore2Xtext.defaultEPackageInfo = new EPackageInfo(modelPackage, URI.createPlatformResourceURI(modelLanguage.nsURI), URI.createPlatformResourceURI(modelLanguage.nsURI), "?",
+//            modelLanguage.name)
+//            ecore2Xtext.rootElementClass = value // type EClass? // is this the "entry rule"? -> model.name + "Project" is the class name
+//        ]
+//        creator.lineDelimiter = LineDelimiter.UNIX.value
+//        
+//        creator.createProjects(config)
+        
         // How it would be done from Eclipse:
         // 1. create a new project using the "Xtext Project From Existing Ecore Models" wizard
         // see https://github.com/eclipse-xtext/xtext/blob/997bedb00a8eb43ebfe43576aa1e4a638eaba10f/org.eclipse.xtext.tests/src/org/eclipse/xtext/xtext/wizard/cli/CliWizardIntegrationTest.java#L51
@@ -138,7 +178,6 @@ class SPVizModelGenerator extends AbstractGenerator {
         // 3. fix the dependencies in the newly generated plugin: add the slf4j.api dependency. Xtext needs it, but currently does not add it, seems to be an Xtext bug.
         // 4. Run the org.eclipse.emf.mew2.launch.runtime.Mwe2Launcher on the new project as configured in the generated run configuration
         // 5. adapt the dsl resource (and other classes I forgot) as in thesis so that it creates a correct model readable by the synthesis
-        // [or do the alternative: generate all files on your own (not feasible, all classes / parser from Xtext really should be generated)]
     }
     
     /**

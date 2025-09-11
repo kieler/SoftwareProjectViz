@@ -23,7 +23,8 @@ class GenerateMavenBuild {
      */
     
     static String[] vizBundleSuffixes = #["viz", "model", "language.server", "diffviz"]
-    static String[] modelBundleSuffixes = #["model", "model.dsl.parent", "diff.dsl.parent"]
+//    TODO: comment in when DSL generation works.
+    static String[] modelBundleSuffixes = #["model", /*"model.dsl.parent", */"diff.dsl.parent"]
     
     /**
      * Generates the entire Maven build for this visualization.

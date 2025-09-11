@@ -298,7 +298,8 @@ class SPVizGenerator extends AbstractGenerator {
            new Dependency(data.bundleNamePrefix, data.bundleNamePrefix + ".viz", "${project.version}"),
            new Dependency(data.bundleNamePrefix, data.bundleNamePrefix + ".diffviz", "${project.version}"),
            new Dependency(data.modelBundleNamePrefix, data.modelBundleNamePrefix + ".model", "${project.version}"),
-           new Dependency(data.modelBundleNamePrefix + ".dsl", data.modelBundleNamePrefix + ".dsl", "1.0.0-SNAPSHOT"),
+//           TODO: comment in when DSL generation works.
+//           new Dependency(data.modelBundleNamePrefix + ".dsl", data.modelBundleNamePrefix + ".dsl", "1.0.0-SNAPSHOT"),
            new Dependency(data.modelBundleNamePrefix + ".diff.dsl", data.modelBundleNamePrefix + ".diff.dsl", "1.0.0-SNAPSHOT")
         ]
     }

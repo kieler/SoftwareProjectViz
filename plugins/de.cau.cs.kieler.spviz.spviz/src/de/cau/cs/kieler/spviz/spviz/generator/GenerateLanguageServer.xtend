@@ -56,7 +56,8 @@ class GenerateLanguageServer {
             import «data.getBundleNamePrefix».model.«data.visualizationName.toFirstUpper»Package
             import «data.modelBundleNamePrefix».model.«data.spvizModel.name.toFirstUpper»Package
             import «data.modelBundleNamePrefix».diff.dsl.«data.spvizModel.name.toFirstUpper»DiffDslStandaloneSetup
-            import «data.modelBundleNamePrefix».dsl.«data.spvizModel.name.toFirstUpper»DslStandaloneSetup
+«««            TODO: comment in when DSL generation works.
+            // import «data.modelBundleNamePrefix».dsl.«data.spvizModel.name.toFirstUpper»DslStandaloneSetup
             import org.eclipse.emf.ecore.resource.Resource
             import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl
             
@@ -84,7 +85,8 @@ class GenerateLanguageServer {
                     Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap.put("«data.visualizationName.toLowerCase»", new XMIResourceFactoryImpl)
                     
                     // Register DSL and Diff DSL languages.
-                    «data.spvizModel.name.toFirstUpper»DslStandaloneSetup.doSetup
+«««                    TODO: comment in when DSL generation works.
+                    // «data.spvizModel.name.toFirstUpper»DslStandaloneSetup.doSetup
                     «data.spvizModel.name.toFirstUpper»DiffDslStandaloneSetup.doSetup
                 }
             }
