@@ -3,7 +3,7 @@
  *
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2022-2024 by
+ * Copyright 2022-2025 by
  * + Kiel University
  *   + Department of Computer Science
  *   + Real-Time and Embedded Systems Group
@@ -54,9 +54,9 @@ class GenerateLanguageServer {
             import de.cau.cs.kieler.kgraph.text.ide.KGraphLSSetup
             import de.cau.cs.kieler.klighd.lsp.launch.ILanguageRegistration
             import «data.getBundleNamePrefix».model.«data.visualizationName.toFirstUpper»Package
-            import «data.getBundleNamePrefix».model.«data.visualizationName.toFirstUpper»DiffDslStandaloneSetup
             import «data.modelBundleNamePrefix».model.«data.spvizModel.name.toFirstUpper»Package
-            import «data.modelBundleNamePrefix».model.«data.spvizModel.name.toFirstUpper»DslStandaloneSetup
+            import «data.modelBundleNamePrefix».diff.dsl.«data.spvizModel.name.toFirstUpper»DiffDslStandaloneSetup
+            import «data.modelBundleNamePrefix».dsl.«data.spvizModel.name.toFirstUpper»DslStandaloneSetup
             import org.eclipse.emf.ecore.resource.Resource
             import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl
             
@@ -85,7 +85,7 @@ class GenerateLanguageServer {
                     
                     // Register DSL and Diff DSL languages.
                     «data.spvizModel.name.toFirstUpper»DslStandaloneSetup.doSetup
-                    «data.visualizationName.toFirstUpper»DiffDslStandaloneSetup.doSetup
+                    «data.spvizModel.name.toFirstUpper»DiffDslStandaloneSetup.doSetup
                 }
             }
             

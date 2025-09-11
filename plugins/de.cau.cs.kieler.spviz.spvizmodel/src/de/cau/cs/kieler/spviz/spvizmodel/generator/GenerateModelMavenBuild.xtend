@@ -3,7 +3,7 @@
  *
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2022-2024 by
+ * Copyright 2022-2025 by
  * + Kiel University
  *   + Department of Computer Science
  *   + Real-Time and Embedded Systems Group
@@ -225,7 +225,7 @@ class GenerateModelMavenBuild {
                 <guice-version>7.0.0</guice-version>
                 <klighd-version>3.0.2.v20240507</klighd-version>
                 <lsp4j-version>0.22.0</lsp4j-version>
-                <tycho-version>2.7.5</tycho-version>
+                <tycho-version>3.0.5</tycho-version>
                 <xtext-version>2.33.0</xtext-version>
                 <xtend-version>2.33.0</xtend-version>
                 
@@ -450,7 +450,7 @@ class GenerateModelMavenBuild {
                               <pluginExecutionFilter>
                                 <groupId>org.eclipse.tycho</groupId>
                                 <artifactId>target-platform-configuration</artifactId>
-                                <versionRange>[2.7.5,)</versionRange>
+                                <versionRange>[3.0.5,)</versionRange>
                                 <goals>
                                   <goal>target-platform</goal>
                                 </goals>

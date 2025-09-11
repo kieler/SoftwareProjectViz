@@ -3,7 +3,7 @@
  *
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2020-2024 by
+ * Copyright 2020-2025 by
  * + Kiel University
  *   + Department of Computer Science
  *     + Real-Time and Embedded Systems Group
@@ -25,6 +25,11 @@ import org.eclipse.emf.ecore.resource.Resource
 import org.eclipse.xtext.generator.AbstractGenerator
 import org.eclipse.xtext.generator.IFileSystemAccess2
 import org.eclipse.xtext.generator.IGeneratorContext
+import org.eclipse.xtext.util.JavaVersion
+import org.eclipse.xtext.xtext.wizard.BuildSystem
+import org.eclipse.xtext.xtext.wizard.LanguageDescriptor
+import org.eclipse.xtext.xtext.wizard.LanguageDescriptor.FileExtensions
+import org.eclipse.xtext.xtext.wizard.LineDelimiter
 import org.eclipse.xtext.xtext.wizard.WizardConfiguration
 import org.eclipse.xtext.xtext.wizard.cli.CliProjectsCreator
 import org.slf4j.Logger
@@ -83,19 +88,46 @@ class SPVizModelGenerator extends AbstractGenerator {
         // Generate a .generate scaffold for the model if not already existent.
         GenerateGeneratorScaffold.generate(rootDirectory, model, version)
         
+        // Generate DiffDSL
         val CliProjectsCreator creator = new CliProjectsCreator()
         val WizardConfiguration config = new WizardConfiguration() => [
-            // TODO: configure this.
-            baseName = "bla"
+            rootLocation = rootPath.toAbsolutePath.toString
+            baseName = model.package + ".diff.dsl"
+            language.name = baseName + "." + model.name + "DiffDsl"
+            language.fileExtensions = FileExtensions.fromString(model.name.toLowerCase + "diff")
+            preferredBuildSystem = BuildSystem.MAVEN
+            javaVersion = JavaVersion.JAVA17
+            ideProject.enabled = true
+            // ensures that META-INF/MANIFEST.MF will be generated for all projects
+            uiProject.enabled = true
+            // cannot find a way to also auto-generate .project files for Eclipse
         ]
-//        val File targetLocation = new File("testdata/wizard-expectations", config.getBaseName()) // where it should be generated to
-//        targetLocation.mkdirs();
-        // only if the project should be wiped
-//        Files.sweepFolder(targetLocation);
-//        config.setRootLocation(targetLocation.getPath());
-//        creator.createProjects(config);
+        creator.lineDelimiter = LineDelimiter.UNIX.value
+        
+        creator.createProjects(config)
+        
+        // modify xtext grammar
+        val diffDslFolder = new File(config.rootLocation + "/" + config.baseName)
+        val diffDslPackageFolder = FileGenerator.createDirectory(diffDslFolder, "src/" + config.baseName.replace('.', '/'))
+        var content = generateDiffGrammar(model, config.language)
+        FileGenerator.updateFile(diffDslPackageFolder, model.name + "DiffDsl.xtext", content)
+        // TODO: only update this file and not do a full regeneration (only the referencedResource is missing)
+        content = generateMwe2(model)
+        FileGenerator.updateFile(diffDslPackageFolder, "Generate" + model.name + "DiffDsl.mwe2", content)
+        // TODO: also update this file, only the emf.ecore.xcore dependency is missing.
+        val diffDslManifestFolder = FileGenerator.createDirectory(diffDslFolder, "META-INF")
+        content = diffManifestContent(model)
+        FileGenerator.updateFile(diffDslManifestFolder, "MANIFEST.MF", content)
+        // TODO: also update this file as well, only the emf.ecore.xcore.sdk.feature.group is missing.
+        val diffDslTargetSourceFolder = new File(config.rootLocation + "/" + config.baseName + ".target")
+        content = diffDslTargetPlatformContent(model)
+        FileGenerator.updateFile(diffDslTargetSourceFolder, config.baseName + ".target.target", content)
+        
+        // generate remaining source files
+        
         
         // TODO: programmatically generate the DSL from the given xcore model.
+        // use this one here? org.eclipse.xtext.xtext.wizard.ecore2xtext
         // How it would be done from Eclipse:
         // 1. create a new project using the "Xtext Project From Existing Ecore Models" wizard
         // see https://github.com/eclipse-xtext/xtext/blob/997bedb00a8eb43ebfe43576aa1e4a638eaba10f/org.eclipse.xtext.tests/src/org/eclipse/xtext/xtext/wizard/cli/CliWizardIntegrationTest.java#L51
@@ -107,8 +139,6 @@ class SPVizModelGenerator extends AbstractGenerator {
         // 4. Run the org.eclipse.emf.mew2.launch.runtime.Mwe2Launcher on the new project as configured in the generated run configuration
         // 5. adapt the dsl resource (and other classes I forgot) as in thesis so that it creates a correct model readable by the synthesis
         // [or do the alternative: generate all files on your own (not feasible, all classes / parser from Xtext really should be generated)]
-        
-        // TODO: generate the DiffDSL (new Xtext project based on .xtext grammar)
     }
     
     /**
@@ -193,6 +223,155 @@ class SPVizModelGenerator extends AbstractGenerator {
         }
         
         «ENDFOR»            
+        '''
+    }
+    
+    private static def String generateDiffGrammar(SPVizModel model, LanguageDescriptor language) {
+        return '''
+            grammar «model.package + ".diff.dsl"».«model.name»DiffDsl with org.eclipse.xtext.common.Terminals
+            
+            generate «model.name.toFirstLower»DiffDsl "«language.nsURI»/«model.name»DiffDsl"
+            
+            import "«model.package».model" as «model.name»Model
+            
+            «model.name»Diff:
+                'compare' sourceModel=STRING
+                'to' targetModel=STRING;
+            
+        '''
+        
+    }
+    
+    private static def String generateMwe2(SPVizModel model) {
+        return '''
+            module «model.package».diff.dsl.Generate«model.name»DiffDsl
+            
+            import org.eclipse.xtext.xtext.generator.*
+            import org.eclipse.xtext.xtext.generator.model.project.*
+            
+            var rootPath = ".."
+            
+            Workflow {
+                
+                component = XtextGenerator {
+                    configuration = {
+                        project = StandardProjectConfig {
+                            baseName = "«model.package».diff.dsl"
+                            rootPath = rootPath
+                            eclipsePlugin = {
+                                enabled = true
+                            }
+                            createEclipseMetaData = true
+                        }
+                        code = {
+                            encoding = "UTF-8"
+                            lineDelimiter = "\n"
+                            fileHeader = "/*\n * generated by SPViz and Xtext \${version}\n */"
+                            preferXtendStubs = false
+                        }
+                    }
+                    language = StandardLanguage {
+                        name = "«model.package».diff.dsl.«model.name»DiffDsl"
+«««                        This is the important missing line
+                        referencedResource = "platform:/resource/«model.package».model/model/«model.name»Model.xcore"
+                        fileExtensions = "«model.name.toLowerCase»diff"
+            
+                        serializer = {
+                            generateStub = false
+                        }
+                        validator = {
+                            // composedCheck = "org.eclipse.xtext.validation.NamesAreUniqueValidator"
+                            // Generates checks for @Deprecated grammar annotations, an IssueProvider and a corresponding PropertyPage
+                            generateDeprecationValidation = true
+                        }
+                        generator = {
+                            generateXtendStub = true
+                        }
+                    }
+                }
+            }
+             
+        '''   
+    }
+    
+    private static def String diffDslTargetPlatformContent(SPVizModel model) {
+        return '''
+             <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+             <?pde version="3.8"?>
+             <target name="«model.package».diff.dsl.target" sequenceNumber="1">
+                 <locations>
+                     <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+                         <unit id="org.eclipse.jdt.feature.group" version="0.0.0"/>
+                         <unit id="org.eclipse.platform.feature.group" version="0.0.0"/>
+                         <unit id="org.eclipse.pde.feature.group" version="0.0.0"/>
+                         <unit id="org.eclipse.draw2d.feature.group" version="0.0.0"/>
+                         <unit id="org.eclipse.emf.sdk.feature.group" version="0.0.0"/>
+«««                         Only this line would be missing otherwise
+                         <unit id="org.eclipse.emf.ecore.xcore.sdk.feature.group" version="0.0.0"/>
+                         <repository location="https://download.eclipse.org/releases/2023-12"/>
+                     </location>
+                     <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+                         <unit id="org.eclipse.emf.mwe2.launcher.feature.group" version="0.0.0"/>
+                         <repository location="https://download.eclipse.org/modeling/emft/mwe/updates/releases/2.16.0/"/>
+                     </location>
+                     <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+                         <unit id="org.eclipse.xtext.sdk.feature.group" version="0.0.0"/>
+                         <repository location="https://download.eclipse.org/modeling/tmf/xtext/updates/releases/2.33.0/"/>
+                     </location>
+                     <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+                         <unit id="com.google.gson" version="2.10.1"/>
+                         <unit id="com.google.inject" version="7.0.0"/>
+                         <unit id="jakarta.inject.jakarta.inject-api" version="2.0.1"/>
+                         <unit id="org.antlr.runtime" version="3.2.0.v20230929-1400"/>
+                         <unit id="org.junit" version="4.13.2.v20230809-1000"/>
+                         <unit id="org.hamcrest" version="2.2.0"/>
+                         <unit id="org.hamcrest.core" version="2.2.0.v20230809-1000"/>
+                         <unit id="org.objectweb.asm" version="9.6.0"/>
+                         <unit id="io.github.classgraph.classgraph" version="4.8.164"/>
+                         <repository location="https://download.eclipse.org/tools/orbit/simrel/orbit-aggregation/2023-12"/>
+                     </location>
+                 </locations>
+             </target>
+             
+        '''   
+    }
+    
+    private static def String diffManifestContent(SPVizModel model) {
+        return '''
+             Manifest-Version: 1.0
+             Bundle-ManifestVersion: 2
+             Bundle-Name: «model.package».diff.dsl
+             Bundle-Vendor: My Company
+             Bundle-Version: 1.0.0.qualifier
+             Bundle-SymbolicName: «model.package».diff.dsl; singleton:=true
+             Bundle-ActivationPolicy: lazy
+             Require-Bundle: «model.package».model,
+              org.eclipse.xtext,
+«««             missing line follows:
+              org.eclipse.emf.ecore.xcore,
+              org.eclipse.xtext.xbase,
+              org.eclipse.equinox.common;bundle-version="3.16.0",
+              org.antlr.runtime;bundle-version="[3.2.0,3.2.1)",
+              org.eclipse.emf.ecore,
+              org.eclipse.xtext.xbase.lib;bundle-version="2.14.0",
+              org.eclipse.xtext.util,
+              org.eclipse.emf.common
+             Bundle-RequiredExecutionEnvironment: JavaSE-17
+             Automatic-Module-Name: «model.package».diff.dsl
+             Export-Package: «model.package».diff.dsl,
+              «model.package».diff.dsl.scoping,
+              «model.package».diff.dsl.«model.name.toFirstLower»DiffDsl.util,
+              «model.package».diff.dsl.services,
+              «model.package».diff.dsl.parser.antlr,
+              «model.package».diff.dsl.serializer,
+              «model.package».diff.dsl.validation,
+              «model.package».diff.dsl.«model.name.toFirstLower»DiffDsl,
+              «model.package».diff.dsl.generator,
+              «model.package».diff.dsl.«model.name.toFirstLower»DiffDsl.impl,
+              «model.package».diff.dsl.parser.antlr.internal
+             Import-Package: org.apache.log4j
+             
+             
         '''
     }
 }

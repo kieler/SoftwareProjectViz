@@ -3,7 +3,7 @@
  *
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2022-2024 by
+ * Copyright 2022-2025 by
  * + Kiel University
  *   + Department of Computer Science
  *   + Real-Time and Embedded Systems Group
@@ -23,7 +23,7 @@ class GenerateMavenBuild {
      */
     
     static String[] vizBundleSuffixes = #["viz", "model", "language.server", "diffviz"]
-    static String[] modelBundleSuffixes = #["model", "model.dsl", "model.dsl.ide", "diff.dsl", "diff.dsl.ide"]
+    static String[] modelBundleSuffixes = #["model", "model.dsl.parent", "diff.dsl.parent"]
     
     /**
      * Generates the entire Maven build for this visualization.
