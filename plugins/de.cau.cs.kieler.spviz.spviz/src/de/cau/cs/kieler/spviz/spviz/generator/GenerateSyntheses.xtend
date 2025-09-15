@@ -1453,7 +1453,7 @@ class GenerateSyntheses {
                 
                 def static boolean isTargetModel(KNode current) {
                     var currentNode = find«data.projectName»Impl(current)
-                    return currentNode.getProperty(SynthesisProperties.IS_TARGET_MODEL)
+                    return currentNode !== null && currentNode.getProperty(SynthesisProperties.IS_TARGET_MODEL)
                 }
                 
                 /**
@@ -1461,7 +1461,7 @@ class GenerateSyntheses {
                  */
                 def static KNode find«data.projectName»Impl(KNode current) {
                     var currentNode = current
-                    while (currentNode.properties.get(SynthesisProperties.IS_TARGET_MODEL) === null) {
+                    while (currentNode !== null && currentNode.properties.get(SynthesisProperties.IS_TARGET_MODEL) === null) {
                         currentNode = currentNode.getParent()
                     }
                     return currentNode
