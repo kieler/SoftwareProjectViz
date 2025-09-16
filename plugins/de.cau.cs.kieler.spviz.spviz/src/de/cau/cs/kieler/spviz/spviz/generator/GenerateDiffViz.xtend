@@ -68,6 +68,18 @@ class GenerateDiffViz {
                
                @Inject «data.projectName»DiagramSynthesis «data.projectName.toFirstLower»DiagramSynthesis
                
+               override getDisplayedActions() {
+                   return «data.projectName.toFirstLower»DiagramSynthesis.displayedActions
+               }
+               
+               override getDisplayedLayoutOptions() {
+                   return «data.projectName.toFirstLower»DiagramSynthesis.displayedLayoutOptions
+               }
+               
+               override getDisplayedSynthesisOptions() {
+                   return «data.projectName.toFirstLower»DiagramSynthesis.displayedSynthesisOptions
+               }
+               
                override KNode transform(«data.spvizModel.name.toFirstUpper»Diff model) {
                    val root = model.createNode().associateWith(model)
                     
