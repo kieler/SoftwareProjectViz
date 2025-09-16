@@ -394,11 +394,6 @@ class GenerateSubSyntheses {
                                 val connecting = key
                                 val connected = value
                                 
-«««                                TODO: calculate differences and hand them down like this.
-                                // if (!SynthesisUtils.compare«view.name.toFirstUpper»Connections(differentModel, connecting.modelElement, connected.modelElement)){
-                                //     different = true
-                                // }
-                                
                                 if (!nodeExists(connecting) || !nodeExists(connected)) {
                                     // Only Add edges if the nodes are actually shown.
                                     return
@@ -412,11 +407,8 @@ class GenerateSubSyntheses {
                                     data.filter(KIdentifier).head?.id === "connecting«shownConnection.shownConnection.name»«shownConnection.shownConnection.connecting.name»s"
                                 ]
                                 
-                                // val difference = different
                                 val edge = createEdge(connecting, connected) => [
-                                    // val difference_ = difference
-                                    addConnected«shownConnection.shownConnection.connecting.name»Connects«shownConnection.shownConnection.connected.name»Named«shownConnection.shownConnection.name»EdgeRendering(true, false)
-                                    // addConnected«shownConnection.shownConnection.connecting.name»Connects«shownConnection.shownConnection.connected.name»Named«shownConnection.shownConnection.name»EdgeRendering(true, false, difference_, differentModel.projectName.contains("_target"))
+                                    addConnected«shownConnection.shownConnection.connecting.name»Connects«shownConnection.shownConnection.connected.name»Named«shownConnection.shownConnection.name»EdgeRendering(true, false, SynthesisUtils.differenceInConnection«shownConnection.shownConnection.name.toFirstUpper»(connecting.modelElement, connected.modelElement, differentModel))
                                     sourcePort = connectingPort
                                     targetPort = connectedPort
                                     source = connectingNode
@@ -454,6 +446,7 @@ class GenerateSubSyntheses {
                                             ]
                                             
                                             val edge = createEdge(connectingNode, connectedNode, connectionId) => [
+«««                                                TODO: add difference to category edges as well.
                                                 addConnected«categoryConnection.connectingArtifact.name.toFirstUpper»Connects«categoryConnection.connectedArtifact.name.toFirstUpper»Named«categoryConnection.connection.name.toFirstUpper»EdgeRendering(false, false)
                                                 sourcePort = connectingPort
                                                 targetPort = connectedPort
@@ -495,6 +488,7 @@ class GenerateSubSyntheses {
                                                 ]
                                                 
                                                 val edge = createEdge(connectingNode, connectedNode, connectionId) => [
+«««                                                TODO: add difference to category edges as well.
                                                     addConnected«categoryConnection.connectingArtifact.name.toFirstUpper»Connects«categoryConnection.connectedArtifact.name.toFirstUpper»Named«categoryConnection.connection.name.toFirstUpper»EdgeRendering(false, thickIndices.contains(thisIndex))
                                                     sourcePort = connectingPort
                                                     targetPort = connectedPort
@@ -529,6 +523,7 @@ class GenerateSubSyntheses {
                                             val connectedPort = newPort
                                             
                                             val edge = createEdge(connectingNode, connectedNode, connectionId) => [
+«««                                                TODO: add difference to category edges as well.
                                                 addConnected«categoryConnection.connectingArtifact.name.toFirstUpper»Connects«categoryConnection.connectedArtifact.name.toFirstUpper»Named«categoryConnection.connection.name.toFirstUpper»EdgeRendering(false, false)
                                                 sourcePort = connectingPort
                                                 targetPort = connectedPort
@@ -564,6 +559,7 @@ class GenerateSubSyntheses {
                                                 ]
                                                 
                                                 val edge = createEdge(connectingNode, connectedNode, connectionId) => [
+«««                                                TODO: add difference to category edges as well.
                                                     addConnected«categoryConnection.connectingArtifact.name.toFirstUpper»Connects«categoryConnection.connectedArtifact.name.toFirstUpper»Named«categoryConnection.connection.name.toFirstUpper»EdgeRendering(true, thickIndices.contains(thisIndex))
                                                     sourcePort = connectingPort
                                                     targetPort = connectedPort
@@ -603,6 +599,7 @@ class GenerateSubSyntheses {
                                             val connectedPort = newPort
                                             
                                             val edge = createEdge(connectingNode, connectedNode, connectionId) => [
+«««                                                TODO: add difference to category edges as well.
                                                 addConnected«categoryConnection.connectingArtifact.name.toFirstUpper»Connects«categoryConnection.connectedArtifact.name.toFirstUpper»Named«categoryConnection.connection.name.toFirstUpper»EdgeRendering(false, false)
                                                 sourcePort = connectingPort
                                                 targetPort = connectedPort
@@ -622,6 +619,7 @@ class GenerateSubSyntheses {
                                             ]
                                             
                                             val edge = createEdge(connectingNode, connectedNode, connectionId) => [
+«««                                                TODO: add difference to category edges as well.
                                                 addConnected«categoryConnection.connectingArtifact.name.toFirstUpper»Connects«categoryConnection.connectedArtifact.name.toFirstUpper»Named«categoryConnection.connection.name.toFirstUpper»EdgeRendering(false, false)
                                                 sourcePort = connectingPort
                                                 targetPort = connectedPort
@@ -655,6 +653,7 @@ class GenerateSubSyntheses {
                                             val connectedPort = newPort
                                             
                                             val edge = createEdge(connectingNode, connectedNode, connectionId) => [
+«««                                                TODO: add difference to category edges as well.
                                                 addConnected«categoryConnection.connectingArtifact.name.toFirstUpper»Connects«categoryConnection.connectedArtifact.name.toFirstUpper»Named«categoryConnection.connection.name.toFirstUpper»EdgeRendering(false, false)
                                                 sourcePort = connectingPort
                                                 targetPort = connectedPort
@@ -677,6 +676,7 @@ class GenerateSubSyntheses {
                                             ]
                                             
                                             val edge = createEdge(connectingNode, connectedNode, connectionId) => [
+«««                                                TODO: add difference to category edges as well.
                                                 addConnected«categoryConnection.connectingArtifact.name.toFirstUpper»Connects«categoryConnection.connectedArtifact.name.toFirstUpper»Named«categoryConnection.connection.name.toFirstUpper»EdgeRendering(false, true)
                                                 sourcePort = connectingPort
                                                 targetPort = connectedPort
@@ -709,6 +709,7 @@ class GenerateSubSyntheses {
                                     ]
                                     
                                     val edge = createEdge(connecting, connected) => [
+«««                                                TODO: add difference to category edges as well.
                                         addConnected«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»EdgeRendering
                                         sourcePort = connectingPort
                                         targetPort = connectedPort
@@ -835,7 +836,7 @@ class GenerateSubSyntheses {
                                 // Only show this, if the option for it says so and if the context is available.
                                 if (usedContext.getOptionValue(Options.«artifactName.toUpperCase»_SHOW_«containedView.view.name.toUpperCase») === true
                                     && context.«containedView.view.name.toFirstLower»OverviewContext !== null) {
-                                    val «containedView.view.name.toFirstLower»OverviewNodes = «containedView.view.name.toFirstLower»OverviewSynthesis.transform(context.«containedView.view.name.toFirstLower»OverviewContext)
+                                    val «containedView.view.name.toFirstLower»OverviewNodes = «containedView.view.name.toFirstLower»OverviewSynthesis.transform(context.«containedView.view.name.toFirstLower»OverviewContext, differentModel)
                                     children += «containedView.view.name.toFirstLower»OverviewNodes
                                     
                                     «FOR categoryConnection : categories.filter[it.innerView === containedView.view]»

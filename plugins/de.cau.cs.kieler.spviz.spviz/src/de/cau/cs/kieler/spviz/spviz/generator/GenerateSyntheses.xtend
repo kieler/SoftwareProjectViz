@@ -66,6 +66,7 @@ class GenerateSyntheses {
             import de.cau.cs.kieler.klighd.kgraph.KNode
             import de.cau.cs.kieler.klighd.krendering.ViewSynthesisShared
             import de.cau.cs.kieler.klighd.krendering.extensions.KNodeExtensions
+            import de.cau.cs.kieler.klighd.krendering.extensions.KRenderingExtensions
             import de.cau.cs.kieler.klighd.syntheses.AbstractDiagramSynthesis
             import «data.getBundleNamePrefix».viz.actions.RedoAction
             import «data.getBundleNamePrefix».viz.actions.ResetViewAction
@@ -98,6 +99,7 @@ class GenerateSyntheses {
             @ViewSynthesisShared
             class «data.projectName.toFirstUpper»DiagramSynthesis extends AbstractDiagramSynthesis<«data.projectName»> {
                 @Inject extension KNodeExtensions
+                @Inject extension KRenderingExtensions
                 @Inject extension Styles
                 «FOR view : data.views»
                     @Inject «view.name»OverviewSynthesis «view.name.toFirstLower»OverviewSynthesis
@@ -167,6 +169,7 @@ class GenerateSyntheses {
                 
                 override transform(«data.projectName» model) {
                     val modelNode = createNode.associateWith(model)
+                    modelNode.addRectangle => [ invisible = true ]
                     if (TOPDOWN_LAYOUT.booleanValue) {
                         SynthesisUtils.configureTopdownLayout(modelNode, true)
                     }
@@ -236,19 +239,19 @@ class GenerateSyntheses {
                     }
                 }
                 
-                private def createSubNodes(«data.visualizationName» visContext, «data.projectName» model, List<KNode> children) {
+                private def createSubNodes(«data.visualizationName» visContext, «data.projectName» otherModel, List<KNode> children) {
                     «FOR view : data.views»
                         
-                        val overview«view.name»Nodes = «view.name.toFirstLower»OverviewSynthesis.transform(visContext.«view.name.toFirstLower»OverviewContext)
+                        val overview«view.name»Nodes = «view.name.toFirstLower»OverviewSynthesis.transform(visContext.«view.name.toFirstLower»OverviewContext, otherModel)
                         children += overview«view.name»Nodes
                     «ENDFOR»
                 }
                 
-                private def transformSubModel(IVisualizationContext<?> context, «data.projectName» model) {
+                private def transformSubModel(IVisualizationContext<?> context, «data.projectName» otherModel) {
                     switch (context) {
                         «FOR view : data.views»
                             «view.name»OverviewContext: {
-                                return «view.name.toFirstLower»OverviewSynthesis.transform(context, model)
+                                return «view.name.toFirstLower»OverviewSynthesis.transform(context, otherModel)
                             }
                         «ENDFOR»
                         default: {
@@ -519,6 +522,7 @@ class GenerateSyntheses {
             import de.cau.cs.kieler.klighd.krendering.KContainerRendering
             import de.cau.cs.kieler.klighd.krendering.KPolyline
             import de.cau.cs.kieler.klighd.krendering.KRectangle
+            import de.cau.cs.kieler.klighd.krendering.KRendering
             import de.cau.cs.kieler.klighd.krendering.KRoundedRectangle
             import de.cau.cs.kieler.klighd.krendering.KText
             import de.cau.cs.kieler.klighd.krendering.LineStyle
@@ -590,17 +594,14 @@ class GenerateSyntheses {
                 static final int ROUNDNESS = 4
                 
                 // comparison colors.
-                public static final String NOT_IN_SOURCE = "#b8ff61"
-                public static final String SECONDARY_NOT_IN_SOURCE = "#bafc68"
-                public static final String NOT_IN_TARGET = "#fc799a"
-                public static final String SECONDARY_NOT_IN_TARGET = "#fc83a2"
-                public static final String BUNDLE_MOVED_SOURCE = "#76d9f5"
-                public static final String SECONDARY_BUNDLE_MOVED_SOURCE = "#7eddf7"
-                public static final String BUNDLE_MOVED_TARGET = "#3191f7"
-                public static final String SECONDARY_BUNDLE_MOVED_TARGET = "#3995f7"
+                public static final String ADDED = "#00cc00"
+                public static final String REMOVED = "#ff0000"
+                public static final String MODIFIED = "#2a00ff"
                 
                 // ------------------------------------- Generic renderings -------------------------------------
                 
+«««                TODO: selection and modified diff should not both have blue colors.
+«««                TODO: selection and diff style should not both *3 the line width (this currently stacks for modified selected elements)
                 /**
                  * Sets the selection style of the node.
                  */
@@ -608,6 +609,26 @@ class GenerateSyntheses {
                     rendering => [
                         selectionLineWidth = 3 * lineWidthValue;
                         selectionForeground = SELECTION_COLOR.color;
+                    ]
+                }
+                
+                /**
+                 * Set the difference style on the rendering.
+                 */
+                def setDifferenceStyle(KRendering rendering, SynthesisUtils.ArtifactDifference difference, boolean isTargetModel) {
+                    var String color = null
+                    switch (difference) {
+                        case SynthesisUtils.ArtifactDifference.UNCHANGED:
+                            return
+                        case SynthesisUtils.ArtifactDifference.NON_EXISTENT:
+                            color = isTargetModel ? ADDED : REMOVED
+                        case SynthesisUtils.ArtifactDifference.MODIFIED:
+                            color = MODIFIED
+                    }
+                    val color_ = color
+                    rendering => [
+                        lineWidth = 3 * lineWidthValue
+                        foreground = color_.color
                     ]
                 }
                 
@@ -1040,7 +1061,7 @@ class GenerateSyntheses {
                      * {link ReferencedSynthesisExpandAction} to dynamically call the feature synthesis for the given feature.
                      * 
                      * @param node The KNode to add this rendering to.
-                     * @param aritfact The «artifact.name.toFirstLower» this rendering should represent.
+                     * @param artifact The «artifact.name.toFirstLower» this rendering should represent.
                      * @param label The representing name of this feature that should be shown.
                      * @param context The used ViewContext.
                      */
@@ -1053,7 +1074,7 @@ class GenerateSyntheses {
                      * {link ReferencedSynthesisExpandAction} to dynamically call the feature synthesis for the given feature.
                      * 
                      * @param node The KNode to add this rendering to.
-                     * @param aritfact The «artifact.name.toFirstLower» this rendering should represent.
+                     * @param artifact The «artifact.name.toFirstLower» this rendering should represent.
                      * @param label The representing name of this feature that should be shown.
                      * @param differentModel The other model to compare against for this artifact's coloring.
                      */
@@ -1075,13 +1096,8 @@ class GenerateSyntheses {
                             }
                             if (artifact.isExternal) {
                                 setBackgroundGradient(EXTERNAL_COLOR_«artifact.name».color, EXTERNAL_SECONDARY_COLOR_«artifact.name».color, 90)
-                            } else if (differentModel === null || SynthesisUtils.get«artifact.name»Diff(differentModel, artifact) !== null) {
-                                setBackgroundGradient(COLOR_«artifact.name».color, SECONDARY_COLOR_«artifact.name».color, 90)
-«««                                FIXME: this "contains "_target"" code seems dangerous, should use some property instead.
-                            } else if (differentModel.projectName.contains("_target")) {
-                                setBackgroundGradient(NOT_IN_TARGET.color, SECONDARY_NOT_IN_TARGET.color, 90)
                             } else {
-                                setBackgroundGradient(NOT_IN_SOURCE.color, SECONDARY_NOT_IN_SOURCE.color, 90)
+                                setBackgroundGradient(COLOR_«artifact.name».color, SECONDARY_COLOR_«artifact.name».color, 90)
                             }
                             addDoubleClickAction(ContextCollapseExpandAction::ID)
                             addSingleClickAction(SelectRelatedAction::ID, ModifierState.NOT_PRESSED, ModifierState.NOT_PRESSED,
@@ -1090,6 +1106,7 @@ class GenerateSyntheses {
                                 setShadow(SHADOW_COLOR.color, 4, 4)
                             }
                             tooltip = "«artifact.name» \"" + artifact.getName + "\""
+                            setDifferenceStyle(SynthesisUtils.differenceInModel(artifact, differentModel), SynthesisUtils.isTargetModel(differentModel, context))
                             setSelectionStyle
                         ]
                     }
@@ -1129,14 +1146,8 @@ class GenerateSyntheses {
                         node.addRoundedRectangle(ROUNDNESS, ROUNDNESS) => [
                             if (artifact.isExternal) {
                                 setBackgroundGradient(EXTERNAL_COLOR_«artifact.name».color, EXTERNAL_SECONDARY_COLOR_«artifact.name».color, 90)
-«««                                TODO: add the "moved" color, see how that works for all artifacts and not only bundles as in Malte's code.
-                            } else if (differentModel === null || SynthesisUtils.get«artifact.name»Diff(differentModel, artifact) !== null) {
-                                setBackgroundGradient(COLOR_«artifact.name».color, SECONDARY_COLOR_«artifact.name».color, 90)
-«««                                FIXME: see above.
-                            } else if (differentModel.projectName.contains("_target")) {
-                                setBackgroundGradient(NOT_IN_TARGET.color, SECONDARY_NOT_IN_TARGET.color, 90)
                             } else {
-                                setBackgroundGradient(NOT_IN_SOURCE.color, SECONDARY_NOT_IN_SOURCE.color, 90)
+                                setBackgroundGradient(COLOR_«artifact.name».color, SECONDARY_COLOR_«artifact.name».color, 90)
                             }
                             setGridPlacement(1)
                             addRectangle => [
@@ -1194,6 +1205,7 @@ class GenerateSyntheses {
                             }
                             addSingleClickAction(SelectRelatedAction::ID, ModifierState.NOT_PRESSED, ModifierState.NOT_PRESSED,
                                 ModifierState.NOT_PRESSED)
+                            setDifferenceStyle(SynthesisUtils.differenceInModel(artifact, differentModel), SynthesisUtils.isTargetModel(differentModel, context))
                             setSelectionStyle
                         ]
                     }
@@ -1223,34 +1235,28 @@ class GenerateSyntheses {
                         /**
                          * Adds the rendering for an edge showing a «connected.connected.name.toFirstLower» connection.
                          * 
-                         * @param head if this edge shold render an arrow head.
-                         * @param thick if this edge shold be rendered thicker.
+                         * @param head if this edge should render an arrow head.
+                         * @param thick if this edge should be rendered thicker.
                          */
                         def addConnected«connected.connecting.name»Connects«connected.connected.name»Named«connected.name»EdgeRendering(KEdge edge, boolean head, boolean thick) {
-                            addConnected«connected.connecting.name»Connects«connected.connected.name»Named«connected.name»EdgeRendering(edge, head, thick, false, false)
+                            addConnected«connected.connecting.name»Connects«connected.connected.name»Named«connected.name»EdgeRendering(edge, head, thick, SynthesisUtils.ArtifactDifference.UNCHANGED)
                         }
                         
                         /**
                          * Adds the rendering for an edge showing a «connected.connected.name.toFirstLower» connection.
                          * 
-                         * @param head if this edge shold render an arrow head.
-                         * @param thick if this edge shold be rendered thicker.
+                         * @param head if this edge should render an arrow head.
+                         * @param thick if this edge should be rendered thicker.
                          * @param different if there is a difference between source and target model.
                          * @param targetModel true if this edge is missing in the target model, false if it is missing in the source model.
                          */
-                        def addConnected«connected.connecting.name»Connects«connected.connected.name»Named«connected.name»EdgeRendering(KEdge edge, boolean head, boolean thick, boolean different, boolean targetModel) {
+                        def addConnected«connected.connecting.name»Connects«connected.connected.name»Named«connected.name»EdgeRendering(KEdge edge, boolean head, boolean thick, SynthesisUtils.ArtifactDifference difference) {
                             edge.addPolyline => [
                                 lineWidth = thick ? 4 : 2
                                 if (head) {
                                     addHeadArrowDecorator => [
+                                        setDifferenceStyle(difference, SynthesisUtils.isTargetModel(edge))
                                         lineWidth = thick ? 2 : 1
-                                        if (different) {
-                                            background = targetModel ? NOT_IN_TARGET.color : NOT_IN_SOURCE.color
-                                            foreground = targetModel ? NOT_IN_TARGET.color : NOT_IN_SOURCE.color
-                                        } else {
-                                            background = "black".color
-                                            foreground = "black".color
-                                        }
                                         selectionLineWidth = thick ? 3 : 1.5f
                                         selectionForeground = SELECTION_COLOR.color
                                         selectionBackground = SELECTION_COLOR.color
@@ -1259,13 +1265,7 @@ class GenerateSyntheses {
                                         suppressSelectablility
                                     ]
                                 }
-                                if (different) {
-                                    background = targetModel ? NOT_IN_TARGET.color : NOT_IN_SOURCE.color
-                                    foreground = targetModel ? NOT_IN_TARGET.color : NOT_IN_SOURCE.color
-                                } else {
-                                    background = "black".color
-                                    foreground = "black".color
-                                }
+                                setDifferenceStyle(difference, SynthesisUtils.isTargetModel(edge))
                                 lineStyle = LineStyle.DASH
                                 selectionLineWidth = thick ? 6 : 3
                                 selectionForeground = SELECTION_COLOR.color
@@ -1346,6 +1346,8 @@ class GenerateSyntheses {
             
             import de.cau.cs.kieler.klighd.SynthesisOption
             import de.cau.cs.kieler.klighd.ViewContext
+            import de.cau.cs.kieler.klighd.kgraph.KEdge
+            import de.cau.cs.kieler.klighd.kgraph.KGraphElement
             import de.cau.cs.kieler.klighd.kgraph.KNode
             import de.cau.cs.kieler.klighd.syntheses.DiagramSyntheses
             import «data.getBundleNamePrefix».model.IOverviewVisualizationContext
@@ -1394,16 +1396,36 @@ class GenerateSyntheses {
                  * Utils class can not be instantiated.
                  */
                 private new() {}
+                    
+                /**
+                 * Enum for how two artifacts between models differ with each other.
+                 */
+                static enum ArtifactDifference {
+                    /**
+                     * The aritfact is unchanged between both models.
+                     */
+                    UNCHANGED,
+                    /**
+                     * The artifact does not exist in the other model and is therefore either removed/added in the other model.
+                     */
+                    NON_EXISTENT,
+                    /**
+                     * The artifact is modified in the other model. A modification indicates that an artifact with the same
+                     * ID exists in the other model that has different *outgoing* connections or different *contained* artifacts.
+                     * Incoming connections and different containers are ignored.
+                     */
+                    MODIFIED
+                }
                 
-                /* 
-                * Method finds corresponding IVisualizationContext from a different model by reversing the way
-                * up the ContextModel.
-                * 
-                * @param originContext VizContext to search for
-                * @param targetViz top of the VizContext model to search through
-                * 
-                * @return the corresponding VizContext or null if there is none
-                */
+                /**
+                 * Method finds corresponding IVisualizationContext from a different model by reversing the way
+                 * up the ContextModel.
+                 * 
+                 * @param originContext VizContext to search for
+                 * @param targetViz top of the VizContext model to search through
+                 * 
+                 * @return the corresponding VizContext or null if there is none
+                 */
                 def static IVisualizationContext<?> getDiffContext(IVisualizationContext<?> originContext, «data.visualizationName» targetViz) {
 «««                    TODO: this seems inefficient.
                     var currentContext = originContext
@@ -1442,7 +1464,7 @@ class GenerateSyntheses {
                     return toFindContext.class === originContext.class ? toFindContext : null
                 }
                 
-                /*
+                /**
                  * Checks which of the models is the root. Returns true if the root is the source model and false
                  * if its the target model.
                  * 
@@ -1450,10 +1472,23 @@ class GenerateSyntheses {
                  * 
                  * @return whether the root is the target model or not
                  */
-                
-                def static boolean isTargetModel(KNode current) {
-                    var currentNode = find«data.projectName»Impl(current)
+                def static boolean isTargetModel(KGraphElement current) {
+                    var KNode currentNode = null
+                    if (current instanceof KNode) {
+                        currentNode = current
+                    } else if (current instanceof KEdge) {
+                        currentNode = current.source
+                    }
+                    currentNode = find«data.projectName»Impl(currentNode)
                     return currentNode !== null && currentNode.getProperty(SynthesisProperties.IS_TARGET_MODEL)
+                }
+                
+«««                TODO: hacky solution, should be solved better in the long term.
+                /**
+                 * If this model (given the other model) is the target model
+                 */
+                def static boolean isTargetModel(«data.projectName.toFirstUpper» differentModel, ViewContext context) {
+                    return differentModel !== context.viewModel.getChildren().get(0).getChildren.get(0).getProperty(SynthesisProperties.TARGET_MODEL)
                 }
                 
                 /**
@@ -1555,45 +1590,127 @@ class GenerateSyntheses {
                     }
                 }
                 
+                /**
+                 * If the two artifacts represent the same thing in two different models
+                 */
+                def static isEqualTo(Identifiable a1, Identifiable a2) {
+                    return a1.class == a2.class && a1.ecoreId.equals(a2.ecoreId)
+                }
+                
                 «FOR artifact : data.artifacts»
-«««                    TODO: implement and integrate something like this. Go through all connections incident to this artifact.
-                    /*
-                     * Check if the «artifact.name.toFirstLower»s are the same. Checks the connections (incoming and outgoing) and parent.
-                     * 
-                     * @param «artifact.name.toFirstLower»1 «artifact.name.toFirstLower» that gets checked for differences compared to the other one.
-                     * @param «artifact.name.toFirstLower»2 «artifact.name.toFirstLower» the other one gets compared to.
-                     * 
-                     * @return true if the everything is the same
-                     */
-                    def static boolean compare«artifact.name.toFirstUpper»Surroundings(«artifact.name.toFirstUpper» «artifact.name.toFirstLower»1, «artifact.name.toFirstUpper» «artifact.name.toFirstLower»2) {
-                        // TODO: not yet implemented.
-                        return true
-                    }
-                    
-                    /*
-                     * Compares the connection between two «artifact.name.toFirstLower»s to
-                     * the connection of two «artifact.name.toFirstLower»s with the same Id in a different model. 
-                     * 
-                     * @return True if the connection still exists
-                     */
-                    def static boolean compare«artifact.name.toFirstUpper»Connections(«data.projectName» differentModel, «artifact.name.toFirstUpper» start, «artifact.name.toFirstUpper» end) {
-                        // TODO: not yet implemented.
-                        return true
-                    }
-                    
-                    /*
-                     * Find and return the «artifact.name.toFirstUpper» with the same Id from a different model.
+                    /**
+                     * Find and return the «artifact.name.toFirstUpper» with the same ID in a different model.
+                     * Returns {@code null} if artifact does not exist in the other model.
                      */ 
-                    def static «artifact.name.toFirstUpper» get«artifact.name.toFirstUpper»Diff(OSGiProject differentModel, «artifact.name.toFirstUpper» orig) {
-                        for («artifact.name.toFirstUpper» other: differentModel.«artifact.name.toFirstLower»s) {
-                            if (orig.ecoreId.equals(other.ecoreId)) {
+                    def static «artifact.name.toFirstUpper» findEqualArtifactInModel(«artifact.name.toFirstUpper» artifact, «data.projectName.toFirstUpper» otherModel) {
+                        val String identifier = artifact.ecoreId
+                        for («artifact.name.toFirstUpper» other: otherModel.«artifact.name.toFirstLower»s) {
+                            if (identifier.equals(other.ecoreId)) {
                                 return other
                             }
                         }
                         return null
                     }
                     
+                    /**
+                     * Calculates the {@link ArtifactDifference} of a «artifact.name.toFirstLower» compared to a different project.
+                     */
+                    def static ArtifactDifference differenceInModel(«artifact.name.toFirstUpper» artifact, «data.projectName.toFirstUpper» otherModel) {
+                        if (otherModel === null) {
+                            return ArtifactDifference.UNCHANGED
+                        }
+                        
+                        // check for existence in other model
+                        val otherArtifact = findEqualArtifactInModel(artifact, otherModel)
+                        if (otherArtifact === null) {
+                            return ArtifactDifference.NON_EXISTENT
+                        }
+                        
+                        // check for equal outgoing connections and contained artifacts.
+                        if (equalOutgoingConnections(artifact, otherArtifact) && equalContainedArtifacts(artifact, otherArtifact)) {
+                            return ArtifactDifference.UNCHANGED
+                        }
+                        return ArtifactDifference.MODIFIED
+                    }
                     
+                    /**
+                     * Check if all outgoing connections (those defined within the Artifact's body in the .spvizmodel via 'connects') of this artifact1 (this model) connect to all artifacts with the same IDs in artifact2 (the other model).
+                     */
+                    def static boolean equalOutgoingConnections(«artifact.name.toFirstUpper» artifact1, «artifact.name.toFirstUpper» artifact2) {
+                        «IF !data.getConnectedArtifacts(artifact).empty»
+                            // check the sizes of outgoing connection lists first.
+                            if (
+                                «FOR connection : data.getConnectedArtifacts(artifact) SEPARATOR " ||"»
+                                    artifact1.connected«connection.name.toFirstUpper»«connection.connected.name.toFirstUpper»s.size !== artifact2.connected«connection.name.toFirstUpper»«connection.connected.name.toFirstUpper»s.size
+                                «ENDFOR»
+                            ) {
+                                return false
+                            }
+                            
+                            // if lists are the same size, search a corresponding target for each connection.
+                        «ENDIF»
+                        «FOR connection : data.getConnectedArtifacts(artifact)»
+                            for (connected : artifact1.connected«connection.name.toFirstUpper»«connection.connected.name.toFirstUpper»s) {
+                                if (artifact2.connected«connection.name.toFirstUpper»«connection.connected.name.toFirstUpper»s.findFirst[isEqualTo(connected)] === null) {
+                                    return false
+                                }
+                            }
+                        «ENDFOR»
+                        // found everything!
+                        return true
+                    }
+                    
+                    /**
+                     * Check if all contained artifacts (those defined within the Artifact's body in the .spvizmodel via 'contains') are in equal in both artifacts.
+                     */
+                    def static boolean equalContainedArtifacts(«artifact.name.toFirstUpper» artifact1, «artifact.name.toFirstUpper» artifact2) {
+                        «IF !artifact.containedArtifacts.empty»
+                            // check the sizes of contained artifact lists first.
+                            if (
+                                «FOR containment : artifact.containedArtifacts SEPARATOR " ||"»
+                                    artifact1.«containment.name.toFirstLower»s.size !== artifact2.«containment.name.toFirstLower»s.size
+                                «ENDFOR»
+                            ) {
+                                return false
+                            }
+                            
+                            // if lists are the same size, search for a corresponding contained element for each containment.
+                        «ENDIF»
+                        «FOR containment : artifact.containedArtifacts»
+                            for (contained : artifact1.«containment.name.toFirstLower»s) {
+                                if (artifact2.«containment.name.toFirstLower»s.findFirst[isEqualTo(contained)] === null) {
+                                    return false
+                                }
+                            }
+                        «ENDFOR»
+                        // found everything!
+                        return true
+                    }
+                «ENDFOR»
+                
+                «FOR connection : data.connections»
+                    def static ArtifactDifference differenceInConnection«connection.name.toFirstUpper»(«connection.connecting.name.toFirstUpper» sourceArtifact, «connection.connected.name.toFirstUpper» targetArtifact, «data.projectName.toFirstUpper» otherModel) {
+                        if (otherModel === null) {
+                            return ArtifactDifference.UNCHANGED
+                        }
+                        
+                        // check for existence in other model
+                        val otherSourceArtifact = findEqualArtifactInModel(sourceArtifact, otherModel)
+                        if (otherSourceArtifact === null) {
+                            return ArtifactDifference.NON_EXISTENT
+                        }
+                        val otherTargetArtifact = findEqualArtifactInModel(targetArtifact, otherModel)
+                        if (otherTargetArtifact === null) {
+                            return ArtifactDifference.NON_EXISTENT
+                        }
+                        
+                        // check that connection still exists
+                        if (!otherSourceArtifact.connected«connection.name.toFirstUpper»«connection.connected.name.toFirstUpper»s.contains(otherTargetArtifact)) {
+                            return ArtifactDifference.NON_EXISTENT
+                        }
+                        
+                        return ArtifactDifference.UNCHANGED
+                    }
                 «ENDFOR»
                 
                 «FOR categoryConnection : data.getUniqueCategoryConnections»

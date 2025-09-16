@@ -81,7 +81,7 @@ class GenerateDiffViz {
                    val XtextResourceSet rs = new XtextResourceSet  
                    
                    var source«data.projectName» = usedContext.getProperty(DiffSynthesisProperties.SOURCE_«data.spvizModel.name.toUpperCase»_MODEL)
-                   if (source«data.projectName» === null){
+                   if (source«data.projectName» === null) {
                        
                        val Resource source = rs.createResource(URI.createURI(folderString + "/" + model.sourceModel))
                        source.load(rs.getLoadOptions())
@@ -91,7 +91,7 @@ class GenerateDiffViz {
                    }
                    
                    var target«data.projectName» = usedContext.getProperty(DiffSynthesisProperties.TARGET_«data.spvizModel.name.toUpperCase»_MODEL)
-                   if (target«data.projectName» === null){
+                   if (target«data.projectName» === null) {
                        
                        val Resource target = rs.createResource(URI.createURI(folderString + "/" + model.targetModel))
                        target.load(rs.getLoadOptions())
@@ -104,6 +104,7 @@ class GenerateDiffViz {
                    val target«data.projectName»_ = target«data.projectName»
                    
                    root.children += createNode => [
+                       addRectangle => [ invisible = true ]
                        associateWith(model)
                        DiagramSyntheses.setLayoutOption(it, CoreOptions::ALGORITHM, "org.eclipse.elk.layered")
                        setLayoutOption(LayeredOptions.DIRECTION, Direction.RIGHT)
