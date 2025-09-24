@@ -1488,7 +1488,7 @@ class GenerateSyntheses {
                  * If this model (given the other model) is the target model
                  */
                 def static boolean isTargetModel(«data.projectName.toFirstUpper» differentModel, ViewContext context) {
-                    return differentModel !== context.viewModel.getChildren().get(0).getChildren.get(0).getProperty(SynthesisProperties.TARGET_MODEL)
+                    return differentModel !== null && differentModel !== context.viewModel.getChildren()?.get(0)?.getChildren?.get(0)?.getProperty(SynthesisProperties.TARGET_MODEL)
                 }
                 
                 /**
