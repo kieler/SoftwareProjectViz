@@ -134,7 +134,7 @@ class GenerateSyntheses {
                     options.add(CONTAINER_CONNECTION_STYLE)        
                     
                     // Add category options.
-                    options.addAll(FILTER_CATEGORY, TEXT_FILTER_CATEGORY, VIEW_FILTER_CATEGORY, PERFORMANCE)
+                    options.addAll(FILTER_CATEGORY, TEXT_FILTER_CATEGORY, VIEW_FILTER_CATEGORY, ARTIFACT_VIEW_FILTER_CATEGORY, PERFORMANCE)
                     
                     // Add all text filter options.
                     «FOR artifact : data.artifacts BEFORE "options.addAll(FILTER_BY, " SEPARATOR "," AFTER ")"»
