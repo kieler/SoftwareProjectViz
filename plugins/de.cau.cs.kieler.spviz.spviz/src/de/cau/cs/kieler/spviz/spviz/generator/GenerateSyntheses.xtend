@@ -142,7 +142,7 @@ class GenerateSyntheses {
                     «ENDFOR»
                     
                     // Add all view filter options.
-                    options.addAll(SHOW_EXTERNAL, CONTAINER_EDGES_WHEN_FOCUSED, SHORTEN_BY, INTERACTIVE_BUTTONS)
+                    options.addAll(SHOW_EXTERNAL, CONTAINER_EDGES_WHEN_FOCUSED, IDS, SHORTEN_BY, INTERACTIVE_BUTTONS)
                     
                     // Add all artifact view filters.
                     «FOR artifact : data.artifacts»
@@ -1004,7 +1004,11 @@ class GenerateSyntheses {
                             setGridPlacement(columns)
                             addRectangle => [
                                 invisible = true
-                                addSimpleLabel(name, false)
+                                if (context.getOptionValue(IDS) as Boolean) {
+                                    addSimpleLabel(name, false)
+                                } else {
+                                    addSimpleLabel("", false)
+                                }
                             ]
                             if (interactiveButtons) {
                                 addVerticalLine
@@ -1057,10 +1061,14 @@ class GenerateSyntheses {
                                 invisible = true
                                 addRectangle => [
                                     invisible = true
-                                    addSimpleLabel(SynthesisUtils.getId(artifact.getName, context), hasChildren) => [
-                                        fontBold = true
-                                        selectionFontBold = true
-                                    ]
+                                    if (context.getOptionValue(IDS) as Boolean) {
+                                        addSimpleLabel(SynthesisUtils.getId(artifact.getName, context), hasChildren) => [
+                                            fontBold = true
+                                            selectionFontBold = true
+                                        ]
+                                    } else {
+                                        addSimpleLabel("", false)
+                                    }
                                 ]
                                 if (interactiveButtons) {
                                     addVerticalLine
@@ -1100,6 +1108,7 @@ class GenerateSyntheses {
                             if (context.getOptionValue(SHOW_SHADOWS) as Boolean) {
                                 setShadow(SHADOW_COLOR.color, 4, 4)
                             }
+                            tooltip = "«artifact.name» \"" + artifact.getName + "\""
                             addSingleClickAction(SelectRelatedAction::ID, ModifierState.NOT_PRESSED, ModifierState.NOT_PRESSED,
                                 ModifierState.NOT_PRESSED)
                             setSelectionStyle
@@ -1734,6 +1743,11 @@ class GenerateSyntheses {
                 public static final SynthesisOption SHORTEN_BY = SynthesisOption.createTextOption(
                     "Shorten IDs by").setCategory(VIEW_FILTER_CATEGORY)
                     .description = "Shorten the IDs of all artifacts by this prefix."
+                
+                /** Option for removing all artifact IDs completely. */
+                public static final SynthesisOption IDS = SynthesisOption.createCheckOption(
+                    "IDs", true).setCategory(VIEW_FILTER_CATEGORY)
+                    .description = "Show artifact IDs."
                 
                 /** Option for showing interactive buttons. */
                 public static final SynthesisOption INTERACTIVE_BUTTONS = SynthesisOption.createCheckOption(
