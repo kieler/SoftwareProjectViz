@@ -93,7 +93,7 @@ class GenerateDiffViz {
                    val XtextResourceSet rs = new XtextResourceSet  
                    
                    var source«data.projectName» = usedContext.getProperty(DiffSynthesisProperties.SOURCE_«data.spvizModel.name.toUpperCase»_MODEL)
-                   if (source«data.projectName» === null) {
+                   if (source«data.projectName» === null || !source«data.projectName».eResource.URI.toString.equals(folderString + "/" + model.sourceModel)) {
                        
                        val Resource source = rs.createResource(URI.createURI(folderString + "/" + model.sourceModel))
                        source.load(rs.getLoadOptions())
@@ -103,7 +103,7 @@ class GenerateDiffViz {
                    }
                    
                    var target«data.projectName» = usedContext.getProperty(DiffSynthesisProperties.TARGET_«data.spvizModel.name.toUpperCase»_MODEL)
-                   if (target«data.projectName» === null) {
+                   if (target«data.projectName» === null || !target«data.projectName».eResource.URI.toString.equals(folderString + "/" + model.targetModel)) {
                        
                        val Resource target = rs.createResource(URI.createURI(folderString + "/" + model.targetModel))
                        target.load(rs.getLoadOptions())
