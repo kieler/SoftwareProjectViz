@@ -3,7 +3,7 @@
  *
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2022-2025 by
+ * Copyright 2022-2026 by
  * + Kiel University
  *   + Department of Computer Science
  *   + Real-Time and Embedded Systems Group
@@ -22,20 +22,20 @@ import java.io.File
  */
 class GenerateLanguageServer {
     
-    def static void generate(File sourceFolder, File launchFolder, DataAccess data) {
+    def static void generate(File sourceFolder, File launchFolder, DataAccess data, boolean noModelDsl, boolean noDiff) {
         
         val String bundleNamePrefix = data.getBundleNamePrefix
         val File folder = FileGenerator.createDirectory(sourceFolder, bundleNamePrefix.replace('.','/') + "/language/server")
         
-        var String content = generateLanguageRegistration(data)
+        var String content = generateLanguageRegistration(data, noModelDsl, noDiff)
         FileGenerator.updateFile(folder, data.visualizationName + "LanguageRegistration.xtend", content)
         content = generateLanguageServer(data)
         FileGenerator.updateFile(folder, data.visualizationName + "LanguageServer.xtend", content)
         content = generateLsCreator(data)
         FileGenerator.updateFile(folder, data.visualizationName + "LsCreator.xtend", content)
-        content = generateRegistrationLsExt(data)
+        content = generateRegistrationLsExt(data, noModelDsl, noDiff)
         FileGenerator.updateFile(folder, data.visualizationName + "RegistrationLsExt.xtend", content)
-        content = generateLaunchConfig(data)
+        content = generateLaunchConfig(data, noModelDsl, noDiff)
         FileGenerator.generateFile(launchFolder, data.visualizationName + " Launguage Server.launch", content)
     }
     
@@ -47,7 +47,7 @@ class GenerateLanguageServer {
      * @return
      *         the generated file content as a string
      */
-    def static String generateLanguageRegistration(DataAccess data) {
+    def static String generateLanguageRegistration(DataAccess data, boolean noModelDsl, boolean noDiff) {
         return '''
             package «data.getBundleNamePrefix».language.server
             
@@ -55,8 +55,12 @@ class GenerateLanguageServer {
             import de.cau.cs.kieler.klighd.lsp.launch.ILanguageRegistration
             import «data.getBundleNamePrefix».model.«data.visualizationName.toFirstUpper»Package
             import «data.modelBundleNamePrefix».model.«data.spvizModel.name.toFirstUpper»Package
-            import «data.modelBundleNamePrefix».model.dsl.«data.spvizModel.name.toFirstUpper»DslStandaloneSetup
-            import «data.modelBundleNamePrefix».diff.dsl.«data.spvizModel.name.toFirstUpper»DiffDslStandaloneSetup
+            «IF !noModelDsl»
+                import «data.modelBundleNamePrefix».model.dsl.«data.spvizModel.name.toFirstUpper»DslStandaloneSetup
+            «ENDIF»
+            «IF !noDiff»
+                import «data.modelBundleNamePrefix».diff.dsl.«data.spvizModel.name.toFirstUpper»DiffDslStandaloneSetup
+            «ENDIF»
             import org.eclipse.emf.ecore.resource.Resource
             import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl
             
@@ -82,10 +86,16 @@ class GenerateLanguageServer {
                     
                     Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap.put("«data.spvizModel.name.toLowerCase»", new XMIResourceFactoryImpl)
                     Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap.put("«data.visualizationName.toLowerCase»", new XMIResourceFactoryImpl)
-                    
-                    // Register DSL and Diff DSL languages.
-                    «data.spvizModel.name.toFirstUpper»DslStandaloneSetup.doSetup
-                    «data.spvizModel.name.toFirstUpper»DiffDslStandaloneSetup.doSetup
+                    «IF !noModelDsl»
+                        
+                        // Register model DSL language.
+                        «data.spvizModel.name.toFirstUpper»DslStandaloneSetup.doSetup
+                    «ENDIF»
+                    «IF !noDiff»
+                        
+                        // Register diff DSL language.
+                        «data.spvizModel.name.toFirstUpper»DiffDslStandaloneSetup.doSetup
+                    «ENDIF»
                 }
             }
             
@@ -173,7 +183,7 @@ class GenerateLanguageServer {
      * @return
      *         the generated file content as a string
      */
-    def static String generateRegistrationLsExt(DataAccess data) {
+    def static String generateRegistrationLsExt(DataAccess data, boolean noModelDsl, boolean noDiff) {
         return '''
             package «data.getBundleNamePrefix».language.server
             
@@ -191,21 +201,25 @@ class GenerateLanguageServer {
                 
                 override getLanguageExtensions() {
                     return newArrayList(
+                        «IF !noModelDsl»
+                            new Language("«data.spvizModel.name.toLowerCase»dsl", "«data.spvizModel.name» Model DSL", #[
+                            "projectName", "external",
+                                «FOR artifact : data.artifacts SEPARATOR ", "»
+                                    "«artifact.name.toFirstLower»", "«artifact.name.toFirstLower»s"
+                                «ENDFOR»
+                                «FOR connection : data.connections BEFORE ", " SEPARATOR ", "»
+                                    "«connection.name.toFirstLower»"
+                                «ENDFOR»
+                            ]),
+                        «ENDIF»
+                        «IF !noDiff»
+                            new Language("«data.visualizationName.toLowerCase»diffdsl", "«data.visualizationName» Diff DSL", #[
+                                "compare",
+                                "to"
+                            ]),
+                        «ENDIF»
                         new Language("«data.spvizModel.name.toLowerCase»", "«data.spvizModel.name» Model", #[]),
-                        new Language("«data.visualizationName.toLowerCase»", "«data.visualizationName» Model", #[]),
-                        new Language("«data.spvizModel.name.toLowerCase»dsl", "«data.spvizModel.name» Model DSL", #[
-                        "projectName", "external",
-                            «FOR artifact : data.artifacts SEPARATOR ", "»
-                                "«artifact.name.toFirstLower»", "«artifact.name.toFirstLower»s"
-                            «ENDFOR»
-                            «FOR connection : data.connections BEFORE ", " SEPARATOR ", "»
-                                "«connection.name.toFirstLower»"
-                            «ENDFOR»
-                        ]),
-                        new Language("«data.visualizationName.toLowerCase»diffdsl", "«data.visualizationName» Diff DSL", #[
-                            "compare",
-                            "to"
-                        ])
+                        new Language("«data.visualizationName.toLowerCase»", "«data.visualizationName» Model", #[])
                     )
                 }
                 
@@ -214,7 +228,7 @@ class GenerateLanguageServer {
         '''
     }
     
-    def static String generateLaunchConfig(DataAccess data) {
+    def static String generateLaunchConfig(DataAccess data, boolean noModelDsl, boolean noDiff) {
         return '''
             <?xml version="1.0" encoding="UTF-8" standalone="no"?>
             <launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
@@ -236,18 +250,22 @@ class GenerateLanguageServer {
                     <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/«data.bundleNamePrefix».model&quot; path=&quot;5&quot; type=&quot;2&quot;/&gt;&#10;"/>
                     <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry path=&quot;5&quot; projectName=&quot;«data.bundleNamePrefix».viz&quot; type=&quot;1&quot;/&gt;&#10;"/>
                     <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/«data.bundleNamePrefix».viz&quot; path=&quot;5&quot; type=&quot;2&quot;/&gt;&#10;"/>
-                    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry path=&quot;5&quot; projectName=&quot;«data.bundleNamePrefix».diffviz&quot; type=&quot;1&quot;/&gt;&#10;"/>
-                    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/«data.bundleNamePrefix».diffviz&quot; path=&quot;5&quot; type=&quot;2&quot;/&gt;&#10;"/>
                     <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry path=&quot;5&quot; projectName=&quot;«data.modelBundleNamePrefix».model&quot; type=&quot;1&quot;/&gt;&#10;"/>
                     <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/«data.modelBundleNamePrefix».model&quot; path=&quot;5&quot; type=&quot;2&quot;/&gt;&#10;"/>
-                    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry path=&quot;5&quot; projectName=&quot;«data.modelBundleNamePrefix».model.dsl&quot; type=&quot;1&quot;/&gt;&#10;"/>
-                    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/«data.modelBundleNamePrefix».model.dsl&quot; path=&quot;5&quot; type=&quot;2&quot;/&gt;&#10;"/>
-                    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry path=&quot;5&quot; projectName=&quot;«data.modelBundleNamePrefix».model.dsl.ide&quot; type=&quot;1&quot;/&gt;&#10;"/>
-                    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/«data.modelBundleNamePrefix».model.dsl.ide&quot; path=&quot;5&quot; type=&quot;2&quot;/&gt;&#10;"/>
-                    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry path=&quot;5&quot; projectName=&quot;«data.modelBundleNamePrefix».diff.dsl&quot; type=&quot;1&quot;/&gt;&#10;"/>
-                    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/«data.modelBundleNamePrefix».diff.dsl&quot; path=&quot;5&quot; type=&quot;2&quot;/&gt;&#10;"/>
-                    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry path=&quot;5&quot; projectName=&quot;«data.modelBundleNamePrefix».diff.dsl.ide&quot; type=&quot;1&quot;/&gt;&#10;"/>
-                    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/«data.modelBundleNamePrefix».diff.dsl.ide&quot; path=&quot;5&quot; type=&quot;2&quot;/&gt;&#10;"/>
+                    «IF !noModelDsl»
+                        <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry path=&quot;5&quot; projectName=&quot;«data.modelBundleNamePrefix».model.dsl&quot; type=&quot;1&quot;/&gt;&#10;"/>
+                        <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/«data.modelBundleNamePrefix».model.dsl&quot; path=&quot;5&quot; type=&quot;2&quot;/&gt;&#10;"/>
+                        <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry path=&quot;5&quot; projectName=&quot;«data.modelBundleNamePrefix».model.dsl.ide&quot; type=&quot;1&quot;/&gt;&#10;"/>
+                        <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/«data.modelBundleNamePrefix».model.dsl.ide&quot; path=&quot;5&quot; type=&quot;2&quot;/&gt;&#10;"/>
+                    «ENDIF»
+                    «IF !noDiff»
+                        <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry path=&quot;5&quot; projectName=&quot;«data.bundleNamePrefix».diffviz&quot; type=&quot;1&quot;/&gt;&#10;"/>
+                        <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/«data.bundleNamePrefix».diffviz&quot; path=&quot;5&quot; type=&quot;2&quot;/&gt;&#10;"/>
+                        <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry path=&quot;5&quot; projectName=&quot;«data.modelBundleNamePrefix».diff.dsl&quot; type=&quot;1&quot;/&gt;&#10;"/>
+                        <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/«data.modelBundleNamePrefix».diff.dsl&quot; path=&quot;5&quot; type=&quot;2&quot;/&gt;&#10;"/>
+                        <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry path=&quot;5&quot; projectName=&quot;«data.modelBundleNamePrefix».diff.dsl.ide&quot; type=&quot;1&quot;/&gt;&#10;"/>
+                        <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/«data.modelBundleNamePrefix».diff.dsl.ide&quot; path=&quot;5&quot; type=&quot;2&quot;/&gt;&#10;"/>
+                    «ENDIF»
                     <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#10;&lt;runtimeClasspathEntry containerPath=&quot;org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER&quot; path=&quot;5&quot; type=&quot;4&quot;/&gt;&#10;"/>
                 </listAttribute>
                 <stringAttribute key="org.eclipse.jdt.launching.CLASSPATH_PROVIDER" value="org.eclipse.m2e.launchconfig.classpathProvider"/>

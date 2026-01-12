@@ -3,7 +3,7 @@
  *
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2020-2025 by
+ * Copyright 2020-2026 by
  * + Kiel University
  *   + Department of Computer Science
  *     + Real-Time and Embedded Systems Group
@@ -48,7 +48,7 @@ class SPVizGenerator extends AbstractGenerator {
     override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
         val workspace = ResourcesPlugin.workspace
         val output = Paths.get(workspace.root.location.toString)
-        SPVizGenerator.generate(resource, output)
+        SPVizGenerator.generate(resource, output, false, false)
     }
     
 //    TODO: add flags and a class for each 'via' connection (look at 'UsedPackagesOfBundleEdgeConnection' for reference) 
@@ -61,7 +61,7 @@ class SPVizGenerator extends AbstractGenerator {
         "AbstractMethodError", "AssertionError", "BootstrapMethodError", "ClassCircularityError", "ClassFormatError", "Error", "ExceptionInInitializerError", "IllegalAccessError", "IncompatibleClassChangeError", "InstantiationError", "InternalError", "LinkageError", "NoClassDefFoundError", "NoSuchFieldError", "NoSuchMethodError", "OutOfMemoryError", "StackOverflowError", "ThreadDeath", "UnknownError", "UnsatisfiedLinkError", "UnsupportedClassVersionError", "VerifyError", "VirtualMachineError"
     ]
     
-    static def void generate(Resource resource, Path rootPath) {
+    static def void generate(Resource resource, Path rootPath, boolean noModelDsl, boolean noDiff) {
         
         val DataAccess data = new DataAccess(resource)
         val root = rootPath.toAbsolutePath.toString + "/"
@@ -118,25 +118,29 @@ class SPVizGenerator extends AbstractGenerator {
         // Copy icons over into the project
         copyIcons(FileGenerator.createDirectory(vizProjectDirectory, "icons"))
         
-        // Generate the -viz.diffviz project
-        val diffVizProjectName = data.getBundleNamePrefix + ".diffviz"
-        val diffVizProjectPath = root + diffVizProjectName
-        if (new File(diffVizProjectPath).isDirectory) {
-            LOGGER.info("Updating sources of project {}", diffVizProjectPath)
+        if (noDiff) {
+            LOGGER.info("Skip generating the diffviz project.")
         } else {
-            LOGGER.info("Generating project {}", diffVizProjectPath)
+            // Generate the -viz.diffviz project
+            val diffVizProjectName = data.getBundleNamePrefix + ".diffviz"
+            val diffVizProjectPath = root + diffVizProjectName
+            if (new File(diffVizProjectPath).isDirectory) {
+                LOGGER.info("Updating sources of project {}", diffVizProjectPath)
+            } else {
+                LOGGER.info("Generating project {}", diffVizProjectPath)
+            }
+            FileGenerator.createDirectory(diffVizProjectPath)
+            new ProjectGenerator(diffVizProjectName, diffVizProjectPath)
+                .configureMaven(true)
+                .configureKlighd(true)
+                .additionalSourceFolder("xtend-gen")
+                .configureRequiredBundles(requiredDiffVizBundles(data))
+                .configureExportedPackages(exportedDiffVizPackages(data))
+                .generate()
+                
+            val sourceDiffVizFolder = new File(diffVizProjectPath, "src-gen")
+            GenerateDiffViz.generate(sourceDiffVizFolder, data)
         }
-        FileGenerator.createDirectory(diffVizProjectPath)
-        new ProjectGenerator(diffVizProjectName, diffVizProjectPath)
-            .configureMaven(true)
-            .configureKlighd(true)
-            .additionalSourceFolder("xtend-gen")
-            .configureRequiredBundles(requiredDiffVizBundles(data))
-            .configureExportedPackages(exportedDiffVizPackages(data))
-            .generate()
-            
-        val sourceDiffVizFolder = new File(diffVizProjectPath, "src-gen")
-        GenerateDiffViz.generate(sourceDiffVizFolder, data)
         
         
         // Generate the .language.server Maven project
@@ -149,7 +153,7 @@ class SPVizGenerator extends AbstractGenerator {
         }
         val lsProjectDirectory = FileGenerator.createDirectory(lsProjectPath)
         new JavaMavenProjectGenerator(data.bundleNamePrefix, lsProjectName, lsProjectPath)
-            .configureDependencies(requiredLSDependencies(data))
+            .configureDependencies(requiredLSDependencies(data, noModelDsl, noDiff))
             .configureDependencyManagement(lsDependencyManagement)
             .configureXtendSources(true)
             .configureSourceFolderName("src-gen")
@@ -160,10 +164,10 @@ class SPVizGenerator extends AbstractGenerator {
         // Generate further source files for the java project
         val launchFolder = FileGenerator.createDirectory(lsProjectDirectory, "launch")
         val lsSourceFolder = FileGenerator.createDirectory(lsProjectDirectory, "src-gen")
-        GenerateLanguageServer.generate(lsSourceFolder, launchFolder, data)
+        GenerateLanguageServer.generate(lsSourceFolder, launchFolder, data, noModelDsl, noDiff)
         
         // Generate the Maven build framework for this visualization.
-        GenerateMavenBuild.generate(root, data.bundleNamePrefix, data.visualizationName.toFirstUpper, data.modelBundleNamePrefix, "0.1.0")
+        GenerateMavenBuild.generate(root, data.bundleNamePrefix, data.visualizationName.toFirstUpper, data.modelBundleNamePrefix, "0.1.0", noModelDsl, noDiff)
     }
     
     /**
@@ -272,8 +276,8 @@ class SPVizGenerator extends AbstractGenerator {
         ]
     }
     
-    protected static def List<Dependency> requiredLSDependencies(DataAccess data) {
-        return #[
+    protected static def List<Dependency> requiredLSDependencies(DataAccess data, boolean noModelDsl, boolean noDiff) {
+        val deps = newLinkedList(
            new Dependency("com.google.code.gson", "gson", "${gson-version}"),
            new Dependency("com.google.inject", "guice", "${guice-version}"),
            new Dependency("de.cau.cs.kieler.klighd", "de.cau.cs.kieler.kgraph.text", "${klighd-version}"),
@@ -296,11 +300,16 @@ class SPVizGenerator extends AbstractGenerator {
            new Dependency("org.eclipse.xtext", "org.eclipse.xtext.xbase.lib", "${xtext-version}"),
            new Dependency(data.bundleNamePrefix, data.bundleNamePrefix + ".model", "${project.version}"),
            new Dependency(data.bundleNamePrefix, data.bundleNamePrefix + ".viz", "${project.version}"),
-           new Dependency(data.bundleNamePrefix, data.bundleNamePrefix + ".diffviz", "${project.version}"),
-           new Dependency(data.modelBundleNamePrefix, data.modelBundleNamePrefix + ".model", "${project.version}"),
-           new Dependency(data.modelBundleNamePrefix + ".model.dsl", data.modelBundleNamePrefix + ".model.dsl", "1.0.0-SNAPSHOT"),
-           new Dependency(data.modelBundleNamePrefix + ".diff.dsl", data.modelBundleNamePrefix + ".diff.dsl", "1.0.0-SNAPSHOT")
-        ]
+           new Dependency(data.modelBundleNamePrefix, data.modelBundleNamePrefix + ".model", "${project.version}")
+        )
+        if (!noModelDsl) {
+            deps += new Dependency(data.modelBundleNamePrefix + ".model.dsl", data.modelBundleNamePrefix + ".model.dsl", "1.0.0-SNAPSHOT")
+        }
+        if (!noDiff) {
+            deps += new Dependency(data.bundleNamePrefix, data.bundleNamePrefix + ".diffviz", "${project.version}")
+            deps += new Dependency(data.modelBundleNamePrefix + ".diff.dsl", data.modelBundleNamePrefix + ".diff.dsl", "1.0.0-SNAPSHOT")
+        }
+        return deps
     }
     
     protected static def List<String> requiredVizBundles(DataAccess data) {

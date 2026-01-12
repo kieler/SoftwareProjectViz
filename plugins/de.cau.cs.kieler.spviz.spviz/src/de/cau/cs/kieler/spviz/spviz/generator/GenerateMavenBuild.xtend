@@ -3,7 +3,7 @@
  *
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2022-2025 by
+ * Copyright 2022-2026 by
  * + Kiel University
  *   + Department of Computer Science
  *   + Real-Time and Embedded Systems Group
@@ -14,6 +14,7 @@ package de.cau.cs.kieler.spviz.spviz.generator
 
 import de.cau.cs.kieler.spviz.spvizmodel.generator.FileGenerator
 import java.io.File
+import java.util.List
 
 class GenerateMavenBuild {
     /* 
@@ -22,8 +23,8 @@ class GenerateMavenBuild {
      *   (/bin, /target, dependencies.txt, ...)
      */
     
-    static String[] vizBundleSuffixes = #["viz", "model", "language.server", "diffviz"]
-    static String[] modelBundleSuffixes = #["model", "model.dsl.parent", "diff.dsl.parent"]
+    static List<String> vizBundleSuffixes
+    static List<String> modelBundleSuffixes
     
     /**
      * Generates the entire Maven build for this visualization.
@@ -34,10 +35,19 @@ class GenerateMavenBuild {
      * @param modelIdPrefix The ID prefix of the spvizmodel.
      * @param version The version the generated project should be generated with.
      */
-    static def generate(String rootPath, String artifactIdPrefix, String vizName, String modelIdPrefix, String version) {
+    static def generate(String rootPath, String artifactIdPrefix, String vizName, String modelIdPrefix, String version, boolean noModelDsl, boolean noDiff) {
+        vizBundleSuffixes = newArrayList("viz", "model", "language.server")
+        modelBundleSuffixes = newArrayList("model")
+        if (!noDiff) {
+            vizBundleSuffixes.add("diffviz")
+            modelBundleSuffixes.add("diff.dsl.parent")
+        }
+        if (!noModelDsl) {
+            modelBundleSuffixes.add("model.dsl.parent")
+        }
         val root = new File (rootPath)
         // A pom for each sub-module
-        for (bundleSuffix : de.cau.cs.kieler.spviz.spviz.generator.GenerateMavenBuild.vizBundleSuffixes) {
+        for (bundleSuffix : vizBundleSuffixes) {
             addProjectPom(root, artifactIdPrefix, bundleSuffix, version)
         }
         // The main build folder with the main pom to build this viz, an Eclipse feature, LS CLI build, and Tycho update site config
@@ -130,10 +140,10 @@ class GenerateMavenBuild {
                   <modules>
                     <module>../spviz.build</module>
                     <module>../spviz.build/de.cau.cs.kieler.spviz.targetplatform</module>
-                    «FOR bundleSuffix : GenerateMavenBuild.vizBundleSuffixes»
+                    «FOR bundleSuffix : vizBundleSuffixes»
                         <module>../«vizArtifactIdPrefix».«bundleSuffix»</module>
                     «ENDFOR»
-                    «FOR modelBundleSuffix : GenerateMavenBuild.modelBundleSuffixes»
+                    «FOR modelBundleSuffix : modelBundleSuffixes»
                         <module>../«modelIdPrefix».«modelBundleSuffix»</module>
                     «ENDFOR»
                     <module>feature</module>

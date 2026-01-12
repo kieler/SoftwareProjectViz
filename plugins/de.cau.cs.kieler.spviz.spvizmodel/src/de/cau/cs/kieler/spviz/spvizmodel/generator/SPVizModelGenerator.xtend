@@ -3,7 +3,7 @@
  *
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2020-2025 by
+ * Copyright 2020-2026 by
  * + Kiel University
  *   + Department of Computer Science
  *     + Real-Time and Embedded Systems Group
@@ -48,10 +48,10 @@ class SPVizModelGenerator extends AbstractGenerator {
     override void doGenerate(Resource resource, IFileSystemAccess2 fsa, IGeneratorContext context) {
         val workspace = ResourcesPlugin.workspace
         val output = Paths.get(workspace.root.location.toString)
-        SPVizModelGenerator.generate(resource, output)
+        SPVizModelGenerator.generate(resource, output, false, false)
     }
     
-    static def void generate(Resource resource, Path rootPath) {
+    static def void generate(Resource resource, Path rootPath, boolean noModelDsl, boolean noDiff) {
         val rootDirectory = new File(rootPath.toAbsolutePath.toString)
         val SPVizModel model = resource.contents.head as SPVizModel
         
@@ -88,101 +88,112 @@ class SPVizModelGenerator extends AbstractGenerator {
         // Generate a .generate scaffold for the model if not already existent.
         GenerateGeneratorScaffold.generate(rootDirectory, model, version)
         
-        // Generate DiffDSL
-        var CliProjectsCreator creator = new CliProjectsCreator()
-        var WizardConfiguration config = new WizardConfiguration() => [
-            rootLocation = rootPath.toAbsolutePath.toString
-            baseName = model.package + ".diff.dsl"
-            language.name = baseName + "." + model.name + "DiffDsl"
-            language.fileExtensions = FileExtensions.fromString(model.name.toLowerCase + "diff")
-            preferredBuildSystem = BuildSystem.MAVEN
-            javaVersion = JavaVersion.JAVA17
-            ideProject.enabled = true
-            // ensures that META-INF/MANIFEST.MF will be generated for all projects
-            uiProject.enabled = true
-            // cannot find a way to also auto-generate .project files for Eclipse
-        ]
-        creator.lineDelimiter = LineDelimiter.UNIX.value
+        if (noDiff) {
+            LOGGER.info("Skip generating difference DSL.")
+        } else {
+            LOGGER.info("Generate difference DSL")
+            // Generate DiffDSL
+            val CliProjectsCreator creator = new CliProjectsCreator()
+            val WizardConfiguration config = new WizardConfiguration() => [
+                rootLocation = rootPath.toAbsolutePath.toString
+                baseName = model.package + ".diff.dsl"
+                language.name = baseName + "." + model.name + "DiffDsl"
+                language.fileExtensions = FileExtensions.fromString(model.name.toLowerCase + "diff")
+                preferredBuildSystem = BuildSystem.MAVEN
+                javaVersion = JavaVersion.JAVA17
+                ideProject.enabled = true
+                // ensures that META-INF/MANIFEST.MF will be generated for all projects
+                uiProject.enabled = true
+                // cannot find a way to also auto-generate .project files for Eclipse
+            ]
+            creator.lineDelimiter = LineDelimiter.UNIX.value
+            
+            creator.createProjects(config)
+            
+            // modify xtext grammar
+            val diffDslFolder = new File(config.rootLocation + "/" + config.baseName)
+            val diffDslPackageFolder = FileGenerator.createDirectory(diffDslFolder, "src/" + config.baseName.replace('.', '/'))
+            var content = generateDiffGrammar(model, config.language)
+            FileGenerator.updateFile(diffDslPackageFolder, model.name + "DiffDsl.xtext", content)
+            // TODO: only update this file and not do a full regeneration (only the referencedResource is missing)
+            content = generateDiffDslMwe2(model)
+            FileGenerator.updateFile(diffDslPackageFolder, "Generate" + model.name + "DiffDsl.mwe2", content)
+            // TODO: also only update this file, only the emf.ecore.xcore dependency is missing.
+            val diffDslManifestFolder = FileGenerator.createDirectory(diffDslFolder, "META-INF")
+            content = diffManifestContent(model)
+            FileGenerator.updateFile(diffDslManifestFolder, "MANIFEST.MF", content)
+            // TODO: also only update this file, only the emf.ecore.xcore.sdk.feature.group is missing.
+            val diffDslTargetSourceFolder = new File(config.rootLocation + "/" + config.baseName + ".target")
+            content = dslTargetPlatformContent(model, true)
+            FileGenerator.updateFile(diffDslTargetSourceFolder, config.baseName + ".target.target", content)
+            // The generated .ide plugin does not export the correct packages required by the also generated ui plugin, re-generate its MANIFEST.MF file
+            val diffDslIdeFolder = new File(config.rootLocation + "/" + config.baseName + ".ide")
+            content = dslIdeManifestContent(model, true)
+            FileGenerator.updateFile(FileGenerator.createDirectory(diffDslIdeFolder, "META-INF"), "MANIFEST.MF", content)
+            // The generated .ui plugin misses some imports in its Manifest as well
+            val diffDslUiFolder = new File(config.rootLocation + "/" + config.baseName + ".ui")
+            content = dslUiManifestContent(model, true)
+            FileGenerator.updateFile(FileGenerator.createDirectory(diffDslUiFolder, "META-INF"), "MANIFEST.MF", content)
+        }
         
-        creator.createProjects(config)
-        
-        // modify xtext grammar
-        val diffDslFolder = new File(config.rootLocation + "/" + config.baseName)
-        val diffDslPackageFolder = FileGenerator.createDirectory(diffDslFolder, "src/" + config.baseName.replace('.', '/'))
-        var content = generateDiffGrammar(model, config.language)
-        FileGenerator.updateFile(diffDslPackageFolder, model.name + "DiffDsl.xtext", content)
-        // TODO: only update this file and not do a full regeneration (only the referencedResource is missing)
-        content = generateDiffDslMwe2(model)
-        FileGenerator.updateFile(diffDslPackageFolder, "Generate" + model.name + "DiffDsl.mwe2", content)
-        // TODO: also only update this file, only the emf.ecore.xcore dependency is missing.
-        val diffDslManifestFolder = FileGenerator.createDirectory(diffDslFolder, "META-INF")
-        content = diffManifestContent(model)
-        FileGenerator.updateFile(diffDslManifestFolder, "MANIFEST.MF", content)
-        // TODO: also only update this file, only the emf.ecore.xcore.sdk.feature.group is missing.
-        val diffDslTargetSourceFolder = new File(config.rootLocation + "/" + config.baseName + ".target")
-        content = dslTargetPlatformContent(model, true)
-        FileGenerator.updateFile(diffDslTargetSourceFolder, config.baseName + ".target.target", content)
-        // The generated .ide plugin does not export the correct packages required by the also generated ui plugin, re-generate its MANIFEST.MF file
-        val diffDslIdeFolder = new File(config.rootLocation + "/" + config.baseName + ".ide")
-        content = dslIdeManifestContent(model, true)
-        FileGenerator.updateFile(FileGenerator.createDirectory(diffDslIdeFolder, "META-INF"), "MANIFEST.MF", content)
-        // The generated .ui plugin misses some imports in its Manifest as well
-        val diffDslUiFolder = new File(config.rootLocation + "/" + config.baseName + ".ui")
-        content = dslUiManifestContent(model, true)
-        FileGenerator.updateFile(FileGenerator.createDirectory(diffDslUiFolder, "META-INF"), "MANIFEST.MF", content)
-        
-        
-        // Generate model DSL
-        config = new WizardConfiguration() => [
-            rootLocation = rootPath.toAbsolutePath.toString
-            baseName = model.package + ".model.dsl"
-            language.name = baseName + "." + model.name + "Dsl"
-            language.fileExtensions = FileExtensions.fromString(model.name.toLowerCase + "dsl")
-            preferredBuildSystem = BuildSystem.MAVEN
-            javaVersion = JavaVersion.JAVA17
-            ideProject.enabled = true
-            // ensures that META-INF/MANIFEST.MF will be generated for all projects
-            uiProject.enabled = true
-            // cannot find a way to also auto-generate .project files for Eclipse
-        ]
-        
-        creator.createProjects(config)
-        
-        // modify xtext grammar
-        val dslFolder = new File(config.rootLocation + "/" + config.baseName)
-        val dslPackageFolder = FileGenerator.createDirectory(dslFolder, "src/" + config.baseName.replace('.', '/'))
-        content = generateDslGrammar(model, config.language)
-        FileGenerator.updateFile(dslPackageFolder, model.name + "Dsl.xtext", content)
-        // TODO: only update this file and not do a full regeneration (only the referencedResource is missing)
-        content = generateDslMwe2(model)
-        FileGenerator.updateFile(dslPackageFolder, "Generate" + model.name + "Dsl.mwe2", content)
-        // TODO: also only update this file, only the emf.ecore.xcore dependency is missing.
-        val dslManifestFolder = FileGenerator.createDirectory(dslFolder, "META-INF")
-        content = dslManifestContent(model)
-        FileGenerator.updateFile(dslManifestFolder, "MANIFEST.MF", content)
-        // TODO: also only update this file, only the emf.ecore.xcore.sdk.feature.group is missing.
-        val dslTargetSourceFolder = new File(config.rootLocation + "/" + config.baseName + ".target")
-        content = dslTargetPlatformContent(model, false)
-        FileGenerator.updateFile(dslTargetSourceFolder, config.baseName + ".target.target", content)
-        // The build properties falsely add the "plugin.xml" to the binary inclusions automatically, this removes that again.
-        content = generateDslBuildProperties(model)
-        FileGenerator.updateFile(dslFolder, "build.properties", content)
-        // The generated .ide plugin does not export the correct packages required by the also generated ui plugin, re-generate its MANIFEST.MF file
-        val dslIdeFolder = new File(config.rootLocation + "/" + config.baseName + ".ide")
-        content = dslIdeManifestContent(model, false)
-        FileGenerator.updateFile(FileGenerator.createDirectory(dslIdeFolder, "META-INF"), "MANIFEST.MF", content)
-        // The generated .ui plugin misses some imports in its Manifest as well
-        val dslUiFolder = new File(config.rootLocation + "/" + config.baseName + ".ui")
-        content = dslUiManifestContent(model, false)
-        FileGenerator.updateFile(FileGenerator.createDirectory(dslUiFolder, "META-INF"), "MANIFEST.MF", content)
-        
-        // Adapt the source files of the model DSL as in thesis so that it creates a correct model readable by the synthesis.
-        // RuntimeModule
-        content = generateRuntimeModule(model)
-        FileGenerator.updateFile(dslPackageFolder, model.name + "DslRuntimeModule.java", content)  
-        // Resource
-        content = generateResource(model)
-        FileGenerator.updateFile(dslPackageFolder, model.name + "DslResource.xtend", content)
+        if (noModelDsl) {
+            LOGGER.info("Skip generating model DSL.")
+        } else {
+            LOGGER.info("Generate model DSL")
+            // Generate model DSL
+            val CliProjectsCreator creator = new CliProjectsCreator()
+            val WizardConfiguration config = new WizardConfiguration() => [
+                rootLocation = rootPath.toAbsolutePath.toString
+                baseName = model.package + ".model.dsl"
+                language.name = baseName + "." + model.name + "Dsl"
+                language.fileExtensions = FileExtensions.fromString(model.name.toLowerCase + "dsl")
+                preferredBuildSystem = BuildSystem.MAVEN
+                javaVersion = JavaVersion.JAVA17
+                ideProject.enabled = true
+                // ensures that META-INF/MANIFEST.MF will be generated for all projects
+                uiProject.enabled = true
+                // cannot find a way to also auto-generate .project files for Eclipse
+            ]
+            creator.lineDelimiter = LineDelimiter.UNIX.value
+            
+            creator.createProjects(config)
+            
+            // modify xtext grammar
+            val dslFolder = new File(config.rootLocation + "/" + config.baseName)
+            val dslPackageFolder = FileGenerator.createDirectory(dslFolder, "src/" + config.baseName.replace('.', '/'))
+            var content = generateDslGrammar(model, config.language)
+            FileGenerator.updateFile(dslPackageFolder, model.name + "Dsl.xtext", content)
+            // TODO: only update this file and not do a full regeneration (only the referencedResource is missing)
+            content = generateDslMwe2(model)
+            FileGenerator.updateFile(dslPackageFolder, "Generate" + model.name + "Dsl.mwe2", content)
+            // TODO: also only update this file, only the emf.ecore.xcore dependency is missing.
+            val dslManifestFolder = FileGenerator.createDirectory(dslFolder, "META-INF")
+            content = dslManifestContent(model)
+            FileGenerator.updateFile(dslManifestFolder, "MANIFEST.MF", content)
+            // TODO: also only update this file, only the emf.ecore.xcore.sdk.feature.group is missing.
+            val dslTargetSourceFolder = new File(config.rootLocation + "/" + config.baseName + ".target")
+            content = dslTargetPlatformContent(model, false)
+            FileGenerator.updateFile(dslTargetSourceFolder, config.baseName + ".target.target", content)
+            // The build properties falsely add the "plugin.xml" to the binary inclusions automatically, this removes that again.
+            content = generateDslBuildProperties(model)
+            FileGenerator.updateFile(dslFolder, "build.properties", content)
+            // The generated .ide plugin does not export the correct packages required by the also generated ui plugin, re-generate its MANIFEST.MF file
+            val dslIdeFolder = new File(config.rootLocation + "/" + config.baseName + ".ide")
+            content = dslIdeManifestContent(model, false)
+            FileGenerator.updateFile(FileGenerator.createDirectory(dslIdeFolder, "META-INF"), "MANIFEST.MF", content)
+            // The generated .ui plugin misses some imports in its Manifest as well
+            val dslUiFolder = new File(config.rootLocation + "/" + config.baseName + ".ui")
+            content = dslUiManifestContent(model, false)
+            FileGenerator.updateFile(FileGenerator.createDirectory(dslUiFolder, "META-INF"), "MANIFEST.MF", content)
+            
+            // Adapt the source files of the model DSL as in thesis so that it creates a correct model readable by the synthesis.
+            // RuntimeModule
+            content = generateRuntimeModule(model)
+            FileGenerator.updateFile(dslPackageFolder, model.name + "DslRuntimeModule.java", content)  
+            // Resource
+            content = generateResource(model)
+            FileGenerator.updateFile(dslPackageFolder, model.name + "DslResource.xtend", content)
+        }
         
     }
     
