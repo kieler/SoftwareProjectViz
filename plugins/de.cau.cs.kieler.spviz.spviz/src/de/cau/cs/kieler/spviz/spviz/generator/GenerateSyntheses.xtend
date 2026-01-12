@@ -550,6 +550,7 @@ class GenerateSyntheses {
                 import «data.getBundleNamePrefix».viz.actions.RevealConnecting«connection.connecting.name»Connects«connection.connected.name»Named«connection.name»Action
                 import «data.getBundleNamePrefix».viz.actions.RemoveConnecting«connection.connecting.name»Connects«connection.connected.name»Named«connection.name»Action
             «ENDFOR»
+            import «data.getBundleNamePrefix».viz.SynthesisUtils.ArtifactDifference
             «FOR artifact : data.artifacts»
                 import «data.modelBundleNamePrefix».model.«artifact.name»
             «ENDFOR»
@@ -574,6 +575,8 @@ class GenerateSyntheses {
                 
                 // The colors used for the visualization.
                 public static final String DEFAULT_BACKGROUND_COLOR = "white"
+                
+                // Artifact colors
                 «FOR artifact : data.artifacts»
                     public static final String COLOR_«artifact.name» = "«colors.get(artifact)»"
                     public static final String SECONDARY_COLOR_«artifact.name» = "«secondaryColors.get(artifact)»"
@@ -587,8 +590,8 @@ class GenerateSyntheses {
                 
                 public static final String SHADOW_COLOR = "black"
                 
-                // Edge colors.
-                public static final String SELECTION_COLOR = "blue"
+                // Selection color.
+                public static final String SELECTION_COLOR = "orange"
                 
                 /** The roundness of visualized rounded rectangles. */
                 static final int ROUNDNESS = 4
@@ -600,22 +603,22 @@ class GenerateSyntheses {
                 
                 // ------------------------------------- Generic renderings -------------------------------------
                 
-«««                TODO: selection and modified diff should not both have blue colors.
-«««                TODO: selection and diff style should not both *3 the line width (this currently stacks for modified selected elements)
                 /**
                  * Sets the selection style of the node.
                  */
-                def setSelectionStyle(KContainerRendering rendering) {
+                def setSelectionStyle(KContainerRendering rendering, boolean alreadyWide) {
                     rendering => [
-                        selectionLineWidth = 3 * lineWidthValue;
-                        selectionForeground = SELECTION_COLOR.color;
+                        if (!alreadyWide) {
+                            selectionLineWidth = 3 * lineWidthValue
+                        }
+                        selectionForeground = SELECTION_COLOR.color
                     ]
                 }
                 
                 /**
                  * Set the difference style on the rendering.
                  */
-                def setDifferenceStyle(KRendering rendering, SynthesisUtils.ArtifactDifference difference, boolean isTargetModel) {
+                def setDifferenceStyle(KRendering rendering, SynthesisUtils.ArtifactDifference difference, boolean isTargetModel, boolean isEdge) {
                     var String color = null
                     switch (difference) {
                         case SynthesisUtils.ArtifactDifference.UNCHANGED:
@@ -627,7 +630,7 @@ class GenerateSyntheses {
                     }
                     val color_ = color
                     rendering => [
-                        lineWidth = 3 * lineWidthValue
+                        lineWidth = (isEdge ? 1.5f : 3) * lineWidthValue
                         foreground = color_.color
                     ]
                 }
@@ -642,7 +645,7 @@ class GenerateSyntheses {
                             setShadow(SHADOW_COLOR.color, 4, 4)
                         }
                         addSimpleLabel(name, false)
-                        setSelectionStyle
+                        setSelectionStyle(false)
                     ]
                 }
                 
@@ -703,7 +706,7 @@ class GenerateSyntheses {
                             }
                             background = DEFAULT_BACKGROUND_COLOR.color
                             tooltip = tooltipText
-                            setSelectionStyle
+                            setSelectionStyle(false)
                         ]
                     } else {
                         // Collapsed
@@ -732,7 +735,7 @@ class GenerateSyntheses {
                             }
                             background = DEFAULT_BACKGROUND_COLOR.color
                             tooltip = tooltipText
-                            setSelectionStyle
+                            setSelectionStyle(false)
                         ]
                     }
                 }
@@ -1043,7 +1046,7 @@ class GenerateSyntheses {
                         }
                         background = DEFAULT_BACKGROUND_COLOR.color
                         tooltip = "The overview of all available views for this project."
-                        setSelectionStyle
+                        setSelectionStyle(false)
                     ]
                 }
                 
@@ -1110,8 +1113,9 @@ class GenerateSyntheses {
                                 setShadow(SHADOW_COLOR.color, 4, 4)
                             }
                             tooltip = "«artifact.name» \"" + artifact.getName + "\""
-                            setDifferenceStyle(SynthesisUtils.differenceInModel(artifact, differentModel), SynthesisUtils.isTargetModel(differentModel, context))
-                            setSelectionStyle
+                            val diff = SynthesisUtils.differenceInModel(artifact, differentModel)
+                            setDifferenceStyle(diff, SynthesisUtils.isTargetModel(differentModel, context), false)
+                            setSelectionStyle(diff !== ArtifactDifference.UNCHANGED)
                         ]
                     }
                     
@@ -1214,8 +1218,9 @@ class GenerateSyntheses {
                             tooltip = "«artifact.name» \"" + artifact.getName + "\""
                             addSingleClickAction(SelectRelatedAction::ID, ModifierState.NOT_PRESSED, ModifierState.NOT_PRESSED,
                                 ModifierState.NOT_PRESSED)
-                            setDifferenceStyle(SynthesisUtils.differenceInModel(artifact, differentModel), SynthesisUtils.isTargetModel(differentModel, context))
-                            setSelectionStyle
+                            val diff = SynthesisUtils.differenceInModel(artifact, differentModel)
+                            setDifferenceStyle(diff, SynthesisUtils.isTargetModel(differentModel, context), false)
+                            setSelectionStyle(diff !== ArtifactDifference.UNCHANGED)
                         ]
                     }
                     
@@ -1264,7 +1269,7 @@ class GenerateSyntheses {
                                 lineWidth = thick ? 4 : 2
                                 if (head) {
                                     addHeadArrowDecorator => [
-                                        setDifferenceStyle(difference, SynthesisUtils.isTargetModel(edge))
+                                        setDifferenceStyle(difference, SynthesisUtils.isTargetModel(edge), true)
                                         lineWidth = thick ? 2 : 1
                                         selectionLineWidth = thick ? 3 : 1.5f
                                         selectionForeground = SELECTION_COLOR.color
@@ -1274,7 +1279,7 @@ class GenerateSyntheses {
                                         suppressSelectablility
                                     ]
                                 }
-                                setDifferenceStyle(difference, SynthesisUtils.isTargetModel(edge))
+                                setDifferenceStyle(difference, SynthesisUtils.isTargetModel(edge), true)
                                 lineStyle = LineStyle.DASH
                                 selectionLineWidth = thick ? 6 : 3
                                 selectionForeground = SELECTION_COLOR.color
