@@ -711,7 +711,7 @@ class SPVizModelGenerator extends AbstractGenerator {
                 }
                 
                 /**
-                 * Converts the given name to an ACII string save for using in an Ecore ID.
+                 * Converts the given name to an ASCII string save for using in an Ecore ID.
                  * German umlauts are converted to their long form counterparts (e.g., ä->ae)
                  * and special characters not in the alphabet are replaced by underscores (_).
                  * 
