@@ -1416,7 +1416,7 @@ class GenerateSyntheses {
                  */
                 static enum ArtifactDifference {
                     /**
-                     * The aritfact is unchanged between both models.
+                     * The artifact is unchanged between both models.
                      */
                     UNCHANGED,
                     /**
