@@ -345,7 +345,6 @@ class SPVizGenerator extends AbstractGenerator {
             "org.eclipse.emf",
             "org.eclipse.xtext",
             "org.eclipse.xtext.xbase.lib",
-            "com.google.inject",
             data.modelBundleNamePrefix + ".model",
             data.modelBundleNamePrefix + ".diff.dsl",
             data.bundleNamePrefix + ".viz"
