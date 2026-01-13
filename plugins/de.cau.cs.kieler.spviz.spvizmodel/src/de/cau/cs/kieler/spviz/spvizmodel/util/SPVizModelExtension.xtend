@@ -3,7 +3,7 @@
  * 
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2021-2023 by
+ * Copyright 2021-2025 by
  * + Kiel University
  *   + Department of Computer Science
  *     + Real-Time and Embedded Systems Group
@@ -18,6 +18,7 @@ package de.cau.cs.kieler.spviz.spvizmodel.util
 
 import de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.Artifact
 import de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.Connection
+import de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.Containment
 
 /** 
  * Utility extension class for usability of the SPVizmodel classes.
@@ -60,6 +61,26 @@ class SPVizModelExtension {
         return c1.name == c2.name
             && c1.connected.name.equals(c2.connected.name)
             && c1.connecting.name.equals(c2.connecting.name)
+    }
+    
+    /**
+     * Returns all contained artifacts of this artifact.
+     * 
+     * @param theArtifact the parent artifact to search in.
+     * @return all artifacts that are contained within this. 
+     */
+    static def getContainedArtifacts(Artifact theArtifact) {
+        return theArtifact.references.filter(Containment).map[contains]
+    }
+    
+    /**
+     * Returns all connected artifacts of this artifact.
+     * 
+     * @param theArtifact the source artifact to search in.
+     * @return all artifacts that are connected within this. 
+     */
+    static def getConnectedArtifacts(Artifact theArtifact) {
+        return theArtifact.references.filter(Connection).map[connected]
     }
     
 }

@@ -63,8 +63,10 @@ class GenerateSyntheses {
             import com.google.inject.Inject
             import de.cau.cs.kieler.klighd.DisplayedActionData
             import de.cau.cs.kieler.klighd.kgraph.KGraphFactory
+            import de.cau.cs.kieler.klighd.kgraph.KNode
             import de.cau.cs.kieler.klighd.krendering.ViewSynthesisShared
             import de.cau.cs.kieler.klighd.krendering.extensions.KNodeExtensions
+            import de.cau.cs.kieler.klighd.krendering.extensions.KRenderingExtensions
             import de.cau.cs.kieler.klighd.syntheses.AbstractDiagramSynthesis
             import «data.getBundleNamePrefix».viz.actions.RedoAction
             import «data.getBundleNamePrefix».viz.actions.ResetViewAction
@@ -81,6 +83,7 @@ class GenerateSyntheses {
             «ENDFOR»
             import «data.modelBundleNamePrefix».model.«data.projectName»
             import java.util.LinkedHashSet
+            import java.util.List
             import org.eclipse.elk.alg.layered.options.CrossingMinimizationStrategy
             import org.eclipse.elk.alg.layered.options.LayeredMetaDataProvider
             import org.eclipse.elk.alg.layered.options.LayeredOptions
@@ -96,12 +99,17 @@ class GenerateSyntheses {
             @ViewSynthesisShared
             class «data.projectName.toFirstUpper»DiagramSynthesis extends AbstractDiagramSynthesis<«data.projectName»> {
                 @Inject extension KNodeExtensions
+                @Inject extension KRenderingExtensions
                 @Inject extension Styles
                 «FOR view : data.views»
                     @Inject «view.name»OverviewSynthesis «view.name.toFirstLower»OverviewSynthesis
                 «ENDFOR»
                 
                 extension KGraphFactory = KGraphFactory.eINSTANCE
+                
+                public var other = false
+                public var «data.projectName» sourceModel = null
+                public var «data.projectName» targetModel = null
                 
                 override getInputDataType() {
                     «data.projectName»
@@ -161,15 +169,30 @@ class GenerateSyntheses {
                 
                 override transform(«data.projectName» model) {
                     val modelNode = createNode.associateWith(model)
+                    modelNode.addRectangle => [ invisible = true ]
                     if (TOPDOWN_LAYOUT.booleanValue) {
                         SynthesisUtils.configureTopdownLayout(modelNode, true)
                     }
                     
+                    // set which model is synthesized
+                    modelNode.setProperty(SynthesisProperties.IS_TARGET_MODEL, other)
+                    modelNode.setProperty(SynthesisProperties.SOURCE_MODEL, sourceModel)
+                    modelNode.setProperty(SynthesisProperties.TARGET_MODEL, targetModel)
+                    
+                    
+                    // Differentiate source/target model in diff visualization.
+                    var «data.visualizationName» visualizationContext = null 
+                    var visContextsProperty = SynthesisProperties.VISUALIZATION_CONTEXTS
+                    var visContextIndexProperty = SynthesisProperties.CURRENT_VISUALIZATION_CONTEXT_INDEX
+                    if (SynthesisUtils.isTargetModel(modelNode)) {
+                        visContextsProperty = SynthesisProperties.VISUALIZATION_CONTEXTS_OTHER
+                        visContextIndexProperty = SynthesisProperties.CURRENT_VISUALIZATION_CONTEXT_INDEX_OTHER
+                    }
+                    
                     // Create a view with the currently stored visualization context in mind. If there is no current context, create
                     // a new one for the general model overview and store that for later use.
-                    val visualizationContexts = usedContext.getProperty(SynthesisProperties.VISUALIZATION_CONTEXTS)
-                    var index = usedContext.getProperty(SynthesisProperties.CURRENT_VISUALIZATION_CONTEXT_INDEX)
-                    var «data.visualizationName» visualizationContext = null
+                    val visualizationContexts = usedContext.getProperty(visContextsProperty)
+                    var index = usedContext.getProperty(visContextIndexProperty)
                     
                     if (!visualizationContexts.empty && index !== null) {
                         visualizationContext = visualizationContexts.get(index)
@@ -179,7 +202,7 @@ class GenerateSyntheses {
                     if (visualizationContext === null || !visualizationContext.isRootModel(model)) {
                         visualizationContexts.removeIf [ true ]
                         index = 0
-                        usedContext.setProperty(SynthesisProperties.CURRENT_VISUALIZATION_CONTEXT_INDEX, index)
+                        usedContext.setProperty(visContextIndexProperty, index)
                         visualizationContext = VizModelUtil.create«data.visualizationName»(model)
                         visualizationContexts.add(visualizationContext)
                     }
@@ -197,19 +220,18 @@ class GenerateSyntheses {
                             if (TOPDOWN_LAYOUT.booleanValue) {
                                 SynthesisUtils.configureTopdownLayout(it, false)
                             }
+                            setLayoutOption(BoxLayouterOptions.BOX_PACKING_MODE, PackingMode.GROUP_MIXED)
                             addProjectRendering(model.projectName, usedContext)
-                            «FOR view : data.views»
-                                
-                                val overview«view.name»Nodes = «view.name.toFirstLower»OverviewSynthesis.transform(visContext.«view.name.toFirstLower»OverviewContext)
-                                children += overview«view.name»Nodes
-                            «ENDFOR»
+                            
+                            // send the respectively different model through
+                            createSubNodes(visContext, other ? sourceModel : targetModel, children)
                         ]
                         
                         return modelNode
                         
                     } else {
                         // Delegate the view model generation to another subsynthesis that can show the requested visualization context.
-                        val children = transformSubModel(visualizationContext.focus)
+                        val children = transformSubModel(visualizationContext.focus, other ? sourceModel : targetModel)
                         
                         modelNode.children += children
                         
@@ -217,11 +239,19 @@ class GenerateSyntheses {
                     }
                 }
                 
-                private def transformSubModel(IVisualizationContext<?> context) {
+                private def createSubNodes(«data.visualizationName» visContext, «data.projectName» otherModel, List<KNode> children) {
+                    «FOR view : data.views»
+                        
+                        val overview«view.name»Nodes = «view.name.toFirstLower»OverviewSynthesis.transform(visContext.«view.name.toFirstLower»OverviewContext, otherModel)
+                        children += overview«view.name»Nodes
+                    «ENDFOR»
+                }
+                
+                private def transformSubModel(IVisualizationContext<?> context, «data.projectName» otherModel) {
                     switch (context) {
                         «FOR view : data.views»
                             «view.name»OverviewContext: {
-                                return «view.name.toFirstLower»OverviewSynthesis.transform(context)
+                                return «view.name.toFirstLower»OverviewSynthesis.transform(context, otherModel)
                             }
                         «ENDFOR»
                         default: {
@@ -284,10 +314,22 @@ class GenerateSyntheses {
                }
                
                override transform(«data.visualizationName»Impl model) {
-                   val visualizationContexts = usedContext.getProperty(SynthesisProperties.VISUALIZATION_CONTEXTS)
-                   var index = usedContext.getProperty(SynthesisProperties.CURRENT_VISUALIZATION_CONTEXT_INDEX)
-                   val rootVisualization = usedContext.getProperty(SynthesisProperties.MODEL_VISUALIZATION_CONTEXT)
                    var «data.visualizationName» visualizationContext = null
+                   
+                   // Differentiate source/target model in diff visualization.
+                   var visContextsProperty = SynthesisProperties.VISUALIZATION_CONTEXTS
+                   var currentVisContextIndexProperty = SynthesisProperties.CURRENT_VISUALIZATION_CONTEXT_INDEX
+                   var modelVisualizationContextProperty = SynthesisProperties.MODEL_VISUALIZATION_CONTEXT
+                   
+                   if (SynthesisUtils.isTargetModel(usedContext.getViewModel())) {
+                       visContextsProperty = SynthesisProperties.VISUALIZATION_CONTEXTS_OTHER
+                       currentVisContextIndexProperty = SynthesisProperties.CURRENT_VISUALIZATION_CONTEXT_INDEX_OTHER
+                       modelVisualizationContextProperty = SynthesisProperties.MODEL_VISUALIZATION_CONTEXT_OTHER
+                   }
+                   
+                   val visualizationContexts = usedContext.getProperty(visContextsProperty)
+                   var index = usedContext.getProperty(currentVisContextIndexProperty)
+                   val rootVisualization = usedContext.getProperty(modelVisualizationContextProperty)
                    
                    if (!visualizationContexts.empty && index !== null) {
                        visualizationContext = visualizationContexts.get(index)
@@ -297,14 +339,14 @@ class GenerateSyntheses {
                    if (visualizationContext === null || rootVisualization !== model) {
                        visualizationContexts.removeIf [ true ]
                        index = 0
-                       usedContext.setProperty(SynthesisProperties.CURRENT_VISUALIZATION_CONTEXT_INDEX, index)
+                       usedContext.setProperty(currentVisContextIndexProperty, index)
                        
                        // As we use a different model, the root model may differ from what is shown in the visualization
                        // context. So create a new visualization context and initialize and connect it with everything the old model
                        // had as well.
                        visualizationContext = VisualizationReInitializer.reInitialize(model)
                        visualizationContexts.add(visualizationContext)
-                       usedContext.setProperty(SynthesisProperties.MODEL_VISUALIZATION_CONTEXT, model)
+                       usedContext.setProperty(modelVisualizationContextProperty, model)
                        
                        // Set synthesis and layout options according to the stored options.
                        setSynthesisOptions(model.getSynthesisOptions)
@@ -480,6 +522,7 @@ class GenerateSyntheses {
             import de.cau.cs.kieler.klighd.krendering.KContainerRendering
             import de.cau.cs.kieler.klighd.krendering.KPolyline
             import de.cau.cs.kieler.klighd.krendering.KRectangle
+            import de.cau.cs.kieler.klighd.krendering.KRendering
             import de.cau.cs.kieler.klighd.krendering.KRoundedRectangle
             import de.cau.cs.kieler.klighd.krendering.KText
             import de.cau.cs.kieler.klighd.krendering.LineStyle
@@ -507,9 +550,11 @@ class GenerateSyntheses {
                 import «data.getBundleNamePrefix».viz.actions.RevealConnecting«connection.connecting.name»Connects«connection.connected.name»Named«connection.name»Action
                 import «data.getBundleNamePrefix».viz.actions.RemoveConnecting«connection.connecting.name»Connects«connection.connected.name»Named«connection.name»Action
             «ENDFOR»
+            import «data.getBundleNamePrefix».viz.SynthesisUtils.ArtifactDifference
             «FOR artifact : data.artifacts»
                 import «data.modelBundleNamePrefix».model.«artifact.name»
             «ENDFOR»
+            import «data.modelBundleNamePrefix».model.«data.projectName»
 «««            import java.util.List
             import static «data.getBundleNamePrefix».viz.Options.*
             
@@ -530,6 +575,8 @@ class GenerateSyntheses {
                 
                 // The colors used for the visualization.
                 public static final String DEFAULT_BACKGROUND_COLOR = "white"
+                
+                // Artifact colors
                 «FOR artifact : data.artifacts»
                     public static final String COLOR_«artifact.name» = "«colors.get(artifact)»"
                     public static final String SECONDARY_COLOR_«artifact.name» = "«secondaryColors.get(artifact)»"
@@ -543,21 +590,48 @@ class GenerateSyntheses {
                 
                 public static final String SHADOW_COLOR = "black"
                 
-                // Edge colors.
-                public static final String SELECTION_COLOR = "blue"
+                // Selection color.
+                public static final String SELECTION_COLOR = "orange"
                 
                 /** The roundness of visualized rounded rectangles. */
                 static final int ROUNDNESS = 4
+                
+                // comparison colors.
+                public static final String ADDED = "#00cc00"
+                public static final String REMOVED = "#ff0000"
+                public static final String MODIFIED = "#2a00ff"
                 
                 // ------------------------------------- Generic renderings -------------------------------------
                 
                 /**
                  * Sets the selection style of the node.
                  */
-                def setSelectionStyle(KContainerRendering rendering) {
+                def setSelectionStyle(KContainerRendering rendering, boolean alreadyWide) {
                     rendering => [
-                        selectionLineWidth = 3 * lineWidthValue;
-                        selectionForeground = SELECTION_COLOR.color;
+                        if (!alreadyWide) {
+                            selectionLineWidth = 3 * lineWidthValue
+                        }
+                        selectionForeground = SELECTION_COLOR.color
+                    ]
+                }
+                
+                /**
+                 * Set the difference style on the rendering.
+                 */
+                def setDifferenceStyle(KRendering rendering, SynthesisUtils.ArtifactDifference difference, boolean isTargetModel, boolean isEdge) {
+                    var String color = null
+                    switch (difference) {
+                        case SynthesisUtils.ArtifactDifference.UNCHANGED:
+                            return
+                        case SynthesisUtils.ArtifactDifference.NON_EXISTENT:
+                            color = isTargetModel ? ADDED : REMOVED
+                        case SynthesisUtils.ArtifactDifference.MODIFIED:
+                            color = MODIFIED
+                    }
+                    val color_ = color
+                    rendering => [
+                        lineWidth = (isEdge ? 1.5f : 3) * lineWidthValue
+                        foreground = color_.color
                     ]
                 }
                 
@@ -571,7 +645,7 @@ class GenerateSyntheses {
                             setShadow(SHADOW_COLOR.color, 4, 4)
                         }
                         addSimpleLabel(name, false)
-                        setSelectionStyle
+                        setSelectionStyle(false)
                     ]
                 }
                 
@@ -601,7 +675,7 @@ class GenerateSyntheses {
                                     if (isConnectable) {
                                         columns += 1
                                     }
-                                } 
+                                }
                                 setGridPlacement(columns)
                                 invisible = true
                                 addRectangle => [
@@ -632,7 +706,7 @@ class GenerateSyntheses {
                             }
                             background = DEFAULT_BACKGROUND_COLOR.color
                             tooltip = tooltipText
-                            setSelectionStyle
+                            setSelectionStyle(false)
                         ]
                     } else {
                         // Collapsed
@@ -661,7 +735,7 @@ class GenerateSyntheses {
                             }
                             background = DEFAULT_BACKGROUND_COLOR.color
                             tooltip = tooltipText
-                            setSelectionStyle
+                            setSelectionStyle(false)
                         ]
                     }
                 }
@@ -972,7 +1046,7 @@ class GenerateSyntheses {
                         }
                         background = DEFAULT_BACKGROUND_COLOR.color
                         tooltip = "The overview of all available views for this project."
-                        setSelectionStyle
+                        setSelectionStyle(false)
                     ]
                 }
                 
@@ -990,11 +1064,24 @@ class GenerateSyntheses {
                      * {link ReferencedSynthesisExpandAction} to dynamically call the feature synthesis for the given feature.
                      * 
                      * @param node The KNode to add this rendering to.
-                     * @param aritfact The «artifact.name.toFirstLower» this rendering should represent.
+                     * @param artifact The «artifact.name.toFirstLower» this rendering should represent.
                      * @param label The representing name of this feature that should be shown.
                      * @param context The used ViewContext.
                      */
                     def add«artifact.name»InOverviewRendering(KNode node, «artifact.name» artifact, String name, ViewContext context) {
+                        add«artifact.name»InOverviewRendering(node, artifact, name, context, null)
+                    }
+                    
+                    /**
+                     * Adds a simple rendering for a {@link «artifact.name»} to the given node that can be expanded to call the
+                     * {link ReferencedSynthesisExpandAction} to dynamically call the feature synthesis for the given feature.
+                     * 
+                     * @param node The KNode to add this rendering to.
+                     * @param artifact The «artifact.name.toFirstLower» this rendering should represent.
+                     * @param label The representing name of this feature that should be shown.
+                     * @param differentModel The other model to compare against for this artifact's coloring.
+                     */
+                    def add«artifact.name»InOverviewRendering(KNode node, «artifact.name» artifact, String name, ViewContext context, «data.projectName» differentModel) {
                         node.addRoundedRectangle(ROUNDNESS, ROUNDNESS) => [
                             val interactiveButtons = context.getOptionValue(INTERACTIVE_BUTTONS) as Boolean
                             var columns = 1
@@ -1026,7 +1113,9 @@ class GenerateSyntheses {
                                 setShadow(SHADOW_COLOR.color, 4, 4)
                             }
                             tooltip = "«artifact.name» \"" + artifact.getName + "\""
-                            setSelectionStyle
+                            val diff = SynthesisUtils.differenceInModel(artifact, differentModel)
+                            setDifferenceStyle(diff, SynthesisUtils.isTargetModel(differentModel, context), false)
+                            setSelectionStyle(diff !== ArtifactDifference.UNCHANGED)
                         ]
                     }
                     
@@ -1044,6 +1133,24 @@ class GenerateSyntheses {
                      */
                     def KRoundedRectangle add«artifact.name»Rendering(KNode node, «artifact.name» artifact, boolean inOverview, boolean hasChildren,
                         ViewContext context) {
+                        add«artifact.name»Rendering(node, artifact, inOverview, hasChildren, context, null)
+                    }
+                    
+                    /**
+                     * Adds a rendering for a {@link «artifact.name»} to the given node.
+                     * Contains the name of the «artifact.name.toFirstLower», a button to focus this artifact and text for the ID and description of this artifact.
+                     * 
+                     * @param node The KNode this rendering should be attached to.
+                     * @param artifact The «artifact.name.toFirstLower» this rendering represents.
+                     * @param inOverview If this product is shown in a «artifact.name.toFirstLower» overview.
+                     * @param hasChildren If this rendering should leave space for a child area.
+                     * @param context The view context used in the synthesis.
+                     * @param differentModel The other model to compare against for this artifact's coloring.
+                     * 
+                     * @return The entire rendering for a «artifact.name.toFirstLower».
+                     */
+                    def KRoundedRectangle add«artifact.name»Rendering(KNode node, «artifact.name» artifact, boolean inOverview, boolean hasChildren,
+                        ViewContext context, «data.projectName» differentModel) {
                         node.addRoundedRectangle(ROUNDNESS, ROUNDNESS) => [
                             if (artifact.isExternal) {
                                 setBackgroundGradient(EXTERNAL_COLOR_«artifact.name».color, EXTERNAL_SECONDARY_COLOR_«artifact.name».color, 90)
@@ -1111,7 +1218,9 @@ class GenerateSyntheses {
                             tooltip = "«artifact.name» \"" + artifact.getName + "\""
                             addSingleClickAction(SelectRelatedAction::ID, ModifierState.NOT_PRESSED, ModifierState.NOT_PRESSED,
                                 ModifierState.NOT_PRESSED)
-                            setSelectionStyle
+                            val diff = SynthesisUtils.differenceInModel(artifact, differentModel)
+                            setDifferenceStyle(diff, SynthesisUtils.isTargetModel(differentModel, context), false)
+                            setSelectionStyle(diff !== ArtifactDifference.UNCHANGED)
                         ]
                     }
                     
@@ -1140,17 +1249,28 @@ class GenerateSyntheses {
                         /**
                          * Adds the rendering for an edge showing a «connected.connected.name.toFirstLower» connection.
                          * 
-                         * @param head if this edge shold render an arrow head.
-                         * @param thick if this edge shold be rendered thicker.
+                         * @param head if this edge should render an arrow head.
+                         * @param thick if this edge should be rendered thicker.
                          */
                         def addConnected«connected.connecting.name»Connects«connected.connected.name»Named«connected.name»EdgeRendering(KEdge edge, boolean head, boolean thick) {
+                            addConnected«connected.connecting.name»Connects«connected.connected.name»Named«connected.name»EdgeRendering(edge, head, thick, SynthesisUtils.ArtifactDifference.UNCHANGED)
+                        }
+                        
+                        /**
+                         * Adds the rendering for an edge showing a «connected.connected.name.toFirstLower» connection.
+                         * 
+                         * @param head if this edge should render an arrow head.
+                         * @param thick if this edge should be rendered thicker.
+                         * @param different if there is a difference between source and target model.
+                         * @param targetModel true if this edge is missing in the target model, false if it is missing in the source model.
+                         */
+                        def addConnected«connected.connecting.name»Connects«connected.connected.name»Named«connected.name»EdgeRendering(KEdge edge, boolean head, boolean thick, SynthesisUtils.ArtifactDifference difference) {
                             edge.addPolyline => [
                                 lineWidth = thick ? 4 : 2
                                 if (head) {
                                     addHeadArrowDecorator => [
+                                        setDifferenceStyle(difference, SynthesisUtils.isTargetModel(edge), true)
                                         lineWidth = thick ? 2 : 1
-                                        background = "black".color
-                                        foreground = "black".color
                                         selectionLineWidth = thick ? 3 : 1.5f
                                         selectionForeground = SELECTION_COLOR.color
                                         selectionBackground = SELECTION_COLOR.color
@@ -1159,6 +1279,7 @@ class GenerateSyntheses {
                                         suppressSelectablility
                                     ]
                                 }
+                                setDifferenceStyle(difference, SynthesisUtils.isTargetModel(edge), true)
                                 lineStyle = LineStyle.DASH
                                 selectionLineWidth = thick ? 6 : 3
                                 selectionForeground = SELECTION_COLOR.color
@@ -1239,6 +1360,8 @@ class GenerateSyntheses {
             
             import de.cau.cs.kieler.klighd.SynthesisOption
             import de.cau.cs.kieler.klighd.ViewContext
+            import de.cau.cs.kieler.klighd.kgraph.KEdge
+            import de.cau.cs.kieler.klighd.kgraph.KGraphElement
             import de.cau.cs.kieler.klighd.kgraph.KNode
             import de.cau.cs.kieler.klighd.syntheses.DiagramSyntheses
             import «data.getBundleNamePrefix».model.IOverviewVisualizationContext
@@ -1256,7 +1379,9 @@ class GenerateSyntheses {
             import org.eclipse.elk.core.options.PortConstraints
             import org.eclipse.elk.core.options.TopdownSizeApproximator
             import org.eclipse.elk.core.options.TopdownNodeTypes
-            
+            import «data.modelBundleNamePrefix».model.Identifiable
+            import «data.modelBundleNamePrefix».model.«data.projectName»
+            import «data.bundleNamePrefix».model.«data.visualizationName»
             «FOR artifact : data.artifacts»
                 import «data.modelBundleNamePrefix».model.«artifact.name.toFirstUpper»
             «ENDFOR»
@@ -1285,6 +1410,111 @@ class GenerateSyntheses {
                  * Utils class can not be instantiated.
                  */
                 private new() {}
+                    
+                /**
+                 * Enum for how two artifacts between models differ with each other.
+                 */
+                static enum ArtifactDifference {
+                    /**
+                     * The artifact is unchanged between both models.
+                     */
+                    UNCHANGED,
+                    /**
+                     * The artifact does not exist in the other model and is therefore either removed/added in the other model.
+                     */
+                    NON_EXISTENT,
+                    /**
+                     * The artifact is modified in the other model. A modification indicates that an artifact with the same
+                     * ID exists in the other model that has different *outgoing* connections or different *contained* artifacts.
+                     * Incoming connections and different containers are ignored.
+                     */
+                    MODIFIED
+                }
+                
+                /**
+                 * Method finds corresponding IVisualizationContext from a different model by reversing the way
+                 * up the ContextModel.
+                 * 
+                 * @param originContext VizContext to search for
+                 * @param targetViz top of the VizContext model to search through
+                 * 
+                 * @return the corresponding VizContext or null if there is none
+                 */
+                def static IVisualizationContext<?> getDiffContext(IVisualizationContext<?> originContext, «data.visualizationName» targetViz) {
+«««                    TODO: this seems inefficient.
+                    var currentContext = originContext
+                    var toFindContext = targetViz as IVisualizationContext<?>
+                    var wayUp = <IVisualizationContext<?>>newLinkedList()
+                    
+                    // save all viewContexts that are parents of the origin and the origin itself,
+                    // until there is no parent
+                    while (currentContext.getParent() !== null) {
+                        wayUp.add(currentContext)
+                        currentContext = currentContext.getParent()
+                    }
+                    
+                    // reverse the order of parents to find the corresponding children until we followed the
+                    // way completely
+                    wayUp.reverse()
+                    for (context : wayUp) {
+                        var children = toFindContext.childContexts
+                        for (child : children) {
+                            if (child.class === context.class) {
+                                if (child.modelElement !== null && context.modelElement !== null) {
+                                    var element_target = child.modelElement as Identifiable
+                                    var element_source = context.modelElement as Identifiable
+                                    if (element_target.ecoreId.equals(element_source.ecoreId)) {
+                                        toFindContext = child
+                                    }
+                                } else {
+                                    toFindContext = child
+                                }
+                                
+                            }
+                        }
+                    }
+                    
+                    
+                    return toFindContext.class === originContext.class ? toFindContext : null
+                }
+                
+                /**
+                 * Checks which of the models is the root. Returns true if the root is the source model and false
+                 * if its the target model.
+                 * 
+                 * @param current KNode location
+                 * 
+                 * @return whether the root is the target model or not
+                 */
+                def static boolean isTargetModel(KGraphElement current) {
+                    var KNode currentNode = null
+                    if (current instanceof KNode) {
+                        currentNode = current
+                    } else if (current instanceof KEdge) {
+                        currentNode = current.source
+                    }
+                    currentNode = find«data.projectName»Impl(currentNode)
+                    return currentNode !== null && currentNode.getProperty(SynthesisProperties.IS_TARGET_MODEL)
+                }
+                
+«««                TODO: hacky solution, should be solved better in the long term.
+                /**
+                 * If this model (given the other model) is the target model
+                 */
+                def static boolean isTargetModel(«data.projectName.toFirstUpper» differentModel, ViewContext context) {
+                    return differentModel !== null && differentModel !== context.viewModel.getChildren()?.get(0)?.getChildren?.get(0)?.getProperty(SynthesisProperties.TARGET_MODEL)
+                }
+                
+                /**
+                 * Returns the KNode that represents the «data.projectName»Impl
+                 */
+                def static KNode find«data.projectName»Impl(KNode current) {
+                    var currentNode = current
+                    while (currentNode !== null && currentNode.properties.get(SynthesisProperties.IS_TARGET_MODEL) === null) {
+                        currentNode = currentNode.getParent()
+                    }
+                    return currentNode
+                }
                 
                 /**
                  * If the id should be truncated by the prefix of the {@link Options#SHORTEN_BY} option, this returns a
@@ -1373,6 +1603,129 @@ class GenerateSyntheses {
                         return visualizationContexts
                     }
                 }
+                
+                /**
+                 * If the two artifacts represent the same thing in two different models
+                 */
+                def static isEqualTo(Identifiable a1, Identifiable a2) {
+                    return a1.class == a2.class && a1.ecoreId.equals(a2.ecoreId)
+                }
+                
+                «FOR artifact : data.artifacts»
+                    /**
+                     * Find and return the «artifact.name.toFirstUpper» with the same ID in a different model.
+                     * Returns {@code null} if artifact does not exist in the other model.
+                     */ 
+                    def static «artifact.name.toFirstUpper» findEqualArtifactInModel(«artifact.name.toFirstUpper» artifact, «data.projectName.toFirstUpper» otherModel) {
+                        val String identifier = artifact.ecoreId
+                        for («artifact.name.toFirstUpper» other: otherModel.«artifact.name.toFirstLower»s) {
+                            if (identifier.equals(other.ecoreId)) {
+                                return other
+                            }
+                        }
+                        return null
+                    }
+                    
+                    /**
+                     * Calculates the {@link ArtifactDifference} of a «artifact.name.toFirstLower» compared to a different project.
+                     */
+                    def static ArtifactDifference differenceInModel(«artifact.name.toFirstUpper» artifact, «data.projectName.toFirstUpper» otherModel) {
+                        if (otherModel === null) {
+                            return ArtifactDifference.UNCHANGED
+                        }
+                        
+                        // check for existence in other model
+                        val otherArtifact = findEqualArtifactInModel(artifact, otherModel)
+                        if (otherArtifact === null) {
+                            return ArtifactDifference.NON_EXISTENT
+                        }
+                        
+                        // check for equal outgoing connections and contained artifacts.
+                        if (equalOutgoingConnections(artifact, otherArtifact) && equalContainedArtifacts(artifact, otherArtifact)) {
+                            return ArtifactDifference.UNCHANGED
+                        }
+                        return ArtifactDifference.MODIFIED
+                    }
+                    
+                    /**
+                     * Check if all outgoing connections (those defined within the Artifact's body in the .spvizmodel via 'connects') of this artifact1 (this model) connect to all artifacts with the same IDs in artifact2 (the other model).
+                     */
+                    def static boolean equalOutgoingConnections(«artifact.name.toFirstUpper» artifact1, «artifact.name.toFirstUpper» artifact2) {
+                        «IF !data.getConnectedArtifacts(artifact).empty»
+                            // check the sizes of outgoing connection lists first.
+                            if (
+                                «FOR connection : data.getConnectedArtifacts(artifact) SEPARATOR " ||"»
+                                    artifact1.connected«connection.name.toFirstUpper»«connection.connected.name.toFirstUpper»s.size !== artifact2.connected«connection.name.toFirstUpper»«connection.connected.name.toFirstUpper»s.size
+                                «ENDFOR»
+                            ) {
+                                return false
+                            }
+                            
+                            // if lists are the same size, search a corresponding target for each connection.
+                        «ENDIF»
+                        «FOR connection : data.getConnectedArtifacts(artifact)»
+                            for (connected : artifact1.connected«connection.name.toFirstUpper»«connection.connected.name.toFirstUpper»s) {
+                                if (artifact2.connected«connection.name.toFirstUpper»«connection.connected.name.toFirstUpper»s.findFirst[isEqualTo(connected)] === null) {
+                                    return false
+                                }
+                            }
+                        «ENDFOR»
+                        // found everything!
+                        return true
+                    }
+                    
+                    /**
+                     * Check if all contained artifacts (those defined within the Artifact's body in the .spvizmodel via 'contains') are in equal in both artifacts.
+                     */
+                    def static boolean equalContainedArtifacts(«artifact.name.toFirstUpper» artifact1, «artifact.name.toFirstUpper» artifact2) {
+                        «IF !artifact.containedArtifacts.empty»
+                            // check the sizes of contained artifact lists first.
+                            if (
+                                «FOR containment : artifact.containedArtifacts SEPARATOR " ||"»
+                                    artifact1.«containment.name.toFirstLower»s.size !== artifact2.«containment.name.toFirstLower»s.size
+                                «ENDFOR»
+                            ) {
+                                return false
+                            }
+                            
+                            // if lists are the same size, search for a corresponding contained element for each containment.
+                        «ENDIF»
+                        «FOR containment : artifact.containedArtifacts»
+                            for (contained : artifact1.«containment.name.toFirstLower»s) {
+                                if (artifact2.«containment.name.toFirstLower»s.findFirst[isEqualTo(contained)] === null) {
+                                    return false
+                                }
+                            }
+                        «ENDFOR»
+                        // found everything!
+                        return true
+                    }
+                «ENDFOR»
+                
+                «FOR connection : data.connections»
+                    def static ArtifactDifference differenceInConnection«connection.name.toFirstUpper»(«connection.connecting.name.toFirstUpper» sourceArtifact, «connection.connected.name.toFirstUpper» targetArtifact, «data.projectName.toFirstUpper» otherModel) {
+                        if (otherModel === null) {
+                            return ArtifactDifference.UNCHANGED
+                        }
+                        
+                        // check for existence in other model
+                        val otherSourceArtifact = findEqualArtifactInModel(sourceArtifact, otherModel)
+                        if (otherSourceArtifact === null) {
+                            return ArtifactDifference.NON_EXISTENT
+                        }
+                        val otherTargetArtifact = findEqualArtifactInModel(targetArtifact, otherModel)
+                        if (otherTargetArtifact === null) {
+                            return ArtifactDifference.NON_EXISTENT
+                        }
+                        
+                        // check that connection still exists
+                        if (!otherSourceArtifact.connected«connection.name.toFirstUpper»«connection.connected.name.toFirstUpper»s.contains(otherTargetArtifact)) {
+                            return ArtifactDifference.NON_EXISTENT
+                        }
+                        
+                        return ArtifactDifference.UNCHANGED
+                    }
+                «ENDFOR»
                 
                 «FOR categoryConnection : data.getUniqueCategoryConnections»
                     /**
@@ -1616,6 +1969,7 @@ class GenerateSyntheses {
             
             import de.cau.cs.kieler.klighd.ViewContext
             import «data.getBundleNamePrefix».model.«data.visualizationName»
+            import «data.modelBundleNamePrefix».model.«data.projectName»
             import java.util.LinkedList
             import java.util.List
             import org.eclipse.elk.graph.properties.IProperty
@@ -1631,7 +1985,12 @@ class GenerateSyntheses {
                  * Currently does not store a delta between the contexts, but a hard copy of every state used since the beginning
                  * default view.
                  */
-                public static final IProperty<List<«data.visualizationName»>> VISUALIZATION_CONTEXTS = new Property<List<«data.visualizationName»>>("osgimodel.visualizationContexts", new LinkedList<«data.visualizationName»>)
+                public static final IProperty<List<«data.visualizationName»>> VISUALIZATION_CONTEXTS = new Property<List<«data.visualizationName»>>("model.visualizationContexts", new LinkedList<«data.visualizationName»>)
+                
+                /**
+                 * The other visualization contexts in a difference visualization, see {@code VISUALIZATION_CONTEXTS}.
+                 */
+                public static final IProperty<List<«data.visualizationName»>> VISUALIZATION_CONTEXTS_OTHER = new Property<List<«data.visualizationName»>>("model.visualizationContextsOther", new LinkedList<«data.visualizationName»>)
                 
                 /**
                  * Property pointing towards which index points towards the currently used visualization context in the
@@ -1642,11 +2001,39 @@ class GenerateSyntheses {
                 public static final IProperty<Integer> CURRENT_VISUALIZATION_CONTEXT_INDEX = new Property<Integer>("model.currentVisualizationContextIndex", null)
                 
                 /**
+                 * The other visualization context index in a difference visualization, see {@code CURRENT_VISUALIZATION_CONTEXT_INDEX}.
+                 */
+                public static final IProperty<Integer> CURRENT_VISUALIZATION_CONTEXT_INDEX_OTHER = new Property<Integer>("model.currentVisualizationContextIndexOther", null)
+                
+                /**
                  * The root model visualization context for the VizSynthesis to figure out the change of file against the usual
                  * change of the visualization model.
                  * May be null if the model visualization context has not been set yet for the view context.
                  */
                 public static final IProperty<«data.visualizationName»> MODEL_VISUALIZATION_CONTEXT = new Property<«data.visualizationName»>("model.modelVisualizationContext", null)
+                
+                /**
+                 * The other model visualization context in a difference visualization, see {@code MODEL_VISUALIZATION_CONTEXT}.
+                 */
+                public static final IProperty<«data.visualizationName»> MODEL_VISUALIZATION_CONTEXT_OTHER = new Property<«data.visualizationName»>("model.modelVisualizationContextOther", null)
+                
+                /**
+                 * Property that indicates the source model in a difference visualization. Set to null (or not set at all)
+                 * if normal visualization for one model is used.
+                 */
+                public static final IProperty<«data.projectName»> SOURCE_MODEL = new Property<«data.projectName»>("model.sourceModel", null)
+                
+                /**
+                 * Property that indicates the target model in a difference visualization. Set to null (or not set at all)
+                 * if normal visualization for one model is used.
+                 */
+                public static final IProperty<«data.projectName»> TARGET_MODEL = new Property<«data.projectName»>("model.targetModel", null)
+                
+                /**
+                 * Checkmark for marking the synthesis for each model.
+                 * If true, then current model in context is source model, if false, then it is the target model.
+                 */
+                public static final IProperty<Boolean> IS_TARGET_MODEL = new Property<Boolean>("model.isTargetModel", null)
                 
             }
             

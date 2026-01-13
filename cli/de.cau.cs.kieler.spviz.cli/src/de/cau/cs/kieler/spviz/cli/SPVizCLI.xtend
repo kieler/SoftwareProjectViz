@@ -3,7 +3,7 @@
  *
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2024-2025 by
+ * Copyright 2024-2026 by
  * + Kiel University
  *   + Department of Computer Science
  *   + Real-Time and Embedded Systems Group
@@ -77,6 +77,12 @@ class SPVizCLI implements Runnable {
     
     @Option(names = #["-g", "--build-generator"], defaultValue = "false", description = "Automatically build the generator projects with Maven.")
     protected boolean buildGenerator
+    
+    @Option(names = #["--no-model-dsl"], defaultValue = "false", description = "Skip generating the model DSL for your architecture model and skip incorporating them into the build process.")
+    protected boolean noModelDsl
+    
+    @Option(names = #["--no-diff"], defaultValue = "false", description = "Skip generating the difference visualization and its DSL and skip incorporating them into the build process.")
+    protected boolean noDiff
 
     /**
      * Main entry point for this command line tool.
@@ -107,7 +113,7 @@ class SPVizCLI implements Runnable {
                 // Parse the model file.
                 LOGGER.info("Generating sources for {}", spvizModelFile.absolutePath.replace("\\", "/"))
                 val Resource resource = rs.getResource(URI.createURI("file://" + spvizModelFile.absolutePath.replace("\\", "/")), true)
-                SPVizModelGenerator.generate(resource, output)
+                SPVizModelGenerator.generate(resource, output, noModelDsl, noDiff)
             }
             
             // Prepare loading .spviz files.
@@ -118,7 +124,7 @@ class SPVizCLI implements Runnable {
                 LOGGER.info("Generating sources for {}", spvizFile.absolutePath.replace("\\", "/"))
                 val Resource resource = rs.createResource(URI.createURI("file://" + spvizFile.absolutePath.replace("\\", "/")))
                 resource.load(rs.getLoadOptions())
-                SPVizGenerator.generate(resource, output)
+                SPVizGenerator.generate(resource, output, noModelDsl, noDiff)
                 
                 // Build the project.
                 val buildProject = output.toAbsolutePath.toString.replace("\\", "/") + "/" + (resource.contents.head as SPViz).package + ".build"

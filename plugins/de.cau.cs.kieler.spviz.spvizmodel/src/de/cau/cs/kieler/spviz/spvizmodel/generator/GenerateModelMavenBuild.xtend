@@ -3,7 +3,7 @@
  *
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2022-2024 by
+ * Copyright 2022-2025 by
  * + Kiel University
  *   + Department of Computer Science
  *   + Real-Time and Embedded Systems Group
@@ -225,7 +225,7 @@ class GenerateModelMavenBuild {
                 <guice-version>7.0.0</guice-version>
                 <klighd-version>3.0.2.v20240507</klighd-version>
                 <lsp4j-version>0.22.0</lsp4j-version>
-                <tycho-version>2.7.5</tycho-version>
+                <tycho-version>3.0.5</tycho-version>
                 <xtext-version>2.33.0</xtext-version>
                 <xtend-version>2.33.0</xtend-version>
                 
@@ -450,7 +450,7 @@ class GenerateModelMavenBuild {
                               <pluginExecutionFilter>
                                 <groupId>org.eclipse.tycho</groupId>
                                 <artifactId>target-platform-configuration</artifactId>
-                                <versionRange>[2.7.5,)</versionRange>
+                                <versionRange>[3.0.5,)</versionRange>
                                 <goals>
                                   <goal>target-platform</goal>
                                 </goals>
@@ -492,6 +492,8 @@ class GenerateModelMavenBuild {
                   <unit id="org.eclipse.lsp4j.sdk.feature.group" version="0.0.0"/>
                   <unit id="org.eclipse.wildwebdeveloper.xml.feature.feature.group" version="0.0.0"/>
                   <unit id="org.eclipse.sdk.feature.group" version="0.0.0"/>
+                  <unit id="org.eclipse.xtext.sdk.feature.group" version="0.0.0"/>
+                  <unit id="org.eclipse.emf.ecore.xcore.sdk.feature.group" version="0.0.0"/> 
                   <repository location="https://download.eclipse.org/releases/2023-12"/>
                 </location>
 «««                <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
@@ -510,6 +512,7 @@ class GenerateModelMavenBuild {
                 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
                   <unit id="com.google.gson" version="0.0.0"/>
                   <unit id="com.google.inject" version="0.0.0"/>
+                  <unit id="slf4j.api" version="0.0.0"/> 
                   <repository location="https://download.eclipse.org/tools/orbit/simrel/orbit-aggregation/release/4.30.0/"/>
                 </location>
               </locations>
