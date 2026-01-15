@@ -3,7 +3,7 @@
  *
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2022-2024 by
+ * Copyright 2022-2026 by
  * + Kiel University
  *   + Department of Computer Science
  *   + Real-Time and Embedded Systems Group
@@ -163,7 +163,7 @@ class JavaMavenProjectGenerator {
         return '''
             <?xml version="1.0" encoding="UTF-8"?>
             <classpath>
-                <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-17"/>
+                <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-21"/>
                 <classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER"/>
                 <classpathentry kind="src" path="«sourceFolderName»"/>
                 «IF xtendSources»
@@ -245,15 +245,16 @@ class JavaMavenProjectGenerator {
                             <artifactId>maven-compiler-plugin</artifactId>
                             <version>3.10.0</version>
                             <configuration>
-                                <source>17</source>
-                                <target>17</target>
+                                <source>21</source>
+                                <target>21</target>
                             </configuration>
                         </plugin>
                         «IF xtendSources»
                             <!-- Compile Xtend code -->
                             <plugin>
-                              <groupId>org.eclipse.xtend</groupId>
+                              <groupId>org.eclipse.xtext</groupId>
                               <artifactId>xtend-maven-plugin</artifactId>
+                              <version>${xtext-version}</version>
                             </plugin>
                         «ENDIF»
                         «IF generateShadedJar»
@@ -300,6 +301,7 @@ class JavaMavenProjectGenerator {
                                       <exclude>META-INF/INDEX.LIST</exclude>
                                       <exclude>META-INF/MANIFEST.MF</exclude>
                                       <exclude>modeling32.png</exclude>
+                                      <exclude>module-info.class</exclude>
                                       <exclude>OSGI-INF/l10n/bundle.properties</exclude>
                                       <exclude>plugin.xml</exclude>
                                       <exclude>profile.list</exclude>

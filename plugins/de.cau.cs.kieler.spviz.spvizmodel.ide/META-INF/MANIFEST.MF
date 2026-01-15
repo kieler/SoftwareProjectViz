@@ -10,6 +10,6 @@ Require-Bundle: de.cau.cs.kieler.spviz.spvizmodel,
  org.antlr.runtime;bundle-version="[3.2.0,3.2.1)",
  org.eclipse.xtext.ide,
  org.eclipse.xtext.xbase.ide
-Bundle-RequiredExecutionEnvironment: JavaSE-17
+Bundle-RequiredExecutionEnvironment: JavaSE-21
 Export-Package: de.cau.cs.kieler.spviz.spvizmodel.ide.contentassist.antlr.internal,
  de.cau.cs.kieler.spviz.spvizmodel.ide.contentassist.antlr

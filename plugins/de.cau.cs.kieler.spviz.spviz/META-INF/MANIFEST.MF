@@ -19,7 +19,7 @@ Require-Bundle: de.cau.cs.kieler.spviz.spvizmodel,
  org.eclipse.xtext.xbase.lib;bundle-version="2.14.0",
  org.eclipse.xtend.lib;bundle-version="2.14.0",
  slf4j.api
-Bundle-RequiredExecutionEnvironment: JavaSE-17
+Bundle-RequiredExecutionEnvironment: JavaSE-21
 Export-Package: de.cau.cs.kieler.spviz.spviz.services,
  de.cau.cs.kieler.spviz.spviz.parser.antlr,
  de.cau.cs.kieler.spviz.spviz.scoping,

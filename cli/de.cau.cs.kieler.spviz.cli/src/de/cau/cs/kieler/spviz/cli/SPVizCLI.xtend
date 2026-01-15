@@ -20,12 +20,14 @@ import de.cau.cs.kieler.spviz.spvizmodel.SPVizModelStandaloneSetup
 import de.cau.cs.kieler.spviz.spvizmodel.generator.SPVizModelGenerator
 import java.io.BufferedReader
 import java.io.File
+import java.io.FileNotFoundException
 import java.io.IOException
 import java.io.InputStreamReader
 import java.nio.file.Path
 import java.util.ArrayList
 import java.util.List
 import org.eclipse.emf.common.util.URI
+import org.eclipse.emf.common.util.WrappedException
 import org.eclipse.emf.ecore.resource.Resource
 import org.eclipse.xtext.resource.XtextResourceSet
 import org.slf4j.Logger
@@ -83,6 +85,8 @@ class SPVizCLI implements Runnable {
     
     @Option(names = #["--no-diff"], defaultValue = "false", description = "Skip generating the difference visualization and its DSL and skip incorporating them into the build process.")
     protected boolean noDiff
+    
+    boolean errors = false
 
     /**
      * Main entry point for this command line tool.
@@ -112,8 +116,17 @@ class SPVizCLI implements Runnable {
             for (spvizModelFile : spvizModelFiles) {
                 // Parse the model file.
                 LOGGER.info("Generating sources for {}", spvizModelFile.absolutePath.replace("\\", "/"))
-                val Resource resource = rs.getResource(URI.createURI("file://" + spvizModelFile.absolutePath.replace("\\", "/")), true)
-                SPVizModelGenerator.generate(resource, output, noModelDsl, noDiff)
+                try {
+                    val Resource resource = rs.getResource(URI.createURI("file://" + spvizModelFile.absolutePath.replace("\\", "/")), true)
+                    SPVizModelGenerator.generate(resource, output, noModelDsl, noDiff)
+                } catch (WrappedException e) {
+                    if (e.cause instanceof FileNotFoundException) {
+                        LOGGER.error("File does not exist, skipping this file.")
+                        errors = true
+                    } else {
+                        throw e
+                    }
+                }
             }
             
             // Prepare loading .spviz files.
@@ -122,44 +135,54 @@ class SPVizCLI implements Runnable {
                 // Parse the visualization file. A full absolute URI with file:// scheme is important, so that the resource
                 // can correctly resolve the imported .spvizmodel file.
                 LOGGER.info("Generating sources for {}", spvizFile.absolutePath.replace("\\", "/"))
-                val Resource resource = rs.createResource(URI.createURI("file://" + spvizFile.absolutePath.replace("\\", "/")))
-                resource.load(rs.getLoadOptions())
-                SPVizGenerator.generate(resource, output, noModelDsl, noDiff)
-                
-                // Build the project.
-                val buildProject = output.toAbsolutePath.toString.replace("\\", "/") + "/" + (resource.contents.head as SPViz).package + ".build"
-                if (build) {
-                    LOGGER.info("Building the project {}.", buildProject)
-                    try {
-	                    // First, try with "mvn" as the command
-	                    #["mvn", "clean", "package"].invoke(new File(buildProject))
-                    } catch (IOException e) try {
-                    	// If that does not work, try "mvn.cmd"
-                    	LOGGER.warn("Cannot invoke \"mvn\" command, trying \"mvn.cmd\" instead.")
-	                    #["mvn.cmd", "clean", "package"].invoke(new File(buildProject))
-                    	
-                    } catch (IOException e2) {
-           				LOGGER.error("Building generated project failed, because the \"mvn\" command cannot be executed. Is Maven installed and available via command line?. See trace for details.", e)
+                try {
+                    val Resource resource = rs.createResource(URI.createURI("file://" + spvizFile.absolutePath.replace("\\", "/")))
+                    resource.load(rs.getLoadOptions())
+                    SPVizGenerator.generate(resource, output, noModelDsl, noDiff)
+                    // Build the project.
+                    val buildProject = output.toAbsolutePath.toString.replace("\\", "/") + "/" + (resource.contents.head as SPViz).package + ".build"
+                    if (build) {
+                        LOGGER.info("Building the project {}.", buildProject)
+                        try {
+    	                    // First, try with "mvn" as the command
+    	                    #["mvn", "clean", "package"].invoke(new File(buildProject))
+                        } catch (IOException e) try {
+                        	// If that does not work, try "mvn.cmd"
+                        	LOGGER.warn("Cannot invoke \"mvn\" command, trying \"mvn.cmd\" instead.")
+    	                    #["mvn.cmd", "clean", "package"].invoke(new File(buildProject))
+                        	
+                        } catch (IOException e2) {
+               				LOGGER.error("Building generated project failed, because the \"mvn\" command cannot be executed. Is Maven installed and available via command line?. See trace for details.", e)
+                            errors = true
+                        }
+                        
                     }
-                    
-                }
-                // Build the generator.
-                if (buildGenerator) {
-                    LOGGER.info("Building the project {}.", buildProject)
-                    try {
-	                    // First, try with "mvn" as the command
-                    	#["mvn", "clean", "package", "-P", "generator"].invoke(new File(buildProject))
-                	} catch (IOException e) try {
-                    	// If that does not work, try "mvn.cmd"
-                    	LOGGER.warn("Cannot invoke \"mvn\" command, trying \"mvn.cmd\" instead.")
-	                    #["mvn.cmd", "clean", "package", "-P", "generator"].invoke(new File(buildProject))
-                    	
-                    } catch (IOException e2) {
-           				LOGGER.error("Building generated project failed, because the \"mvn\" command cannot be executed. Is Maven installed and available via command line?. See trace for details.", e)
+                    // Build the generator.
+                    if (buildGenerator) {
+                        LOGGER.info("Building the project {}.", buildProject)
+                        try {
+    	                    // First, try with "mvn" as the command
+                        	#["mvn", "clean", "package", "-P", "generator"].invoke(new File(buildProject))
+                    	} catch (IOException e) try {
+                        	// If that does not work, try "mvn.cmd"
+                        	LOGGER.warn("Cannot invoke \"mvn\" command, trying \"mvn.cmd\" instead.")
+    	                    #["mvn.cmd", "clean", "package", "-P", "generator"].invoke(new File(buildProject))
+                        	
+                        } catch (IOException e2) {
+               				LOGGER.error("Building generated project failed, because the \"mvn\" command cannot be executed. Is Maven installed and available via command line?. See trace for details.", e)
+                            errors = true
+                        }
                     }
+                } catch (FileNotFoundException e) {
+                    LOGGER.error("File does not exist, skipping this file.")
+                    errors = true
                 }
             }
-            LOGGER.info("SPViz project generation finished. The newly generated projects can be found in {}", output.toAbsolutePath().toString())
+            if (errors) {
+                LOGGER.warn("SPViz project generation finished with errors. See the logs for details. The newly generated projects can be found in {}", output.toAbsolutePath().toString())
+            } else {
+                LOGGER.info("SPViz project generation finished. The newly generated projects can be found in {}", output.toAbsolutePath().toString())
+            }
             
             
         } catch (Throwable t) {

@@ -15,7 +15,6 @@ Require-Bundle: org.antlr.runtime;bundle-version="[3.2.0,3.2.1)",
  org.eclipse.equinox.common;bundle-version="3.5.0",
  org.eclipse.jdt.core;visibility:=reexport,
  org.eclipse.jdt.launching,
- org.eclipse.m2e.core,
  org.eclipse.xtext,
  org.eclipse.xtext.util,
  org.eclipse.xtext.xbase,
@@ -23,7 +22,7 @@ Require-Bundle: org.antlr.runtime;bundle-version="[3.2.0,3.2.1)",
  org.eclipse.xtend.lib;bundle-version="2.14.0",
  slf4j.api,
  org.eclipse.xtext.xtext.wizard
-Bundle-RequiredExecutionEnvironment: JavaSE-17
+Bundle-RequiredExecutionEnvironment: JavaSE-21
 Export-Package: de.cau.cs.kieler.spviz.spvizmodel,
  de.cau.cs.kieler.spviz.spvizmodel.generator,
  de.cau.cs.kieler.spviz.spvizmodel.generator.maven,

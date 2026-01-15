@@ -39,9 +39,9 @@
       <version>2.0.14</version>
     </dependency>
     <dependency>
-      <groupId>org.eclipse.xtend</groupId>
+      <groupId>org.eclipse.xtext</groupId>
       <artifactId>org.eclipse.xtend.lib</artifactId>
-      <version>${xtend-version}</version>
+      <version>${xtext-version}</version>
     </dependency>
     <dependency>
       <groupId>org.eclipse.xtext</groupId>
@@ -53,6 +53,11 @@
       <artifactId>org.eclipse.xtext.xbase.lib</artifactId>
       <version>${xtext-version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.eclipse.xtext</groupId>
+      <artifactId>org.eclipse.xtext.xtext.wizard</artifactId>
+      <version>${xtext-version}</version>
+    </dependency>
   </dependencies>
   
   <build>
@@ -60,7 +65,7 @@
     <plugins>
       <!-- Compile Xtend code -->
       <plugin>
-        <groupId>org.eclipse.xtend</groupId>
+        <groupId>org.eclipse.xtext</groupId>
         <artifactId>xtend-maven-plugin</artifactId>
       </plugin>
 
@@ -73,7 +78,11 @@
           <shadedArtifactAttached>true</shadedArtifactAttached>
           <transformers>
             <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-              <mainClass>de.cau.cs.kieler.spviz.cli.SPVizCLI</mainClass>
+            <manifestEntries>
+              <Main-Class>de.cau.cs.kieler.spviz.cli.SPVizCLI</Main-Class>
+              <!-- This version number will be read by the integrated Xtext wizard configurator and needs to be present in the final MANIFEST.MF file. -->
+              <Maven-Version>${xtext-version}</Maven-Version>
+            </manifestEntries>
             </transformer>
             <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
                 <resource>plugin.properties</resource>
@@ -109,6 +118,7 @@
                       <exclude>META-INF/INDEX.LIST</exclude>
                       <exclude>META-INF/MANIFEST.MF</exclude>
                       <exclude>modeling32.png</exclude>
+                      <exclude>module-info.class</exclude>
                       <exclude>OSGI-INF/l10n/bundle.properties</exclude>
                       <exclude>plugin.xml</exclude>
                       <exclude>profile.list</exclude>

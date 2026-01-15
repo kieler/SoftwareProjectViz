@@ -3,7 +3,7 @@
  *
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2022-2024 by
+ * Copyright 2022-2026 by
  * + Kiel University
  *   + Department of Computer Science
  *   + Real-Time and Embedded Systems Group
@@ -438,8 +438,8 @@ class GenerateGeneratorScaffold {
     
     def static requiredBundles(SPVizModel model) {
         return #[
-            new Dependency("info.picocli", "picocli" , "4.7.5"),
-            new Dependency("org.eclipse.emf", "org.eclipse.emf.ecore.xmi", "2.36.0"),
+            new Dependency("info.picocli", "picocli" , "4.7.7"),
+            new Dependency("org.eclipse.emf", "org.eclipse.emf.ecore.xmi", "2.39.0"),
             new Dependency(model.package, model.package + ".model", "0.1.0-SNAPSHOT")
         ]
     }

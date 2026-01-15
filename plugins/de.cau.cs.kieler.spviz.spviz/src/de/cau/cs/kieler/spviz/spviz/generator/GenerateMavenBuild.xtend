@@ -223,12 +223,12 @@ class GenerateMavenBuild {
                                 <dependency>
                                     <groupId>org.eclipse.platform</groupId>
                                     <artifactId>org.eclipse.text</artifactId>
-                                    <version>3.14.100</version>
+                                    <version>3.14.500</version>
                                 </dependency>
                                 <dependency>
                                     <groupId>org.eclipse.platform</groupId>
                                     <artifactId>org.eclipse.core.resources</artifactId>
-                                    <version>3.20.200</version>
+                                    <version>3.23.100</version>
                                 </dependency>
                                 <dependency>
                                     <groupId>org.eclipse.xtext</groupId>
@@ -253,45 +253,46 @@ class GenerateMavenBuild {
                                 <dependency>
                                     <groupId>org.eclipse.emf</groupId>
                                     <artifactId>org.eclipse.emf.common</artifactId>
-                                    <version>2.30.0</version>
+                                    <version>2.44.0</version>
                                 </dependency>
                                 <dependency>
                                     <groupId>org.eclipse.emf</groupId>
                                     <artifactId>org.eclipse.emf.ecore</artifactId>
-                                    <version>2.36.0</version>
+                                    <version>2.41.0</version>
                                 </dependency>
                                 <dependency>
                                     <groupId>org.eclipse.emf</groupId>
                                     <artifactId>org.eclipse.emf.ecore.xmi</artifactId>
-                                    <version>2.37.0</version>
+                                    <version>2.39.0</version>
                                 </dependency>
                                 <dependency>
                                     <groupId>org.eclipse.emf</groupId>
                                     <artifactId>org.eclipse.emf.codegen</artifactId>
-                                    <version>2.14.0</version>
+                                    <version>2.27.0</version>
                                 </dependency>
                                 <dependency>
                                     <groupId>org.eclipse.emf</groupId>
                                     <artifactId>org.eclipse.emf.codegen.ecore</artifactId>
-                                    <version>2.23.0</version>
+                                    <version>2.44.0</version>
                                 </dependency>
                                 <dependency>
                                     <groupId>org.eclipse.emf</groupId>
                                     <artifactId>org.eclipse.emf.ecore.xcore</artifactId>
-                                    <version>1.29.0</version>
+                                    <version>1.35.0</version>
                                 </dependency>
                                 <dependency>
                                     <groupId>org.eclipse.emf</groupId>
                                     <artifactId>org.eclipse.emf.ecore.xcore.lib</artifactId>
-                                    <version>1.7.0</version>
+                                    <version>1.7.1</version>
                                 </dependency>
                             </dependencies>
                           </plugin>
                     «ENDIF»
                     <!-- Compile Xtend code -->
                     <plugin>
-                      <groupId>org.eclipse.xtend</groupId>
+                      <groupId>org.eclipse.xtext</groupId>
                       <artifactId>xtend-maven-plugin</artifactId>
+                      <version>${xtext-version}</version>
                     </plugin>
                   </plugins>
                 </build>
@@ -414,10 +415,10 @@ class GenerateMavenBuild {
                     <category name="viz"/>
                 </feature>
                
-                <repository-reference location="https://download.eclipse.org/releases/2023-12" enabled="true" />
-                <repository-reference location="https://download.eclipse.org/tools/orbit/simrel/orbit-aggregation/release/4.30.0/" enabled="true" />
-                <repository-reference location="https://download.eclipse.org/elk/updates/releases/0.9.1/" enabled="true" />
-                <repository-reference location="https://kieler.github.io/KLighD/v3.0.1/" enabled="true" />
+                <repository-reference location="https://download.eclipse.org/releases/2025-12" enabled="true" />
+                <repository-reference location="https://download.eclipse.org/tools/orbit/simrel/orbit-aggregation/release/4.38.0/" enabled="true" />
+                <repository-reference location="https://download.eclipse.org/elk/updates/releases/0.11.0/" enabled="true" />
+                <repository-reference location="https://kieler.github.io/KLighD/v3.1.0/" enabled="true" />
             
             </site>
             
@@ -459,6 +460,7 @@ class GenerateMavenBuild {
                   <!-- do not publish this artifact to Maven repositories -->
                   <plugin>
                     <artifactId>maven-deploy-plugin</artifactId>
+                    <version>3.1.4</version>
                     <configuration>
                       <skip>true</skip>
                     </configuration>

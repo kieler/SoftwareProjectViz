@@ -3,7 +3,7 @@
  *
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2022-2025 by
+ * Copyright 2022-2026 by
  * + Kiel University
  *   + Department of Computer Science
  *   + Real-Time and Embedded Systems Group
@@ -130,12 +130,12 @@ class GenerateModelMavenBuild {
                         <dependency>
                             <groupId>org.eclipse.platform</groupId>
                             <artifactId>org.eclipse.text</artifactId>
-                            <version>3.14.100</version>
+                            <version>3.14.500</version>
                         </dependency>
                         <dependency>
                             <groupId>org.eclipse.platform</groupId>
                             <artifactId>org.eclipse.core.resources</artifactId>
-                            <version>3.20.200</version>
+                            <version>3.23.100</version>
                         </dependency>
                         <dependency>
                             <groupId>org.eclipse.xtext</groupId>
@@ -160,37 +160,37 @@ class GenerateModelMavenBuild {
                         <dependency>
                             <groupId>org.eclipse.emf</groupId>
                             <artifactId>org.eclipse.emf.common</artifactId>
-                            <version>2.30.0</version>
+                            <version>2.44.0</version>
                         </dependency>
                         <dependency>
                             <groupId>org.eclipse.emf</groupId>
                             <artifactId>org.eclipse.emf.ecore</artifactId>
-                            <version>2.36.0</version>
+                            <version>2.41.0</version>
                         </dependency>
                         <dependency>
                             <groupId>org.eclipse.emf</groupId>
                             <artifactId>org.eclipse.emf.ecore.xmi</artifactId>
-                            <version>2.37.0</version>
+                            <version>2.39.0</version>
                         </dependency>
                         <dependency>
                             <groupId>org.eclipse.emf</groupId>
                             <artifactId>org.eclipse.emf.codegen</artifactId>
-                            <version>2.14.0</version>
+                            <version>2.27.0</version>
                         </dependency>
                         <dependency>
                             <groupId>org.eclipse.emf</groupId>
                             <artifactId>org.eclipse.emf.codegen.ecore</artifactId>
-                            <version>2.23.0</version>
+                            <version>2.44.0</version>
                         </dependency>
                         <dependency>
                             <groupId>org.eclipse.emf</groupId>
                             <artifactId>org.eclipse.emf.ecore.xcore</artifactId>
-                            <version>1.29.0</version>
+                            <version>1.35.0</version>
                         </dependency>
                         <dependency>
                             <groupId>org.eclipse.emf</groupId>
                             <artifactId>org.eclipse.emf.ecore.xcore.lib</artifactId>
-                            <version>1.7.0</version>
+                            <version>1.7.1</version>
                         </dependency>
                     </dependencies>
                   </plugin>
@@ -216,18 +216,18 @@ class GenerateModelMavenBuild {
               
               <!-- Define a few properties used throughout all build profiles. -->
               <properties>
-                <targetJdk>17</targetJdk>
-                <maven.compiler.source>17</maven.compiler.source>
-                <maven.compiler.target>17</maven.compiler.target>
+                <targetJdk>21</targetJdk>
+                <maven.compiler.source>21</maven.compiler.source>
+                <maven.compiler.target>21</maven.compiler.target>
                 
-                <elk-version>0.9.1</elk-version>
-                <gson-version>2.10.1</gson-version>
+                <elk-version>0.11.0</elk-version>
+                <gson-version>2.13.2</gson-version>
                 <guice-version>7.0.0</guice-version>
-                <klighd-version>3.0.2.v20240507</klighd-version>
-                <lsp4j-version>0.22.0</lsp4j-version>
-                <tycho-version>3.0.5</tycho-version>
-                <xtext-version>2.33.0</xtext-version>
-                <xtend-version>2.33.0</xtend-version>
+                <klighd-version>3.1.0.v20250428</klighd-version>
+                <lsp4j-version>0.24.0</lsp4j-version>
+                <tycho-version>4.0.13</tycho-version>
+                <xtext-version>2.41.0</xtext-version>
+                <xtend-version>2.41.0</xtend-version>
                 
                 <sourceFeatureLabelSuffix>&#xA0;(Sources)</sourceFeatureLabelSuffix>
                 <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -299,7 +299,7 @@ class GenerateModelMavenBuild {
                   <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-dependency-plugin</artifactId>
-                    <version>3.1.1</version>
+                    <version>3.9.0</version>
                     <executions>
                       <execution>
                         <id>tree</id>
@@ -321,7 +321,7 @@ class GenerateModelMavenBuild {
             
                     <!-- Maven Xtend plugin to tell maven how to compile Xtend code -->
                     <plugin>
-                      <groupId>org.eclipse.xtend</groupId>
+                      <groupId>org.eclipse.xtext</groupId>
                       <artifactId>xtend-maven-plugin</artifactId>
                       <version>${xtext-version}</version>
                       <configuration>
@@ -340,7 +340,7 @@ class GenerateModelMavenBuild {
                     <plugin>
                       <groupId>org.codehaus.mojo</groupId>
                       <artifactId>build-helper-maven-plugin</artifactId>
-                      <version>1.3</version>
+                      <version>3.6.1</version>
                       <executions>
                         <execution>
                           <id>add-source</id>
@@ -361,7 +361,7 @@ class GenerateModelMavenBuild {
                     <!-- Generated code needs cleanup too -->
                     <plugin>
                       <artifactId>maven-clean-plugin</artifactId>
-                      <version>3.0.0</version>
+                      <version>3.5.0</version>
                       <configuration>
                         <filesets>
                           <fileset>
@@ -373,97 +373,6 @@ class GenerateModelMavenBuild {
                         </filesets>
                       </configuration>
                     </plugin>
-                  
-                    <!-- Configure Eclipse m2e to ignore certain plugin goals when integrating Maven build
-                              settings into Eclipse. -->
-                    <plugin>
-                      <groupId>org.eclipse.m2e</groupId>
-                      <artifactId>lifecycle-mapping</artifactId>
-                      <version>1.0.0</version>
-                      <configuration>
-                        <lifecycleMappingMetadata>
-                          <pluginExecutions>
-                            <pluginExecution>
-                              <pluginExecutionFilter>
-                                <groupId>
-                                  org.apache.maven.plugins
-                                </groupId>
-                                <artifactId>
-                                  maven-dependency-plugin
-                                </artifactId>
-                                <versionRange>
-                                  [3.1.1,)
-                                </versionRange>
-                                <goals>
-                                  <goal>tree</goal>
-                                </goals>
-                              </pluginExecutionFilter>
-                              <action>
-                                <ignore></ignore>
-                              </action>
-                            </pluginExecution>
-                            <pluginExecution>
-                              <pluginExecutionFilter>
-                                <groupId>org.eclipse.tycho</groupId>
-                                <artifactId>tycho-compiler-plugin</artifactId>
-                                <versionRange>${tycho-version}</versionRange>
-                                <goals>
-                                  <goal>compile</goal>
-                                  <goal>testCompile</goal>
-                                  <goal>validate-classpath</goal>
-                                </goals>
-                              </pluginExecutionFilter>
-                              <action>
-                                <ignore/>
-                              </action>
-                            </pluginExecution>
-                            <pluginExecution>
-                              <pluginExecutionFilter>
-                                <groupId>org.eclipse.tycho</groupId>
-                                <artifactId>tycho-packaging-plugin</artifactId>
-                                <versionRange>${tycho-version}</versionRange>
-                                <goals>
-                                  <goal>build-qualifier</goal>
-                                  <goal>build-qualifier-aggregator</goal>
-                                  <goal>validate-id</goal>
-                                  <goal>validate-version</goal>
-                                </goals>
-                              </pluginExecutionFilter>
-                              <action>
-                                <ignore/>
-                              </action>
-                            </pluginExecution>
-                            <pluginExecution>
-                              <pluginExecutionFilter>
-                                <groupId>org.apache.maven.plugins</groupId>
-                                <artifactId>maven-clean-plugin</artifactId>
-                                <versionRange>[3.0.0,)</versionRange>
-                                <goals>
-                                  <goal>clean</goal>
-                                </goals>
-                              </pluginExecutionFilter>
-                              <action>
-                                <ignore/>
-                              </action>
-                            </pluginExecution>
-                            <pluginExecution>
-                              <pluginExecutionFilter>
-                                <groupId>org.eclipse.tycho</groupId>
-                                <artifactId>target-platform-configuration</artifactId>
-                                <versionRange>[3.0.5,)</versionRange>
-                                <goals>
-                                  <goal>target-platform</goal>
-                                </goals>
-                              </pluginExecutionFilter>
-                              <action>
-                                <ignore></ignore>
-                              </action>
-                            </pluginExecution>
-                          </pluginExecutions>
-                        </lifecycleMappingMetadata>
-                      </configuration>
-                    </plugin>
-          
                   </plugins>
                 
                 </pluginManagement>
@@ -494,7 +403,7 @@ class GenerateModelMavenBuild {
                   <unit id="org.eclipse.sdk.feature.group" version="0.0.0"/>
                   <unit id="org.eclipse.xtext.sdk.feature.group" version="0.0.0"/>
                   <unit id="org.eclipse.emf.ecore.xcore.sdk.feature.group" version="0.0.0"/> 
-                  <repository location="https://download.eclipse.org/releases/2023-12"/>
+                  <repository location="https://download.eclipse.org/releases/2025-12"/>
                 </location>
 «««                <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
 «««                  <unit id="org.sonatype.tycho.m2e.feature.feature.group" version="0.0.0"/>
@@ -502,18 +411,18 @@ class GenerateModelMavenBuild {
 «««                </location>
                 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
                   <unit id="org.eclipse.elk.sdk.feature.feature.group" version="0.0.0"/>
-                  <repository location="https://download.eclipse.org/elk/updates/releases/0.9.1/"/>
+                  <repository location="https://download.eclipse.org/elk/updates/releases/0.11.0/"/>
                 </location>
                 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
                   <unit id="de.cau.cs.kieler.kgraph.text.ide" version="0.0.0"/>
                   <unit id="de.cau.cs.kieler.klighd.view.feature.feature.group" version="0.0.0"/>
-                  <repository location="https://kieler.github.io/KLighD/v3.0.1/"/>
+                  <repository location="https://kieler.github.io/KLighD/v3.1.0/"/>
                 </location>
                 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
                   <unit id="com.google.gson" version="0.0.0"/>
                   <unit id="com.google.inject" version="0.0.0"/>
                   <unit id="slf4j.api" version="0.0.0"/> 
-                  <repository location="https://download.eclipse.org/tools/orbit/simrel/orbit-aggregation/release/4.30.0/"/>
+                  <repository location="https://download.eclipse.org/tools/orbit/simrel/orbit-aggregation/release/4.38.0/"/>
                 </location>
               </locations>
             </target>
@@ -545,6 +454,7 @@ class GenerateModelMavenBuild {
                   <!-- do not publish this artifact to Maven repositories -->
                   <plugin>
                     <artifactId>maven-deploy-plugin</artifactId>
+                    <version>3.1.4</version>
                     <configuration>
                       <skip>true</skip>
                     </configuration>

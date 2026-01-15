@@ -91,7 +91,7 @@ class SPVizModelGenerator extends AbstractGenerator {
         if (noDiff) {
             LOGGER.info("Skip generating difference DSL.")
         } else {
-            LOGGER.info("Generate difference DSL")
+            LOGGER.info("Generating difference DSL")
             // Generate DiffDSL
             val CliProjectsCreator creator = new CliProjectsCreator()
             val WizardConfiguration config = new WizardConfiguration() => [
@@ -139,7 +139,7 @@ class SPVizModelGenerator extends AbstractGenerator {
         if (noModelDsl) {
             LOGGER.info("Skip generating model DSL.")
         } else {
-            LOGGER.info("Generate model DSL")
+            LOGGER.info("Generating model DSL")
             // Generate model DSL
             val CliProjectsCreator creator = new CliProjectsCreator()
             val WizardConfiguration config = new WizardConfiguration() => [
@@ -453,27 +453,28 @@ class SPVizModelGenerator extends AbstractGenerator {
                          <unit id="org.eclipse.emf.sdk.feature.group" version="0.0.0"/>
 «««                         Only this line would be missing otherwise
                          <unit id="org.eclipse.emf.ecore.xcore.sdk.feature.group" version="0.0.0"/>
-                         <repository location="https://download.eclipse.org/releases/2023-12"/>
+                         <repository location="https://download.eclipse.org/releases/2025-12"/>
                      </location>
                      <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
                          <unit id="org.eclipse.emf.mwe2.launcher.feature.group" version="0.0.0"/>
-                         <repository location="https://download.eclipse.org/modeling/emft/mwe/updates/releases/2.16.0/"/>
+                         <repository location="https://download.eclipse.org/modeling/emft/mwe/updates/releases/2.24.0/"/>
                      </location>
                      <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
                          <unit id="org.eclipse.xtext.sdk.feature.group" version="0.0.0"/>
-                         <repository location="https://download.eclipse.org/modeling/tmf/xtext/updates/releases/2.33.0/"/>
+                         <repository location="https://download.eclipse.org/modeling/tmf/xtext/updates/releases/2.41.0/"/>
                      </location>
                      <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
-                         <unit id="com.google.gson" version="2.10.1"/>
+                         <unit id="com.google.gson" version="2.13.2"/>
                          <unit id="com.google.inject" version="7.0.0"/>
                          <unit id="jakarta.inject.jakarta.inject-api" version="2.0.1"/>
                          <unit id="org.antlr.runtime" version="3.2.0.v20230929-1400"/>
-                         <unit id="org.junit" version="4.13.2.v20230809-1000"/>
+                         <unit id="org.junit" version="0.0.0"/>
                          <unit id="org.hamcrest" version="2.2.0"/>
                          <unit id="org.hamcrest.core" version="2.2.0.v20230809-1000"/>
-                         <unit id="org.objectweb.asm" version="9.6.0"/>
-                         <unit id="io.github.classgraph.classgraph" version="4.8.164"/>
-                         <repository location="https://download.eclipse.org/tools/orbit/simrel/orbit-aggregation/2023-12"/>
+«««                         <unit id="org.apache.commons.logging" version="0.0.0"/>
+                         <unit id="org.objectweb.asm" version="9.9.0"/>
+                         <unit id="io.github.classgraph.classgraph" version="0.0.0"/>
+                         <repository location="https://download.eclipse.org/tools/orbit/simrel/orbit-aggregation/2025-12"/>
                      </location>
                  </locations>
              </target>
@@ -494,13 +495,13 @@ class SPVizModelGenerator extends AbstractGenerator {
 «««             missing line follows:
               org.eclipse.emf.ecore.xcore,
               org.eclipse.xtext.xbase,
-              org.eclipse.equinox.common;bundle-version="3.16.0",
+              org.eclipse.equinox.common;bundle-version="3.19.0",
               org.antlr.runtime;bundle-version="[3.2.0,3.2.1)",
               org.eclipse.emf.ecore,
               org.eclipse.xtext.xbase.lib;bundle-version="2.14.0",
               org.eclipse.xtext.util,
               org.eclipse.emf.common
-             Bundle-RequiredExecutionEnvironment: JavaSE-17
+             Bundle-RequiredExecutionEnvironment: JavaSE-21
              Automatic-Module-Name: «model.package».diff.dsl
              Export-Package: «model.package».diff.dsl,
               «model.package».diff.dsl.scoping,
@@ -531,13 +532,13 @@ class SPVizModelGenerator extends AbstractGenerator {
 «««             missing line follows:
               org.eclipse.emf.ecore.xcore,
               org.eclipse.xtext.xbase,
-              org.eclipse.equinox.common;bundle-version="3.16.0",
+              org.eclipse.equinox.common;bundle-version="3.19.0",
               org.antlr.runtime;bundle-version="[3.2.0,3.2.1)",
               org.eclipse.emf.ecore,
               org.eclipse.xtext.xbase.lib;bundle-version="2.14.0",
               org.eclipse.xtext.util,
               org.eclipse.emf.common
-             Bundle-RequiredExecutionEnvironment: JavaSE-17
+             Bundle-RequiredExecutionEnvironment: JavaSE-21
              Automatic-Module-Name: «model.package».model.dsl
              Export-Package: «model.package».model.dsl,
               «model.package».model.dsl.scoping,
@@ -559,14 +560,14 @@ class SPVizModelGenerator extends AbstractGenerator {
             Manifest-Version: 1.0
             Bundle-ManifestVersion: 2
             Bundle-Name: «idePackageName»
-            Bundle-Vendor: My Company
+            Bundle-Vendor: SPViz
             Bundle-Version: 1.0.0.qualifier
             Bundle-SymbolicName: «idePackageName»; singleton:=true
             Bundle-ActivationPolicy: lazy
             Require-Bundle: «dslPackageName»,
              org.eclipse.xtext.ide,
              org.eclipse.xtext.xbase.ide
-            Bundle-RequiredExecutionEnvironment: JavaSE-17
+            Bundle-RequiredExecutionEnvironment: JavaSE-21
             Automatic-Module-Name: «idePackageName»
             Export-Package: «idePackageName».contentassist.antlr,
              «idePackageName».contentassist.antlr.internal;x-friends:="«uiPackageName»"
@@ -595,7 +596,7 @@ class SPVizModelGenerator extends AbstractGenerator {
              org.eclipse.compare,
              org.eclipse.xtext.builder
             Import-Package: org.apache.log4j
-            Bundle-RequiredExecutionEnvironment: JavaSE-17
+            Bundle-RequiredExecutionEnvironment: JavaSE-21
             Automatic-Module-Name: «uiPackageName»
         '''
     }
@@ -617,7 +618,7 @@ class SPVizModelGenerator extends AbstractGenerator {
                                  org.eclipse.emf.mwe2.launch,\
                                  org.eclipse.emf.mwe2.lib,\
                                  org.objectweb.asm,\
-                                 org.apache.commons.logging,\
+«««                                 org.apache.commons.logging,\
                                  org.apache.log4j
         '''
     }

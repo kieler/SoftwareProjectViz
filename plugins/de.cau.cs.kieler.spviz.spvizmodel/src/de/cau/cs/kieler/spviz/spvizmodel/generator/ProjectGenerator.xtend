@@ -3,7 +3,7 @@
  *
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2021-2024 by
+ * Copyright 2021-2026 by
  * + Kiel University
  *   + Department of Computer Science
  *   + Real-Time and Embedded Systems Group
@@ -219,7 +219,7 @@ class ProjectGenerator {
                 «FOR additionalSourceFolder : additionalSourceFolders»
                     <classpathentry kind="src" path="«additionalSourceFolder»"/>
                 «ENDFOR»
-                <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-17"/>
+                <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-21"/>
                 <classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
                 <classpathentry kind="output" path="bin"/>
             </classpath>
@@ -303,9 +303,10 @@ class ProjectGenerator {
         Bundle-ManifestVersion: 2
         Automatic-Module-Name: «CodeGenUtil.validPluginID(identifier)»
         Bundle-Name: «identifier»
+        Bundle-Vendor: SPViz
         Bundle-SymbolicName: «CodeGenUtil.validPluginID(identifier)»; singleton:=true
         Bundle-Version: 0.1.0.qualifier
-        Bundle-RequiredExecutionEnvironment: JavaSE-17
+        Bundle-RequiredExecutionEnvironment: JavaSE-21
         «FOR exportedPackage : exportedPackages BEFORE "Export-Package:" SEPARATOR ','»
             «" " + exportedPackage»
         «ENDFOR»
