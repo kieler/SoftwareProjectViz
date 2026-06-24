@@ -344,6 +344,17 @@ class GenerateGeneratorScaffold {
                 
                 «FOR artifact : model.artifacts»
                     /**
+                     * Returns the «artifact.name.toFirstLower» with the given identifying name, if it already exists.
+                     * Returns {@code null} if it does not exist yet.
+                     *
+                     * @param name The identifying name of the «artifact.name.toFirstLower».
+                     * @return The «artifact.name.toFirstLower» for the given name or {@code null}.
+                     */
+                    private «artifact.name.toFirstUpper» find«artifact.name.toFirstUpper»(final String name) {
+                    	return «artifact.name.toFirstLower»s.get(name);
+                    }
+                    
+                    /**
                      * Return the «artifact.name.toFirstLower» with the given name. If it was generated before, return that, or else return a new one.
                      * The {@code name} and {@code ecoreId} of the module are pre-set.
                      * 
@@ -372,17 +383,17 @@ class GenerateGeneratorScaffold {
                  * the files to the <em>accumulator</em>
                  *
                  * @param name Filename extension/ending to search for
-                 * @param file Path to search in
+                 * @param searchRoot Path to search in
                  * @param accumulator The list to accumulate the found paths in.
                  */
-                private void findFiles(final String name, final File file, final List<Path> accumulator) {
-                    final File[] list = file.listFiles();
+                private void findFiles(final String fileNameSuffix, final File searchRoot, final List<Path> accumulator) {
+                    final File[] list = searchRoot.listFiles();
             
                     if (list != null) {
                         for (final File fil : list) {
                             if (fil.isDirectory()) {
-                                findFiles(name, fil, accumulator);
-                            } else if (fil.getName().endsWith(name)) {
+                                findFiles(fileNameSuffix, fil, accumulator);
+                            } else if (fil.getName().endsWith(fileNameSuffix)) {
                                 Path filePath = Paths.get(fil.getPath());
                                 accumulator.add(filePath);
                             }
@@ -391,7 +402,7 @@ class GenerateGeneratorScaffold {
                 }
             
                 /**
-                 * Converts the given name to an ACII string save for using in an Ecore ID.
+                 * Converts the given name to an ASCII string save for using in an Ecore ID.
                  * German umlauts are converted to their long form counterparts (e.g., ä->ae)
                  * and special characters not in the alphabet are replaced by underscores (_).
                  * 
