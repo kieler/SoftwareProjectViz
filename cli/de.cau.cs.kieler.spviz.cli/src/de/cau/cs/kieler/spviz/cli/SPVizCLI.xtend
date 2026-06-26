@@ -43,7 +43,7 @@ import picocli.CommandLine.Parameters
  *
  * @author nre
  */
-@Command(name = "spviz")
+@Command(name = "spviz", versionProvider = SPVizVersionProvider)
 class SPVizCLI implements Runnable {
     
     static final Logger LOGGER = LoggerFactory.getLogger(SPVizCLI)
@@ -73,6 +73,9 @@ class SPVizCLI implements Runnable {
     
     @Option(names = #["-h", "--help"], usageHelp = true, description = "display a help message")
     protected boolean help
+
+    @Option(names = #["-V", "--version"], versionHelp = true, description = "display version info")
+    protected boolean version
     
     @Option(names = #["-b", "--build"], defaultValue = "false", description = "Automatically build the generated visualization projects with Maven.")
     protected boolean build
