@@ -15,11 +15,86 @@
   <build>
     <sourceDirectory>src</sourceDirectory>
     <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>3.0.0</version>
+        <executions>
+          <execution>
+            <?m2e ignore?>
+            <id>mwe2Launcher</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>java</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <skip>${exec.skip}</skip>
+          <mainClass>org.eclipse.emf.mwe2.launch.runtime.Mwe2Launcher</mainClass>
+          <arguments>
+            <argument>/${project.basedir}/src/de/cau/cs/kieler/spviz/spviz/GenerateSPViz.mwe2</argument>
+            <argument>-p</argument>
+            <argument>rootPath=/${project.basedir}/..</argument>
+          </arguments>
+          <classpathScope>compile</classpathScope>
+          <includePluginDependencies>true</includePluginDependencies>
+          <cleanupDaemonThreads>false</cleanupDaemonThreads>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.eclipse.xtext</groupId>
+            <artifactId>org.eclipse.xtext.xtext.generator.dependencies</artifactId>
+            <version>${xtext-version}</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-clean-plugin</artifactId>
+        <configuration>
+          <filesets combine.children="append">
+            <fileset>
+              <directory>${project.basedir}/src-gen</directory>
+              <includes>
+                <include>**/*</include>
+              </includes>
+            </fileset>
+            <fileset>
+              <directory>${project.basedir}/model/generated</directory>
+              <includes>
+                <include>**/*</include>
+              </includes>
+            </fileset>
+            <fileset>
+              <directory>${project.basedir}/../de.cau.cs.kieler.spviz.spviz.ide/src-gen</directory>
+              <includes>
+                <include>**/*</include>
+              </includes>
+            </fileset>
+            <fileset>
+              <directory>${project.basedir}/../de.cau.cs.kieler.spviz.spviz.ui/src-gen</directory>
+              <includes>
+                <include>**/*</include>
+              </includes>
+            </fileset>
+            <fileset>
+              <directory>${project.basedir}/../de.cau.cs.kieler.spviz.spviz.tests/src-gen</directory>
+              <includes>
+                <include>**/*</include>
+              </includes>
+            </fileset>
+          </filesets>
+        </configuration>
+      </plugin>
       <!-- Compile Xtend code -->
       <plugin>
         <groupId>org.eclipse.xtext</groupId>
         <artifactId>xtend-maven-plugin</artifactId>
         <version>${xtext-version}</version>
+        <configuration>
+          <skipXtend>${skipXtend}</skipXtend>
+        </configuration>
       </plugin>
     </plugins>
   </build>

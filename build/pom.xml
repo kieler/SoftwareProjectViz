@@ -20,6 +20,9 @@
     <maven.compiler.source>21</maven.compiler.source>
 
     <maven.compiler.target>21</maven.compiler.target>
+    <!-- execution skip flag for Xtext code generation, may be set to true for individual profiles or custom builds. -->
+    <exec.skip>false</exec.skip>
+    <skipXtend>false</skipXtend>
     
     <!-- guarantee that we use utf8 for compilation, this is especially required due to xtend's template symbols («) when running maven on windows. -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -34,6 +37,43 @@
       <activation>
         <activeByDefault>true</activeByDefault>
       </activation>
+      <modules>
+        <module>de.cau.cs.kieler.spviz.targetplatform</module>
+        <module>../plugins/de.cau.cs.kieler.spviz.spviz</module>
+        <module>../plugins/de.cau.cs.kieler.spviz.spviz.ide</module>
+        <module>../plugins/de.cau.cs.kieler.spviz.spviz.ui</module>
+        <module>../plugins/de.cau.cs.kieler.spviz.spvizmodel</module>
+        <module>../plugins/de.cau.cs.kieler.spviz.spvizmodel.ide</module>
+        <module>../plugins/de.cau.cs.kieler.spviz.spvizmodel.ui</module>
+        <module>../cli/de.cau.cs.kieler.spviz.cli</module>
+        <module>../features/de.cau.cs.kieler.spviz.feature</module>
+        <module>../features/de.cau.cs.kieler.spviz.ui.feature</module>
+        <!-- <module>../plugins/de.cau.cs.kieler.spviz.spviz.tests</module> --> <!-- You requested to install 'org.eclipse.equinox.p2.iu; org.junit.jupiter.api [5.0.0,6.0.0)' but it could not be found -->
+        <!-- <module>../plugins/de.cau.cs.kieler.spviz.spviz.ui.tests</module> -->
+        <!-- <module>../plugins/de.cau.cs.kieler.spviz.spvizmodel.tests</module> -->
+        <!-- <module>../plugins/de.cau.cs.kieler.spviz.spvizmodel.ui.tests</module> -->
+        <module>de.cau.cs.kieler.spviz.repository</module>
+      </modules>
+    </profile>
+
+    <!-- Run this profile with the generate-sources lifecycle to regenerate Xtext sources. -->
+    <profile>
+      <id>generate-xtext-sources</id>
+      <properties>
+        <skipXtend>true</skipXtend>
+      </properties>
+
+      <modules>
+        <module>de.cau.cs.kieler.spviz.targetplatform</module>
+        <module>../plugins/de.cau.cs.kieler.spviz.spvizmodel</module>
+        <module>../plugins/de.cau.cs.kieler.spviz.spviz</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>build-only</id>
+      <properties>
+        <exec.skip>true</exec.skip>
+      </properties>
       
       <modules>
         <module>de.cau.cs.kieler.spviz.targetplatform</module>
