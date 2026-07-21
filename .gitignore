@@ -43,4 +43,4 @@ test-bin/
 
 # Xtext generated code
 src-gen/
-model/generated/
+**/model/generated
