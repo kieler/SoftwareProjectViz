@@ -3,10 +3,11 @@
  *
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2021-2025 by
+ * Copyright 2021-2026 by
  * + Kiel University
  *   + Department of Computer Science
  *   + Real-Time and Embedded Systems Group
+ * + and Scheidt & Bachmann System Technik GmbH, 24109 Melsdorf
  * 
  * This code is provided under the terms of the Eclipse Public License 2.0 (EPL-2.0).
  */
@@ -69,6 +70,7 @@ class GenerateSubSyntheses {
             
             import com.google.inject.Inject
             import de.cau.cs.kieler.klighd.kgraph.KGraphFactory
+            import de.cau.cs.kieler.klighd.kgraph.KEdge
             import de.cau.cs.kieler.klighd.kgraph.KIdentifier
             import de.cau.cs.kieler.klighd.kgraph.KNode
             import de.cau.cs.kieler.klighd.krendering.extensions.KContainerRenderingExtensions
@@ -123,6 +125,25 @@ class GenerateSubSyntheses {
                 «ENDFOR»
                 extension KGraphFactory = KGraphFactory.eINSTANCE
                 
+                private def void addConnectionLabels(KEdge edge, Iterable<String> labels, boolean show) {
+                    val tooltipText = labels.filter[it !== null && !it.empty].toSet.join("\n")
+                    if (!tooltipText.empty) {
+                        edge.tooltip = tooltipText
+                    }
+                    if (usedContext.getOptionValue(SHOW_CONNECTION_LABELS) as Boolean && show) {
+                        labels.filter[it !== null && !it.empty].toSet.forEach [ label |
+                            edge.labels += createKLabel => [
+                                text = label
+                                tooltip = label
+                            ]
+                        ]
+                    }
+                }
+
+                private def void addConnectionLabels(KEdge edge, Iterable<String> labels) {
+                    edge.addConnectionLabels(labels, true)
+                }
+                
                 override transform(«viewName»OverviewContext context) {
                     transform(context, null)
                 }
@@ -155,8 +176,8 @@ class GenerateSubSyntheses {
                             «FOR categoryConnection : outerCategoryConnections»
                                 var Iterable<«categoryConnection.connectedCategory.name.toFirstUpper»Context> connected«categoryConnection.connectedCategory.name.toFirstUpper»From«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»s = #[]
                                 var Iterable<«categoryConnection.connectedCategory.name.toFirstUpper»Context> connecting«categoryConnection.connectedCategory.name.toFirstUpper»From«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»s = #[]
-                                var Iterable<«data.bundleNamePrefix».model.Pair<«categoryConnection.connectingArtifact.name.toFirstUpper»Context, «categoryConnection.connectedArtifact.name.toFirstUpper»Context>> connected«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Connections = #[]
-                                var Iterable<«data.bundleNamePrefix».model.Pair<«categoryConnection.connectingArtifact.name.toFirstUpper»Context, «categoryConnection.connectedArtifact.name.toFirstUpper»Context>> connecting«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Connections = #[]
+                                var Iterable<«data.bundleNamePrefix».model.EdgeData<«categoryConnection.connectingArtifact.name.toFirstUpper»Context, «categoryConnection.connectedArtifact.name.toFirstUpper»Context>> connected«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Connections = #[]
+                                var Iterable<«data.bundleNamePrefix».model.EdgeData<«categoryConnection.connectingArtifact.name.toFirstUpper»Context, «categoryConnection.connectedArtifact.name.toFirstUpper»Context>> connecting«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Connections = #[]
                                 if (usedContext.getOptionValue(CONTAINER_EDGES_WHEN_FOCUSED) as Boolean || context.rootVisualization.focus !== context) {
                                     // Add an invisible port for each «categoryConnection.connectingArtifact.name.toFirstLower»->«categoryConnection.connectedArtifact.name.toFirstLower» connection via their «categoryConnection.innerView.name.toFirstLower» inside a «categoryConnection.connectedCategory.name.toFirstLower» category,
                                     // if the connection is currently to be shown;
@@ -209,9 +230,9 @@ class GenerateSubSyntheses {
                                         // Add an invisible port for each «categoryConnection.connectingArtifact.name.toFirstLower»->«categoryConnection.connectedArtifact.name.toFirstLower» connection via their «categoryConnection.innerView.name.toFirstLower» inside a «categoryConnection.connectedCategory.name.toFirstLower» category,
                                         // if the connection is currently to be shown.
                                         for (connected«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Connection : connected«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Connections) {
-                                            ports += it.createPort(context, "connected«categoryConnection.connectingCategory.name.toFirstUpper»CategoryVia«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»From" + connected«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Connection.key.modelElement.ecoreId + "To" + connected«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Connection.value.modelElement.ecoreId) => [
+                                            ports += it.createPort(context, "connected«categoryConnection.connectingCategory.name.toFirstUpper»CategoryVia«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»From" + connected«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Connection.source.modelElement.ecoreId + "To" + connected«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Connection.target.modelElement.ecoreId) => [
                                                 associateWith(context)
-                                                data += createKIdentifier => [ it.id = "connected«categoryConnection.connectingCategory.name.toFirstUpper»CategoryVia«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»From" + connected«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Connection.key.modelElement.ecoreId + "To" + connected«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Connection.value.modelElement.ecoreId ]
+                                                data += createKIdentifier => [ it.id = "connected«categoryConnection.connectingCategory.name.toFirstUpper»CategoryVia«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»From" + connected«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Connection.source.modelElement.ecoreId + "To" + connected«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Connection.target.modelElement.ecoreId ]
                                                 // Connected elements are always shown and expanded to the east with the drawing direction.
                                                 addLayoutParam(CoreOptions::PORT_SIDE, PortSide::EAST)
                                                 addGenericInvisiblePortRendering
@@ -221,9 +242,9 @@ class GenerateSubSyntheses {
                                         }
                                         
                                         for (connecting«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Connection : connecting«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Connections) {
-                                            ports += it.createPort(context, "connecting«categoryConnection.connectingCategory.name.toFirstUpper»CategoryVia«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»From" + connecting«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Connection.key.modelElement.ecoreId + "To" + connecting«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Connection.value.modelElement.ecoreId) => [
+                                            ports += it.createPort(context, "connecting«categoryConnection.connectingCategory.name.toFirstUpper»CategoryVia«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»From" + connecting«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Connection.source.modelElement.ecoreId + "To" + connecting«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Connection.target.modelElement.ecoreId) => [
                                                 associateWith(context)
-                                                data += createKIdentifier => [ it.id = "connecting«categoryConnection.connectingCategory.name.toFirstUpper»CategoryVia«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»From" + connecting«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Connection.key.modelElement.ecoreId + "To" + connecting«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Connection.value.modelElement.ecoreId ]
+                                                data += createKIdentifier => [ it.id = "connecting«categoryConnection.connectingCategory.name.toFirstUpper»CategoryVia«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»From" + connecting«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Connection.source.modelElement.ecoreId + "To" + connecting«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Connection.target.modelElement.ecoreId ]
                                                 // Connecting elements always connect from the west with the drawing direction.
                                                 addLayoutParam(CoreOptions::PORT_SIDE, PortSide::WEST)
                                                 addGenericInvisiblePortRendering
@@ -330,8 +351,8 @@ class GenerateSubSyntheses {
 «               »«FOR categoryConnection : outerCategoryConnections BEFORE ', ' SEPARATOR ', '»«««
 «                   »Iterable<«categoryConnection.connectedCategory.name.toFirstUpper»Context> connected«categoryConnection.connectedCategory.name.toFirstUpper»From«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»s, «««
 «                   »Iterable<«categoryConnection.connectedCategory.name.toFirstUpper»Context> connecting«categoryConnection.connectedCategory.name.toFirstUpper»From«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»s, «««
-«                   »Iterable<«data.bundleNamePrefix».model.Pair<«categoryConnection.connectingArtifact.name.toFirstUpper»Context, «categoryConnection.connectedArtifact.name.toFirstUpper»Context>> connected«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Connections, «««
-«                   »Iterable<«data.bundleNamePrefix».model.Pair<«categoryConnection.connectingArtifact.name.toFirstUpper»Context, «categoryConnection.connectedArtifact.name.toFirstUpper»Context>> connecting«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Connections«««
+«                   »Iterable<«data.bundleNamePrefix».model.EdgeData<«categoryConnection.connectingArtifact.name.toFirstUpper»Context, «categoryConnection.connectedArtifact.name.toFirstUpper»Context>> connected«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Connections, «««
+«                   »Iterable<«data.bundleNamePrefix».model.EdgeData<«categoryConnection.connectingArtifact.name.toFirstUpper»Context, «categoryConnection.connectedArtifact.name.toFirstUpper»Context>> connecting«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Connections«««
 «               »«ENDFOR») {
                 transformDetailed«viewName»Overview(context, parentNode, null«««
 «               »«FOR categoryConnection : outerCategoryConnections BEFORE ', ' SEPARATOR ', '»«««
@@ -360,8 +381,8 @@ class GenerateSubSyntheses {
 «               »«FOR categoryConnection : outerCategoryConnections BEFORE ', ' SEPARATOR ', '»«««
 «                   »Iterable<«categoryConnection.connectedCategory.name.toFirstUpper»Context> connected«categoryConnection.connectedCategory.name.toFirstUpper»From«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»s, «««
 «                   »Iterable<«categoryConnection.connectedCategory.name.toFirstUpper»Context> connecting«categoryConnection.connectedCategory.name.toFirstUpper»From«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»s, «««
-«                   »Iterable<«data.bundleNamePrefix».model.Pair<«categoryConnection.connectingArtifact.name.toFirstUpper»Context, «categoryConnection.connectedArtifact.name.toFirstUpper»Context>> connected«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Connections, «««
-«                   »Iterable<«data.bundleNamePrefix».model.Pair<«categoryConnection.connectingArtifact.name.toFirstUpper»Context, «categoryConnection.connectedArtifact.name.toFirstUpper»Context>> connecting«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Connections«««
+«                   »Iterable<«data.bundleNamePrefix».model.EdgeData<«categoryConnection.connectingArtifact.name.toFirstUpper»Context, «categoryConnection.connectedArtifact.name.toFirstUpper»Context>> connected«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Connections, «««
+«                   »Iterable<«data.bundleNamePrefix».model.EdgeData<«categoryConnection.connectingArtifact.name.toFirstUpper»Context, «categoryConnection.connectedArtifact.name.toFirstUpper»Context>> connecting«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Connections«««
 «               »«ENDFOR») {
                     «FOR shownElement : view.shownElements»
                         val filteredDetailed«shownElement.shownElement.name»Contexts = filteredElementContexts(
@@ -391,8 +412,8 @@ class GenerateSubSyntheses {
 «««                            // Connects the {@code sourceBundleNode} and the {@code usedByBundleNode} via an arrow in UML style,
 «««                            // so [usedByBundleNode] ----- uses -----> [sourceBundleNode]
                                 // var boolean different = false
-                                val connecting = key
-                                val connected = value
+                                val connecting = source
+                                val connected = target
                                 
                                 if (!nodeExists(connecting) || !nodeExists(connected)) {
                                     // Only Add edges if the nodes are actually shown.
@@ -414,6 +435,7 @@ class GenerateSubSyntheses {
                                     source = connectingNode
                                     target = connectedNode
                                 ]
+                                edge.addConnectionLabels(labels)
                                 connectingNode.outgoingEdges += edge
                                 connectedNode.incomingEdges += edge
                             ]
@@ -471,18 +493,18 @@ class GenerateSubSyntheses {
                                         val thisIndex = i // make the lambda happy with a final variable
                                         if (!skipIndices.contains(thisIndex)) {
                                             val connected«categoryConnection.connectedArtifact.name.toFirstUpper»Connection = connected«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Connections.get(i)
-                                            val connectionId = "connected«categoryConnection.connectingCategory.name.toFirstUpper»CategoryVia«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»From" + connected«categoryConnection.connectedArtifact.name.toFirstUpper»Connection.key.modelElement.ecoreId + "To" + connected«categoryConnection.connectedArtifact.name.toFirstUpper»Connection.value.modelElement.ecoreId
+                                            val connectionId = "connected«categoryConnection.connectingCategory.name.toFirstUpper»CategoryVia«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»From" + connected«categoryConnection.connectedArtifact.name.toFirstUpper»Connection.source.modelElement.ecoreId + "To" + connected«categoryConnection.connectedArtifact.name.toFirstUpper»Connection.target.modelElement.ecoreId
                                             // «categoryConnection.connectingArtifact.name.toFirstLower» to hidden layer edge
                                             {
                                                 // the child node related to the source «categoryConnection.connectingArtifact.name.toFirstLower».
                                                 val connectingNode = children.filter(KNode).findFirst [
-                                                    data.filter(KIdentifier).head?.id.equals(connected«categoryConnection.connectedArtifact.name.toFirstUpper»Connection.key.modelElement.ecoreId)
+                                                    data.filter(KIdentifier).head?.id.equals(connected«categoryConnection.connectedArtifact.name.toFirstUpper»Connection.source.modelElement.ecoreId)
                                                 ]
                                                 val connectedNode = it
                                                 val connectingPort = connectingNode.ports.findFirst [
                                                     data.filter(KIdentifier).head?.id.equals("connected«categoryConnection.connection.name.toFirstUpper»«categoryConnection.connectedArtifact.name.toFirstUpper»s")
                                                 ]
-                                                val «categoryConnection.connectedCategory.name.toFirstUpper»PortName = "connected«categoryConnection.connectingCategory.name.toFirstUpper»CategoryVia«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»To" + (connected«categoryConnection.connectedArtifact.name.toFirstUpper»Connection.value.parent.parent.modelElement as «categoryConnection.connectedCategory.name.toFirstUpper»).ecoreId
+                                                val «categoryConnection.connectedCategory.name.toFirstUpper»PortName = "connected«categoryConnection.connectingCategory.name.toFirstUpper»CategoryVia«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»To" + (connected«categoryConnection.connectedArtifact.name.toFirstUpper»Connection.target.parent.parent.modelElement as «categoryConnection.connectedCategory.name.toFirstUpper»).ecoreId
                                                 val connectedPort = connectedNode.ports.findFirst [
                                                     data.filter(KIdentifier).head?.id.equals(«categoryConnection.connectedCategory.name.toFirstUpper»PortName)
                                                 ]
@@ -495,6 +517,10 @@ class GenerateSubSyntheses {
                                                     source = connectingNode
                                                     target = connectedNode
                                                 ]
+                                                edge.addConnectionLabels(connected«categoryConnection.connectedArtifact.name.toFirstUpper»ConnectionsList
+                                                    .filter[it.source === connected«categoryConnection.connectedArtifact.name.toFirstUpper»Connection.source
+                                                        && it.target.parent === connected«categoryConnection.connectedArtifact.name.toFirstUpper»Connection.target.parent]
+                                                    .flatMap[labels])
                                                 connectingNode.outgoingEdges += edge
                                                 connectedNode.incomingEdges += edge
                                             }
@@ -542,15 +568,15 @@ class GenerateSubSyntheses {
                                         val thisIndex = i // make the lambda happy with a final variable
                                         if (!skipIndices.contains(thisIndex)) {
                                             val connecting«categoryConnection.connectedArtifact.name.toFirstUpper»Connection = connecting«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Connections.get(i)
-                                            val connectionId = "connecting«categoryConnection.connectingCategory.name.toFirstUpper»CategoryVia«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»From" + connecting«categoryConnection.connectedArtifact.name.toFirstUpper»Connection.key.modelElement.ecoreId + "To" + connecting«categoryConnection.connectedArtifact.name.toFirstUpper»Connection.value.modelElement.ecoreId
+                                            val connectionId = "connecting«categoryConnection.connectingCategory.name.toFirstUpper»CategoryVia«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»From" + connecting«categoryConnection.connectedArtifact.name.toFirstUpper»Connection.source.modelElement.ecoreId + "To" + connecting«categoryConnection.connectedArtifact.name.toFirstUpper»Connection.target.modelElement.ecoreId
                                             // hidden layer to «categoryConnection.connectedArtifact.name.toFirstLower» edge
                                             {
                                                 val connectingNode = it
                                                 // the child node related to the target «categoryConnection.connectedArtifact.name.toFirstLower».
                                                 val connectedNode = children.filter(KNode).findFirst [
-                                                    data.filter(KIdentifier).head?.id.equals(connecting«categoryConnection.connectedArtifact.name.toFirstUpper»Connection.value.modelElement.ecoreId)
+                                                    data.filter(KIdentifier).head?.id.equals(connecting«categoryConnection.connectedArtifact.name.toFirstUpper»Connection.target.modelElement.ecoreId)
                                                 ]
-                                                val connecting«categoryConnection.connectedCategory.name.toFirstUpper»PortName = "connecting«categoryConnection.connectingCategory.name.toFirstUpper»CategoryVia«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»From" + (connecting«categoryConnection.connectedArtifact.name.toFirstUpper»Connection.key.parent.parent.modelElement as «categoryConnection.connectedCategory.name.toFirstUpper»).ecoreId
+                                                val connecting«categoryConnection.connectedCategory.name.toFirstUpper»PortName = "connecting«categoryConnection.connectingCategory.name.toFirstUpper»CategoryVia«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»From" + (connecting«categoryConnection.connectedArtifact.name.toFirstUpper»Connection.source.parent.parent.modelElement as «categoryConnection.connectedCategory.name.toFirstUpper»).ecoreId
                                                 val connectingPort = connectingNode.ports.findFirst [
                                                     data.filter(KIdentifier).head?.id.equals(connecting«categoryConnection.connectedCategory.name.toFirstUpper»PortName)
                                                 ]
@@ -566,6 +592,10 @@ class GenerateSubSyntheses {
                                                     source = connectingNode
                                                     target = connectedNode
                                                 ]
+                                                edge.addConnectionLabels(connecting«categoryConnection.connectedArtifact.name.toFirstUpper»ConnectionsList
+                                                    .filter[it.source.parent === connecting«categoryConnection.connectedArtifact.name.toFirstUpper»Connection.source.parent
+                                                        && it.target === connecting«categoryConnection.connectedArtifact.name.toFirstUpper»Connection.target]
+                                                    .flatMap[labels])
                                                 connectingNode.outgoingEdges += edge
                                                 connectedNode.incomingEdges += edge
                                             }
@@ -575,7 +605,7 @@ class GenerateSubSyntheses {
                                     // Add an invisible port for each currently shown «categoryConnection.connectingArtifact.name.toFirstUpper»->«categoryConnection.connectedArtifact.name.toFirstUpper» connection via their «categoryConnection.innerView.name.toFirstLower» inside a «categoryConnection.connectedCategory.name.toFirstLower» category,
                                     // as well as the edges connecting from the «categoryConnection.connectingArtifact.name.toFirstLower» to them and them to the outside ports.
                                     for (connected«categoryConnection.connectedArtifact.name.toFirstUpper»Connection : connected«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Connections) {
-                                        val connectionId = "connected«categoryConnection.connectingCategory.name.toFirstUpper»CategoryVia«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»From" + connected«categoryConnection.connectedArtifact.name.toFirstUpper»Connection.key.modelElement.ecoreId + "To" + connected«categoryConnection.connectedArtifact.name.toFirstUpper»Connection.value.modelElement.ecoreId
+                                        val connectionId = "connected«categoryConnection.connectingCategory.name.toFirstUpper»CategoryVia«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»From" + connected«categoryConnection.connectedArtifact.name.toFirstUpper»Connection.source.modelElement.ecoreId + "To" + connected«categoryConnection.connectedArtifact.name.toFirstUpper»Connection.target.modelElement.ecoreId
                                         val newPort = it.createPort(context, connectionId) => [
                                             associateWith(context)
                                             data += createKIdentifier => [ it.id = connectionId ]
@@ -590,7 +620,7 @@ class GenerateSubSyntheses {
                                         {
                                             // the child node related to the source «categoryConnection.connectingArtifact.name.toFirstLower».
                                             val connectingNode = children.filter(KNode).findFirst [
-                                                data.filter(KIdentifier).head?.id.equals(connected«categoryConnection.connectedArtifact.name.toFirstUpper»Connection.key.modelElement.ecoreId)
+                                                data.filter(KIdentifier).head?.id.equals(connected«categoryConnection.connectedArtifact.name.toFirstUpper»Connection.source.modelElement.ecoreId)
                                             ]
                                             val connectedNode = it
                                             val connectingPort = connectingNode.ports.findFirst [
@@ -606,6 +636,7 @@ class GenerateSubSyntheses {
                                                 source = connectingNode
                                                 target = connectedNode
                                             ]
+                                            edge.addConnectionLabels(connected«categoryConnection.connectedArtifact.name.toFirstUpper»Connection.labels)
                                             connectingNode.outgoingEdges += edge
                                             connectedNode.incomingEdges += edge
                                         }
@@ -632,7 +663,7 @@ class GenerateSubSyntheses {
                                     }
                                     
                                     for (connecting«categoryConnection.connectedArtifact.name.toFirstUpper»Connection : connecting«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Connections) {
-                                        val connectionId = "connecting«categoryConnection.connectingCategory.name.toFirstUpper»CategoryVia«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»From" + connecting«categoryConnection.connectedArtifact.name.toFirstUpper»Connection.key.modelElement.ecoreId + "To" + connecting«categoryConnection.connectedArtifact.name.toFirstUpper»Connection.value.modelElement.ecoreId
+                                        val connectionId = "connecting«categoryConnection.connectingCategory.name.toFirstUpper»CategoryVia«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»From" + connecting«categoryConnection.connectedArtifact.name.toFirstUpper»Connection.source.modelElement.ecoreId + "To" + connecting«categoryConnection.connectedArtifact.name.toFirstUpper»Connection.target.modelElement.ecoreId
                                         val newPort = it.createPort(context, connectionId) => [
                                             associateWith(context)
                                             data += createKIdentifier => [ it.id = connectionId ]
@@ -668,7 +699,7 @@ class GenerateSubSyntheses {
                                             val connectingNode = it
                                             // the child node related to the target «categoryConnection.connectedArtifact.name.toFirstLower».
                                             val connectedNode = children.filter(KNode).findFirst [
-                                                data.filter(KIdentifier).head?.id.equals(connecting«categoryConnection.connectedArtifact.name.toFirstUpper»Connection.value.modelElement.ecoreId)
+                                                data.filter(KIdentifier).head?.id.equals(connecting«categoryConnection.connectedArtifact.name.toFirstUpper»Connection.target.modelElement.ecoreId)
                                             ]
                                             val connectingPort = newPort
                                             val connectedPort = connectedNode.ports.findFirst [
@@ -683,6 +714,7 @@ class GenerateSubSyntheses {
                                                 source = connectingNode
                                                 target = connectedNode
                                             ]
+                                            edge.addConnectionLabels(connecting«categoryConnection.connectedArtifact.name.toFirstUpper»Connection.labels)
                                             connectingNode.outgoingEdges += edge
                                             connectedNode.incomingEdges += edge
                                         }
@@ -693,8 +725,8 @@ class GenerateSubSyntheses {
                             // Add all inner category edges.
                             «FOR categoryConnection : innerCategoryConnections»
                                 context.«categoryConnection.connectingCategory.name.toFirstLower»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges.forEach [
-                                    val connecting = key
-                                    val connected = value
+                                    val connecting = source
+                                    val connected = target
                                     if (!nodeExists(connecting) || !nodeExists(connected)) {
                                         // Only Add edges if the nodes are actually shown.
                                         return
@@ -716,6 +748,7 @@ class GenerateSubSyntheses {
                                         source = connectingNode
                                         target = connectedNode
                                     ]
+                                    edge.addConnectionLabels(labels, usedContext.getOptionValue(SHOW_OUTER_CATEGORY_CONNECTION_LABELS) as Boolean)
                                     connectingNode.outgoingEdges += edge
                                     connectedNode.incomingEdges += edge
                                 ]
@@ -923,7 +956,7 @@ class GenerateSubSyntheses {
                                                 // from the child B Deps OV's individual dep ports to the cumulative «categoryConnection.connectedCategory.name.toFirstUpper»->«categoryConnection.connectedCategory.name.toFirstUpper» port here.
                                                 val connected«categoryConnection.connectedArtifact.name.toFirstUpper»Connections = SynthesisUtils.shownConnected«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»(context.parent as «categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Container, context.«categoryConnection.innerView.name.toFirstLower»OverviewContext)
                                                 for (connected«categoryConnection.connectedArtifact.name.toFirstUpper»Connection : connected«categoryConnection.connectedArtifact.name.toFirstUpper»Connections) {
-                                                    val connectionId = "connected«categoryConnection.connectedCategory.name.toFirstUpper»CategoryVia«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»From" + connected«categoryConnection.connectedArtifact.name.toFirstUpper»Connection.key.modelElement.ecoreId + "To" + connected«categoryConnection.connectedArtifact.name.toFirstUpper»Connection.value.modelElement.ecoreId
+                                                    val connectionId = "connected«categoryConnection.connectedCategory.name.toFirstUpper»CategoryVia«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»From" + connected«categoryConnection.connectedArtifact.name.toFirstUpper»Connection.source.modelElement.ecoreId + "To" + connected«categoryConnection.connectedArtifact.name.toFirstUpper»Connection.target.modelElement.ecoreId
                                                     
                                                     val connectingNode = «categoryConnection.innerView.name.toFirstLower»OverviewNodes.head
                                                     val connectedNode = it
@@ -931,7 +964,7 @@ class GenerateSubSyntheses {
                                                         data.filter(KIdentifier).head?.id.equals(connectionId)
                                                     ]
                                                     val connectedPort = connectedNode.ports.findFirst [
-                                                        data.filter(KIdentifier).head?.id.equals("connected«categoryConnection.connectedCategory.name.toFirstUpper»CategoryVia«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»To" + (connected«categoryConnection.connectedArtifact.name.toFirstUpper»Connection.value.parent.parent as «categoryConnection.connectedCategory.name.toFirstUpper»Context).modelElement.ecoreId)
+                                                        data.filter(KIdentifier).head?.id.equals("connected«categoryConnection.connectedCategory.name.toFirstUpper»CategoryVia«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»To" + (connected«categoryConnection.connectedArtifact.name.toFirstUpper»Connection.target.parent.parent as «categoryConnection.connectedCategory.name.toFirstUpper»Context).modelElement.ecoreId)
                                                     ]
                                                     
                                                     val edge = createEdge(connectingNode, connectedNode, connectionId) => [
@@ -948,12 +981,12 @@ class GenerateSubSyntheses {
                                                 // Same for incoming edges.
                                                 val connecting«categoryConnection.connectingArtifact.name.toFirstUpper»Connections = SynthesisUtils.shownConnecting«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»(context.parent as «categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Container, context.«categoryConnection.innerView.name.toFirstLower»OverviewContext)
                                                 for (connecting«categoryConnection.connectingArtifact.name.toFirstUpper»Connection : connecting«categoryConnection.connectingArtifact.name.toFirstUpper»Connections) {
-                                                    val connectionId = "connecting«categoryConnection.connectedCategory.name.toFirstUpper»CategoryVia«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»From" + connecting«categoryConnection.connectingArtifact.name.toFirstUpper»Connection.key.modelElement.ecoreId + "To" + connecting«categoryConnection.connectingArtifact.name.toFirstUpper»Connection.value.modelElement.ecoreId
+                                                    val connectionId = "connecting«categoryConnection.connectedCategory.name.toFirstUpper»CategoryVia«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»From" + connecting«categoryConnection.connectingArtifact.name.toFirstUpper»Connection.source.modelElement.ecoreId + "To" + connecting«categoryConnection.connectingArtifact.name.toFirstUpper»Connection.target.modelElement.ecoreId
                                                     
                                                     val connectingNode = it
                                                     val connectedNode = «categoryConnection.innerView.name.toFirstLower»OverviewNodes.head
                                                     val connectingPort = connectingNode.ports.findFirst [
-                                                        data.filter(KIdentifier).head?.id.equals("connecting«categoryConnection.connectedCategory.name.toFirstUpper»CategoryVia«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»From" + (connecting«categoryConnection.connectingArtifact.name.toFirstUpper»Connection.key.parent.parent as «categoryConnection.connectedCategory.name.toFirstUpper»Context).modelElement.ecoreId)
+                                                        data.filter(KIdentifier).head?.id.equals("connecting«categoryConnection.connectedCategory.name.toFirstUpper»CategoryVia«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»From" + (connecting«categoryConnection.connectingArtifact.name.toFirstUpper»Connection.source.parent.parent as «categoryConnection.connectedCategory.name.toFirstUpper»Context).modelElement.ecoreId)
                                                     ]
                                                     val connectedPort = connectedNode.ports.findFirst [
                                                         data.filter(KIdentifier).head?.id.equals(connectionId)

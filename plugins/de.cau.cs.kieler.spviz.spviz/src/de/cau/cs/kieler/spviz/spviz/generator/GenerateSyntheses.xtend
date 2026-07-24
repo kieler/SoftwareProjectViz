@@ -3,10 +3,11 @@
  *
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2021-2025 by
+ * Copyright 2021-2026 by
  * + Kiel University
  *   + Department of Computer Science
  *   + Real-Time and Embedded Systems Group
+ * + and Scheidt & Bachmann System Technik GmbH, 24109 Melsdorf
  * 
  * This code is provided under the terms of the Eclipse Public License 2.0 (EPL-2.0).
  */
@@ -150,7 +151,8 @@ class GenerateSyntheses {
                     «ENDFOR»
                     
                     // Add all view filter options.
-                    options.addAll(SHOW_EXTERNAL, CONTAINER_EDGES_WHEN_FOCUSED, IDS, SHORTEN_BY, INTERACTIVE_BUTTONS)
+                    options.addAll(SHOW_EXTERNAL, CONTAINER_EDGES_WHEN_FOCUSED, SHOW_CONNECTION_LABELS,
+                        SHOW_OUTER_CATEGORY_CONNECTION_LABELS, IDS, SHORTEN_BY, INTERACTIVE_BUTTONS)
                     
                     // Add all artifact view filters.
                     «FOR artifact : data.artifacts»
@@ -1738,7 +1740,7 @@ class GenerateSyntheses {
                      */
                     def static Iterable<«categoryConnection.connectedCategory.name.toFirstUpper»Context> shownConnectedCategoryConnections«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»(«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Container parentContext, «categoryConnection.connectedCategory.name.toFirstUpper» «categoryConnection.connectedCategory.name.toFirstLower») {
                         val allConnections = shownCategoryConnections«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»(parentContext, «categoryConnection.connectedCategory.name.toFirstLower»)
-                        return allConnections.filter[it.key.modelElement === «categoryConnection.connectedCategory.name.toFirstLower»].map[it.value]
+                        return allConnections.filter[it.source.modelElement === «categoryConnection.connectedCategory.name.toFirstLower»].map[it.target]
                     }
                     
                     /**
@@ -1751,12 +1753,12 @@ class GenerateSyntheses {
                      */
                     def static Iterable<«categoryConnection.connectedCategory.name.toFirstUpper»Context> shownConnectingCategoryConnections«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»(«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Container parentContext, «categoryConnection.connectedCategory.name.toFirstUpper» «categoryConnection.connectedCategory.name.toFirstLower») {
                         val allConnections = shownCategoryConnections«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»(parentContext, «categoryConnection.connectedCategory.name.toFirstLower»)
-                        return allConnections.filter[it.value.modelElement === «categoryConnection.connectedCategory.name.toFirstLower»].map[it.key]
+                        return allConnections.filter[it.target.modelElement === «categoryConnection.connectedCategory.name.toFirstLower»].map[it.source]
                     }
                     
-                    def static Iterable<«data.bundleNamePrefix».model.Pair<«categoryConnection.connectedCategory.name.toFirstUpper»Context, «categoryConnection.connectedCategory.name.toFirstUpper»Context>> shownCategoryConnections«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»(«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Container parentContext, «categoryConnection.connectedCategory.name.toFirstUpper» «categoryConnection.connectedCategory.name.toFirstLower») {
+                    def static Iterable<«data.bundleNamePrefix».model.EdgeData<«categoryConnection.connectedCategory.name.toFirstUpper»Context, «categoryConnection.connectedCategory.name.toFirstUpper»Context>> shownCategoryConnections«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»(«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Container parentContext, «categoryConnection.connectedCategory.name.toFirstUpper» «categoryConnection.connectedCategory.name.toFirstLower») {
                         val allConnections = parentContext.«categoryConnection.connectingCategory.name.toFirstLower»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges
-                        return allConnections.filter[it.key.modelElement === «categoryConnection.connectedCategory.name.toFirstLower» || it.value.modelElement === «categoryConnection.connectedCategory.name.toFirstLower»]
+                        return allConnections.filter[it.source.modelElement === «categoryConnection.connectedCategory.name.toFirstLower» || it.target.modelElement === «categoryConnection.connectedCategory.name.toFirstLower»]
                     }
                     
                     /**
@@ -1767,10 +1769,10 @@ class GenerateSyntheses {
                      * @param parentContext The «categoryConnection.innerView.name.toFirstLower» container.
                      * @return The outgoing «categoryConnection.connectingArtifact.name.toFirstLower»->«categoryConnection.connectedArtifact.name.toFirstLower» «categoryConnection.connection.name.toFirstLower» connections.
                      */
-                    def static Iterable<«data.bundleNamePrefix».model.Pair<«categoryConnection.connectingArtifact.name.toFirstUpper»Context, «categoryConnection.connectedArtifact.name.toFirstUpper»Context>> shownConnected«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»(«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Container containerContext, «categoryConnection.innerView.name.toFirstUpper»OverviewContext parentContext) {
+                    def static Iterable<«data.bundleNamePrefix».model.EdgeData<«categoryConnection.connectingArtifact.name.toFirstUpper»Context, «categoryConnection.connectedArtifact.name.toFirstUpper»Context>> shownConnected«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»(«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Container containerContext, «categoryConnection.innerView.name.toFirstUpper»OverviewContext parentContext) {
                         val allConnections = containerContext.«categoryConnection.connectingArtifact.name.toFirstLower»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges
                         val all«categoryConnection.connectingArtifact.name.toFirstUpper»Contexts = parentContext.childContexts.filter(«categoryConnection.connectingArtifact.name.toFirstUpper»Context)
-                        return allConnections.filter[ all«categoryConnection.connectingArtifact.name.toFirstUpper»Contexts.contains(it.key) ]
+                        return allConnections.filter[ all«categoryConnection.connectingArtifact.name.toFirstUpper»Contexts.contains(it.source) ]
                     }
                     
                     /**
@@ -1781,10 +1783,10 @@ class GenerateSyntheses {
                      * @param parentContext The «categoryConnection.innerView.name.toFirstLower» container.
                      * @return The incoming «categoryConnection.connectingArtifact.name.toFirstLower»->«categoryConnection.connectedArtifact.name.toFirstLower» «categoryConnection.connection.name.toFirstLower» connections.
                      */
-                    def static Iterable<«data.bundleNamePrefix».model.Pair<«categoryConnection.connectingArtifact.name.toFirstUpper»Context, «categoryConnection.connectedArtifact.name.toFirstUpper»Context>> shownConnecting«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»(«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Container containerContext, «categoryConnection.innerView.name.toFirstUpper»OverviewContext parentContext) {
+                    def static Iterable<«data.bundleNamePrefix».model.EdgeData<«categoryConnection.connectingArtifact.name.toFirstUpper»Context, «categoryConnection.connectedArtifact.name.toFirstUpper»Context>> shownConnecting«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»(«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Container containerContext, «categoryConnection.innerView.name.toFirstUpper»OverviewContext parentContext) {
                         val allConnections = containerContext.«categoryConnection.connectingArtifact.name.toFirstLower»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges
                         val all«categoryConnection.connectedArtifact.name.toFirstUpper»Contexts = parentContext.childContexts.filter(«categoryConnection.connectedArtifact.name.toFirstUpper»Context)
-                        return allConnections.filter[ all«categoryConnection.connectedArtifact.name.toFirstUpper»Contexts.contains(it.value) ]
+                        return allConnections.filter[ all«categoryConnection.connectedArtifact.name.toFirstUpper»Contexts.contains(it.target) ]
                     }
                 «ENDFOR»
                 
@@ -1891,7 +1893,7 @@ class GenerateSyntheses {
                      * @param otherDuplicateIndices a list as that returns the indices of the other duplicates in the list. The list
                      *      will be cleared and filled with new indices as calculated by this method.
                      */
-                    def static void indicesOfEqual«categoryConnection.connectingArtifact.name.toFirstUpper»To«categoryConnection.connectedCategory.name.toFirstUpper»In«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»(List<«data.bundleNamePrefix».model.Pair<«categoryConnection.connectingArtifact.name.toFirstUpper»Context, «categoryConnection.connectedArtifact.name.toFirstUpper»Context>> pairList, Set<Integer> firstDuplicateIndices, List<Integer> otherDuplicateIndices) {
+                    def static void indicesOfEqual«categoryConnection.connectingArtifact.name.toFirstUpper»To«categoryConnection.connectedCategory.name.toFirstUpper»In«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»(List<«data.bundleNamePrefix».model.EdgeData<«categoryConnection.connectingArtifact.name.toFirstUpper»Context, «categoryConnection.connectedArtifact.name.toFirstUpper»Context>> pairList, Set<Integer> firstDuplicateIndices, List<Integer> otherDuplicateIndices) {
                         firstDuplicateIndices.clear
                         otherDuplicateIndices.clear
                         for (var int i = 0; i < pairList.size; i++) {
@@ -1901,9 +1903,9 @@ class GenerateSyntheses {
                                 pairList.forEach [ otherPair, otherIndex |
                                     if (otherIndex !== thisIndex
                                         // both sources are the same
-                                        && otherPair.key === connection.key
+                                        && otherPair.source === connection.source
                                         // both targets are leading to the same overview
-                                        && otherPair.value.parent === connection.value.parent
+                                        && otherPair.target.parent === connection.target.parent
                                     ) {
                                         // found another pair with the same key and value.
                                         firstDuplicateIndices.add(thisIndex)
@@ -1925,7 +1927,7 @@ class GenerateSyntheses {
                      * @param otherDuplicateIndices a list as that returns the indices of the other duplicates in the list. The list
                      *      will be cleared and filled with new indices as calculated by this method.
                      */
-                    def static void indicesOfEqual«categoryConnection.connectedCategory.name.toFirstUpper»To«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»(List<«data.bundleNamePrefix».model.Pair<«categoryConnection.connectingArtifact.name.toFirstUpper»Context, «categoryConnection.connectedArtifact.name.toFirstUpper»Context>> pairList, Set<Integer> firstDuplicateIndices, List<Integer> otherDuplicateIndices) {
+                    def static void indicesOfEqual«categoryConnection.connectedCategory.name.toFirstUpper»To«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»(List<«data.bundleNamePrefix».model.EdgeData<«categoryConnection.connectingArtifact.name.toFirstUpper»Context, «categoryConnection.connectedArtifact.name.toFirstUpper»Context>> pairList, Set<Integer> firstDuplicateIndices, List<Integer> otherDuplicateIndices) {
                         firstDuplicateIndices.clear
                         otherDuplicateIndices.clear
                         for (var int i = 0; i < pairList.size; i++) {
@@ -1935,9 +1937,9 @@ class GenerateSyntheses {
                                 pairList.forEach [ otherPair, otherIndex |
                                     if (otherIndex !== thisIndex
                                         // both sources are leading to the same overview
-                                        && otherPair.key.parent === connection.key.parent
+                                        && otherPair.source.parent === connection.source.parent
                                         // both targets are the same
-                                        && otherPair.value === connection.value
+                                        && otherPair.target === connection.target
                                     ) {
                                         // found another pair with the same key and value.
                                         firstDuplicateIndices.add(thisIndex)
@@ -2106,6 +2108,16 @@ class GenerateSyntheses {
                 public static final SynthesisOption CONTAINER_EDGES_WHEN_FOCUSED = SynthesisOption.createCheckOption(
                     "Container edges when focused", true).setCategory(VIEW_FILTER_CATEGORY)
                     .description = "Changes whether overviews that are shown in categories and have container edges should show their edges going out of the overview."
+
+                /** Option for showing custom labels on connection edges. */
+                public static final SynthesisOption SHOW_CONNECTION_LABELS = SynthesisOption.createCheckOption(
+                    "Connection labels", true).setCategory(VIEW_FILTER_CATEGORY)
+                    .description = "Shows custom labels on connection edges."
+
+                /** Option for showing labels on category edges in containing overviews. */
+                public static final SynthesisOption SHOW_OUTER_CATEGORY_CONNECTION_LABELS = SynthesisOption.createCheckOption(
+                    "Connection labels in containing overviews", true).setCategory(VIEW_FILTER_CATEGORY)
+                    .description = "Shows custom connection labels on category edges in containing overviews."
                 
                 /** Category option containing options for filtering artifact views. */
                 public static final SynthesisOption ARTIFACT_VIEW_FILTER_CATEGORY = SynthesisOption.createCategory("Artifact overview filter", false)
@@ -2573,8 +2585,8 @@ class GenerateSyntheses {
                         «FOR connection : view.shownConnections»
                             for (oldEdge : oldContext.«connection.shownConnection.connecting.name.toFirstLower»Connects«connection.shownConnection.connected.name»Named«connection.shownConnection.name»Edges) {
                                 // check if the source and target of the connection still exist and if they are still in connected.
-                                val connecting = oldEdge.key.modelElement
-                                val connected = oldEdge.value.modelElement
+                                val connecting = oldEdge.source.modelElement
+                                val connected = oldEdge.target.modelElement
                                 if (newContext.«connection.shownConnection.connecting.name.toFirstLower»s.contains(connecting)
                                     && newContext.«connection.shownConnection.connected.name.toFirstLower»s.contains(connected)
                                     && connecting.connected«connection.shownConnection.name»«connection.shownConnection.connected.name»s.contains(connected)) {
@@ -2589,18 +2601,18 @@ class GenerateSyntheses {
                             // re-connect the category edges for «categoryConnection.innerView.name.toFirstLower» from that.
                             for (oldEdge : oldContext.«categoryConnection.connectingArtifact.name.toFirstLower»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges) {
                                 // Check if the source and target of the connection still exist, if they still can be, and if they still are connected.
-                                val connecting«categoryConnection.connectingArtifact.name.toFirstUpper» = oldEdge.key.modelElement
-                                val connecting«categoryConnection.connectedCategory.name.toFirstUpper» = oldEdge.key.parent?.parent?.modelElement
-                                val connected«categoryConnection.connectedArtifact.name.toFirstUpper» = oldEdge.value.modelElement
-                                val connected«categoryConnection.connectedCategory.name.toFirstUpper» = oldEdge.value.parent?.parent?.modelElement
+                                val connecting«categoryConnection.connectingArtifact.name.toFirstUpper» = oldEdge.source.modelElement
+                                val connecting«categoryConnection.connectedCategory.name.toFirstUpper» = oldEdge.source.parent?.parent?.modelElement
+                                val connected«categoryConnection.connectedArtifact.name.toFirstUpper» = oldEdge.target.modelElement
+                                val connected«categoryConnection.connectedCategory.name.toFirstUpper» = oldEdge.target.parent?.parent?.modelElement
                                 
                                 if (newContext.«categoryConnection.connectedCategory.name.toFirstLower»s.contains(connecting«categoryConnection.connectedCategory.name.toFirstUpper»)
                                     && newContext.«categoryConnection.connectedCategory.name.toFirstLower»s.contains(connected«categoryConnection.connectedCategory.name.toFirstUpper»)
                                 ) {
-                                    val matchedEdge = newContext.possible«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges.findFirst [ connecting«categoryConnection.connectingArtifact.name.toFirstUpper» === it.key.modelElement && connected«categoryConnection.connectedArtifact.name.toFirstUpper» === it.value.modelElement ]
+                                    val matchedEdge = newContext.possible«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges.findFirst [ connecting«categoryConnection.connectingArtifact.name.toFirstUpper» === it.source.modelElement && connected«categoryConnection.connectedArtifact.name.toFirstUpper» === it.target.modelElement ]
                                     if (matchedEdge !== null) {
                                         // This method also connects the «categoryConnection.connectedCategory.name.toFirstLower»->«categoryConnection.connectedCategory.name.toFirstLower» container alongside the «categoryConnection.connectingArtifact.name.toFirstLower»->«categoryConnection.connectedArtifact.name.toFirstLower»
-                                        add«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edge(matchedEdge.key, matchedEdge.value)
+                                        add«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edge(matchedEdge.source, matchedEdge.target)
                                     }
                                 }
                             }

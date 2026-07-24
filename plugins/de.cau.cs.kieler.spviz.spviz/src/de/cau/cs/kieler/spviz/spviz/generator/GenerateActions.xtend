@@ -3,10 +3,11 @@
  *
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2021-2024 by
+ * Copyright 2021-2026 by
  * + Kiel University
  *   + Department of Computer Science
  *   + Real-Time and Embedded Systems Group
+ * + and Scheidt & Bachmann System Technik GmbH, 24109 Melsdorf
  * 
  * This code is provided under the terms of the Eclipse Public License 2.0 (EPL-2.0).
  */
@@ -327,11 +328,11 @@ class GenerateActions {
                                 val containerOverviewContext = overviewContext.parent.parent as «categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Container
                                 // Look for the connection in the container overview
                                 containerOverviewContext.possible«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges.filter[
-                                    «isConnected ? "key" : "value"» === «artifactFromName.toFirstLower»Context
-                                    && «isConnected ? "value" : "key"».modelElement === «connectingOrConnected.toFirstLower»«artifactToName»
+                                    «isConnected ? "source" : "target"» === «artifactFromName.toFirstLower»Context
+                                    && «isConnected ? "target" : "source"».modelElement === «connectingOrConnected.toFirstLower»«artifactToName»
                                 ].forEach [
                                     // The «isConnected ? "target" : "source"» «categoryConnection.connectedCategory.name.toFirstLower», «categoryConnection.innerView.name.toFirstLower» overview and «artifactToName.toFirstLower» need to be expanded first.
-                                    val «isConnected ? "target" : "source"»«artifactToName.toFirstLower»Context = it.«isConnected ? "value" : "key"»
+                                    val «isConnected ? "target" : "source"»«artifactToName.toFirstLower»Context = it.«isConnected ? "target" : "source"»
                                     val «isConnected ? "target" : "source"»«categoryConnection.innerView.name.toFirstUpper»OverviewContext = «isConnected ? "target" : "source"»«artifactToName.toFirstLower»Context?.parent as «categoryConnection.innerView.name.toFirstUpper»OverviewContext
                                     val «isConnected ? "target" : "source"»«categoryConnection.connectedCategory.name.toFirstUpper»Context = «isConnected ? "target" : "source"»«categoryConnection.innerView.name.toFirstUpper»OverviewContext?.parent as «categoryConnection.connectedCategory.name.toFirstUpper»Context
                                     val «categoryConnection.connectingCategory.name.toFirstLower»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Context = «isConnected ? "target" : "source"»«categoryConnection.connectedCategory.name.toFirstUpper»Context?.parent as «categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Container
@@ -340,7 +341,7 @@ class GenerateActions {
                                     «isConnected ? "target" : "source"»«categoryConnection.innerView.name.toFirstUpper»OverviewContext.makeDetailed(«isConnected ? "target" : "source"»«artifactToName.toFirstLower»Context)
                                     
                                     // configure to connect via an edge.
-                                    add«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edge(«isConnected ? "it.key, target" + artifactToName.toFirstLower + "Context" : "source" + artifactToName.toFirstLower + "Context, it.value"»)
+                                    add«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edge(«isConnected ? "it.source, target" + artifactToName.toFirstLower + "Context" : "source" + artifactToName.toFirstLower + "Context, it.target"»)
                                     «connectingOrConnected.toFirstLower»ExternalContexts.add(«isConnected ? "target" : "source"»«artifactToName.toFirstLower»Context)
                                 ]
                             }

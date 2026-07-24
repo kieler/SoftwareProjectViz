@@ -7,6 +7,7 @@
  * + Kiel University
  *   + Department of Computer Science
  *     + Real-Time and Embedded Systems Group
+ * + and Scheidt & Bachmann System Technik GmbH, 24109 Melsdorf
  * 
  * This code is provided under the terms of the Eclipse Public License 2.0 (EPL-2.0).
  */
@@ -14,6 +15,7 @@ package de.cau.cs.kieler.spviz.spvizmodel.generator
 
 import de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.Connection
 import de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.Containment
+import de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.Artifact
 import de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.SPVizModel
 import java.io.File
 import java.nio.file.Path
@@ -161,7 +163,7 @@ class SPVizModelGenerator extends AbstractGenerator {
             // modify xtext grammar
             val dslFolder = new File(config.rootLocation + "/" + config.baseName)
             val dslPackageFolder = FileGenerator.createDirectory(dslFolder, "src/" + config.baseName.replace('.', '/'))
-            var content = generateDslGrammar(model, config.language)
+            var content = generateDslGrammar(model)
             FileGenerator.updateFile(dslPackageFolder, model.name + "Dsl.xtext", content)
             // TODO: only update this file and not do a full regeneration (only the referencedResource is missing)
             content = generateDslMwe2(model)
@@ -193,6 +195,10 @@ class SPVizModelGenerator extends AbstractGenerator {
             // Resource
             content = generateResource(model)
             FileGenerator.updateFile(dslPackageFolder, model.name + "DslResource.xtend", content)
+            // Validator
+            val dslValidationFolder = FileGenerator.createDirectory(dslFolder, "src/" + config.baseName.replace('.', '/') + "/validation")
+            content = generateDslValidator(model)
+            FileGenerator.updateFile(dslValidationFolder, model.name + "DslValidator.java", content)
         }
         
     }
@@ -266,6 +272,14 @@ class SPVizModelGenerator extends AbstractGenerator {
             unique id String ecoreId
             String name
             boolean external
+            /**
+             * Managed by ModelUtil.add... methods. Modify this list only when importing or transforming a model.
+             */
+            contains ConnectionLabel[] connectionLabels
+        }
+        
+        abstract class ConnectionLabel {
+            String label
         }
         
         «FOR artifact : model.artifacts»
@@ -279,6 +293,19 @@ class SPVizModelGenerator extends AbstractGenerator {
         }
         
         «ENDFOR»            
+        «FOR artifact : model.artifacts»
+            «FOR connection : artifact.references.filter(Connection)»
+                class «directLabelClassName(artifact, connection)» extends ConnectionLabel {
+                    refers «connection.connects.name» target
+                }
+
+                class «contextLabelClassName(artifact, connection)» extends ConnectionLabel {
+                    refers «artifact.name» source
+                    refers «connection.connects.name» target
+                }
+
+            «ENDFOR»
+        «ENDFOR»
         '''
     }
     
@@ -298,7 +325,7 @@ class SPVizModelGenerator extends AbstractGenerator {
         
     }
     
-    private static def String generateDslGrammar(SPVizModel model, LanguageDescriptor language) {
+    private static def String generateDslGrammar(SPVizModel model) {
         return '''
             grammar «model.package».model.dsl.«model.name»Dsl with org.eclipse.xtext.common.Terminals
             
@@ -324,15 +351,77 @@ class SPVizModelGenerator extends AbstractGenerator {
                             ('«containment.contains.name.toFirstLower»s:' '[' «containment.contains.name.toFirstLower»s += [«containment.contains.name.toFirstUpper»|EString] ( "," «containment.contains.name.toFirstLower»s += [«containment.contains.name.toFirstUpper»|EString])* ']' )?
                         «ENDFOR»
                         «FOR connection : artifact.references.filter(Connection)»
-                            ('«connection.name.toFirstLower»' connected«connection.name.toFirstUpper»«connection.connects.name.toFirstUpper»s += [«connection.connects.name.toFirstUpper»|EString] ('«connection.name.toFirstLower»' connected«connection.name.toFirstUpper»«connection.connects.name.toFirstUpper»s += [«connection.connects.name.toFirstUpper»|EString])*)?
+                            ('«connection.name.toFirstLower»' connectionLabels += «directLabelClassName(artifact, connection)»)*
                         «ENDFOR»
+                        ('labels' '{' connectionLabels += ContextConnectionLabel* '}')?
                     '}')?
                 ;
                 
             «ENDFOR»
+            ContextConnectionLabel returns ConnectionLabel:
+                «FOR connection : model.artifacts.flatMap[references.filter(Connection)] SEPARATOR " |"»
+                    «contextLabelClassName(connection.eContainer as Artifact, connection)»
+                «ENDFOR»
+            ;
+
+            «FOR artifact : model.artifacts»
+                «FOR connection : artifact.references.filter(Connection)»
+                    «directLabelClassName(artifact, connection)» returns «directLabelClassName(artifact, connection)»:
+                        target=[«connection.connects.name.toFirstUpper»|EString] (label=EString)?
+                    ;
+
+                    «contextLabelClassName(artifact, connection)» returns «contextLabelClassName(artifact, connection)»:
+                        '«connection.name.toFirstLower»' source=[«artifact.name.toFirstUpper»|EString] '->'
+                        target=[«connection.connects.name.toFirstUpper»|EString] label=EString
+                    ;
+
+                «ENDFOR»
+            «ENDFOR»
             EString returns ecore::EString:
                 STRING | ID
             ;
+        '''
+    }
+
+    private static def String generateDslValidator(SPVizModel model) {
+        return '''
+            package «model.package».model.dsl.validation;
+
+            import «model.package».model.ConnectionLabel;
+            import org.eclipse.emf.ecore.EObject;
+            import org.eclipse.emf.ecore.EStructuralFeature;
+            import org.eclipse.xtext.validation.Check;
+
+            public class «model.name»DslValidator extends Abstract«model.name»DslValidator {
+
+                @Check
+                public void checkContextLabelEndpoints(ConnectionLabel label) {
+                    EStructuralFeature sourceFeature = label.eClass().getEStructuralFeature("source");
+                    EStructuralFeature targetFeature = label.eClass().getEStructuralFeature("target");
+                    if (sourceFeature == null || targetFeature == null) {
+                        return;
+                    }
+            
+                    EObject context = label.eContainer();
+                    EObject source = (EObject) label.eGet(sourceFeature);
+                    EObject target = (EObject) label.eGet(targetFeature);
+                    if (!contains(context, source) || !contains(context, target)) {
+                        error("Context label source and target must both be contained in the label context.", label, targetFeature);
+                    }
+                }
+            
+                private static boolean contains(EObject context, EObject element) {
+                    if (context == element) {
+                        return true;
+                    }
+                    for (EObject reference : context.eCrossReferences()) {
+                        if (reference == element) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+            }
         '''
     }
     
@@ -656,6 +745,11 @@ class SPVizModelGenerator extends AbstractGenerator {
             «FOR artifact : model.artifacts»
                 import «model.package».model.«artifact.name»
             «ENDFOR»
+            «FOR artifact : model.artifacts»
+                «FOR connection : artifact.references.filter(Connection)»
+                    import «model.package».model.«directLabelClassName(artifact, connection)»
+                «ENDFOR»
+            «ENDFOR»
             
             /**
              * A customized {@link LazyLinkingResource}. Modifies the parsed model and adds an ID based on the element name.
@@ -680,6 +774,18 @@ class SPVizModelGenerator extends AbstractGenerator {
                                         if («artifact.name.toFirstLower».ecoreId === null) {
                                             «artifact.name.toFirstLower».ecoreId = «artifact.name.toUpperCase»_ID_PREFIX + «artifact.name.toFirstLower».name.toAscii
                                         }
+                                        // The generated model DSL stores direct connection declarations as label records.
+                                        // Restore the existing inverse connection references from those records.
+                                        «FOR connection : artifact.references.filter(Connection)»
+                                            «artifact.name.toFirstLower».connectionLabels.filter(«directLabelClassName(artifact, connection)»).forEach [ label |
+                                                if (
+                                                    !«artifact.name.toFirstLower».connected«connection.name»«connection.connects.name»s.contains(label.target)
+                                                    && «artifact.name.toFirstLower».connected«connection.name»«connection.connects.name»s instanceof NotifyingListImpl
+                                                ) {
+                                                    («artifact.name.toFirstLower».connected«connection.name»«connection.connects.name»s as NotifyingListImpl<«connection.connects.name»>).basicAdd(label.target, null)
+                                                }
+                                            ]
+                                        «ENDFOR»
                                         // resolve all opposite relations, as Xtext fails to properly set them up here.
                                         «FOR connection : artifact.references.filter(Connection)»
                                             «artifact.name.toFirstLower».connected«connection.name»«connection.connects.name»s.forEach [ connected |
@@ -736,18 +842,26 @@ class SPVizModelGenerator extends AbstractGenerator {
                     name.chars().forEachOrdered([character |
                         // Replace all known mappings to readable allowable ID substrings
                         
-                        // character literals in xtend are dumb ~ nre mam
+                        // Xtend needs to know these are char types for a proper char-as-number comparison below.
                         val char A = 'A'
                         val char Z = 'Z'
                         val char a = 'a'
                         val char z = 'z'
                         val char dot = '.'
                         val char dash = '-'
+                        val char zero = '0'
+                        val char one = '1'
+                        val char nine = '9'
                         
                         if (mappings.containsKey(character as char)) {
                             sb.append(mappings.get(character as char))
-                        // Keep all A-Z,a-z and .- the same.
-                        } else if (character >= A && character <= Z || character >= a && character <= z || character === dot || character === dash) {
+                        // Keep all A-Z,a-z,0-9 and .- the same.
+                        } else if (character >= A && character <= Z || 
+                            character >= a && character <= z ||
+                            character === dot ||
+                            character === dash ||
+                            character === zero ||
+                            character >= one && character <= nine) {
                             sb.append(character as char)
                         // Replace all other characters by _
                         } else {
@@ -760,5 +874,15 @@ class SPVizModelGenerator extends AbstractGenerator {
                 
             }
         '''
+    }
+
+    private static def String directLabelClassName(Artifact artifact, Connection connection) {
+        return artifact.name.toFirstUpper + "Connects" + connection.connects.name.toFirstUpper + "Named"
+            + connection.name.toFirstUpper + "Label"
+    }
+
+    private static def String contextLabelClassName(Artifact artifact, Connection connection) {
+        return artifact.name.toFirstUpper + "Connects" + connection.connects.name.toFirstUpper + "Named"
+            + connection.name.toFirstUpper + "ContextLabel"
     }
 }

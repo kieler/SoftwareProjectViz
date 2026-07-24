@@ -7,6 +7,7 @@
  * + Kiel University
  *   + Department of Computer Science
  *     + Real-Time and Embedded Systems Group
+ * + and Scheidt & Bachmann System Technik GmbH, 24109 Melsdorf
  * 
  * This code is provided under the terms of the Eclipse Public License 2.0 (EPL-2.0).
  */
@@ -442,9 +443,10 @@ class SPVizGenerator extends AbstractGenerator {
             // ------------------------------- Helper Data Classes ------------------------------//
             ///////////////////////////////////////////////////////////////////////////////////////
             
-            class Pair<K,V> {
-                refers K key
-                refers V value
+            class EdgeData<S,T> {
+                refers S source
+                refers T target
+                String[] labels
             }
             
             class Option {
@@ -474,7 +476,7 @@ class SPVizGenerator extends AbstractGenerator {
             
             «FOR connection : data.connections»
                 class «connection.connecting.name»Connects«connection.connected.name»Named«connection.name»Container extends IOverviewVisualizationContext<Object> {
-                    contains Pair<«connection.connecting.name»Context, «connection.connected.name»Context>[] «connection.connecting.name.toFirstLower»Connects«connection.connected.name»Named«connection.name»Edges
+                    contains EdgeData<«connection.connecting.name»Context, «connection.connected.name»Context>[] «connection.connecting.name.toFirstLower»Connects«connection.connected.name»Named«connection.name»Edges
                 }
             «ENDFOR»
             
@@ -484,13 +486,13 @@ class SPVizGenerator extends AbstractGenerator {
                     // pre-calculating which connected «categoryConnection.connectedArtifact.name.toFirstLower»s, connecting «categoryConnection.connectingArtifact.name.toFirstLower»s, and which «categoryConnection.connectedCategory.name.toFirstLower»s are connected in this way.
                     
                     /** All «categoryConnection.connectedCategory.name.toFirstLower» category edges related to «categoryConnection.connection.name.toFirstLower»s that are possible. */
-                    contains Pair<«categoryConnection.connectedCategory.name.toFirstUpper»Context, «categoryConnection.connectedCategory.name.toFirstUpper»Context>[] possible«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges
+                    contains EdgeData<«categoryConnection.connectedCategory.name.toFirstUpper»Context, «categoryConnection.connectedCategory.name.toFirstUpper»Context>[] possible«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges
                     /** All «categoryConnection.connectedCategory.name.toFirstLower» category edges related to «categoryConnection.connection.name.toFirstLower»s that are currently connected. */
-                    contains Pair<«categoryConnection.connectedCategory.name.toFirstUpper»Context, «categoryConnection.connectedCategory.name.toFirstUpper»Context>[] «categoryConnection.connectingCategory.name.toFirstLower»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges
+                    contains EdgeData<«categoryConnection.connectedCategory.name.toFirstUpper»Context, «categoryConnection.connectedCategory.name.toFirstUpper»Context>[] «categoryConnection.connectingCategory.name.toFirstLower»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges
                     /** All inner «categoryConnection.connectedCategory.name.toFirstLower» category edges related to «categoryConnection.connection.name.toFirstLower»s that are possible. */
-                    contains Pair<«categoryConnection.connectingArtifact.name.toFirstUpper»Context, «categoryConnection.connectedArtifact.name.toFirstUpper»Context>[] possible«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges
+                    contains EdgeData<«categoryConnection.connectingArtifact.name.toFirstUpper»Context, «categoryConnection.connectedArtifact.name.toFirstUpper»Context>[] possible«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges
                     /** All inner «categoryConnection.connectedCategory.name.toFirstLower» category edges related to «categoryConnection.connection.name.toFirstLower»s that are currently connected. */
-                    contains Pair<«categoryConnection.connectingArtifact.name.toFirstUpper»Context, «categoryConnection.connectedArtifact.name.toFirstUpper»Context>[] «categoryConnection.connectingArtifact.name.toFirstLower»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges
+                    contains EdgeData<«categoryConnection.connectingArtifact.name.toFirstUpper»Context, «categoryConnection.connectedArtifact.name.toFirstUpper»Context>[] «categoryConnection.connectingArtifact.name.toFirstLower»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges
                 }
             «ENDFOR»
 

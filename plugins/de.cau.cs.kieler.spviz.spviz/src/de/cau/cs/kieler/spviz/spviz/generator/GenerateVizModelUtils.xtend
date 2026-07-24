@@ -3,10 +3,11 @@
  *
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2021-2024 by
+ * Copyright 2021-2026 by
  * + Kiel University
  *   + Department of Computer Science
  *   + Real-Time and Embedded Systems Group
+ * + and Scheidt & Bachmann System Technik GmbH, 24109 Melsdorf
  * 
  * This code is provided under the terms of the Eclipse Public License 2.0 (EPL-2.0).
  */
@@ -56,7 +57,7 @@ class GenerateVizModelUtils {
             «FOR view : data.views»
                 import «data.getBundleNamePrefix».model.«view.name»OverviewContext
             «ENDFOR»
-            import «data.getBundleNamePrefix».model.Pair
+            import «data.getBundleNamePrefix».model.EdgeData
             import «data.getBundleNamePrefix».model.IVisualizationContext
             import «data.getBundleNamePrefix».model.IOverviewVisualizationContext
             import «data.getBundleNamePrefix».model.«data.visualizationName»Factory
@@ -116,20 +117,34 @@ class GenerateVizModelUtils {
                 }
             
                 /**
-                 * Create a Pair with the given key and value.
+                 * Create edge data with the given source and target.
                  * 
-                 * @param <K> The key's class.
-                 * @param <V> The value's class.
-                 * @param key The key or the first value of the pair.
-                 * @param value The value or the second value of the pair.
-                 * @return The initialized pair.
+                 * @param <S> The source's class.
+                 * @param <T> The target's class.
+                 * @param source The source context.
+                 * @param target The target context.
+                 * @return The initialized edge data.
                  */
-                static def <K, V> Pair<K, V> createPair(K key, V value) {
-                    val Pair<K, V> pair = FACTORY.createPair
-                    pair.key = key
-                    pair.value = value
+                static def <S, T> EdgeData<S, T> createEdgeData(S source, T target) {
+                    return createEdgeData(source, target, null)
+                }
+
+                /**
+                 * Create edge data with the given source, target, and optional edge label.
+                 */
+                static def <S, T> EdgeData<S, T> createEdgeData(S source, T target, String label) {
+                    val EdgeData<S, T> edgeData = FACTORY.createEdgeData
+                    edgeData.source = source
+                    edgeData.target = target
+                    edgeData.addLabel(label)
                     
-                    return pair
+                    return edgeData
+                }
+
+                static def void addLabel(EdgeData<?, ?> edgeData, String label) {
+                    if (label !== null && !label.empty && !edgeData.labels.contains(label)) {
+                        edgeData.labels += label
+                    }
                 }
             
             }
@@ -165,6 +180,8 @@ class GenerateVizModelUtils {
                 import «data.getBundleNamePrefix».model.«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Container
             «ENDFOR»
             import «data.modelBundleNamePrefix».model.«data.projectName»
+            import «data.modelBundleNamePrefix».model.Identifiable
+            import «data.modelBundleNamePrefix».model.util.ModelUtil
             «FOR artifact : data.artifacts»
                 import «data.modelBundleNamePrefix».model.«artifact.name»
             «ENDFOR»
@@ -172,6 +189,7 @@ class GenerateVizModelUtils {
             import java.util.Map
             
             import static extension org.eclipse.emf.common.util.ECollections.*
+            import static extension «data.getBundleNamePrefix».model.util.VizModelUtil.*
             
             /**
              * Extension class that contains some static methods commonly used in the OSGi synthesis for modifying the visualization
@@ -181,6 +199,21 @@ class GenerateVizModelUtils {
                 
                 static val ALREADY_INITIALIZED_ERROR_MSG = "This object was already initialized and cannot be initialized a " +
                 "second time."
+                
+                /**
+                 * Finds the first artifact context containing the source context. This is the owner
+                 * used to resolve labels scoped to a filtered artifact view.
+                 */
+                def static Identifiable connectionLabelContext(IVisualizationContext<?> sourceContext) {
+                    var current = sourceContext.parent
+                    while (current !== null) {
+                        if (current.modelElement instanceof Identifiable) {
+                            return current.modelElement as Identifiable
+                        }
+                        current = current.parent
+                    }
+                    return null
+                }
                 
                 «FOR artifact : data.artifacts»
                     /**
@@ -256,12 +289,17 @@ class GenerateVizModelUtils {
                                                 }
                                                 // Create the information for the possible «categoryConnection.connectingArtifact.name.toFirstLower»-«categoryConnection.connectedArtifact.name.toFirstLower»connection
                                                 val target«categoryConnection.connectedArtifact.name.toFirstUpper»Context = target«categoryConnection.connectedCategory.name.toFirstUpper»Context.«categoryConnection.innerView.name.toFirstLower»OverviewContext.childContexts.filter(«categoryConnection.connectedArtifact.name.toFirstUpper»Context).findFirst [ it.modelElement === target«categoryConnection.connectedArtifact.name.toFirstUpper» ]
-                                                overviewContext.possible«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges.add(VizModelUtil.createPair(source«categoryConnection.connectingArtifact.name.toFirstUpper»Context, target«categoryConnection.connectedArtifact.name.toFirstUpper»Context))
+                                                val label = ModelUtil.get«categoryConnection.connection.name.toFirstUpper»Label(source«categoryConnection.connectingArtifact.name.toFirstUpper»Context.modelElement, target«categoryConnection.connectedArtifact.name.toFirstUpper»Context.modelElement, source«categoryConnection.connectingArtifact.name.toFirstUpper»Context.connectionLabelContext)
+                                                overviewContext.possible«categoryConnection.connectingArtifact.name.toFirstUpper»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges.add(VizModelUtil.createEdgeData(source«categoryConnection.connectingArtifact.name.toFirstUpper»Context, target«categoryConnection.connectedArtifact.name.toFirstUpper»Context, label))
                                                 // Also create the information for the possible container «categoryConnection.connectedCategory.name.toFirstLower»-«categoryConnection.connectedCategory.name.toFirstLower» connection, if it does not exist already.
                                                 if (!overviewContext.possible«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges.exists[ possibleEdge |
-                                                    possibleEdge.key === source«categoryConnection.connectedCategory.name.toFirstUpper»Context && possibleEdge.value === target«categoryConnection.connectedCategory.name.toFirstUpper»Context
+                                                    possibleEdge.source === source«categoryConnection.connectedCategory.name.toFirstUpper»Context && possibleEdge.target === target«categoryConnection.connectedCategory.name.toFirstUpper»Context
                                                 ]) {
-                                                    overviewContext.possible«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges.add(VizModelUtil.createPair(source«categoryConnection.connectedCategory.name.toFirstUpper»Context, target«categoryConnection.connectedCategory.name.toFirstUpper»Context))
+                                                    overviewContext.possible«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges.add(VizModelUtil.createEdgeData(source«categoryConnection.connectedCategory.name.toFirstUpper»Context, target«categoryConnection.connectedCategory.name.toFirstUpper»Context, label))
+                                                } else {
+                                                    overviewContext.possible«categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges.findFirst [ possibleEdge |
+                                                        possibleEdge.source === source«categoryConnection.connectedCategory.name.toFirstUpper»Context && possibleEdge.target === target«categoryConnection.connectedCategory.name.toFirstUpper»Context
+                                                    ].addLabel(label)
                                                 }
                                             ]
                                         ]
@@ -401,20 +439,20 @@ class GenerateVizModelUtils {
                             def dispatch static void removeEdges(«view.name»OverviewContext overviewContext, «shownElement.shownElement.name»Context context) {
                                 «FOR connectedConnection : data.getConnectedArtifactsInOverview(shownElement.shownElement, view)»
                                     overviewContext.«connectedConnection.connecting.name.toFirstLower»Connects«connectedConnection.connected.name»Named«connectedConnection.name»Edges.clone.forEach[
-                                        if (key === context) {
+                                        if (source === context) {
                                             overviewContext.«connectedConnection.connecting.name.toFirstLower»Connects«connectedConnection.connected.name»Named«connectedConnection.name»Edges.remove(it)
-                                            key.allConnected«connectedConnection.connecting.name»Connects«connectedConnection.connected.name»Named«connectedConnection.name»Shown = false
-                                            value.allConnecting«connectedConnection.connecting.name»Connects«connectedConnection.connected.name»Named«connectedConnection.name»Shown = false
+                                            source.allConnected«connectedConnection.connecting.name»Connects«connectedConnection.connected.name»Named«connectedConnection.name»Shown = false
+                                            target.allConnecting«connectedConnection.connecting.name»Connects«connectedConnection.connected.name»Named«connectedConnection.name»Shown = false
                                         }
                                     ]
                                     
                                 «ENDFOR»
                                 «FOR connectingConnection : data.getConnectingArtifactsInOverview(shownElement.shownElement, view)»
                                     overviewContext.«connectingConnection.connecting.name.toFirstLower»Connects«connectingConnection.connected.name»Named«connectingConnection.name»Edges.clone.forEach[
-                                        if (value === context) {
+                                        if (target === context) {
                                             overviewContext.«connectingConnection.connecting.name.toFirstLower»Connects«connectingConnection.connected.name»Named«connectingConnection.name»Edges.remove(it)
-                                            key.allConnected«connectingConnection.connecting.name»Connects«connectingConnection.connected.name»Named«connectingConnection.name»Shown = false
-                                            value.allConnecting«connectingConnection.connecting.name»Connects«connectingConnection.connected.name»Named«connectingConnection.name»Shown = false
+                                            source.allConnected«connectingConnection.connecting.name»Connects«connectingConnection.connected.name»Named«connectingConnection.name»Shown = false
+                                            target.allConnecting«connectingConnection.connecting.name»Connects«connectingConnection.connected.name»Named«connectingConnection.name»Shown = false
                                         }
                                     ]
                                     
@@ -428,20 +466,20 @@ class GenerateVizModelUtils {
                                             val «categoryConnection.connectedCategory.name.toFirstLower»Context = grandParentContext as «categoryConnection.connectedCategory.name.toFirstUpper»Context
                                             val «categoryConnection.connectingCategory.name.toFirstLower»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Container = grandGrandParentContext as «categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Container
                                             «categoryConnection.connectingCategory.name.toFirstLower»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Container.«categoryConnection.connectingArtifact.name.toFirstLower»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges.removeIf [ «categoryConnection.connection.name.toFirstLower»Edge |
-                                                «categoryConnection.connection.name.toFirstLower»Edge.key === (context as Object) || «categoryConnection.connection.name.toFirstLower»Edge.value === (context as Object)
+                                                «categoryConnection.connection.name.toFirstLower»Edge.source === (context as Object) || «categoryConnection.connection.name.toFirstLower»Edge.target === (context as Object)
                                             ]
                                             // if this is the last connection of a «shownElement.shownElement.name.toFirstLower»/«categoryConnection.connectedArtifact.name.toFirstLower» connecting two «categoryConnection.connectedCategory.name.toFirstLower»s, that needs to be removed as well.
                                             // First, find out if the removed «shownElement.shownElement.name.toFirstLower»/«categoryConnection.connectedArtifact.name.toFirstLower» is in a source and/or target «categoryConnection.connectedCategory.name.toFirstLower».
                                             «categoryConnection.connectingCategory.name.toFirstLower»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Container.«categoryConnection.connectingCategory.name.toFirstLower»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges.removeIf [ «categoryConnection.connectedCategory.name.toFirstLower»Edge |
-                                                if («categoryConnection.connectedCategory.name.toFirstLower»Context !== «categoryConnection.connectedCategory.name.toFirstLower»Edge.key && «categoryConnection.connectedCategory.name.toFirstLower»Context !== «categoryConnection.connectedCategory.name.toFirstLower»Edge.value) {
+                                                if («categoryConnection.connectedCategory.name.toFirstLower»Context !== «categoryConnection.connectedCategory.name.toFirstLower»Edge.source && «categoryConnection.connectedCategory.name.toFirstLower»Context !== «categoryConnection.connectedCategory.name.toFirstLower»Edge.target) {
                                                     // if the «categoryConnection.connectedCategory.name.toFirstLower» edge has nothing to do with the now-removed «categoryConnection.connectedCategory.name.toFirstLower», there is nothing to do here.
                                                     return false
                                                 }
                                                 // The «categoryConnection.connectedCategory.name.toFirstLower» is now unconnected, if the «categoryConnection.connectedCategory.name.toFirstLower» overview context has no more active «shownElement.shownElement.name.toFirstLower»-«categoryConnection.connectedArtifact.name.toFirstLower» edges
                                                 // where the parent «categoryConnection.connectedCategory.name.toFirstLower» contexts of one of the edges are the «shownElement.shownElement.name.toFirstLower»/«categoryConnection.connectedArtifact.name.toFirstLower»'s «categoryConnection.connectedCategory.name.toFirstLower»s.
                                                 return !«categoryConnection.connectingCategory.name.toFirstLower»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Container.«categoryConnection.connectingArtifact.name.toFirstLower»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges.exists [ «categoryConnection.connection.name.toFirstLower»Edge |
-                                                    «categoryConnection.connection.name.toFirstLower»Edge.key.parent?.parent === «categoryConnection.connectedCategory.name.toFirstLower»Edge.key
-                                                    && «categoryConnection.connection.name.toFirstLower»Edge.value.parent?.parent === «categoryConnection.connectedCategory.name.toFirstLower»Edge.value
+                                                    «categoryConnection.connection.name.toFirstLower»Edge.source.parent?.parent === «categoryConnection.connectedCategory.name.toFirstLower»Edge.source
+                                                    && «categoryConnection.connection.name.toFirstLower»Edge.target.parent?.parent === «categoryConnection.connectedCategory.name.toFirstLower»Edge.target
                                                 ]
                                             ]
                                         }
@@ -449,11 +487,11 @@ class GenerateVizModelUtils {
                                 «ENDFOR»
                                 «FOR categoryConnection : data.getCategoryConnections.filter[ it.connectedCategory === shownElement.shownElement && it.eContainer === view ].toSet»
                                     overviewContext.«categoryConnection.connectingCategory.name.toFirstLower»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges.removeIf[ «categoryConnection.connectedCategory.name.toFirstLower»Edge |
-                                        «categoryConnection.connectedCategory.name.toFirstLower»Edge.key === context || «categoryConnection.connectedCategory.name.toFirstLower»Edge.value === context
+                                        «categoryConnection.connectedCategory.name.toFirstLower»Edge.source === context || «categoryConnection.connectedCategory.name.toFirstLower»Edge.target === context
                                     ]
                                     
                                     overviewContext.«categoryConnection.connectingArtifact.name.toFirstLower»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges.removeIf [ «categoryConnection.connectingArtifact.name.toFirstLower»«categoryConnection.connectedArtifact.name.toFirstUpper»Edge |
-                                        «categoryConnection.connectingArtifact.name.toFirstLower»«categoryConnection.connectedArtifact.name.toFirstUpper»Edge.key.parent?.parent === context || «categoryConnection.connectingArtifact.name.toFirstLower»«categoryConnection.connectedArtifact.name.toFirstUpper»Edge.value.parent?.parent === context
+                                        «categoryConnection.connectingArtifact.name.toFirstLower»«categoryConnection.connectedArtifact.name.toFirstUpper»Edge.source.parent?.parent === context || «categoryConnection.connectingArtifact.name.toFirstLower»«categoryConnection.connectedArtifact.name.toFirstUpper»Edge.target.parent?.parent === context
                                     ]
                                 «ENDFOR»
                             }
@@ -676,22 +714,23 @@ class GenerateVizModelUtils {
                                 "parent context!")
                         }
                         // Only if this edge does not exist yet, add it to the list of connected «connection.connected.name.toFirstLower» edges.
-                        if (!parentContext.«connection.connecting.name.toFirstLower»Connects«connection.connected.name»Named«connection.name»Edges.exists [ key === connectingContext && value === connectedContext ]) {
-                            parentContext.«connection.connecting.name.toFirstLower»Connects«connection.connected.name»Named«connection.name»Edges += VizModelUtil.createPair(connectingContext, connectedContext)
+                        if (!parentContext.«connection.connecting.name.toFirstLower»Connects«connection.connected.name»Named«connection.name»Edges.exists [ source === connectingContext && target === connectedContext ]) {
+                            val label = ModelUtil.get«connection.name.toFirstUpper»Label(connectingContext.modelElement, connectedContext.modelElement, connectingContext.connectionLabelContext)
+                            parentContext.«connection.connecting.name.toFirstLower»Connects«connection.connected.name»Named«connection.name»Edges += VizModelUtil.createEdgeData(connectingContext, connectedContext, label)
                             
                             // Check for both the connecting «connection.connecting.name.toFirstLower» and the connected «connection.connected.name.toFirstLower» if all connections are now shown in the 
                             // parent context. If they are, remember it in the corresponding «connection.connecting.name.toFirstLower» context.
                             // Connecting context:
                             if (connectingContext.modelElement.connected«connection.name»«connection.connected.name»s.forall [ connected |
                                 !parentContext.modelElements.contains(connected) ||
-                                parentContext.«connection.connecting.name.toFirstLower»Connects«connection.connected.name»Named«connection.name»Edges.exists [ key === connectingContext && value.modelElement === connected ]
+                                parentContext.«connection.connecting.name.toFirstLower»Connects«connection.connected.name»Named«connection.name»Edges.exists [ source === connectingContext && target.modelElement === connected ]
                             ]) {
                                 connectingContext.allConnected«connection.connecting.name»Connects«connection.connected.name»Named«connection.name»Shown = true
                             }
                             // Connected context:
                             if (connectedContext.modelElement.connecting«connection.name»«connection.connecting.name»s.forall [ connecting |
                                 !parentContext.modelElements.contains(connecting) ||
-                                parentContext.«connection.connecting.name.toFirstLower»Connects«connection.connected.name»Named«connection.name»Edges.exists [ key.modelElement === connecting && value === connectedContext ]
+                                parentContext.«connection.connecting.name.toFirstLower»Connects«connection.connected.name»Named«connection.name»Edges.exists [ source.modelElement === connecting && target === connectedContext ]
                             ]) {
                                 connectedContext.allConnecting«connection.connecting.name»Connects«connection.connected.name»Named«connection.name»Shown = true
                             }
@@ -710,7 +749,7 @@ class GenerateVizModelUtils {
                             throw new IllegalArgumentException("The connecting and the connected context both have to have the same " +
                                 "parent context!")
                         }
-                        parentContext.«connection.connecting.name.toFirstLower»Connects«connection.connected.name»Named«connection.name»Edges.removeIf [ key === connectingContext && value === connectedContext ]
+                        parentContext.«connection.connecting.name.toFirstLower»Connects«connection.connected.name»Named«connection.name»Edges.removeIf [ source === connectingContext && target === connectedContext ]
                         
                         // Mark for both the connecting and connected context that not all connections are shown in the 
                         // parent context anymore. Remember that in the corresponding context.
@@ -747,12 +786,17 @@ class GenerateVizModelUtils {
                         }
                         val parentContext = _parentContext as «categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Container
                         // Only if this edge does not exist yet, add it to the list of connected «categoryConnection.connectingArtifact.name.toFirstLower»-«categoryConnection.connectedArtifact.name.toFirstLower» edges.
-                        if (!parentContext.«categoryConnection.connectingArtifact.name.toFirstLower»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges.exists [ key === connecting«categoryConnection.connectingArtifact.name.toFirstUpper»Context && value === connected«categoryConnection.connectedArtifact.name.toFirstUpper»Context ]) {
-                            parentContext.«categoryConnection.connectingArtifact.name.toFirstLower»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges += VizModelUtil.createPair(connecting«categoryConnection.connectingArtifact.name.toFirstUpper»Context, connected«categoryConnection.connectedArtifact.name.toFirstUpper»Context)
+                        if (!parentContext.«categoryConnection.connectingArtifact.name.toFirstLower»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges.exists [ source === connecting«categoryConnection.connectingArtifact.name.toFirstUpper»Context && target === connected«categoryConnection.connectedArtifact.name.toFirstUpper»Context ]) {
+                            val label = ModelUtil.get«categoryConnection.connection.name.toFirstUpper»Label(connecting«categoryConnection.connectingArtifact.name.toFirstUpper»Context.modelElement, connected«categoryConnection.connectedArtifact.name.toFirstUpper»Context.modelElement, connecting«categoryConnection.connectingArtifact.name.toFirstUpper»Context.connectionLabelContext)
+                            parentContext.«categoryConnection.connectingArtifact.name.toFirstLower»And«categoryConnection.connectedArtifact.name.toFirstUpper»In«categoryConnection.connectedCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges += VizModelUtil.createEdgeData(connecting«categoryConnection.connectingArtifact.name.toFirstUpper»Context, connected«categoryConnection.connectedArtifact.name.toFirstUpper»Context, label)
                             
                             // Also add the container «categoryConnection.connectedCategory.name.toFirstLower» edge, if that does not exist yet either.
-                            if (!parentContext.«categoryConnection.connectingCategory.name.toFirstLower»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges.exists [ key === source«categoryConnection.connectedCategory.name.toFirstUpper»Context && value === target«categoryConnection.connectedCategory.name.toFirstUpper»Context ]) {
-                                parentContext.«categoryConnection.connectingCategory.name.toFirstLower»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges += VizModelUtil.createPair(source«categoryConnection.connectedCategory.name.toFirstUpper»Context as «categoryConnection.connectedCategory.name.toFirstUpper»Context, target«categoryConnection.connectedCategory.name.toFirstUpper»Context as «categoryConnection.connectedCategory.name.toFirstUpper»Context)
+                            if (!parentContext.«categoryConnection.connectingCategory.name.toFirstLower»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges.exists [ source === source«categoryConnection.connectedCategory.name.toFirstUpper»Context && target === target«categoryConnection.connectedCategory.name.toFirstUpper»Context ]) {
+                                parentContext.«categoryConnection.connectingCategory.name.toFirstLower»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges += VizModelUtil.createEdgeData(source«categoryConnection.connectedCategory.name.toFirstUpper»Context as «categoryConnection.connectedCategory.name.toFirstUpper»Context, target«categoryConnection.connectedCategory.name.toFirstUpper»Context as «categoryConnection.connectedCategory.name.toFirstUpper»Context, label)
+                            } else {
+                                parentContext.«categoryConnection.connectingCategory.name.toFirstLower»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Edges.findFirst [ edge |
+                                    edge.source === source«categoryConnection.connectedCategory.name.toFirstUpper»Context && edge.target === target«categoryConnection.connectedCategory.name.toFirstUpper»Context
+                                ].addLabel(label)
                             }
                             
                     //        // TODO: not sure if black/white ports should be a feature for the container edges as well, maybe not as it is not shown in the context directly.
@@ -761,14 +805,14 @@ class GenerateVizModelUtils {
                     //        // Connecting context:
                     //        if (connectingContext.modelElement.connectedDependencyBundles.forall [ connected |
                     //            !parentContext.modelElements.contains(connected) ||
-                    //            parentContext.bundleConnectsBundleNamedDependencyEdges.exists [ key === connectingContext && value.modelElement === connected ]
+                    //            parentContext.bundleConnectsBundleNamedDependencyEdges.exists [ source === connectingContext && target.modelElement === connected ]
                     //        ]) {
                     //            connectingContext.allConnectedBundleConnectsBundleNamedDependencyShown = true
                     //        }
                     //        // Connected context:
                     //        if (connectedContext.modelElement.connectingDependencyBundles.forall [ connecting |
                     //            !parentContext.modelElements.contains(connecting) ||
-                    //            parentContext.bundleConnectsBundleNamedDependencyEdges.exists [ key.modelElement === connecting && value === connectedContext ]
+                    //            parentContext.bundleConnectsBundleNamedDependencyEdges.exists [ source.modelElement === connecting && target === connectedContext ]
                     //        ]) {
                     //            connectedContext.allConnectingBundleConnectsBundleNamedDependencyShown = true
                     //        }
@@ -800,7 +844,7 @@ class GenerateVizModelUtils {
                         val parentContext = _parentContext as «categoryConnection.connectingCategory.name.toFirstUpper»CategoryConnects«categoryConnection.connectedCategory.name.toFirstUpper»Via«(categoryConnection.connection.connecting).name.toFirstUpper»Dot«categoryConnection.connection.name.toFirstUpper»Container
                         
                         // TODO: this. And when this should be called. Is it even sensible anymore to remove an element like this?
-                    //    parentContext.bundleConnectsBundleNamedDependencyEdges.removeIf [ key === connectingContext && value === connectedContext ]
+                    //    parentContext.bundleConnectsBundleNamedDependencyEdges.removeIf [ source === connectingContext && target === connectedContext ]
                         
                     //    // Mark for both the connecting and connected context that not all connections are shown in the 
                     //    // parent context anymore. Remember that in the corresponding context.
@@ -838,10 +882,10 @@ class GenerateVizModelUtils {
                                 «IF connection.connecting === artifact || connection.connected === artifact»
                                     if (parent.«connection.connecting.name.toFirstLower»Connects«connection.connected.name»Named«connection.name»Edges.exists [ edge |
                                         «IF connection.connecting === artifact»
-                                            edge.key === child || 
+                                            edge.source === child || 
                                         «ENDIF»
                                         «IF connection.connected === artifact»
-                                            edge.value === child ||
+                                            edge.target === child ||
                                         «ENDIF»
                                         false
                                     ]) {
