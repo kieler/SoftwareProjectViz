@@ -2,7 +2,7 @@
 <feature
       id="de.cau.cs.kieler.spviz.feature"
       label="SPViz"
-      version="0.5.1.qualifier"
+      version="0.6.0.v20260804"
       provider-name="Kieler">
 
    <description url="https://github.com/Kieler">
