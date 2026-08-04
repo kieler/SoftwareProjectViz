@@ -7,6 +7,9 @@ on:
     release:
         types: [published]
 
+permissions:
+    contents: write
+
 jobs:
     release-assets:
         name: "Add assets to release"
@@ -31,20 +34,21 @@ jobs:
             - name: Build with Maven
               run: mvn --batch-mode --update-snapshots -f build/pom.xml verify
 
-            - name: Release tag
-              run: echo "::set-output name=SHORTENED_GITHUB_REF::${GITHUB_REF##*/}"
-              id: release-tag
-            # Upload update site zip to release
-            # Github has no official action for this. Uses: https://github.com/JasonEtco/upload-to-release
+            # Upload update site zip and CLI to release
+            # Github has no official action for this. Uses svenstaro/upload-release-action instead.
             - name: Upload P2 Repository
-              uses: JasonEtco/upload-to-release@d648f1babf776de9cad881320bd9e9818fc3b262
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              uses: svenstaro/upload-release-action@2.11.5
               with:
-                  args: "build/de.cau.cs.kieler.spviz.repository/target/de.cau.cs.kieler.spviz.repository-${{ steps.release-tag.outputs.SHORTENED_GITHUB_REF }}.zip application/zip"
+                  repo_token: ${{ secrets.GITHUB_TOKEN }}
+                  file: build/de.cau.cs.kieler.spviz.repository/target/*.zip
+                  file_glob: true
+                  tag: ${{ github.event.release.tag_name }}
+                  overwrite: true
             - name: Upload CLI
-              uses: JasonEtco/upload-to-release@d648f1babf776de9cad881320bd9e9818fc3b262
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              uses: svenstaro/upload-release-action@2.11.5
               with:
-                  args: "cli/de.cau.cs.kieler.spviz.cli/target/spviz-cli.jar"
+                  repo_token: ${{ secrets.GITHUB_TOKEN }}
+                  file: cli/de.cau.cs.kieler.spviz.cli/target/spviz-cli.jar
+                  asset_name: spviz-cli.jar
+                  tag: ${{ github.event.release.tag_name }}
+                  overwrite: true
