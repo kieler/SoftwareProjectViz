@@ -152,6 +152,44 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>3.2.0</version>
+        <executions>
+          <execution>
+            <id>copy-cli-to-tools-skill</id>
+            <phase>package</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <target>
+                <mkdir dir="${project.basedir}/../../skills/spviz-cli-tools/tools"/>
+                <copy file="${project.build.directory}/spviz-cli.jar"
+                      tofile="${project.basedir}/../../skills/spviz-cli-tools/tools/spviz-cli.jar"
+                      overwrite="true"/>
+              </target>
+            </configuration>
+          </execution>
+          <execution>
+            <id>archive-skills-for-release</id>
+            <phase>package</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <skip>${skipSkillsArchive}</skip>
+              <target>
+                <mkdir dir="${project.basedir}/../../build/target"/>
+                <zip destfile="${project.basedir}/../../build/target/spviz-skills.zip">
+                  <zipfileset dir="${project.basedir}/../../skills" prefix="skills"/>
+                </zip>
+              </target>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 </project>

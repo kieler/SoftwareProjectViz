@@ -18,6 +18,7 @@ It generates tool code (and code templates) based on an architecture description
 - build: `mvn clean package -f build/pom.xml`
 - fast build without regenerating Xtext code: `mvn -f build/pom.xml -Pbuild-only package`
 - test (only works after Xtext regeneration): `mvn -f build/pom.xml -Pbuild-only verify` (currently, all tests are deactivated)
+- release build with the bundled skill archive: `mvn -f build/pom.xml "-Pall,prepare-skills" verify` (only to test release builds, downloads external executables for skills)
 ### Tools after successful build
 - generate tool with CLI: In `cli/de.cau.cs.kieler.spviz.cli/target` call `java -jar spviz-cli.jar ../../../../SoftwareProjectViz-examples/osgi/osgi.spvizmodel ../../../../SoftwareProjectViz-examples/osgi/osgi.spviz -o <placeholder>`; verify the two mentioned models exist and are available to you (they are in a different repository), and replace the placeholder with a temporary folder that you can work in
 - test build generated code: in the generated `de.cau.cs.kieler.spviz.<visualization name>viz.build` folder (NOT the `spviz.build` folder), call `mvn clean package`

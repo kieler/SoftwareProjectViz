@@ -51,6 +51,49 @@
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>3.5.0</version>
+        <executions>
+          <execution>
+            <id>copy-spvizmodel-grammar-to-dsl-skill</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.basedir}/../../skills/spviz-dsl-modeling</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${project.basedir}/src/de/cau/cs/kieler/spviz/spvizmodel</directory>
+                  <includes>
+                    <include>SPVizModel.xtext</include>
+                  </includes>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+          <execution>
+            <id>copy-spvizmodel-grammar-to-troubleshooting-skill</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.basedir}/../../skills/spviz-troubleshooting</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${project.basedir}/src/de/cau/cs/kieler/spviz/spvizmodel</directory>
+                  <includes>
+                    <include>SPVizModel.xtext</include>
+                  </includes>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-clean-plugin</artifactId>
         <configuration>
           <filesets combine.children="append">
