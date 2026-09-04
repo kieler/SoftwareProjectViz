@@ -1,0 +1,449 @@
+Niklas Rentz. Pragmatic Software Architecture Visualization with Web Technology Number
+2026/1 in Kiel Computer Science Series. Department of Computer Science, 2026. Dissertation,
+Faculty of Engineering, Kiel University. Cutout of the text of Appendix A of this
+dissertation, all figures removed.
+Published as CC-BY-4.0, see https://creativecommons.org/licenses/by/4.0/.
+
+----
+
+The KLighD Diagram Generation Process
+
+This appendix provides insights into the technical details of the view model
+used in KLighD and its diagram generation process prior to the enhancements
+of this thesis. This serves as a reference to understand the foundation that
+the contributions of Part I builds upon. The main publications that initially
+contributed these models are in the papers of Schneider et al. [SSH12;
+SSH13] and have since evolved, so that there is no good current reference
+apart from the source code repository and its wiki.
+
+A.1 The KGraph View Model
+
+To understand the technical details of the individual steps of the diagram
+generation, this section first explains the KGraph view model. The KGraph
+view model does not only include a graph definition and the position
+and size of graph primitives such as nodes and edges, but also definitions
+for individual graph element styling (renderings) and position and size
+relations of such rendering primitives. An earlier version of this view model
+has been presented by Schneider et al. [SSH12].
+
+KGraph
+The KGraph view model is an EMF Ecore model [SBP+09] of a hierarchical
+graph with ports and labels. Figure A.1 shows a class diagram of the graph
+
+structure, omitting classes and fields related to the storage of layout data on
+the graph. Starting from the bottom of the figure, the KGraph defines the
+typical graph structure with the (KGraph) node and edge artifacts KNode
+and KEdge. A KNode contains other child KNodes while KEdges are contained
+in their source node. This hierarchy of KNodes makes the graph structure a
+hierarchical graph, while the entire KGraph is defined by a single root KNode.
+Furthermore, every KNode may contain optional KPorts that the KEdges may
+connect to. All graph elements and the ports may be labeled with KLabels.
+These together form the KGraphElements and form the base graph structure.
+
+    All further graph transformations within KLighD are performed on this
+structure and further rendering and style information, as well as configura-
+tions for layout and rendering are attached to the graph elements. There
+are two different mechanisms for this: for one, any data can be attached to
+graph elements as KGraphData, which is an interface for data such as render-
+ing information and is further described below. For a second, properties
+can be used to store configurations for predefined options via an IProperty,
+which is basically a unique identifier for that option.
+
+KRendering
+
+The KGraph structure also defines all information that is required to turn
+KGraphs into diagrams by KRenderings that are stored as KGraphData for
+each graph element. Figure A.2 sketches a class diagram of the classes
+related to this KRendering class that extends the KGraphData class from Fig-
+ure A.1. Let me introduce a brief overview of these classes before going into
+detail. Each KRendering itself is a KStyleHolder and can therefore contain
+KStyle definitions. The specific subclass of KRendering and its KStyle influ-
+ence the styling of the graph element they are attached to. The KRendering
+of a graph element can be built up hierarchically with a root KRendering
+as a KContainerRendering and multiple child renderings to build an arbi-
+trarily complex graph element styling. Furthermore, KPlacementData and
+KPlacement can be attached to each KRendering and influence the micro
+layout of further contained KRenderings and therefore also the styling of the
+graph element. KActions can also be attached to each rendering to enable
+unique interaction possibilities.
+
+    The different kinds of KRenderings are mainly shape primitives and
+mimic shape primitive counterparts from SVG and other rendering frame-
+works such as Piccolo2D [BGM04]. Figure A.3 displays a few selected
+rendering primitives that are detailed in the following.
+
+KRectangle: A rectangle, possibly with rounded corners if the specialization
+    KRoundedRectangle is used.
+
+KPolygon: An arbitrary polygon shape, here shown as a custom octagon.
+
+KEllipse: An ellipse that can also be used to draw circles.
+
+KArc: An ellipsoid arc, here as the rightmost 180 degrees with a closed off
+    left side.
+
+KText: An arbitrary string of characters. Here, each previous rendering is
+    displayed as a container rendering housing an inner KText.
+
+KPolyline: Other renderings that are primarily for edges are based on some
+    routing points and are all subclasses of KPolyline. The plain KPolyline
+    itself draws straight edges between routing points, as in the upper edge
+    in the figure.
+
+KRoundedBendsPolyline: Similar to the KPolyline, just with circular rounded
+    bends around each routing point. This is displayed in the middle edge.
+
+KSpline: A quadratic spline curve connecting four-tuples of bend points.
+    This is displayed in the lower edge.
+
+    Except for the KText, all of these KRenderings can be freely resized
+in their width or height and can contain other KRenderings within their
+bounds to compose more complex renderings. That is, they are all also
+KContainerRenderings.
+
+    Other notable KRendering classes include the KImage, displaying a JPEG
+or PNG image, the KChildArea as a placeholder that has no own graphical
+representation for the position of child graph elements of a KNode, and the
+KRenderingRef.
+
+    The KRenderingRef is a rendering that points to another rendering de-
+fined in the top level of the graph in a KRenderingLibrary. This facilitates
+
+the reuse of (complex) renderings that are defined once inside the rendering
+library and reused with a simple KRenderingRef. For example, the edges in
+Figures A.1 and A.2 that represent class inheritance can all be modeled as
+a KRenderingRef referring a predefined library rendering that consists of a
+KPolyline with a triangular KPolygon for one of the ends of the line. This
+allows the modeler to reduce the total size of the graph model compared
+to other rendering formats: due to different bend points, each edge has a
+different representation in the diagram, while their rendering information
+is identical. In this example, the node renderings cannot be abstracted into
+library renderings in the same way, because the individual texts inside the
+nodes are being defined by different KTexts.
+
+    Every KRendering is also a KStyleHolder and can therefore hold KStyle
+definitions. KStyles can be understood as changes to the appearance of
+KRenderings, similar to the use of CSS for SVG. Figure A.4 shows the same
+KRendering structure from Figure A.3, now with some custom styles to
+showcase the possibilities using KStyles. The styles that are now different
+in the figure include custom colors or color gradients for line strokes and
+element background, line styles such as line width or a custom line dash
+pattern, text styles such as font type, size, weight (bold, italics), or decoration
+(underline). More similar styles corresponding to CSS styles are also possible.
+These KStyles mostly only modify the appearance of KRenderings, i.e., the
+size and position of rectangles and polygons stays the same while their
+rendering on the screen looks different. However, styles for larger font sizes
+and font weights such as bold text leads to differently sized text. In the
+figure this can be seen in the KEllipse text that causes its container, the
+ellipse, to be larger than in Figure A.3.
+
+    The last important styling aspect for KRenderings is the placement of
+KRenderings in hierarchical KRendering structures. KLighD implements differ-
+ent placement constraints of child renderings within KContainerRenderings
+similar to margins or paddings or the flexbox layout in CSS. This is possible
+via KPlacementData for KRenderings. This is divided into four placement
+strategies for child renderings: reference-point-based placement, area-based place-
+ment, grid-based placement, and a special decorator placement only for edge
+renderings. For each of the renderings we can find an example in Fig-
+ure 2.12 on page 38, so the reader may want to keep a finger on that page
+to bookmark the example for the following description.
+
+Reference-point-based placement: Any rendering with a known size that should
+    be placed relative to a reference point of its parent rendering may use
+    the reference-point-based placement. These placement data define a
+    reference point relative to a corner of the parent rendering, offset by abso-
+    lute pixel values or relative to the parent's width and height. Examples
+    using reference-point-based placement are the "+" or "-" buttons and
+    the region titles in the top left corner of the hierarchical boxes of SCCharts
+    in Figures 2.12�2.15. It does not matter how many elements are shown
+    nested within the outer rectangle representing the region, this header is
+    always shown in this top left corner of any SCCharts region, shifted a few
+    pixels down so that the text does not quite touch the rectangle's border.
+
+Area-based placement: In contrast, a child rendering that is supposed to be
+    positioned in relation to the full size of the parent rendering may best
+    be defined with an area-based placement. This places a child rendering
+    relative to the parent's top-left and its bottom-right corner. Both reference
+    points can similarly be defined with relative or absolute offsets. An
+    example for this can again be found in the SCCharts program in the
+    doubly outlined final states dA and dB in Figure 2.12. The renderings for
+    these final states are defined as two nested KRoundedRectangles, while
+    the inner one defines an area-based placement to be offset a few pixels
+    from the top-left and the bottom-right corners, thus creating the illusion
+    of a double outline.
+
+Grid-based placement: A grid-based placement is used whenever multiple
+    renderings that are contained in their parent rendering should be placed
+
+    next to each other horizontally or vertically, or when they should be
+    aligned in a two-dimensional grid. Just like with area-based placement,
+    the entire grid can be offset relative to a top-left and bottom-right corner
+    of the parent rendering. This is configured with a KGridPlacement as the
+    childPlacement in the parent rendering. This grid placement furthermore
+    configures the number of columns that the child renderings should be
+    arranged in. Each child rendering in this grid is placed exactly like area-
+    based placement, just with the grid cell as its reference box. A schema
+    of a grid layout and the corresponding placement with its offsets is
+    shown in Figure A.5. The arrows indicate the offset of the two reference
+    points, marked by circles, and the numbers the row-wise ordering of
+    the renderings in the grid. Furthermore, the figure also shows how each
+    child rendering can also be inset within the grid in the same way. An
+    example use in the SCCharts program in Figure 2.12 is the input and
+    output declarations area: All declarations are put beneath each other
+    in a one-column grid that further divides into one-row grids for the
+    individual text renderings of the purple and black substrings.
+
+Decorator placement: Renderings can also be placed along the path of parent
+    KPolyline renderings with decorator placement. This placement defines
+    a point along the length of the line with relative or absolute offsets from
+
+scchart ABRO {
+  input signal A, B, R
+  output signal O
+  initial state ABthenO {
+    initial state WaitAandB {
+      region "Handle A" {
+        initial state wA
+        if A go to dA
+        final state dA
+      }
+      region "Handle B" {
+        initial state wB
+        if B go to dB
+        final state dB
+      }
+    }
+    do O join to done
+    state done
+  }
+  if R abort to ABthenO
+}
+
+Listing A.1. Source code of the ABRO SCCharts program in the textual .sctx format.
+
+    both ends of the line. Examples in Figure 2.12 are the red circle, the
+    green triangle, and the arrow heads of the shown edges.
+
+    Lastly, KActions can be attached to every KRendering. A KAction defines
+the conditions during interaction with that rendering that should trigger
+an action. The conditions include information about the click type (e.g.,
+single or double click) and pressed modifier keys (control, shift, and alt
+keys) and define when the action should be triggered. The action refers to
+some Java code that will be executed, for example showing more details
+of a rendering. Such action code can be programmatically registered with
+KLighD and modify the view synthesis, highlight parts of the diagram, or
+execute any other arbitrary functionality.
+
+A.2 Diagram Syntheses
+
+In the following I will reuse the SCCharts program called ABRO with its end
+result previously shown in Figure 2.12 to exemplify the steps of the diagram
+generation process in KLighD. SCCharts are typically defined in the textual
+.sctx format. Listing A.1 contains the source code for ABRO.
+
+    The Xtext framework [EB10] parses the program following the defi-
+nition of the SCCharts grammar and creates an in-memory model of the
+program, also called domain model. Figure A.6 displays an illustration of
+the components and connections of this domain model in a layered graph,
+cropped after four layers. This arbitrary domain model is the input that
+KLighD forwards into a diagram synthesis.
+
+    The diagram synthesis is an abstract concept defined in KLighD that
+provides the working blocks required to easily write an M2M transformation
+from the domain model into the KGraph structure. This transformation is
+
+written in Java or the Java dialect Xtend. While this transformation is
+supposed to translate the whole domain model, synthesis implementations
+often use divide-and-conquer strategies to translate parts of the model and
+assemble them into a larger KGraph structure. The SCCharts synthesis, in a
+simplified example, divides the synthesis into sub-syntheses for its states,
+regions, and transitions.
+
+    Abstract representations for the syntheses of these model elements
+are displayed in Figure A.7. The synthesis translates states into KNodes
+with a KRoundedRectangle, some text renderings for the name and variable
+declarations, and space for the representations of all contained regions.
+Similarly, the synthesis translates regions into differently styled KNodes
+with a KRectangle and a text rendering for the name and space for the
+representations of all contained states. Finally, the synthesis translates all
+transitions into KEdges with a KSpline and a KPolyline decorator for the
+arrow head, as well as a KLabel to display the semantic information of the
+transition. This synthesis turns the domain model into a hierarchical graph
+with styling information for each graph element.
+
+    For further configurability, the synthesis can also define synthesis op-
+tions that influence any part of the translation process. For example, options
+can change the styling of individual renderings such as the placement of
+the transition label, filter graph elements or sub-renderings such as the dec-
+larations in the states, or introduce edges representing indirect relationships
+such as communication between regions.
+
+A.3 Macro Layout
+
+The macro layout enriches the graph with concrete position and bounds of
+all graph elements, as well as bend points for the edges. KLighD connects the
+KGraph structure to ELK and hands over the layout task to that framework.
+The results are applied back to each graph element in KLighD's KGraph
+structure for further processing and the eventual final translation into a
+diagram. Apart from the graph structure, ELK also needs information about
+the minimal size of nodes, because that directly influences the position
+
+of other nodes and also the size of their parent node. The source of this
+minimal node size is explained in the following section.
+
+    The standard approach for graph layout as employed by ELK is the bottom-
+up layout approach. This is a divide-and-conquer approach and simplifies
+the problem to lay out a hierarchical graph into multiple instances of layout
+for plain graphs. ELK first calculates the layout of the sub-graphs that
+compose the lowest level of hierarchy in the graph, specifically the subsets
+that are sibling leaf nodes in the inclusion graph. These subsets do not have
+any hierarchy and are laid out using the layout algorithms implemented
+by ELK. The total size of these lower level layouts are then included in the
+minimum size requirements of their parent nodes. These parent nodes are
+now considered to be new leaf nodes in the inclusion graph. Layout is
+further calculated using the same process until the complete layout and
+the size of the entire graph is known for the inclusion graph's root node.
+Bottom-up layout causes the leaf nodes' representations in the resulting
+diagrams to have consistent sizes and comparable sizes for all rendering
+primitives, while the representations of hierarchical nodes can get arbitrarily
+large. A different approach for graph layout, the so-called top-down layout,
+is described in Section 3.4.2.
+
+A.4 Micro Layout
+
+KLighD needs to calculate absolute positions and sizes for the individual
+KRenderings that make up the diagrammatic representation of each graph
+element for the diagram generation. This calculation does not affect the
+relationship between graph elements from the macro layout, but only the
+size of individual graph elements and their renderings. Therefore, this
+layout of the rendering primitives within graph elements is also called micro
+layout, as it affects smaller parts of the diagram. The micro layout is split
+into two parts, one directly before and one directly after the macro layout.
+The first micro layout step calculates the minimal size of each graph element
+and the inset of the child area, the area where potential hierarchical child
+nodes should be placed. With this information, ELK can calculate the entire
+
+layout of hierarchical graphs by using the minimal size for non-hierarchical
+nodes and the child graph size plus the insets for hierarchical nodes.
+
+    Figure A.8 illustrates this constraint for the minimal node size calcula-
+tion. One type of rendering that has an inherent minimal size is the KText
+rendering. The rendering framework or KLighD itself can approximate the
+size of rendered text by analyzing the font data. This calculated size is
+then also the minimal size of that rendering. This minimal size is used to
+calculate the minimal size of the container rendering, in this case there is a
+KRectangle around the text in Figure A.8a that inherits the minimal size of
+its child rendering. Furthermore, the offsets of the child rendering place-
+ment as explained in Section A.1 integrate into the minimal size calculation,
+in this case with an area-based placement for the outermost rectangle, as
+indicated by the arrows in the two reference corners. KLighD applies these
+techniques to calculate the size of all renderings recursively from the leaf
+renderings up to the root rendering of each graph element.
+
+    The minimal node size calculation happens analogously for hierarchical
+nodes, while the insets of the special KChildArea rendering are forwarded to
+ELK as well. In Figure A.8b I replaced the text with a child area, illustrated
+as the small placeholder dot in the center of the four arrows. This figure
+illustrates the minimal size of the rendering as calculated by the first micro
+layout step and shows the node, as if there were no child nodes to lay out
+
+inside this parent node. ELK then calculates the child layout in the macro
+layout step and enlarges the node size as shown in Figure A.8c.
+
+    However, Figures A.8b and A.8c also show why a second pass of the
+micro layout is necessary after the macro layout: The positions and sizes of
+some renderings have to adapt to a changed total size, because the reference
+points relative to their parent rendering have moved. This second micro
+layout step works the same as the first step, only that the child area now
+has a non-zero size that propagates upwards to all other renderings.
+
+A.5 View Transformation
+
+The final transformation step of the laid-out KGraph transforms the graph, en-
+riched with all styling data, into a rendered diagram on a two-dimensional
+canvas following the constraints of Definition 2.6. KLighD utilizes the Pic-
+colo2D [BGM04] framework as the viewer for the diagrams within the
+Eclipse IDE. Piccolo2D provides a canvas as a drawing board for primitive
+AWT and SWT shapes. KLighD translates the various KRenderings into such
+primitives and also applies all KStyles. Therefore, the entire KGraph can now
+be drawn to the screen as a diagram in an Eclipse application or exported
+as an SVG.
+
+    The view transformation also transfers all further information related
+to the interaction with specific renderings such as the attached KActions to
+this rendering framework, which is further explained in the next section.
+
+A.6 Interaction
+
+An M2M transformation chain alone does not yet make a good diagramming
+framework. The modes of interaction and filtering and the usability for
+visualization designers and the final UX make it a worthwhile framework.
+KLighD features different techniques to make the diagrams explorable.
+
+    A basic common feature for diagramming tools supported by KLighD is
+zoom and pan via the mouse wheel and by clicking and dragging the canvas.
+With this quite basic feature, users can either view the entire diagram at
+
+once or focus on smaller parts of the diagram that might otherwise not be
+readable in the full diagram.
+
+    The KActions that can be attached to any KRendering provide common
+interactions with diagrams and other interactions custom to any diagram
+synthesis. When a KAction is attached to a KRendering, KLighD ensures that
+a click on the representation of that rendering in the diagram executes the
+code that got registered for the given action. The click can be a single click
+or double click and include the requirement to press a modifier key on the
+keyboard such as the control, shift, and alt keys.
+
+    Default actions include a collapse/expand action that toggles between
+two different KRenderings attached to the targeted KNode in the view trans-
+formation--one that includes the child nodes and one that does not. This
+interaction implements a method that filters the current diagram to a desired
+level of detail. The diagrams in Figures 2.12 and 2.13 include this filtering,
+as the collapse/expand action was executed on the Handle A and Handle B
+regions, replacing the adjacent "-" button for a "+" button and removing
+all child nodes.
+
+    The custom actions are a programmatic extension to the on-click behav-
+ior. The synthesis designer can register arbitrary Java code with KLighD that
+will be executed when a rendering with a KAction that references that regis-
+tered code is clicked. The code has access to the currently rendered KGraph,
+the original model, and the context in which it got executed and can change
+any part in the diagram generation chain. This includes modifications in
+the original model and its sources, the synthesis of new temporary graph
+elements and renderings, and the modification of the synthesis behavior.
+Furthermore, side effects such as the creation of some files, and arbitrary
+other functionality inside or outside the view framework are possible.
+
+    KLighD also supports two kinds of animation. The diagram elements
+that represent the same semantic element before and after a change in
+the diagram are animated or morphed into each other. For example, a
+rectangle that was moved somewhere else smoothly animates towards its
+new position, and is also resized during the same animation. This also
+applies to edges, in that case KLighD tries to match the bend points in
+the animation and move them smoothly. Another kind of animation is an
+automatic zoom and pan of the current viewport of the canvas. For example,
+
+the fit-to-screen animation moves the viewport such that the entire diagram
+fits into it, giving an overview. By contrast, the zoom-to-focus animation
+centers a specific element in the canvas at 100 % scaling, i.e., 1 pixel in the
+KGraph model corresponds to 1 pixel in on the canvas.
+
+    Another interaction possibility is achieved via configurability of synthe-
+sis options and layout options as explained in Section A.2. These options
+can always be accessed in a sidebar next to the diagram and are custom to
+the used diagram synthesis.
+
+    More detailed information about diagram elements can be shown via
+hover feedback. When the mouse hovers over some diagram element, the
+synthesis can add textual information that will be shown in a small box,
+similar to hover feedback as known for text editors from many popular
+graphical IDEs.
+
+    Lastly, diagrams that are based on a textual model support navigation
+and highlighting between the textual source and the diagram. Selecting a
+graphical element causes the editor to highlight the corresponding definition
+of that element in the text, and selecting a definition in the text selects
+and highlights its corresponding graphical representation. This feature
+is particularly useful for editing the model in the textual source, while
+navigating to the appropriate model element via the diagram.
