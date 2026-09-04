@@ -1,5 +1,4 @@
 # SPViz
-
 SPViz is a generator for software architecture visualization tools.
 It generates tool code (and code templates) based on an architecture description DSL and a DSL describing the visualilzation and its filtering.
 
@@ -10,9 +9,9 @@ It generates tool code (and code templates) based on an architecture description
     * build/: Maven build root and other Eclipse-related build configuration
     * cli/: Source code entrypoint for the CLI
     * features/: Eclipse feature descriptions
-    * plugins/: Shared source code for plugins and the CLI
+    * plugins/: Source code for DSL plugins
 - further documentation about the usage of the generated tools is available at the local folder at ../SoftwareProjectViz.wiki (if not disallowed to use and if available)
-- examples use cases and their DSL descriptions and completed generator templates are available at the local folder at ../SoftwareProjectViz-examples (if not disallowed to use and if available)
+- example use cases and their DSL descriptions and completed generator templates are available at the local folder at ../SoftwareProjectViz-examples (if not disallowed to use and if available)
 
 ## Tools
 - regenerate code from altered .xtext files: `mvn -f build/pom.xml -Pgenerate-xtext-sources generate-sources`

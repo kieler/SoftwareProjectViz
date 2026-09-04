@@ -43,7 +43,8 @@ import picocli.CommandLine.Parameters
  *
  * @author nre
  */
-@Command(name = "spviz", versionProvider = SPVizVersionProvider)
+@Command(name = "spviz", versionProvider = SPVizVersionProvider,
+    footer = "\nFor guided SPViz workflows, use the 'spviz-orientation' AI skill and related other SPViz skills released alongside this CLI.")
 class SPVizCLI implements Runnable {
     
     static final Logger LOGGER = LoggerFactory.getLogger(SPVizCLI)

@@ -44,3 +44,7 @@ test-bin/
 # Xtext generated code
 src-gen/
 **/model/generated
+
+# skill build artifacts
+skills/spviz-cli-tools/tools/
+skills/**/*.xtext
