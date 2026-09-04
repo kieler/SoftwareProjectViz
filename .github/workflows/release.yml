@@ -32,9 +32,9 @@ jobs:
             # - name: Set release version
             #   run: mvn org.eclipse.tycho:tycho-versions-plugin:2.7.3:set-version -DnewVersion="${GITHUB_REF##*/}" -f build/pom.xml
             - name: Build with Maven
-              run: mvn --batch-mode --update-snapshots -f build/pom.xml verify
+              run: mvn --batch-mode --update-snapshots -f build/pom.xml "-Pall,prepare-skills" verify
 
-            # Upload update site zip and CLI to release
+            # Upload update site zip, CLI, and skills to release
             # Github has no official action for this. Uses svenstaro/upload-release-action instead.
             - name: Upload P2 Repository
               uses: svenstaro/upload-release-action@2.11.5
@@ -50,5 +50,13 @@ jobs:
                   repo_token: ${{ secrets.GITHUB_TOKEN }}
                   file: cli/de.cau.cs.kieler.spviz.cli/target/spviz-cli.jar
                   asset_name: spviz-cli.jar
+                  tag: ${{ github.event.release.tag_name }}
+                  overwrite: true
+            - name: Upload SPViz skills
+              uses: svenstaro/upload-release-action@2.11.5
+              with:
+                  repo_token: ${{ secrets.GITHUB_TOKEN }}
+                  file: build/target/spviz-skills.zip
+                  asset_name: spviz-skills.zip
                   tag: ${{ github.event.release.tag_name }}
                   overwrite: true
