@@ -299,6 +299,8 @@ class SPVizGenerator extends AbstractGenerator {
            new Dependency("org.eclipse.xtend", "org.eclipse.xtend.lib", "${xtend-version}"),
            new Dependency("org.eclipse.xtext", "org.eclipse.xtext.ide", "${xtext-version}"),
            new Dependency("org.eclipse.xtext", "org.eclipse.xtext.xbase.lib", "${xtext-version}"),
+           new Dependency("info.picocli", "picocli", "4.7.7"),
+           new Dependency("org.eclipse.emf", "org.eclipse.emf.ecore.xmi", "2.39.0"),
            new Dependency(data.bundleNamePrefix, data.bundleNamePrefix + ".model", "${project.version}"),
            new Dependency(data.bundleNamePrefix, data.bundleNamePrefix + ".viz", "${project.version}"),
            new Dependency(data.modelBundleNamePrefix, data.modelBundleNamePrefix + ".model", "${project.version}")

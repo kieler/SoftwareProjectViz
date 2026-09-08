@@ -136,6 +136,11 @@ class SPVizModelGenerator extends AbstractGenerator {
             val diffDslUiFolder = new File(config.rootLocation + "/" + config.baseName + ".ui")
             content = dslUiManifestContent(model, true)
             FileGenerator.updateFile(FileGenerator.createDirectory(diffDslUiFolder, "META-INF"), "MANIFEST.MF", content)
+
+            // Validator
+            val diffDslValidationFolder = FileGenerator.createDirectory(diffDslFolder, "src/" + config.baseName.replace('.', '/') + "/validation")
+            content = generateDiffDslValidator(model)
+            FileGenerator.updateFile(diffDslValidationFolder, model.name + "DiffDslValidator.java", content)
         }
         
         if (noModelDsl) {
@@ -405,12 +410,18 @@ class SPVizModelGenerator extends AbstractGenerator {
                     EObject context = label.eContainer();
                     EObject source = (EObject) label.eGet(sourceFeature);
                     EObject target = (EObject) label.eGet(targetFeature);
+                    if (context == null || source == null || target == null) {
+                        return;
+                    }
                     if (!contains(context, source) || !contains(context, target)) {
                         error("Context label source and target must both be contained in the label context.", label, targetFeature);
                     }
                 }
             
                 private static boolean contains(EObject context, EObject element) {
+                    if (context == null || element == null) {
+                        return false;
+                    }
                     if (context == element) {
                         return true;
                     }
@@ -420,6 +431,64 @@ class SPVizModelGenerator extends AbstractGenerator {
                         }
                     }
                     return false;
+                }
+            }
+        '''
+    }
+
+    private static def String generateDiffDslValidator(SPVizModel model) {
+        return '''
+            package «model.package».diff.dsl.validation;
+            
+            import java.nio.file.Files;
+            import java.nio.file.Paths;
+            
+            import «model.package».diff.dsl.«model.name.toFirstLower»DiffDsl.«model.name»Diff;
+            import org.eclipse.emf.common.util.URI;
+            import org.eclipse.emf.ecore.EStructuralFeature;
+            import org.eclipse.emf.ecore.resource.Resource;
+            import org.eclipse.xtext.validation.Check;
+            
+            public class «model.name»DiffDslValidator extends Abstract«model.name»DiffDslValidator {
+            
+                private static final String MODEL_EXTENSION = ".«model.name.toLowerCase»";
+                private static final String MODEL_DSL_EXTENSION = ".«model.name.toLowerCase»dsl";
+                
+                @Check
+                public void checkReferencedModels(«model.name»Diff difference) {
+                    checkReferencedModel(difference, "source", difference.getSourceModel(), "sourceModel");
+                    checkReferencedModel(difference, "target", difference.getTargetModel(), "targetModel");
+                }
+                
+                private void checkReferencedModel(«model.name»Diff difference, String role, String modelPathString, String featureName) {
+                    EStructuralFeature feature = difference.eClass().getEStructuralFeature(featureName);
+                    if (modelPathString == null || modelPathString.trim().isEmpty()) {
+                        error("The difference model has an empty " + role + " model path.", difference, feature);
+                        return;
+                    }
+                    
+                    Resource differenceResource = difference.eResource();
+                    if (differenceResource == null || differenceResource.getURI() == null) {
+                        error("The difference model has no resolvable resource URI for its " + role + " model.", difference, feature);
+                        return;
+                    }
+                    
+                    URI modelUri = URI.createURI(modelPathString).resolve(differenceResource.getURI());
+                    String modelFileName = modelUri.lastSegment();
+                    if (modelFileName == null || !isSupportedModelFile(modelFileName)) {
+                        error("The " + role + " model must use the " + MODEL_EXTENSION + " or " + MODEL_DSL_EXTENSION + " file extension: " + modelPathString, difference, feature);
+                        return;
+                    }
+                    
+                    if (!modelUri.isFile() || !Files.isRegularFile(Paths.get(modelUri.toFileString()))) {
+                        error("The " + role + " model file does not exist: " + modelPathString, difference, feature);
+                    }
+                }
+                
+                private boolean isSupportedModelFile(String fileName) {
+                    String lowerCaseFileName = fileName.toLowerCase();
+                    return lowerCaseFileName.endsWith(MODEL_EXTENSION)
+                        || lowerCaseFileName.endsWith(MODEL_DSL_EXTENSION);
                 }
             }
         '''
