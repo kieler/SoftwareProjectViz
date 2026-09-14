@@ -29,6 +29,7 @@ import java.util.List
 import java.util.concurrent.Callable
 import org.eclipse.emf.common.util.URI
 import org.eclipse.emf.ecore.resource.Resource
+import org.eclipse.emf.ecore.resource.ResourceSet
 import org.eclipse.xtext.diagnostics.Severity
 import org.eclipse.xtext.resource.IResourceServiceProvider
 import org.eclipse.xtext.resource.XtextResourceSet
@@ -98,6 +99,11 @@ class SPVizCLI implements Callable<Integer> {
     @Option(names = #["--validate"], defaultValue = "false",
             description = "Only validate the input files for their syntax and referenced artifacts and do not generate anything.")
     protected boolean validate
+    
+    /**
+     * Internal flag that gets set once an error occurs during validation
+     */
+    protected boolean errors
 
     /**
      * Main entry point for this command line tool.
@@ -124,20 +130,33 @@ class SPVizCLI implements Callable<Integer> {
     def int validate() {
         spvizModelResources.clear
         spvizResources.clear
+        errors = false
+        
         if (files.empty) {
             LOGGER.error("No .spvizmodel or .spviz files were provided.")
             return CommandLine.ExitCode.SOFTWARE
         }
-
-        // Prepare loading the files.
-        SPVizModelStandaloneSetup.doSetup
-        SPVizStandaloneSetup.doSetup
-
-        val XtextResourceSet resourceSet = new XtextResourceSet
-        val List<Resource> modelResources = new ArrayList
-        val List<Resource> visualizationResources = new ArrayList
-        var boolean errors = false
-        for (file : files) {
+        
+        val sanitizedFiles = sanitizeFiles(files)
+        val resourceSet = loadResources(sanitizedFiles)
+        validateResources(resourceSet)
+        
+        if (errors) {
+            LOGGER.error("SPViz validation failed.")
+            return CommandLine.ExitCode.SOFTWARE
+        }
+        prepareResources(resourceSet, sanitizedFiles)
+        
+        LOGGER.info("SPViz validation succeeded.")
+        return CommandLine.ExitCode.OK
+    }
+    
+    /**
+     * Checks and filters input files for existence and valid file ending
+     */
+    def List<File> sanitizeFiles(List<File> theFiles) {
+        val sanitizedFiles = newArrayList
+        for (file : theFiles) {
             if (!file.name.endsWith(".spvizmodel") && !file.name.endsWith(".spviz")) {
                 LOGGER.error("Unsupported input file (expected .spvizmodel or .spviz): {}", file.absolutePath)
                 errors = true
@@ -145,22 +164,40 @@ class SPVizCLI implements Callable<Integer> {
                 LOGGER.error("File does not exist: {}", file.absolutePath)
                 errors = true
             } else {
-                try {
-                    val resource = resourceSet.getResource(URI.createFileURI(file.absoluteFile.absolutePath), true)
-                    if (file.name.endsWith(".spvizmodel")) {
-                        modelResources.add(resource)
-                    } else {
-                        visualizationResources.add(resource)
-                    }
-                } catch (Exception exception) {
-                    LOGGER.error("Could not load " + file.absolutePath + ".", exception)
-                    errors = true
-                }
+                sanitizedFiles.add(file)
             }
         }
-
-        // Validate after all resources are loaded.
-        // Loading .spviz files may load more models into the resource set, so run through with a counter and re-check size every iteration.       
+        
+        return sanitizedFiles
+    }
+    
+    /**
+     * Loads the files into a new resource set. Expects each file to exist and have a valid file ending.
+     */
+    def ResourceSet loadResources(List<File> sanitizedFiles) {
+        // Prepare loading the files.
+        SPVizModelStandaloneSetup.doSetup
+        SPVizStandaloneSetup.doSetup
+        
+        val XtextResourceSet resourceSet = new XtextResourceSet
+        for (file : sanitizedFiles) {
+            try {
+                resourceSet.getResource(URI.createFileURI(file.absoluteFile.absolutePath), true)
+            } catch (Exception exception) {
+                LOGGER.error("Could not load " + file.absolutePath + ".", exception)
+                errors = true
+            }
+        }
+        
+        return resourceSet
+    }
+    
+    /**
+     * Validate all SPViz and SPVizModel resources in a resource set.
+     * This call may add referenced resources to the resource set.
+     */
+    def validateResources(ResourceSet resourceSet) {
+        // Validating .spviz files may load referenced .spvizmodel resources into the resource set, so run through with a counter and re-check size every iteration.
         var resourceIndex = 0
         while (resourceIndex < resourceSet.resources.size) {
             val resource = resourceSet.resources.get(resourceIndex)
@@ -184,16 +221,24 @@ class SPVizCLI implements Callable<Integer> {
             }
             resourceIndex++
         }
-
-        if (errors) {
-            LOGGER.error("SPViz validation failed.")
-            return CommandLine.ExitCode.SOFTWARE
+    }
+    
+    /**
+     * Prepares the validated resources for potential following generation step.
+     * Populates the class parameters {@link #spvizModelResources} and {@link #spvizResources} with resources that are also in the list of given files.
+     */
+    def prepareResources(ResourceSet resourceSet, List<File> files) {
+        for (resource : resourceSet.resources) {
+            if (files.exists[ File file |
+                resource.URI.toFileString.equals(file.absolutePath)
+            ]) {
+                if (resource.contents.head instanceof SPViz) {
+                    spvizResources.add(resource)
+                } else {
+                    spvizModelResources.add(resource)
+                }
+            }
         }
-
-        spvizModelResources.addAll(modelResources)
-        spvizResources.addAll(visualizationResources)
-        LOGGER.info("SPViz validation succeeded.")
-        return CommandLine.ExitCode.OK
     }
 
     /**
