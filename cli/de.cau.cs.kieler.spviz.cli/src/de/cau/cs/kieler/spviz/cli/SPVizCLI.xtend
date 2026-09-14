@@ -267,7 +267,6 @@ class SPVizCLI implements Callable<Integer> {
      */
     def int generate() {
         try {
-            var boolean errors = false
             for (resource : spvizModelResources) {
                 LOGGER.info("Generating sources for {}", resource.URI)
                 SPVizModelGenerator.generate(resource, output, noModelDsl, noDiff)
@@ -280,46 +279,49 @@ class SPVizCLI implements Callable<Integer> {
                 val buildProject = output.toAbsolutePath.toString.replace("\\", "/") + "/" + (resource.contents.head as SPViz).package + ".build"
                 if (build) {
                     LOGGER.info("Building the project {}.", buildProject)
-                    try {
-                        // First, try with "mvn" as the command
-                        #["mvn", "clean", "package"].invoke(new File(buildProject))
-                    } catch (IOException e) try {
-                        // If that does not work, try "mvn.cmd"
-                        LOGGER.warn("Cannot invoke \"mvn\" command, trying \"mvn.cmd\" instead.")
-                        #["mvn.cmd", "clean", "package"].invoke(new File(buildProject))
-                    } catch (IOException e2) {
-                        LOGGER.error("Building generated project failed, because the \"mvn\" command cannot be executed. Is Maven installed and available via command line?. See trace for details.", e)
-                        errors = true
-                    }
+                    buildWithMaven(buildProject, #["clean", "package"])
                 }
                 // Build the generator.
                 if (buildGenerator) {
-                    LOGGER.info("Building the project {}.", buildProject)
-                    try {
-                        // First, try with "mvn" as the command
-                        #["mvn", "clean", "package", "-P", "generator"].invoke(new File(buildProject))
-                    } catch (IOException e) try {
-                        // If that does not work, try "mvn.cmd"
-                        LOGGER.warn("Cannot invoke \"mvn\" command, trying \"mvn.cmd\" instead.")
-                        #["mvn.cmd", "clean", "package", "-P", "generator"].invoke(new File(buildProject))
-                    } catch (IOException e2) {
-                        LOGGER.error("Building generated project failed, because the \"mvn\" command cannot be executed. Is Maven installed and available via command line?. See trace for details.", e)
-                        errors = true
-                    }
+                    LOGGER.info("Building the generator project for {}.", buildProject)
+                    buildWithMaven(buildProject, #["clean", "package", "-P", "generator"])
                 }
             }
             if (errors) {
                 LOGGER.warn("SPViz project generation finished with errors. See the logs for details. The newly generated projects can be found in {}", output.toAbsolutePath().toString())
                 return CommandLine.ExitCode.SOFTWARE
-            } else {
-                LOGGER.info("SPViz project generation finished. The newly generated projects can be found in {}", output.toAbsolutePath().toString())
-                return CommandLine.ExitCode.OK
             }
+            LOGGER.info("SPViz project generation finished. The newly generated projects can be found in {}", output.toAbsolutePath().toString())
+            return CommandLine.ExitCode.OK
             
             
         } catch (Throwable t) {
             LOGGER.error("SPViz project generation failed. See trace for details.", t)
             return CommandLine.ExitCode.SOFTWARE
+        }
+    }
+    
+    /**
+     * Builds the project with Maven with the given commands.
+     *
+     * @param buildProject the project to build in.
+     * @param parameters the parameters to pass to Maven.
+     */
+    def void buildWithMaven(String buildProject, List<String> parameters) {
+        try {
+            // First, try with "mvn" as the command
+            val invokeParameters = parameters.clone
+            invokeParameters.addFirst("mvn")
+            invokeParameters.invoke(new File(buildProject))
+        } catch (IOException e) try {
+            // If that does not work, try "mvn.cmd"
+            LOGGER.warn("Cannot invoke \"mvn\" command, trying \"mvn.cmd\" instead.")
+            val invokeParameters = parameters.clone
+            invokeParameters.addFirst("mvn.cmd")
+            invokeParameters.invoke(new File(buildProject))
+        } catch (IOException e2) {
+            LOGGER.error("Building generated project failed, because the \"mvn\" command cannot be executed. Is Maven installed and available via command line?. See trace for details.", e)
+            errors = true
         }
     }
     
@@ -347,9 +349,9 @@ class SPVizCLI implements Callable<Integer> {
             LOGGER.info("Exit value: " + p.exitValue)
             return p.exitValue
         } catch (IOException io) {
-        	// re-throw IO exception
-        	throw io
-    	} catch (Exception e) {
+            // re-throw IO exception
+            throw io
+        } catch (Exception e) {
             LOGGER.error("ERROR: Exception while invoking command", e)
         }
     }
