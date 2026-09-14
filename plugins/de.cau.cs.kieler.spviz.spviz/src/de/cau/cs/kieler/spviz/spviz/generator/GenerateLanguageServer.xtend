@@ -276,14 +276,10 @@ class GenerateLanguageServer {
                  */
                 def boolean validateRootType(Resource resource) {
                     val String fileExtension = getFileExtension(resource)
-                    var String expectedRoot = null
-                    if (fileExtension !== null) {
-                        switch fileExtension.toLowerCase {
-                            case "«data.spvizModel.name.toLowerCase»":
-                                expectedRoot = "«data.projectName»"
-                            case "«data.visualizationName.toLowerCase»":
-                                expectedRoot = "«data.visualizationName»"
-                        }
+                    val String expectedRoot = switch (fileExtension?.toLowerCase ?: "") {
+                        case "«data.spvizModel.name.toLowerCase»": "«data.projectName»"
+                        case "«data.visualizationName.toLowerCase»": "«data.visualizationName»"
+                        default: null
                     }
                     // only check root type on XMI resources with above file endings.
                     if (expectedRoot === null) {
