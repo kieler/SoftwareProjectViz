@@ -203,6 +203,7 @@ class SPVizGenerator extends AbstractGenerator {
                 val newFile = new File(targetFolder, fileName)
                 if (!newFile.exists) {
                     Files.copy(source, newFile.toPath)
+                    source.close
                 }
             }
         }
