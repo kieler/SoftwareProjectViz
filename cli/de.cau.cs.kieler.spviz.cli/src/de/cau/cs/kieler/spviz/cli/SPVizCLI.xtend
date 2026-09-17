@@ -266,6 +266,7 @@ class SPVizCLI implements Callable<Integer> {
      * @return The corresponding {@link CommandLine.ExitCode}
      */
     def int generate() {
+        errors = false
         try {
             for (resource : spvizModelResources) {
                 LOGGER.info("Generating sources for {}", resource.URI)
@@ -279,12 +280,12 @@ class SPVizCLI implements Callable<Integer> {
                 val buildProject = output.toAbsolutePath.toString.replace("\\", "/") + "/" + (resource.contents.head as SPViz).package + ".build"
                 if (build) {
                     LOGGER.info("Building the project {}.", buildProject)
-                    buildWithMaven(buildProject, #["clean", "package"])
+                    errors = errors || buildWithMaven(buildProject, #["clean", "package"])
                 }
                 // Build the generator.
                 if (buildGenerator) {
                     LOGGER.info("Building the generator project for {}.", buildProject)
-                    buildWithMaven(buildProject, #["clean", "package", "-P", "generator"])
+                    errors = errors || buildWithMaven(buildProject, #["clean", "package", "-P", "generator"])
                 }
             }
             if (errors) {
@@ -306,8 +307,10 @@ class SPVizCLI implements Callable<Integer> {
      *
      * @param buildProject the project to build in.
      * @param parameters the parameters to pass to Maven.
+     * 
+     * @return {@code true} if the build failed, {@code false} if it succeeded.
      */
-    def void buildWithMaven(String buildProject, List<String> parameters) {
+    def boolean buildWithMaven(String buildProject, List<String> parameters) {
         try {
             // First, try with "mvn" as the command
             val invokeParameters = parameters.clone
@@ -321,8 +324,9 @@ class SPVizCLI implements Callable<Integer> {
             invokeParameters.invoke(new File(buildProject))
         } catch (IOException e2) {
             LOGGER.error("Building generated project failed, because the \"mvn\" command cannot be executed. Is Maven installed and available via command line?. See trace for details.", e)
-            errors = true
+            return true
         }
+        return false
     }
     
     /**
