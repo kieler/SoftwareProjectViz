@@ -24,8 +24,8 @@ On Windows, use `mvn.cmd` if `mvn` is not on PATH.
 Use `spviz-cli-tools` to obtain and verify the bundled SPViz CLI.
 Consult `spviz-troubleshooting` if the bundled CLI is unavailable or invalid.
 
-Verify the jar with `java -jar <path-to-spviz-cli.jar> --version`, then generate into a dedicated output directory:
-`java -jar <spviz-cli.jar> <path>\architecture.spvizmodel <path>\visualization.spviz -o <output-path>\generated`
+Verify the jar with `java -jar <spviz-cli.jar> --version`, then generate into a dedicated output directory:
+`java -jar <spviz-cli.jar> <path>/architecture.spvizmodel <path>/visualization.spviz -o <output-path>/generated`
 
 The CLI accepts any number of `.spvizmodel` and `.spviz` files.
 `--no-model-dsl` and `--no-diff` reduce generated modules when those features are intentionally not wanted.
@@ -36,7 +36,7 @@ The CLI flags are available as a convenience for human interaction, but separate
 ## Select the correct build root
 Read the package declaration in the `.spviz` file and inspect the generated folders.
 The visualization build root is:
-`<generated>\<visualization package>.build\`
+`<generated>/<visualization package>.build/`
 
 For example, package `de.cau.cs.kieler.spviz.osgiviz` produces `de.cau.cs.kieler.spviz.osgiviz.build`.
 Do not build from the shared `spviz.build` folder.
@@ -44,11 +44,11 @@ The generated build root's POM contains a default Maven profile for the whole vi
 
 ## Build the visualization
 From the visualization build root, or using `-f`:
-`mvn clean package -f <generated>\<visualization package>.build\pom.xml`
+`mvn clean package -f <generated>/<visualization package>.build/pom.xml`
 This builds the generated model/viz/language-server modules, the Eclipse feature and repository, and the packaged artifacts.
 Locate the outputs here:
-- language server: `<visualization package>.language.server\target\*-shaded.jar`
-- P2 repository: `<visualization package>.build\<visualization package>.repository\target\repository`
+- language server: `<visualization package>.language.server/target/*-shaded.jar`
+- P2 repository: `<visualization package>.build/<visualization package>.repository/target/repository`
 
 Never edit `xtend-gen` or generated Java output to fix a build.
 Change the corresponding DSL and regenerate and consult `spviz-troubleshooting` if the build fails.
@@ -56,10 +56,10 @@ Modify generated Xtend code only after consulting the user.
 Usually, this is a bad idea because future regeneration may overwrite the changes.
 
 ## Build the project model generator
-Run `mvn clean package -P generator -f <generated>\<visualization package>.build\pom.xml`
+Run `mvn clean package -P generator -f <generated>/<visualization package>.build/pom.xml`
 
 The `generator` profile builds the `<a2m package>.generate` module and required modules, it does not replace the full visualization build.
-Locate the shaded generator jar in `<a2m package>.generate\target\` and verify it (the one without the "original-" prefix):
+Locate the shaded generator jar in `<a2m package>.generate/target/` and verify it (the one without the "original-" prefix):
 `java -jar <generator-shaded.jar> --help`
 
 Use the `spviz-model-generator` skill to run it against a repository and inspect the resulting model before asking KLighD to open it.

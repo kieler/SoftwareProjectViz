@@ -29,7 +29,7 @@ Start with the reported errors and the CLI diagnostics.
 If no error is reported, inspect the output tree for the expected
 `<a2m-package>.model`, `<a2m-package>.generate`, visualization model/viz,
 language-server, build, and optional model/diff DSL projects.
-To clarify, call `java -jar <path-to-spviz-cli.jar> --help` for descriptions of the CLI options.
+To clarify, call `java -jar <spviz-cli.jar> --help` for descriptions of the CLI options.
 If the bundled CLI is unavailable or invalid, diagnose it through `spviz-cli-tools`
 before asking the user for an alternative.
 
@@ -73,21 +73,21 @@ Use `spviz-project-model-dsl` rather than modifying generated DSL output to fix 
 ## Language-server and KLighD failures
 Make sure to use the correct executables. Locate the shaded jar under:
 ```
-<visualization package>.language.server\target\
+<visualization package>.language.server/target/
 ```
 
 Verify that the KLighD CLI executable is version 0.8.1 or later:
 
 ```
 # Use the verified bundled executable name, for example:
-klighd-win.exe --help
-klighd-win.exe --version
+<klighd-cli> --help
+<klighd-cli> --version
 ```
 For most consistent results, use the `--ls_path` option to point to the language-server jar.
 
 ## Eclipse failures
 For unresolved generated bundles, prompt the user to activate or reload
-`spviz.build\de.cau.cs.kieler.spviz.targetplatform\de.cau.cs.kieler.spviz.targetplatform.target`
+`spviz.build/de.cau.cs.kieler.spviz.targetplatform/de.cau.cs.kieler.spviz.targetplatform.target`
 and to clean and automatically build the generated projects (Project->Clean...->Select generated bundles->Clean) and run Maven->Update Project on all projects.
 
 ## Stop conditions and handoff
@@ -95,10 +95,9 @@ Stop this skill if the diagnostics options from this skill are exhausted.
 Ask the user for input when any part is ambiguous.
 Use your own reasoning for further troubleshooting and route to:
 
+- `spviz-cli-tools` for a missing, mismatched, or incompatible bundled CLI
 - `spviz-dsl-modeling` for an incorrect A2M/VC2M design
-- `spviz-project-model-dsl` for concrete project model syntax
 - `spviz-model-generator` for extraction logic
 - `spviz-build` for a normal build/package workflow
-- `spviz-cli-tools` for a missing, mismatched, or incompatible bundled CLI
 - `spviz-klighd-execution` for a ready language-server/project model pair
-- `spviz-eclipse-integration` for P2, target-platform, or runtime Eclipse work
+- `spviz-project-model-dsl` for concrete project model syntax

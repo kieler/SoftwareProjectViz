@@ -5,7 +5,7 @@ license: EPL-2.0
 ---
 ## Preconditions
 Locate and verify:
-- a shaded jar under `<visualization package>.language.server\target\`
+- a shaded jar under `<visualization package>.language.server/target/`
 - either an XMI project model whose extension is the lowercase A2M name, or a project-model DSL instance whose extension is the lowercase A2M name followed by `dsl`
 - Java 21 if the language server needs to start locally
 - the compatible KLighD CLI supplied by `spviz-cli-tools`
@@ -22,7 +22,7 @@ Use this workflow when the host can open and inspect a browser canvas:
 3. Wait for KLighD to print its base URL.
 Forward a failure if the process fails.
 4. Convert the model path to an absolute `file:///` URI.
-Use forward slashes and percent-encode characters that are not safe in a query value.
+Use forward slashes and encode characters that are not safe in a query value via URL encoding.
 Append it to the printed URL as `?source=<file-uri>`.
 5. Verify that the resulting HTTP URL returns status 200, then open that same URL in the browser canvas.
 6. Read the loaded page and verify that it renders the expected project name and the generated view names from the `.spviz` source after a few seconds of connection initialization.
@@ -41,7 +41,7 @@ Do not use this fallback merely because browser verification requires another to
 
 ## Serve local documentation
 To serve diagrams embedded in local documentation, start the server without opening a specific model:
-`klighd-win.exe --ls_path <language-server.jar> --port <port> serve`
+`<klighd-cli> --ls_path <language-server.jar> --port <port> serve`
 Use iframe URLs with an absolute `file:///` source URI.
 Keep the server running for as long as the documentation is being viewed.
 

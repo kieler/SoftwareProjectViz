@@ -10,15 +10,16 @@ Resolve the CLI tool paths relative to this skill file.
 ## Bundled tools
 | Tool | Relative path | Platform |
 | --- | --- | --- |
-| SPViz CLI | `tools\spviz-cli.jar` | Java, cross-platform |
-| KLighD CLI | `tools\klighd-win.exe` | Windows x64 |
-| KLighD CLI | `tools\klighd-macos` | macOS x64 |
-| KLighD CLI | `tools\klighd-linux` | Linux x64 |
+| SPViz CLI | `tools/spviz-cli.jar` | Java, cross-platform |
+| KLighD CLI | `tools/klighd-win.exe` | Windows x64 |
+| KLighD CLI | `tools/klighd-macos` | macOS x64 |
+| KLighD CLI | `tools/klighd-linux` | Linux x64 |
 
 ## Platform handling
 
 The SPViz jar can be used anywhere a compatible Java 21 or higher runtime is available.
 The bundled KLighD executables are operating-system-specific, only use the one that matches the current platform.
+The other SPViz skills refer to these CLIs as `<spviz-cli.jar>` and `<klighd-cli>`.
 
 ## Handoff
-Verify the required *absolute* tool path, return it to the calling context, and continue there.
+Verify that the file at the required *absolute* tool path exists, return it to the calling context, and continue there.
