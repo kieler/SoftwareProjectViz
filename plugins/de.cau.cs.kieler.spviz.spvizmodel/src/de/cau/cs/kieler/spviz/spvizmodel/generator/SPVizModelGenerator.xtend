@@ -18,12 +18,16 @@ import de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.Containment
 import de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.Artifact
 import de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.SPVizModel
 import java.io.File
+import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.ArrayList
 import java.util.LinkedHashMap
 import org.eclipse.core.resources.ResourcesPlugin
+import org.eclipse.emf.common.util.URI
+import org.eclipse.emf.mwe2.launch.runtime.Mwe2Launcher
 import org.eclipse.emf.ecore.resource.Resource
+import org.eclipse.emf.ecore.resource.URIConverter
 import org.eclipse.xtext.generator.AbstractGenerator
 import org.eclipse.xtext.generator.IFileSystemAccess2
 import org.eclipse.xtext.generator.IGeneratorContext
@@ -102,7 +106,8 @@ class SPVizModelGenerator extends AbstractGenerator {
                 language.name = baseName + "." + model.name + "DiffDsl"
                 language.fileExtensions = FileExtensions.fromString(model.name.toLowerCase + "diff")
                 preferredBuildSystem = BuildSystem.MAVEN
-                javaVersion = JavaVersion.JAVA17
+                javaVersion = JavaVersion.JAVA21
+                runtimeProject.withPluginXml = false
                 ideProject.enabled = true
                 // ensures that META-INF/MANIFEST.MF will be generated for all projects
                 uiProject.enabled = true
@@ -117,25 +122,13 @@ class SPVizModelGenerator extends AbstractGenerator {
             val diffDslPackageFolder = FileGenerator.createDirectory(diffDslFolder, "src/" + config.baseName.replace('.', '/'))
             var content = generateDiffGrammar(model, config.language)
             FileGenerator.updateFile(diffDslPackageFolder, model.name + "DiffDsl.xtext", content)
-            // TODO: only update this file and not do a full regeneration (only the referencedResource is missing)
-            content = generateDiffDslMwe2(model)
-            FileGenerator.updateFile(diffDslPackageFolder, "Generate" + model.name + "DiffDsl.mwe2", content)
-            // TODO: also only update this file, only the emf.ecore.xcore dependency is missing.
-            val diffDslManifestFolder = FileGenerator.createDirectory(diffDslFolder, "META-INF")
-            content = diffManifestContent(model)
-            FileGenerator.updateFile(diffDslManifestFolder, "MANIFEST.MF", content)
-            // TODO: also only update this file, only the emf.ecore.xcore.sdk.feature.group is missing.
-            val diffDslTargetSourceFolder = new File(config.rootLocation + "/" + config.baseName + ".target")
-            content = dslTargetPlatformContent(model, true)
-            FileGenerator.updateFile(diffDslTargetSourceFolder, config.baseName + ".target.target", content)
-            // The generated .ide plugin does not export the correct packages required by the also generated ui plugin, re-generate its MANIFEST.MF file
-            val diffDslIdeFolder = new File(config.rootLocation + "/" + config.baseName + ".ide")
-            content = dslIdeManifestContent(model, true)
-            FileGenerator.updateFile(FileGenerator.createDirectory(diffDslIdeFolder, "META-INF"), "MANIFEST.MF", content)
-            // The generated .ui plugin misses some imports in its Manifest as well
-            val diffDslUiFolder = new File(config.rootLocation + "/" + config.baseName + ".ui")
-            content = dslUiManifestContent(model, true)
-            FileGenerator.updateFile(FileGenerator.createDirectory(diffDslUiFolder, "META-INF"), "MANIFEST.MF", content)
+            
+            // Execute Xtext generation workflow and configure new dependencies
+            val diffDslMwe2File = new File(diffDslPackageFolder, "Generate" + model.name + "DiffDsl.mwe2")
+            configureMwe2(diffDslMwe2File, config.language.name, model)
+            runMwe2(diffDslMwe2File, rootPath, model)
+            configureDslManifest(new File(diffDslFolder, "META-INF/MANIFEST.MF"), model)
+            configureDslTargetPlatform(new File(config.rootLocation + "/" + config.baseName + ".target/" + config.baseName + ".target.target"))
         }
         
         if (noModelDsl) {
@@ -150,7 +143,8 @@ class SPVizModelGenerator extends AbstractGenerator {
                 language.name = baseName + "." + model.name + "Dsl"
                 language.fileExtensions = FileExtensions.fromString(model.name.toLowerCase + "dsl")
                 preferredBuildSystem = BuildSystem.MAVEN
-                javaVersion = JavaVersion.JAVA17
+                javaVersion = JavaVersion.JAVA21
+                runtimeProject.withPluginXml = false
                 ideProject.enabled = true
                 // ensures that META-INF/MANIFEST.MF will be generated for all projects
                 uiProject.enabled = true
@@ -165,28 +159,13 @@ class SPVizModelGenerator extends AbstractGenerator {
             val dslPackageFolder = FileGenerator.createDirectory(dslFolder, "src/" + config.baseName.replace('.', '/'))
             var content = generateDslGrammar(model)
             FileGenerator.updateFile(dslPackageFolder, model.name + "Dsl.xtext", content)
-            // TODO: only update this file and not do a full regeneration (only the referencedResource is missing)
-            content = generateDslMwe2(model)
-            FileGenerator.updateFile(dslPackageFolder, "Generate" + model.name + "Dsl.mwe2", content)
-            // TODO: also only update this file, only the emf.ecore.xcore dependency is missing.
-            val dslManifestFolder = FileGenerator.createDirectory(dslFolder, "META-INF")
-            content = dslManifestContent(model)
-            FileGenerator.updateFile(dslManifestFolder, "MANIFEST.MF", content)
-            // TODO: also only update this file, only the emf.ecore.xcore.sdk.feature.group is missing.
-            val dslTargetSourceFolder = new File(config.rootLocation + "/" + config.baseName + ".target")
-            content = dslTargetPlatformContent(model, false)
-            FileGenerator.updateFile(dslTargetSourceFolder, config.baseName + ".target.target", content)
-            // The build properties falsely add the "plugin.xml" to the binary inclusions automatically, this removes that again.
-            content = generateDslBuildProperties(model)
-            FileGenerator.updateFile(dslFolder, "build.properties", content)
-            // The generated .ide plugin does not export the correct packages required by the also generated ui plugin, re-generate its MANIFEST.MF file
-            val dslIdeFolder = new File(config.rootLocation + "/" + config.baseName + ".ide")
-            content = dslIdeManifestContent(model, false)
-            FileGenerator.updateFile(FileGenerator.createDirectory(dslIdeFolder, "META-INF"), "MANIFEST.MF", content)
-            // The generated .ui plugin misses some imports in its Manifest as well
-            val dslUiFolder = new File(config.rootLocation + "/" + config.baseName + ".ui")
-            content = dslUiManifestContent(model, false)
-            FileGenerator.updateFile(FileGenerator.createDirectory(dslUiFolder, "META-INF"), "MANIFEST.MF", content)
+            
+            // Execute Xtext generation workflow and configure new dependencies
+            val dslMwe2File = new File(dslPackageFolder, "Generate" + model.name + "Dsl.mwe2")
+            configureMwe2(dslMwe2File, config.language.name, model)
+            runMwe2(dslMwe2File, rootPath, model)
+            configureDslManifest(new File(dslFolder, "META-INF/MANIFEST.MF"), model)
+            configureDslTargetPlatform(new File(config.rootLocation + "/" + config.baseName + ".target/" + config.baseName + ".target.target"))
             
             // Adapt the source files of the model DSL as in thesis so that it creates a correct model readable by the synthesis.
             // RuntimeModule
@@ -425,291 +404,119 @@ class SPVizModelGenerator extends AbstractGenerator {
         '''
     }
     
-    private static def String generateDiffDslMwe2(SPVizModel model) {
-        return '''
-            module «model.package».diff.dsl.Generate«model.name»DiffDsl
-            
-            import org.eclipse.xtext.xtext.generator.*
-            import org.eclipse.xtext.xtext.generator.model.project.*
-            
-            var rootPath = ".."
-            
-            Workflow {
-                
-                component = XtextGenerator {
-                    configuration = {
-                        project = StandardProjectConfig {
-                            baseName = "«model.package».diff.dsl"
-                            rootPath = rootPath
-                            eclipsePlugin = {
-                                enabled = true
-                            }
-                            createEclipseMetaData = true
-                        }
-                        code = {
-                            encoding = "UTF-8"
-                            lineDelimiter = "\n"
-                            fileHeader = "/*\n * generated by SPViz and Xtext \${version}\n */"
-                            preferXtendStubs = false
-                        }
-                    }
-                    language = StandardLanguage {
-                        name = "«model.package».diff.dsl.«model.name»DiffDsl"
-«««                        This is the important missing line
-                        referencedResource = "platform:/resource/«model.package».model/model/«model.name»Model.xcore"
-                        fileExtensions = "«model.name.toLowerCase»diff"
-            
-                        serializer = {
-                            generateStub = false
-                        }
-                        validator = {
-                            // composedCheck = "org.eclipse.xtext.validation.NamesAreUniqueValidator"
-                            // Generates checks for @Deprecated grammar annotations, an IssueProvider and a corresponding PropertyPage
-                            generateDeprecationValidation = true
-                        }
-                        generator = {
-                            generateXtendStub = true
-                        }
-                    }
-                }
-            }
-        '''   
+    /**
+     * Add "modelResource" variable to the workflows so that programmatic workflow runs in the CLI can run the workflow with non-platform resource.
+     */
+    private static def void configureMwe2(File mwe2File, String languageName, SPVizModel model) {
+        val modelResourceDeclaration = "var modelResource = \"platform:/resource/" + model.package + ".model/model/" + model.name + "Model.xcore\""
+        FileGenerator.addIfMissing(
+            mwe2File,
+            modelResourceDeclaration,
+            "var rootPath = \"..\"",
+            "\n" + modelResourceDeclaration
+        )
+        val referencedResource = "referencedResource = modelResource"
+        FileGenerator.addIfMissing(
+            mwe2File,
+            referencedResource,
+            "name = \"" + languageName + "\"",
+            "\n" + FileGenerator.indent(referencedResource, 3)
+        )
     }
     
-    private static def String generateDslMwe2(SPVizModel model) {
-        return '''
-            module «model.package».model.dsl.Generate«model.name»Dsl
-            
-            import org.eclipse.xtext.xtext.generator.*
-            import org.eclipse.xtext.xtext.generator.model.project.*
-            
-            var rootPath = ".."
-            
-            Workflow {
-                
-                component = XtextGenerator {
-                    configuration = {
-                        project = StandardProjectConfig {
-                            baseName = "«model.package».model.dsl"
-                            rootPath = rootPath
-                            eclipsePlugin = {
-                                enabled = true
-                            }
-                            createEclipseMetaData = true
-                        }
-                        code = {
-                            encoding = "UTF-8"
-                            lineDelimiter = "\n"
-                            fileHeader = "/*\n * generated by SPViz and Xtext \${version}\n */"
-                            preferXtendStubs = false
-                        }
-                    }
-                    language = StandardLanguage {
-                        name = "«model.package».model.dsl.«model.name»Dsl"
-                        fileExtensions = "«model.name.toLowerCase»dsl"
-                        referencedResource = "platform:/resource/«model.package».model/model/«model.name»Model.xcore"
-                        
-                        fragment = ecore2xtext.Ecore2XtextValueConverterServiceFragment2 auto-inject {}
-            
-                        serializer = {
-                            generateStub = false
-                        }
-                        validator = {
-                            // composedCheck = "org.eclipse.xtext.validation.NamesAreUniqueValidator"
-                            // Generates checks for @Deprecated grammar annotations, an IssueProvider and a corresponding PropertyPage
-                            generateDeprecationValidation = true
-                        }
-                        generator = {
-                            generateXtendStub = true
-                        }
-                    }
-                }
-            }
-        '''
+    /**
+     * Runs the Mwe2 Xtext workflow with the locally-generated resources.
+     */
+    private static def void runMwe2(File workflowFile, Path rootPath, SPVizModel model) {
+        registerPlatformResources()
+        val modelFile = new File(rootPath.toAbsolutePath.toFile, model.package + ".model/model/" + model.name + "Model.xcore")
+        val String[] arguments = #[
+            workflowFile.toURI.toString,
+            "-p",
+            "rootPath=" + rootPath.toAbsolutePath.toString,
+            "-p",
+            "modelResource=" + modelFile.toURI.toString
+        ]
+        LOGGER.info("Generating Xtext infrastructure from {}", workflowFile)
+        new Mwe2Launcher().run(arguments)
     }
     
-    private static def String dslTargetPlatformContent(SPVizModel model, boolean diff) {
-        return '''
-             <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-             <?pde version="3.8"?>
-             <target name="«model.package».«diff ? "diff" : "model"».dsl.target" sequenceNumber="1">
-                 <locations>
-                     <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
-                         <unit id="org.eclipse.jdt.feature.group" version="0.0.0"/>
-                         <unit id="org.eclipse.platform.feature.group" version="0.0.0"/>
-                         <unit id="org.eclipse.pde.feature.group" version="0.0.0"/>
-                         <unit id="org.eclipse.draw2d.feature.group" version="0.0.0"/>
-                         <unit id="org.eclipse.emf.sdk.feature.group" version="0.0.0"/>
-«««                         Only this line would be missing otherwise
-                         <unit id="org.eclipse.emf.ecore.xcore.sdk.feature.group" version="0.0.0"/>
-                         <repository location="https://download.eclipse.org/releases/2025-12"/>
-                     </location>
-                     <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
-                         <unit id="org.eclipse.emf.mwe2.launcher.feature.group" version="0.0.0"/>
-                         <repository location="https://download.eclipse.org/modeling/emft/mwe/updates/releases/2.24.0/"/>
-                     </location>
-                     <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
-                         <unit id="org.eclipse.xtext.sdk.feature.group" version="0.0.0"/>
-                         <repository location="https://download.eclipse.org/modeling/tmf/xtext/updates/releases/2.41.0/"/>
-                     </location>
-                     <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
-                         <unit id="com.google.gson" version="2.13.2"/>
-                         <unit id="com.google.inject" version="7.0.0"/>
-                         <unit id="jakarta.inject.jakarta.inject-api" version="2.0.1"/>
-                         <unit id="org.antlr.runtime" version="3.2.0.v20230929-1400"/>
-                         <unit id="org.junit" version="0.0.0"/>
-                         <unit id="org.hamcrest" version="2.2.0"/>
-                         <unit id="org.hamcrest.core" version="2.2.0.v20230809-1000"/>
-«««                         <unit id="org.apache.commons.logging" version="0.0.0"/>
-                         <unit id="org.objectweb.asm" version="9.9.0"/>
-                         <unit id="io.github.classgraph.classgraph" version="0.0.0"/>
-                         <repository location="https://download.eclipse.org/tools/orbit/simrel/orbit-aggregation/2025-12"/>
-                     </location>
-                 </locations>
-             </target>
-        '''   
+    /**
+     * Re-registers Xtext and EMF platform resources to be usable within non-platform executions.
+     */
+    private static def void registerPlatformResources() {
+        registerBundledResource(
+            "platform:/resource/org.eclipse.emf.ecore/model/Ecore.genmodel",
+            "/model/Ecore.genmodel"
+        )
+        registerBundledResource(
+            "platform:/resource/org.eclipse.xtext.common.types/model/JavaVMTypes.genmodel",
+            "/model/JavaVMTypes.genmodel"
+        )
+        registerBundledResource(
+            "platform:/resource/org.eclipse.xtext.xbase/model/Xbase.genmodel",
+            "/model/Xbase.genmodel"
+        )
+        registerBundledResource(
+            "platform:/resource/org.eclipse.emf.ecore/model/Ecore.ecore",
+            "/model/Ecore.ecore"
+        )
+        registerBundledResource(
+            "platform:/resource/org.eclipse.xtext.common.types/model/JavaVMTypes.ecore",
+            "/model/JavaVMTypes.ecore"
+        )
+        registerBundledResource(
+            "platform:/resource/org.eclipse.xtext.xbase/model/XAnnotations.ecore",
+            "/model/XAnnotations.ecore"
+        )
+        registerBundledResource(
+            "platform:/resource/org.eclipse.xtext.xbase/model/Xtype.ecore",
+            "/model/Xtype.ecore"
+        )
+        registerBundledResource(
+            "platform:/resource/org.eclipse.xtext.xbase/model/Xbase.ecore",
+            "/model/Xbase.ecore"
+        )
+        registerBundledResource(
+            "platform:/resource/org.eclipse.emf.ecore.xcore.lib/model/XcoreLang.xcore",
+            "/model/XcoreLang.xcore"
+        )
     }
     
-    private static def String diffManifestContent(SPVizModel model) {
-        return '''
-             Manifest-Version: 1.0
-             Bundle-ManifestVersion: 2
-             Bundle-Name: «model.package».diff.dsl
-             Bundle-Vendor: SPViz
-             Bundle-Version: 1.0.0.qualifier
-             Bundle-SymbolicName: «model.package».diff.dsl; singleton:=true
-             Bundle-ActivationPolicy: lazy
-             Require-Bundle: «model.package».model,
-              org.eclipse.xtext,
-«««             missing line follows:
-              org.eclipse.emf.ecore.xcore,
-              org.eclipse.xtext.xbase,
-              org.eclipse.equinox.common;bundle-version="3.19.0",
-              org.antlr.runtime;bundle-version="[3.2.0,3.2.1)",
-              org.eclipse.emf.ecore,
-              org.eclipse.xtext.xbase.lib;bundle-version="2.14.0",
-              org.eclipse.xtext.util,
-              org.eclipse.emf.common
-             Bundle-RequiredExecutionEnvironment: JavaSE-21
-             Automatic-Module-Name: «model.package».diff.dsl
-             Export-Package: «model.package».diff.dsl,
-              «model.package».diff.dsl.scoping,
-              «model.package».diff.dsl.«model.name.toFirstLower»DiffDsl.util,
-              «model.package».diff.dsl.services,
-              «model.package».diff.dsl.parser.antlr,
-              «model.package».diff.dsl.serializer,
-              «model.package».diff.dsl.validation,
-              «model.package».diff.dsl.«model.name.toFirstLower»DiffDsl,
-              «model.package».diff.dsl.generator,
-              «model.package».diff.dsl.«model.name.toFirstLower»DiffDsl.impl,
-              «model.package».diff.dsl.parser.antlr.internal
-             Import-Package: org.apache.log4j
-        '''
+    private static def void registerBundledResource(String platformUri, String classpathUri) {
+        val resource = typeof(SPVizModelGenerator).getResource(classpathUri)
+        if (resource !== null) {
+            URIConverter.URI_MAP.put(URI.createURI(platformUri), URI.createURI(resource.toString))
+        }
     }
     
-    private static def String dslManifestContent(SPVizModel model) {
-        return '''
-             Manifest-Version: 1.0
-             Bundle-ManifestVersion: 2
-             Bundle-Name: «model.package».model.dsl
-             Bundle-Vendor: SPViz
-             Bundle-Version: 1.0.0.qualifier
-             Bundle-SymbolicName: «model.package».model.dsl; singleton:=true
-             Bundle-ActivationPolicy: lazy
-             Require-Bundle: «model.package».model,
-              org.eclipse.xtext,
-«««             missing line follows:
-              org.eclipse.emf.ecore.xcore,
-              org.eclipse.xtext.xbase,
-              org.eclipse.equinox.common;bundle-version="3.19.0",
-              org.antlr.runtime;bundle-version="[3.2.0,3.2.1)",
-              org.eclipse.emf.ecore,
-              org.eclipse.xtext.xbase.lib;bundle-version="2.14.0",
-              org.eclipse.xtext.util,
-              org.eclipse.emf.common
-             Bundle-RequiredExecutionEnvironment: JavaSE-21
-             Automatic-Module-Name: «model.package».model.dsl
-             Export-Package: «model.package».model.dsl,
-              «model.package».model.dsl.scoping,
-              «model.package».model.dsl.services,
-              «model.package».model.dsl.parser.antlr,
-              «model.package».model.dsl.serializer,
-              «model.package».model.dsl.validation,
-              «model.package».model.dsl.generator,
-              «model.package».model.dsl.parser.antlr.internal
-             Import-Package: org.apache.log4j
-        '''
+    private static def void configureDslTargetPlatform(File targetFile) {
+        FileGenerator.addIfMissing(
+            targetFile,
+            "org.eclipse.emf.ecore.xcore.sdk.feature.group",
+            "<unit id=\"org.eclipse.emf.sdk.feature.group\" version=\"0.0.0\"/>",
+            "\n" + FileGenerator.indent('<unit id="org.eclipse.emf.ecore.xcore.sdk.feature.group" version="0.0.0"/>', 3)
+        )
     }
     
-    private static def String dslIdeManifestContent(SPVizModel model, boolean diff) {
-        val String dslPackageName = model.package + "." + (diff ? "diff" : "model") + ".dsl"
-        val String idePackageName = dslPackageName + ".ide"
-        val String uiPackageName = dslPackageName + ".ui"
-        return '''
-            Manifest-Version: 1.0
-            Bundle-ManifestVersion: 2
-            Bundle-Name: «idePackageName»
-            Bundle-Vendor: SPViz
-            Bundle-Version: 1.0.0.qualifier
-            Bundle-SymbolicName: «idePackageName»; singleton:=true
-            Bundle-ActivationPolicy: lazy
-            Require-Bundle: «dslPackageName»,
-             org.eclipse.xtext.ide,
-             org.eclipse.xtext.xbase.ide
-            Bundle-RequiredExecutionEnvironment: JavaSE-21
-            Automatic-Module-Name: «idePackageName»
-            Export-Package: «idePackageName».contentassist.antlr,
-             «idePackageName».contentassist.antlr.internal;x-friends:="«uiPackageName»"
-        '''
-    }
-    
-    private static def String dslUiManifestContent(SPVizModel model, boolean diff) {
-        val String dslPackageName = model.package + "." + (diff ? "diff" : "model") + ".dsl"
-        val String idePackageName = dslPackageName + ".ide"
-        val String uiPackageName = dslPackageName + ".ui"
-        return '''
-            Manifest-Version: 1.0
-            Bundle-ManifestVersion: 2
-            Bundle-Name: «uiPackageName»
-            Bundle-Vendor: SPViz
-            Bundle-Version: 1.0.0.qualifier
-            Bundle-SymbolicName: «uiPackageName»; singleton:=true
-            Bundle-ActivationPolicy: lazy
-            Require-Bundle: «dslPackageName»,
-             «idePackageName»,
-             org.eclipse.xtext.ui,
-             org.eclipse.xtext.ui.shared,
-             org.eclipse.xtext.ui.codetemplates.ui,
-             org.eclipse.ui.editors;bundle-version="3.14.300",
-             org.eclipse.ui.ide;bundle-version="3.18.500",
-             org.eclipse.compare,
-             org.eclipse.xtext.builder
-            Import-Package: org.apache.log4j
-            Bundle-RequiredExecutionEnvironment: JavaSE-21
-            Automatic-Module-Name: «uiPackageName»
-        '''
-    }
-    
-    private static def String generateDslBuildProperties(SPVizModel model) {
-        return '''
-            source.. = src/,\
-                       src-gen/,\
-                       xtend-gen/
-            bin.includes = .,\
-                           META-INF/
-            bin.excludes = **/*.mwe2,\
-                           **/*.xtend
-            additional.bundles = org.eclipse.xtext.xbase,\
-                                 org.eclipse.xtext.common.types,\
-                                 org.eclipse.xtext.xtext.generator,\
-                                 org.eclipse.emf.codegen.ecore,\
-                                 org.eclipse.emf.mwe.utils,\
-                                 org.eclipse.emf.mwe2.launch,\
-                                 org.eclipse.emf.mwe2.lib,\
-                                 org.objectweb.asm,\
-«««                                 org.apache.commons.logging,\
-                                 org.apache.log4j
-        '''
+    /**
+     * Configure missing dependencies for the DSL projects.
+     */
+    private static def void configureDslManifest(File manifestFile, SPVizModel model) {
+        val xcoreDependency = "org.eclipse.emf.ecore.xcore"
+        FileGenerator.addIfMissing(
+            manifestFile,
+            xcoreDependency,
+            "Require-Bundle: ",
+            xcoreDependency + ",\n "
+        )
+        val modelBundle = model.package + ".model"
+        FileGenerator.addIfMissing(
+            manifestFile,
+            modelBundle + ",",
+            "Require-Bundle: ",
+            modelBundle + ",\n "
+        )
     }
     
     private static def String generateRuntimeModule(SPVizModel model) {

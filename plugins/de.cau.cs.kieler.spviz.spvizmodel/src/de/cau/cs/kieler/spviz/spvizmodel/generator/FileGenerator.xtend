@@ -3,10 +3,11 @@
  *
  * http://rtsys.informatik.uni-kiel.de/kieler
  * 
- * Copyright 2021-2024 by
+ * Copyright 2021-2026 by
  * + Kiel University
  *   + Department of Computer Science
  *   + Real-Time and Embedded Systems Group
+ * + and Scheidt & Bachmann System Technik GmbH, 24109 Melsdorf
  * 
  * This code is provided under the terms of the Eclipse Public License 2.0 (EPL-2.0).
  */
@@ -115,6 +116,63 @@ class FileGenerator {
         val File directory = new File(base, path)
         directory.mkdirs
         return directory
+    }
+    
+    /**
+     * Adds content after the given match when the check string is missing.
+     *
+     * @param file The file to update.
+     * @param checkString A string to check if the content is already present.
+     * @param match The marker after which content is inserted.
+     * @param content The content to add.
+     */
+    def static void addIfMissing(File file, String checkString, String match, String content) {
+        addIfMissing(file, checkString, match, content, false)
+    }
+    
+    /**
+     * Adds content to an existing file when the given check string is missing.
+     * The content is inserted before the match or after it, depending on {@code insertBeforeMatch}.
+     *
+     * @param file The file to update.
+     * @param checkString A string to check if the content is already present.
+     * @param match The marker before or after which content is inserted.
+     * @param content The content to add.
+     * @param insertBeforeMatch Whether to insert before {@code match} instead of after it.
+     */
+    def static void addIfMissing(File file, String checkString, String match, String content, boolean insertBeforeMatch) {
+        if (!file.isFile) {
+            throw new IllegalStateException("Cannot update missing file: " + file)
+        }
+        
+        val fileContent = Files.readString(file.toPath)
+        if (fileContent.contains(checkString)) {
+            return
+        }
+        
+        val matchIndex = fileContent.indexOf(match)
+        if (matchIndex < 0) {
+            throw new IllegalStateException("Cannot add content to " + file + ": insertion match is missing.")
+        }
+        
+        val insertionIndex = insertBeforeMatch ? matchIndex : matchIndex + match.length
+        val updatedContent = fileContent.substring(0, insertionIndex)
+            + content
+            + fileContent.substring(insertionIndex)
+        updateFile(file, updatedContent)
+    }
+    
+    /**
+     * Indents the given string by the indentation level.
+     * Each level introduces 4 space characters.
+     *
+     * @param content The string to indent.
+     * @param indentationLevel The number of indentation levels to be added.
+     * @return A new indented string representing {@code content}.
+     */
+    def static String indent(String content, int indentationLevel) {
+        val indentation = " ".repeat(indentationLevel * 4)
+        return indentation + content.replace("\n", "\n" + indentation)
     }
     
 }

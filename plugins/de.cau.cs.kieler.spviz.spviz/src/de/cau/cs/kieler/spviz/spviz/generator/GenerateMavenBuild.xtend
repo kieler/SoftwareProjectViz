@@ -278,12 +278,12 @@ class GenerateMavenBuild {
                                 <dependency>
                                     <groupId>org.eclipse.emf</groupId>
                                     <artifactId>org.eclipse.emf.ecore.xcore</artifactId>
-                                    <version>1.35.0</version>
+                                    <version>${xcore-version}</version>
                                 </dependency>
                                 <dependency>
                                     <groupId>org.eclipse.emf</groupId>
                                     <artifactId>org.eclipse.emf.ecore.xcore.lib</artifactId>
-                                    <version>1.7.1</version>
+                                    <version>${xcore-lib-version}</version>
                                 </dependency>
                             </dependencies>
                           </plugin>

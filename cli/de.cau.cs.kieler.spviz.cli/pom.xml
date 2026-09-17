@@ -34,6 +34,16 @@
       <version>2.23.0</version>
     </dependency>
     <dependency>
+      <groupId>org.eclipse.emf</groupId>
+      <artifactId>org.eclipse.emf.ecore.xcore</artifactId>
+      <version>1.35.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.emf</groupId>
+      <artifactId>org.eclipse.emf.ecore.xcore.lib</artifactId>
+      <version>1.7.1</version>
+    </dependency>
+    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-simple</artifactId>
       <version>2.0.14</version>
@@ -45,12 +55,27 @@
     </dependency>
     <dependency>
       <groupId>org.eclipse.xtext</groupId>
+      <artifactId>org.eclipse.xtext.ecore</artifactId>
+      <version>${xtext-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.xtext</groupId>
       <artifactId>org.eclipse.xtext.ide</artifactId>
       <version>${xtext-version}</version>
     </dependency>
     <dependency>
       <groupId>org.eclipse.xtext</groupId>
+      <artifactId>org.eclipse.xtext.util</artifactId>
+      <version>${xtext-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.xtext</groupId>
       <artifactId>org.eclipse.xtext.xbase.lib</artifactId>
+      <version>${xtext-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.xtext</groupId>
+      <artifactId>org.eclipse.xtext.xtext.generator.dependencies</artifactId>
       <version>${xtext-version}</version>
     </dependency>
     <dependency>
@@ -104,12 +129,9 @@
                   <artifact>*:*</artifact>
                   <excludes>
                       <exclude>**/*._trace</exclude>
-                      <exclude>**/*.ecore</exclude>
                       <exclude>**/*.g</exclude>
-                      <exclude>**/*.genmodel</exclude>
                       <exclude>**/*.mwe2</exclude>
                       <exclude>**/*.xsd</exclude>
-                      <exclude>**/*.xtext</exclude>
                       <exclude>*.profile</exclude>
                       <exclude>*.html</exclude>
                       <exclude>.api_description</exclude>
