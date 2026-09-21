@@ -23,6 +23,7 @@
     <!-- execution skip flag for Xtext code generation, may be set to true for individual profiles or custom builds. -->
     <exec.skip>false</exec.skip>
     <skipXtend>false</skipXtend>
+    <skipSkillsArchive>true</skipSkillsArchive>
     
     <!-- guarantee that we use utf8 for compilation, this is especially required due to xtend's template symbols («) when running maven on windows. -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -92,6 +93,46 @@
         <!-- <module>../plugins/de.cau.cs.kieler.spviz.spvizmodel.ui.tests</module> -->
         <module>de.cau.cs.kieler.spviz.repository</module>
       </modules>
+    </profile>
+
+    <!-- Run this profile to download the KLighD CLI tools into the repository-local AI skills. -->
+    <profile>
+      <id>prepare-skills</id>
+      <properties>
+        <skipSkillsArchive>false</skipSkillsArchive>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <version>3.2.0</version>
+            <inherited>false</inherited>
+            <executions>
+              <execution>
+                <id>download-klighd-cli</id>
+                <phase>validate</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <target>
+                    <mkdir dir="${project.basedir}/../skills/spviz-cli-tools/tools"/>
+                    <get src="https://github.com/kieler/klighd-vscode/releases/download/v0.8.1/klighd-linux"
+                         dest="${project.basedir}/../skills/spviz-cli-tools/tools/klighd-linux"/>
+                    <chmod file="${project.basedir}/../skills/spviz-cli-tools/tools/klighd-linux" perm="755"/>
+                    <get src="https://github.com/kieler/klighd-vscode/releases/download/v0.8.1/klighd-macos"
+                         dest="${project.basedir}/../skills/spviz-cli-tools/tools/klighd-macos"/>
+                    <chmod file="${project.basedir}/../skills/spviz-cli-tools/tools/klighd-macos" perm="755"/>
+                    <get src="https://github.com/kieler/klighd-vscode/releases/download/v0.8.1/klighd-win.exe"
+                         dest="${project.basedir}/../skills/spviz-cli-tools/tools/klighd-win.exe"/>
+                  </target>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
   </profiles>
 

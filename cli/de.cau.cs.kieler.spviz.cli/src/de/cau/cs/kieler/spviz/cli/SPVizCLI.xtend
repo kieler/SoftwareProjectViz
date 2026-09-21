@@ -7,6 +7,7 @@
  * + Kiel University
  *   + Department of Computer Science
  *   + Real-Time and Embedded Systems Group
+ * + and Scheidt & Bachmann System Technik GmbH, 24109 Melsdorf
  * 
  * This code is provided under the terms of the Eclipse Public License 2.0 (EPL-2.0).
  */
@@ -20,16 +21,21 @@ import de.cau.cs.kieler.spviz.spvizmodel.SPVizModelStandaloneSetup
 import de.cau.cs.kieler.spviz.spvizmodel.generator.SPVizModelGenerator
 import java.io.BufferedReader
 import java.io.File
-import java.io.FileNotFoundException
 import java.io.IOException
 import java.io.InputStreamReader
 import java.nio.file.Path
 import java.util.ArrayList
 import java.util.List
+import java.util.concurrent.Callable
 import org.eclipse.emf.common.util.URI
-import org.eclipse.emf.common.util.WrappedException
 import org.eclipse.emf.ecore.resource.Resource
+import org.eclipse.emf.ecore.resource.ResourceSet
+import org.eclipse.xtext.diagnostics.Severity
+import org.eclipse.xtext.resource.IResourceServiceProvider
 import org.eclipse.xtext.resource.XtextResourceSet
+import org.eclipse.xtext.util.CancelIndicator
+import org.eclipse.xtext.validation.CheckMode
+import org.eclipse.xtext.validation.Issue
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import picocli.CommandLine
@@ -43,26 +49,27 @@ import picocli.CommandLine.Parameters
  *
  * @author nre
  */
-@Command(name = "spviz", versionProvider = SPVizVersionProvider)
-class SPVizCLI implements Runnable {
+@Command(name = "spviz", versionProvider = SPVizVersionProvider,
+    footer = "\nFor guided SPViz workflows, use the 'spviz-orientation' AI skill and related other SPViz skills released alongside this CLI.")
+class SPVizCLI implements Callable<Integer> {
     
     static final Logger LOGGER = LoggerFactory.getLogger(SPVizCLI)
     
     /**
      * All files for which this tool should generate the projects. Only accepts .spvizmodel and .spviz files.
      */
-    @Parameters(arity = "1..*", description = "Any number of .spvizmodel or .spviz input files. Other files types will be ignored.")
+    @Parameters(arity = "1..*", description = "Any number of .spvizmodel or .spviz input files. Other file types are rejected.")
     protected List<File> files = new ArrayList
 
     /**
-     * The .spvizmodel files given to this tool.
+     * The validated .spvizmodel resources given to this tool.
      */
-    List<File> spvizModelFiles = new ArrayList
+    List<Resource> spvizModelResources = new ArrayList
     
     /**
-     * The .spviz files given to this tool.
+     * The validated .spviz resources given to this tool.
      */
-    List<File> spvizFiles = new ArrayList
+    List<Resource> spvizResources = new ArrayList
 
     /**
      * The paths to the folders of the projects, that should be documented.
@@ -89,7 +96,14 @@ class SPVizCLI implements Runnable {
     @Option(names = #["--no-diff"], defaultValue = "false", description = "Skip generating the difference visualization and its DSL and skip incorporating them into the build process.")
     protected boolean noDiff
     
-    boolean errors = false
+    @Option(names = #["--validate"], defaultValue = "false",
+            description = "Only validate the input files for their syntax and referenced artifacts and do not generate anything.")
+    protected boolean validate
+    
+    /**
+     * Internal flag that gets set once an error occurs during validation
+     */
+    protected boolean errors
 
     /**
      * Main entry point for this command line tool.
@@ -99,98 +113,220 @@ class SPVizCLI implements Runnable {
         System.exit(cl.execute(args))
     }
     
-    override void run() {
-        // Individually list all .spvizmodel and .spviz files from the parameters.
-        spvizModelFiles.addAll(files.filter[
-            name.endsWith(".spvizmodel")
-        ])
-        spvizFiles.addAll(files.filter[
-            name.endsWith(".spviz")
-        ])
+    override Integer call() {
+        val validationResult = validate()
+        if (validationResult !== CommandLine.ExitCode.OK || validate) {
+            return validationResult
+        }
+
+        return generate()
+    }
+
+    /**
+     * Validates the input files and their referenced resources.
+     *
+     * @return The corresponding {@link CommandLine.ExitCode}
+     */
+    def int validate() {
+        spvizModelResources.clear
+        spvizResources.clear
+        errors = false
         
-        val XtextResourceSet rs = new XtextResourceSet
-        //    Comment this line in if the lazy loading causes problems later when resolving the spvizmodel artifacts referred by the spviz file.
-        // This would load the referenced model immediately instead. Should not be necessary.
-//        rs.addLoadOption(XtextResource.OPTION_RESOLVE_ALL, Boolean.TRUE)
-      
-        try {
-            // Prepare loading .spvizmodel files.
-            SPVizModelStandaloneSetup.doSetup
-            for (spvizModelFile : spvizModelFiles) {
-                // Parse the model file.
-                LOGGER.info("Generating sources for {}", spvizModelFile.absolutePath.replace("\\", "/"))
+        if (files.empty) {
+            LOGGER.error("No .spvizmodel or .spviz files were provided.")
+            return CommandLine.ExitCode.SOFTWARE
+        }
+        
+        val sanitizedFiles = sanitizeFiles(files)
+        val resourceSet = loadResources(sanitizedFiles)
+        validateResources(resourceSet)
+        
+        if (errors) {
+            LOGGER.error("SPViz validation failed.")
+            return CommandLine.ExitCode.SOFTWARE
+        }
+        prepareResources(resourceSet, sanitizedFiles)
+        
+        LOGGER.info("SPViz validation succeeded.")
+        return CommandLine.ExitCode.OK
+    }
+    
+    /**
+     * Checks and filters input files for existence and valid file ending
+     */
+    def List<File> sanitizeFiles(List<File> theFiles) {
+        val sanitizedFiles = newArrayList
+        for (file : theFiles) {
+            if (!file.name.endsWith(".spvizmodel") && !file.name.endsWith(".spviz")) {
+                LOGGER.error("Unsupported input file (expected .spvizmodel or .spviz): {}", file.absolutePath)
+                errors = true
+            } else if (!file.isFile) {
+                LOGGER.error("File does not exist: {}", file.absolutePath)
+                errors = true
+            } else {
+                sanitizedFiles.add(file)
+            }
+        }
+        
+        return sanitizedFiles
+    }
+    
+    /**
+     * Loads the files into a new resource set. Expects each file to exist and have a valid file ending.
+     */
+    def ResourceSet loadResources(List<File> sanitizedFiles) {
+        // Prepare loading the files.
+        SPVizModelStandaloneSetup.doSetup
+        SPVizStandaloneSetup.doSetup
+        
+        val XtextResourceSet resourceSet = new XtextResourceSet
+        for (file : sanitizedFiles) {
+            try {
+                resourceSet.getResource(URI.createFileURI(file.absoluteFile.absolutePath), true)
+            } catch (Exception exception) {
+                LOGGER.error("Could not load " + file.absolutePath + ".", exception)
+                errors = true
+            }
+        }
+        
+        return resourceSet
+    }
+    
+    /**
+     * Validate all SPViz and SPVizModel resources in a resource set.
+     * This call may add referenced resources to the resource set.
+     */
+    def validateResources(ResourceSet resourceSet) {
+        // Validating .spviz files may load referenced .spvizmodel resources into the resource set, so run through with a counter and re-check size every iteration.
+        var resourceIndex = 0
+        while (resourceIndex < resourceSet.resources.size) {
+            val resource = resourceSet.resources.get(resourceIndex)
+            val serviceProvider = IResourceServiceProvider.Registry.INSTANCE.getResourceServiceProvider(resource.URI)
+            if (serviceProvider === null || serviceProvider.resourceValidator === null) {
+                LOGGER.error("No validator is registered for {}.", resource.URI)
+                errors = true
+            } else {
                 try {
-                    val Resource resource = rs.getResource(URI.createURI("file://" + spvizModelFile.absolutePath.replace("\\", "/")), true)
-                    SPVizModelGenerator.generate(resource, output, noModelDsl, noDiff)
-                } catch (WrappedException e) {
-                    if (e.cause instanceof FileNotFoundException) {
-                        LOGGER.error("File does not exist, skipping this file.")
-                        errors = true
-                    } else {
-                        throw e
+                    val issues = serviceProvider.resourceValidator.validate(resource, CheckMode.ALL, CancelIndicator.NullImpl)
+                    for (issue : issues) {
+                        reportIssue(resource, issue)
+                        if (issue.severity === Severity.ERROR) {
+                            errors = true
+                        }
                     }
+                } catch (Exception exception) {
+                    LOGGER.error("Could not validate " + resource.URI + ".", exception)
+                    errors = true
                 }
             }
+            resourceIndex++
+        }
+    }
+    
+    /**
+     * Prepares the validated resources for potential following generation step.
+     * Populates the class parameters {@link #spvizModelResources} and {@link #spvizResources} with resources that are also in the list of given files.
+     */
+    def prepareResources(ResourceSet resourceSet, List<File> files) {
+        for (resource : resourceSet.resources) {
+            if (files.exists[ File file |
+                resource.URI.toFileString.equals(file.absolutePath)
+            ]) {
+                if (resource.contents.head instanceof SPViz) {
+                    spvizResources.add(resource)
+                } else {
+                    spvizModelResources.add(resource)
+                }
+            }
+        }
+    }
+
+    /**
+     * Reports one Xtext validation issue with its source location.
+     */
+    def void reportIssue(Resource resource, Issue issue) {
+        val uri = issue.uriToProblem ?: resource.URI
+        val line = issue.lineNumber ?: 0
+        val column = issue.column ?: 0
+        switch issue.severity {
+            case Severity.ERROR:
+                LOGGER.error("{}:{}:{}: {}", uri, line, column, issue.message)
+            case Severity.WARNING:
+                LOGGER.warn("{}:{}:{}: {}", uri, line, column, issue.message)
+            case Severity.INFO:
+                LOGGER.info("{}:{}:{}: {}", uri, line, column, issue.message)
+            case Severity.IGNORE:
+                LOGGER.debug("Ignoring validation issue at {}:{}:{}: {}", uri, line, column, issue.message)
+        }
+    }
+
+    /**
+     * Executes SPViz code generation.
+     *
+     * @return The corresponding {@link CommandLine.ExitCode}
+     */
+    def int generate() {
+        errors = false
+        try {
+            for (resource : spvizModelResources) {
+                LOGGER.info("Generating sources for {}", resource.URI)
+                SPVizModelGenerator.generate(resource, output, noModelDsl, noDiff)
+            }
             
-            // Prepare loading .spviz files.
-            SPVizStandaloneSetup.doSetup
-            for (spvizFile : spvizFiles) {
-                // Parse the visualization file. A full absolute URI with file:// scheme is important, so that the resource
-                // can correctly resolve the imported .spvizmodel file.
-                LOGGER.info("Generating sources for {}", spvizFile.absolutePath.replace("\\", "/"))
-                try {
-                    val Resource resource = rs.createResource(URI.createURI("file://" + spvizFile.absolutePath.replace("\\", "/")))
-                    resource.load(rs.getLoadOptions())
-                    SPVizGenerator.generate(resource, output, noModelDsl, noDiff)
-                    // Build the project.
-                    val buildProject = output.toAbsolutePath.toString.replace("\\", "/") + "/" + (resource.contents.head as SPViz).package + ".build"
-                    if (build) {
-                        LOGGER.info("Building the project {}.", buildProject)
-                        try {
-    	                    // First, try with "mvn" as the command
-    	                    #["mvn", "clean", "package"].invoke(new File(buildProject))
-                        } catch (IOException e) try {
-                        	// If that does not work, try "mvn.cmd"
-                        	LOGGER.warn("Cannot invoke \"mvn\" command, trying \"mvn.cmd\" instead.")
-    	                    #["mvn.cmd", "clean", "package"].invoke(new File(buildProject))
-                        	
-                        } catch (IOException e2) {
-               				LOGGER.error("Building generated project failed, because the \"mvn\" command cannot be executed. Is Maven installed and available via command line?. See trace for details.", e)
-                            errors = true
-                        }
-                        
-                    }
-                    // Build the generator.
-                    if (buildGenerator) {
-                        LOGGER.info("Building the project {}.", buildProject)
-                        try {
-    	                    // First, try with "mvn" as the command
-                        	#["mvn", "clean", "package", "-P", "generator"].invoke(new File(buildProject))
-                    	} catch (IOException e) try {
-                        	// If that does not work, try "mvn.cmd"
-                        	LOGGER.warn("Cannot invoke \"mvn\" command, trying \"mvn.cmd\" instead.")
-    	                    #["mvn.cmd", "clean", "package", "-P", "generator"].invoke(new File(buildProject))
-                        	
-                        } catch (IOException e2) {
-               				LOGGER.error("Building generated project failed, because the \"mvn\" command cannot be executed. Is Maven installed and available via command line?. See trace for details.", e)
-                            errors = true
-                        }
-                    }
-                } catch (FileNotFoundException e) {
-                    LOGGER.error("File does not exist, skipping this file.")
-                    errors = true
+            for (resource : spvizResources) {
+                LOGGER.info("Generating sources for {}", resource.URI)
+                SPVizGenerator.generate(resource, output, noModelDsl, noDiff)
+                // Build the project.
+                val buildProject = output.toAbsolutePath.toString.replace("\\", "/") + "/" + (resource.contents.head as SPViz).package + ".build"
+                if (build) {
+                    LOGGER.info("Building the project {}.", buildProject)
+                    errors = errors || buildWithMaven(buildProject, #["clean", "package"])
+                }
+                // Build the generator.
+                if (buildGenerator) {
+                    LOGGER.info("Building the generator project for {}.", buildProject)
+                    errors = errors || buildWithMaven(buildProject, #["clean", "package", "-P", "generator"])
                 }
             }
             if (errors) {
                 LOGGER.warn("SPViz project generation finished with errors. See the logs for details. The newly generated projects can be found in {}", output.toAbsolutePath().toString())
-            } else {
-                LOGGER.info("SPViz project generation finished. The newly generated projects can be found in {}", output.toAbsolutePath().toString())
+                return CommandLine.ExitCode.SOFTWARE
             }
+            LOGGER.info("SPViz project generation finished. The newly generated projects can be found in {}", output.toAbsolutePath().toString())
+            return CommandLine.ExitCode.OK
             
             
         } catch (Throwable t) {
             LOGGER.error("SPViz project generation failed. See trace for details.", t)
+            return CommandLine.ExitCode.SOFTWARE
         }
+    }
+    
+    /**
+     * Builds the project with Maven with the given commands.
+     *
+     * @param buildProject the project to build in.
+     * @param parameters the parameters to pass to Maven.
+     * 
+     * @return {@code true} if the build failed, {@code false} if it succeeded.
+     */
+    def boolean buildWithMaven(String buildProject, List<String> parameters) {
+        try {
+            // First, try with "mvn" as the command
+            val invokeParameters = parameters.clone
+            invokeParameters.addFirst("mvn")
+            invokeParameters.invoke(new File(buildProject))
+        } catch (IOException e) try {
+            // If that does not work, try "mvn.cmd"
+            LOGGER.warn("Cannot invoke \"mvn\" command, trying \"mvn.cmd\" instead.")
+            val invokeParameters = parameters.clone
+            invokeParameters.addFirst("mvn.cmd")
+            invokeParameters.invoke(new File(buildProject))
+        } catch (IOException e2) {
+            LOGGER.error("Building generated project failed, because the \"mvn\" command cannot be executed. Is Maven installed and available via command line?. See trace for details.", e)
+            return true
+        }
+        return false
     }
     
     /**
@@ -217,9 +353,9 @@ class SPVizCLI implements Runnable {
             LOGGER.info("Exit value: " + p.exitValue)
             return p.exitValue
         } catch (IOException io) {
-        	// re-throw IO exception
-        	throw io
-    	} catch (Exception e) {
+            // re-throw IO exception
+            throw io
+        } catch (Exception e) {
             LOGGER.error("ERROR: Exception while invoking command", e)
         }
     }
