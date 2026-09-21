@@ -229,6 +229,10 @@ class GenerateModelMavenBuild {
                 <xtext-version>2.41.0</xtext-version>
                 <xtend-version>2.41.0</xtend-version>
                 
+                <!-- a few dependency versions from the currently used Eclipse Platform release to avoid signer mismatches from incompatible version numbers -->
+                <core-runtime-version>3.34.100</core-runtime-version>
+                <equinox-common-version>3.20.300</equinox-common-version>
+                
                 <sourceFeatureLabelSuffix>&#xA0;(Sources)</sourceFeatureLabelSuffix>
                 <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
                 <project.build.resourceEncoding>UTF-8</project.build.resourceEncoding>

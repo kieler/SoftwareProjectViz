@@ -61,7 +61,7 @@ class GenerateMavenBuild {
         if (!project.exists || !project.isDirectory) {
             throw new IllegalStateException("The project does either not exist or is not a directory, but should be: " + projectId)
         }
-        val content = pomXmlContent(artifactIdPrefix, bundleSuffix, version, bundleSuffix.equals("model"))
+        val content = pomXmlContent(artifactIdPrefix, bundleSuffix, version)
         FileGenerator.generateFile(project, "pom.xml", content)
     }
     
@@ -166,7 +166,11 @@ class GenerateMavenBuild {
             
         '''
     }
-    private static def pomXmlContent(String vizArtifactIdPrefix, String bundleSuffix, String version, boolean modelXcoreBuild) {
+    private static def pomXmlContent(String vizArtifactIdPrefix, String bundleSuffix, String version) {
+        val modelXcoreBuild = bundleSuffix.equals("model")
+        val includeServicesResource = bundleSuffix.equals("viz") || bundleSuffix.equals("diffviz")
+        val includeIconsResource = bundleSuffix.equals("viz")
+        
         return '''
             <?xml version="1.0" encoding="UTF-8"?>
             <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
@@ -184,6 +188,23 @@ class GenerateMavenBuild {
             
               <build>
                   <sourceDirectory>src-gen</sourceDirectory>
+                  «IF includeServicesResource»
+                      <resources>
+                        <resource>
+                          <directory>META-INF</directory>
+                          <targetPath>META-INF</targetPath>
+                          <includes>
+                            <include>services/**</include>
+                          </includes>
+                        </resource>
+                      «IF includeIconsResource»
+                          <resource>
+                            <directory>icons</directory>
+                            <targetPath>icons</targetPath>
+                          </resource>
+                      «ENDIF»
+                      </resources>
+                  «ENDIF»
                   <plugins>
                     «IF modelXcoreBuild»
                           <plugin>

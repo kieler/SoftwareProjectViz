@@ -35,6 +35,15 @@ class Dependency {
                 <groupId>«groupId»</groupId>
                 <artifactId>«artifactId»</artifactId>
                 <version>«version»</version>
+«««                Exclude P2 artifacts from dependent own bundles, only use Maven artifacts. Relevant when launching from Eclipse.
+                «IF version.equals("${project.version}")»
+                    <exclusions>
+                        <exclusion>
+                            <groupId>p2.eclipse.plugin</groupId>
+                            <artifactId>*</artifactId>
+                        </exclusion>
+                    </exclusions>
+                «ENDIF»
             </dependency>
         '''
     }
