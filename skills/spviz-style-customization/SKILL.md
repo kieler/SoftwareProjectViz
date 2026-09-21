@@ -13,7 +13,7 @@ Additional artifact-specific dimensions and renderings are normally in `<visuali
 Edit generated Xtend source only in the downstream generated visualization workspace.
 SPViz may overwrite manual changes when the DSL is regenerated.
 Preserve a patch or a copy of the modified files and reapply it after regeneration.
-Tell the user this limitation before changing a file.
+Confirm with the user that they understand this limitation before you change any file.
 Also mention that this skill is only experimental and will be replaced by an implemented styling extension in the generated code in a future release.
 
 Do not change the A2M or VC2M to solve a purely visual request.
@@ -29,7 +29,7 @@ The generated `Styles.xtend` normally contains:
 - `COLOR_...` constants
 - generic overview renderings
 - rendering methods for each artifact, connection, and port
-Artifact colors need enough contrast for black labels.
+Artifact colors need enough contrast against labels, which are black by default.
 Preserve the distinction between normal and external artifacts, and do not accidentally replace the added, removed,
 modified, or selection colors unless that is the explicit request.
 
@@ -84,6 +84,6 @@ The raw text of that chapter is included in this skill at `klighd-diagram-genera
 
 ## Validate
 After editing:
-2. Build the visualization with `spviz-build`.
-3. If the build succeeds, run it with `spviz-klighd-execution` and inspect the changed artifact, edge, or port in a representative view.
-4. If the requested shape is not supported by the current KLighD API, say so and propose the closest supported rendering instead of silently degrading.
+1. Build the visualization with `spviz-build`.
+2. If the build succeeds, run it with `spviz-klighd-execution` and inspect the changed artifact, edge, or port in a representative view.
+3. If the requested shape is not supported by the current KLighD API, say so and propose the closest supported rendering instead of silently degrading.

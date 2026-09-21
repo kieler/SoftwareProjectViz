@@ -4,11 +4,15 @@ description: Authors concrete SPViz project model instances in a generated model
 license: EPL-2.0
 ---
 
+## Prerequisites
+An architecture metamodel (A2M) must already be defined before starting this task.
+It is defined via an already-existing `.spvizmodel` file that can be built with the `spviz-build` skill or via the `spviz-dsl-modeling` skill.
+
 ## Inspect the generated language first
 Ask for or infer:
 - the source `.spvizmodel` or the generated A2M model project
 - the generated model-DSL project and its exact file extension
-- whether this is for a current extracted model or a target design
+- whether the model should be generated for an existing project in the current context or a target design
 - the artifact instances, containment hierarchy, connections, external-element policy, and any labels the user wants represented.
 
 Read the generated grammar before writing instances.
@@ -70,7 +74,7 @@ If the A2M lacks it, return to `spviz-dsl-modeling` and decide whether the archi
 ## Workflow
 1. Ensure the A2M and its model DSL have been generated without `--no-model-dsl`, or obtain the matching generated model-DSL project.
 2. Read the generated grammar and identify the root rule and all artifact rules.
-3. If necessary, build or regenerate the generated model-DSL project so its parser and validator are current.
+3. If necessary, build or regenerate the generated model-DSL project with the `spviz-build` skill, so its parser and validator are current.
 4. Write the model to contain every required artifact, containment, and connection of the requested project or target architecture.
 5. Check every reference, ID, external marker, and label against the A2M.
 6. Validate the model against the `--validate` option of the generated language server jar.

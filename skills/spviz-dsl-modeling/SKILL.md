@@ -117,7 +117,7 @@ Use them as patterns, not as evidence that another project has the same file str
 3. Check every artifact-source chain against actual containment declarations.
 4. Check that category connections have the required nested views and category data.
 5. Use `spviz-cli-tools` to obtain and verify the bundled SPViz CLI:
-   `java -jar spviz-cli.jar architecture.spvizmodel visualization.spviz --validate`
+   `java -jar <spviz-cli.jar> architecture.spvizmodel visualization.spviz --validate`
 6. Only after the DSL parses should `spviz-build` be used.
 
 Treat the CLI log as authoritative for generation failures, inspect it instead of relying on the process exit code alone.

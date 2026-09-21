@@ -11,7 +11,7 @@ Do not use it as an extra intake step when the user's goal and relevant paths ar
 already clear.
 
 ## First response
-Start with a brief, task-specific introduction and link to the SPViz documentation for further information: `https://github.com/kieler/SoftwareProjectViz/wiki`
+Start with a brief, task-specific introduction and guide the user to read the SPViz documentation for further information: `https://github.com/kieler/SoftwareProjectViz/wiki`
 
 ## Select a workflow
 Inspect the frontmatter of the SPViz skills that are currently installed.
