@@ -281,6 +281,7 @@ class SPVizGenerator extends AbstractGenerator {
         val deps = newLinkedList(
            new Dependency("com.google.code.gson", "gson", "${gson-version}"),
            new Dependency("com.google.inject", "guice", "${guice-version}"),
+           new Dependency("com.google.guava", "guava", "${guava-version}"),
            new Dependency("de.cau.cs.kieler.klighd", "de.cau.cs.kieler.kgraph.text", "${klighd-version}"),
            new Dependency("de.cau.cs.kieler.klighd", "de.cau.cs.kieler.kgraph.text.ide", "${klighd-version}"),
            new Dependency("de.cau.cs.kieler.klighd", "de.cau.cs.kieler.klighd", "${klighd-version}"),

@@ -168,6 +168,10 @@ class GenerateLanguageServer {
                         return validateModels()
                     }
                     
+                    // Avoid Guice's unsafe class loading on newer JDKs.
+                    if (System.getProperty("guice_custom_class_loading") === null) {
+                        System.setProperty("guice_custom_class_loading", "CHILD")
+                    }
                     val server = new «data.visualizationName.toFirstUpper»LanguageServer
                     server.configureAndRun(new «data.visualizationName.toFirstUpper»LanguageRegistration, new «data.visualizationName.toFirstUpper»LsCreator)
                     return CommandLine.ExitCode.OK

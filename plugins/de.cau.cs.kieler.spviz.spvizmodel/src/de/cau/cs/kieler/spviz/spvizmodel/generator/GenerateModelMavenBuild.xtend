@@ -222,6 +222,7 @@ class GenerateModelMavenBuild {
                 
                 <elk-version>0.11.0</elk-version>
                 <gson-version>2.13.2</gson-version>
+                <guava-version>33.7.1-jre</guava-version>
                 <guice-version>7.0.0</guice-version>
                 <klighd-version>3.1.0.v20250428</klighd-version>
                 <lsp4j-version>0.24.0</lsp4j-version>
