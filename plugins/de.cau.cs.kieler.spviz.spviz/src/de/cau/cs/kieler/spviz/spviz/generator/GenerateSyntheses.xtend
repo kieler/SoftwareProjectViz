@@ -152,7 +152,7 @@ class GenerateSyntheses {
                     
                     // Add all view filter options.
                     options.addAll(SHOW_EXTERNAL, CONTAINER_EDGES_WHEN_FOCUSED, SHOW_CONNECTION_LABELS,
-                        SHOW_OUTER_CATEGORY_CONNECTION_LABELS, IDS, SHORTEN_BY, INTERACTIVE_BUTTONS)
+                        SHOW_OUTER_CATEGORY_CONNECTION_LABELS, SHOW_INFORMATION, IDS, SHORTEN_BY, INTERACTIVE_BUTTONS)
                     
                     // Add all artifact view filters.
                     «FOR artifact : data.artifacts»
@@ -223,7 +223,7 @@ class GenerateSyntheses {
                                 SynthesisUtils.configureTopdownLayout(it, false)
                             }
                             setLayoutOption(BoxLayouterOptions.BOX_PACKING_MODE, PackingMode.GROUP_MIXED)
-                            addProjectRendering(model.projectName, usedContext)
+                            addProjectRendering(model, usedContext)
                             
                             // send the respectively different model through
                             createSubNodes(visContext, other ? sourceModel : targetModel, children)
@@ -1026,28 +1026,54 @@ class GenerateSyntheses {
                     ]
                 }
                 
+                /**
+                 * Adds the information entries as a separate, vertically laid out text block.
+                 */
+                private def void addInformationRendering(KContainerRendering rendering, Iterable<String> information, ViewContext context) {
+                    if (context.getOptionValue(SHOW_INFORMATION) as Boolean && !information.empty) {
+                        rendering.addHorizontalSeperatorLine(1, 0)
+                        rendering.addRectangle => [
+                            invisible = true
+                            setGridPlacement(1)
+                            addSimpleLabel(information.join("\n"), false)
+                        ]
+                    }
+                }
+                
+                /**
+                 * Appends all information entries to the given tooltip text.
+                 */
+                private def String addInformationToTooltip(String tooltipText, Iterable<String> information) {
+                    if (information.empty) {
+                        return tooltipText
+                    }
+                    return tooltipText + "\n" + information.join("\n")
+                }
+                
                 // ------------------------------------- Project renderings ------------------------------------
                 /**
                  * Adds the rendering as a project overview.
+                 * @param project The project to render.
                  * @param context The used ViewContext.
                  */
-                def void addProjectRendering(KNode node, String projectName, ViewContext context) {
+                def void addProjectRendering(KNode node, «data.projectName» project, ViewContext context) {
                     node.addRoundedRectangle(ROUNDNESS, ROUNDNESS) => [
                         setGridPlacement(1)
                         addRectangle => [
                             invisible = true
-                            addSimpleLabel(projectName, true) => [
+                            addSimpleLabel(project.projectName, true) => [
                                 fontBold = true
                                 selectionFontBold = true
                             ]
                         ]
+                        addInformationRendering(project.information, context)
                         addHorizontalSeperatorLine(1, 0)
                         addChildArea
                         if (context.getOptionValue(SHOW_SHADOWS) as Boolean) {
                             setShadow(SHADOW_COLOR.color, 4, 4)
                         }
                         background = DEFAULT_BACKGROUND_COLOR.color
-                        tooltip = "The overview of all available views for this project."
+                        tooltip = addInformationToTooltip("The overview of all available views for this project.", project.information)
                         setSelectionStyle(false)
                     ]
                 }
@@ -1114,7 +1140,7 @@ class GenerateSyntheses {
                             if (context.getOptionValue(SHOW_SHADOWS) as Boolean) {
                                 setShadow(SHADOW_COLOR.color, 4, 4)
                             }
-                            tooltip = "«artifact.name» \"" + artifact.getName + "\""
+                            tooltip = addInformationToTooltip("«artifact.name» \"" + artifact.getName + "\"", artifact.information)
                             val diff = SynthesisUtils.differenceInModel(artifact, differentModel)
                             setDifferenceStyle(diff, SynthesisUtils.isTargetModel(differentModel, context), false)
                             setSelectionStyle(diff !== ArtifactDifference.UNCHANGED)
@@ -1210,6 +1236,7 @@ class GenerateSyntheses {
 «««                                    ]
 «««                                }
 «««                            }
+                            addInformationRendering(artifact.information, context)
                             if (hasChildren) {
                                 addHorizontalSeperatorLine(1, 0)
                                 addChildArea
@@ -1217,7 +1244,7 @@ class GenerateSyntheses {
                             if (context.getOptionValue(SHOW_SHADOWS) as Boolean) {
                                 setShadow(SHADOW_COLOR.color, 4, 4)
                             }
-                            tooltip = "«artifact.name» \"" + artifact.getName + "\""
+                            tooltip = addInformationToTooltip("«artifact.name» \"" + artifact.getName + "\"", artifact.information)
                             addSingleClickAction(SelectRelatedAction::ID, ModifierState.NOT_PRESSED, ModifierState.NOT_PRESSED,
                                 ModifierState.NOT_PRESSED)
                             val diff = SynthesisUtils.differenceInModel(artifact, differentModel)
@@ -2118,6 +2145,11 @@ class GenerateSyntheses {
                 public static final SynthesisOption SHOW_OUTER_CATEGORY_CONNECTION_LABELS = SynthesisOption.createCheckOption(
                     "Connection labels in containing overviews", true).setCategory(VIEW_FILTER_CATEGORY)
                     .description = "Shows custom connection labels on category edges in containing overviews."
+
+                /** Option for showing information text on project and expanded artifact renderings. */
+                public static final SynthesisOption SHOW_INFORMATION = SynthesisOption.createCheckOption(
+                    "Information", true).setCategory(VIEW_FILTER_CATEGORY)
+                    .description = "Shows information text on project and expanded artifact renderings."
                 
                 /** Category option containing options for filtering artifact views. */
                 public static final SynthesisOption ARTIFACT_VIEW_FILTER_CATEGORY = SynthesisOption.createCategory("Artifact overview filter", false)

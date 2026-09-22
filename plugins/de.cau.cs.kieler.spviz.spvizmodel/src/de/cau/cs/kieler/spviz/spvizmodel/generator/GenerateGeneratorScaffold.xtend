@@ -7,6 +7,7 @@
  * + Kiel University
  *   + Department of Computer Science
  *   + Real-Time and Embedded Systems Group
+ * + and Scheidt & Bachmann System Technik GmbH, 24109 Melsdorf
  * 
  * This code is provided under the terms of the Eclipse Public License 2.0 (EPL-2.0).
  */
@@ -272,12 +273,14 @@ class GenerateGeneratorScaffold {
             import java.io.File;
             import java.nio.file.Path;
             import java.nio.file.Paths;
+            import java.time.LocalDate;
             import java.util.HashMap;
             import java.util.List;
             import java.util.Map;
             
             import «model.package».model.«model.name.toFirstUpper»Factory;
             import «model.package».model.«model.name.toFirstUpper»Project;
+            import «model.package».model.util.ModelUtil;
             «FOR artifact : model.artifacts»
                 import «model.package».model.«artifact.name.toFirstUpper»;
             «ENDFOR»
@@ -327,6 +330,8 @@ class GenerateGeneratorScaffold {
                  */
                 public «model.name.toFirstUpper»Project generateData(final File projectPath, final String projectName) {
                     project.setProjectName(projectName);
+                    // Example call to add generic information to the model or individual artifacts
+                    // addGenerationDateInformation();
                     
                     // TODO: fill this!
                     LOGGER.log(System.Logger.Level.ERROR, "You executed the generator template. Your next task is to modify the "
@@ -340,6 +345,13 @@ class GenerateGeneratorScaffold {
                     
                     return project;
             
+                }
+                
+                /**
+                 * Adds the model generation date as information to the project.
+                 */
+                private void addGenerationDateInformation() {
+                    ModelUtil.addInformation(project, "generated on " + LocalDate.now());
                 }
                 
                 «FOR artifact : model.artifacts»

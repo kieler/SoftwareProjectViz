@@ -25,15 +25,17 @@ An instance has an artifact-type keyword, a stable name, and an optional body.
 The name is also the cross-reference identifier and is used to derive the generated `ecoreId`:
 
 ```
-projectName "Example"
+projectName Example
+information "generated on 2026-09-21"
 
-module "core" {
-    components: ["api"]
-    dependency "utilities" "runtime dependency"
+module core {
+    components: [api]
+    dependency utilities "runtime dependency"
+    information "Bundle-Version: 1.2.3"
 }
 
-module "utilities"
-component "api"
+module utilities
+component api
 ```
 
 This is an illustrative shape only.
@@ -41,7 +43,7 @@ Replace `module`, `components`, `dependency`, and `component` with the lower-cas
 
 Use `external` before an artifact instance when it is a deliberately unresolved or
 an element outside the analyzed project scope:
-`external module "third-party"`
+`external module third-party`
 
 External artifacts are still real model nodes, they are only represented fainter and can be filtered.
 They are not a way to suppress an unknown relationship.
@@ -52,6 +54,9 @@ Connections use the generated connection keyword and cross-reference the target 
 Direct connections can have an optional label.
 Context labels belong in the generated `labels` block and must reference both endpoints.
 Check the grammar instead of guessing punctuation, pluralization, or label placement.
+
+The project root and artifacts can contain textual information entries.
+Repeat `information "..."` once per entry.
 
 ## Modeling rules
 1. Define each instance ID exactly once.

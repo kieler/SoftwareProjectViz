@@ -47,14 +47,15 @@ Do not use a traversal index as the identity.
 A source artifact known to belong to the analyzed repository is normally internal; an unresolved dependency stub can be external.
 The scaffold's `createOrFind<Type>` helpers initialize new artifacts as external, so explicitly set `external` to `false` for artifacts found in the analyzed repository.
 Preserve the user's policy for whether external stubs should be visible.
-5. Attach containment relations to the generated parent lists.
-6. Attach connections after all possible targets have been registered.
+5. Add useful project or artifact information with `ModelUtil.addInformation(element, text)`.
+6. Attach containment relations to the generated parent lists.
+7. Attach connections after all possible targets have been registered.
 Use the exact generated bidirectional getter or the generated `ModelUtil.add<Connection>` helper after inspecting its signature.
 Do not manipulate unrelated EMF implementation classes.
-7. Add labels only when the source supplies meaningful labels.
+8. Add labels only when the source supplies meaningful labels.
 For a global label, use `ModelUtil.add<Connection>(source, target, label)`.
 For a context-specific label, use `ModelUtil.add<Connection>InContext(source, target, context, label)`, where both endpoints must be contained by `context`.
-8. Validate required artifacts and relationships, then return the project.
+9. Validate required artifacts and relationships, then return the project.
 
 Create unresolved external stubs only when that is useful for the requested views and the identity is sufficiently reliable.
 If a reference cannot be resolved or parsed, log the path and relationship and fail or report it according to the agreed extraction contract.

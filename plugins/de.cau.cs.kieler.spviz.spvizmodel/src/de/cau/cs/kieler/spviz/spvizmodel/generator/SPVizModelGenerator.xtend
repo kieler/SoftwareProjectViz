@@ -266,14 +266,18 @@ class SPVizModelGenerator extends AbstractGenerator {
         
         package «model.package».model
         
-        class «model.name»Project {
+        class «model.name»Project extends Labeled {
             String projectName
             «FOR artifact : model.artifacts»
                 contains «artifact.name»[] «artifact.name.toFirstLower»s
             «ENDFOR»
         }
         
-        abstract class Identifiable {
+        abstract class Labeled {
+            String[] information
+        }
+        
+        abstract class Identifiable extends Labeled {
             unique id String ecoreId
             String name
             boolean external
@@ -340,6 +344,7 @@ class SPVizModelGenerator extends AbstractGenerator {
             «model.name»Project returns «model.name»Project:
                 ('projectName' projectName=EString)?
                 (
+                    'information' information += STRING |
                     «FOR artifact : model.artifacts SEPARATOR " |"»
                         «artifact.name.toFirstLower»s += «artifact.name.toFirstUpper»
                     «ENDFOR»
@@ -359,6 +364,7 @@ class SPVizModelGenerator extends AbstractGenerator {
                             ('«connection.name.toFirstLower»' connectionLabels += «directLabelClassName(artifact, connection)»)*
                         «ENDFOR»
                         ('labels' '{' connectionLabels += ContextConnectionLabel* '}')?
+                        ('information' information += STRING)*
                     '}')?
                 ;
                 
@@ -372,12 +378,12 @@ class SPVizModelGenerator extends AbstractGenerator {
             «FOR artifact : model.artifacts»
                 «FOR connection : artifact.references.filter(Connection)»
                     «directLabelClassName(artifact, connection)» returns «directLabelClassName(artifact, connection)»:
-                        target=[«connection.connects.name.toFirstUpper»|EString] (label=EString)?
+                        target=[«connection.connects.name.toFirstUpper»|EString] (label=STRING)?
                     ;
 
                     «contextLabelClassName(artifact, connection)» returns «contextLabelClassName(artifact, connection)»:
                         '«connection.name.toFirstLower»' source=[«artifact.name.toFirstUpper»|EString] '->'
-                        target=[«connection.connects.name.toFirstUpper»|EString] label=EString
+                        target=[«connection.connects.name.toFirstUpper»|EString] label=STRING
                     ;
 
                 «ENDFOR»
