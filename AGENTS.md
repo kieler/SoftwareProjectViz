@@ -14,9 +14,9 @@ It generates tool code (and code templates) based on an architecture description
 - example use cases and their DSL descriptions and completed generator templates are available at the local folder at ../SoftwareProjectViz-examples (if not disallowed to use and if available)
 
 ## Tools
-- regenerate code from altered .xtext files: `mvn -f build/pom.xml -Pgenerate-xtext-sources generate-sources`
+- **Required before the first build in a fresh checkout, and after changing any `.xtext` file:** regenerate the Xtext sources with `mvn -f build/pom.xml -Pgenerate-xtext-sources generate-sources`.
 - build: `mvn clean package -f build/pom.xml`
-- fast build without regenerating Xtext code: `mvn -f build/pom.xml -Pbuild-only package`
+- fast build after Xtext sources have been generated: `mvn -f build/pom.xml -Pbuild-only package`
 - test (only works after Xtext regeneration): `mvn -f build/pom.xml -Pbuild-only verify` (currently, all tests are deactivated)
 - release build with the bundled skill archive: `mvn -f build/pom.xml "-Pall,prepare-skills" verify` (only to test release builds, downloads external executables for skills)
 ### Tools after successful build
