@@ -123,12 +123,7 @@ class SPVizModelGenerator extends AbstractGenerator {
             var content = generateDiffGrammar(model, config.language)
             FileGenerator.updateFile(diffDslPackageFolder, model.name + "DiffDsl.xtext", content)
             
-            // Execute Xtext generation workflow and configure new dependencies
-            val diffDslMwe2File = new File(diffDslPackageFolder, "Generate" + model.name + "DiffDsl.mwe2")
-            configureMwe2(diffDslMwe2File, config.language.name, model)
-            runMwe2(diffDslMwe2File, rootPath, model)
-            configureDslManifest(new File(diffDslFolder, "META-INF/MANIFEST.MF"), model)
-            configureDslTargetPlatform(new File(config.rootLocation + "/" + config.baseName + ".target/" + config.baseName + ".target.target"))
+            executeWorkflowAndConfigureProject(rootPath, diffDslFolder, "Generate" + model.name + "DiffDsl.mwe2", config, model)
 
             // Validator
             val diffDslValidationFolder = FileGenerator.createDirectory(diffDslFolder, "src/" + config.baseName.replace('.', '/') + "/validation")
@@ -165,12 +160,7 @@ class SPVizModelGenerator extends AbstractGenerator {
             var content = generateDslGrammar(model)
             FileGenerator.updateFile(dslPackageFolder, model.name + "Dsl.xtext", content)
             
-            // Execute Xtext generation workflow and configure new dependencies
-            val dslMwe2File = new File(dslPackageFolder, "Generate" + model.name + "Dsl.mwe2")
-            configureMwe2(dslMwe2File, config.language.name, model)
-            runMwe2(dslMwe2File, rootPath, model)
-            configureDslManifest(new File(dslFolder, "META-INF/MANIFEST.MF"), model)
-            configureDslTargetPlatform(new File(config.rootLocation + "/" + config.baseName + ".target/" + config.baseName + ".target.target"))
+            executeWorkflowAndConfigureProject(rootPath, dslFolder, "Generate" + model.name + "Dsl.mwe2", config, model)
             
             // Adapt the source files of the model DSL as in thesis so that it creates a correct model readable by the synthesis.
             // RuntimeModule
@@ -185,6 +175,19 @@ class SPVizModelGenerator extends AbstractGenerator {
             FileGenerator.updateFile(dslValidationFolder, model.name + "DslValidator.java", content)
         }
         
+    }
+    
+    /**
+     * Executes Xtext generation workflow and configures new dependencies.
+     * 
+     */
+    private static def void executeWorkflowAndConfigureProject(Path root, File projectFolder,String workflowFileName, WizardConfiguration projectConfig, SPVizModel model) {
+        val packageFolder = FileGenerator.createDirectory(projectFolder, "src/" + projectConfig.baseName.replace('.', '/'))
+        val mwe2File = new File(packageFolder, workflowFileName)
+        configureMwe2(mwe2File, projectConfig.language.name, model)
+        runMwe2(mwe2File, root, model)
+        configureDslManifest(new File(projectFolder, "META-INF/MANIFEST.MF"), model)
+        configureDslTargetPlatform(new File(projectConfig.rootLocation + "/" + projectConfig.baseName + ".target/" + projectConfig.baseName + ".target.target"))
     }
     
     /**
@@ -477,7 +480,7 @@ class SPVizModelGenerator extends AbstractGenerator {
      * Add "modelResource" variable to the workflows so that programmatic workflow runs in the CLI can run the workflow with non-platform resource.
      */
     private static def void configureMwe2(File mwe2File, String languageName, SPVizModel model) {
-        val modelResourceDeclaration = "var modelResource = \"platform:/resource/" + model.package + ".model/model/" + model.name + "Model.xcore\""
+        val modelResourceDeclaration = '''var modelResource = "platform:/resource/«model.package».model/model/«model.name»Model.xcore"'''
         FileGenerator.addIfMissing(
             mwe2File,
             modelResourceDeclaration,
@@ -498,7 +501,7 @@ class SPVizModelGenerator extends AbstractGenerator {
      */
     private static def void runMwe2(File workflowFile, Path rootPath, SPVizModel model) {
         registerPlatformResources()
-        val modelFile = new File(rootPath.toAbsolutePath.toFile, model.package + ".model/model/" + model.name + "Model.xcore")
+        val modelFile = new File(rootPath.toAbsolutePath.toFile, '''«model.package».model/model/«model.name»Model.xcore''')
         val String[] arguments = #[
             workflowFile.toURI.toString,
             "-p",
