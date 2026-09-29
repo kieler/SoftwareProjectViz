@@ -27,11 +27,6 @@ class GenerateModelMavenBuild {
     
     static final Logger LOGGER = LoggerFactory.getLogger(GenerateModelMavenBuild)
     
-    /* 
-     * TODO:
-     * - generate a full .gitignore for an easier build process (/bin, /target, dependencies.txt, ...)
-     */
-     
     /**
      * Generates a pom.xml file for the given project and model.
      * 

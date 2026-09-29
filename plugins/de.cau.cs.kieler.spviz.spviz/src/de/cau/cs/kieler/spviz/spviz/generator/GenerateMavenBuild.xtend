@@ -7,6 +7,7 @@
  * + Kiel University
  *   + Department of Computer Science
  *   + Real-Time and Embedded Systems Group
+ * + and Scheidt & Bachmann System Technik GmbH, 24109 Melsdorf
  * 
  * This code is provided under the terms of the Eclipse Public License 2.0 (EPL-2.0).
  */
@@ -17,12 +18,6 @@ import java.io.File
 import java.util.List
 
 class GenerateMavenBuild {
-    /* 
-     * TODO: 
-     * - generate a full .gitignore for each project/feature/other main folder for an easier build process
-     *   (/bin, /target, dependencies.txt, ...)
-     */
-    
     static List<String> vizBundleSuffixes
     static List<String> modelBundleSuffixes
     
