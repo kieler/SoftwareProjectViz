@@ -105,6 +105,7 @@ class SPVizGenerator extends AbstractGenerator {
             .configureKlighd(true)
             .configureIcons(true)
             .additionalSourceFolder("xtend-gen")
+            .additionalSourceFolder("src")
             .configureRequiredBundles(requiredVizBundles(data))
             .configureExportedPackages(exportedVizPackages(data))
             .generate()

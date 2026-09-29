@@ -1023,8 +1023,8 @@ class GenerateSubSyntheses {
                                             addLayoutParam(CoreOptions::PORT_SIDE, PortSide::EAST)
                                             addLayoutParam(CoreOptions::PORT_INDEX, 0)
                                             addConnected«connected.connecting.name»Connects«connected.connected.name»Named«connected.name»PortRendering(filteredConnected«connected.name»«connected.connected.name»s.size, context.allConnected«connected.connecting.name»Connects«connected.connected.name»Named«connected.name»Shown)
-                                            width = 12
-                                            height = 12
+                                            width = getConnected«connected.connecting.name»Connects«connected.connected.name»Named«connected.name»PortWidth()
+                                            height = getConnected«connected.connecting.name»Connects«connected.connected.name»Named«connected.name»PortHeight()
                                         ]
                                     }
                                 }
@@ -1043,8 +1043,8 @@ class GenerateSubSyntheses {
                                             addLayoutParam(CoreOptions::PORT_SIDE, PortSide::WEST)
                                             addLayoutParam(CoreOptions::PORT_INDEX, 1)
                                             addConnecting«connecting.connecting.name»Connects«connecting.connected.name»Named«connecting.name»PortRendering(filteredConnecting«connecting.name»«connecting.connecting.name»s.size, context.allConnecting«connecting.connecting.name»Connects«connecting.connected.name»Named«connecting.name»Shown)
-                                            width = 12
-                                            height = 12
+                                            width = getConnecting«connecting.connecting.name»Connects«connecting.connected.name»Named«connecting.name»PortWidth()
+                                            height = getConnecting«connecting.connecting.name»Connects«connecting.connected.name»Named«connecting.name»PortHeight()
                                         ]
                                     }
                                 }

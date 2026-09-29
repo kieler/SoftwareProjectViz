@@ -41,6 +41,7 @@ class GenerateSyntheses {
             generateVizDiagramSynthesis(data))
         FileGenerator.updateFile(folder, "KlighdSetup.xtend", generateKlighdSetup(data))
         FileGenerator.updateFile(folder, "Styles.xtend", generateStyles(data))
+        FileGenerator.updateFile(folder, "StylesProvider.xtend", generateStylesProvider(data))
         FileGenerator.updateFile(folder, "SynthesisUtils.xtend", generateSynthesisUtils(data))
         FileGenerator.updateFile(folder, "SynthesisProperties.xtend", generateSynthesisProperties(data))
         FileGenerator.updateFile(folder, "Options.xtend", generateOptions(data))
@@ -517,6 +518,7 @@ class GenerateSyntheses {
             package «data.getBundleNamePrefix».viz
             
             import com.google.inject.Inject
+            import com.google.inject.ProvidedBy
             import de.cau.cs.kieler.klighd.ViewContext
             import de.cau.cs.kieler.klighd.kgraph.KEdge
             import de.cau.cs.kieler.klighd.kgraph.KNode
@@ -567,6 +569,7 @@ class GenerateSyntheses {
              * The renderings and styles of Models.
              */
             @ViewSynthesisShared
+            @ProvidedBy(StylesProvider)
             class Styles {
                 @Inject extension KColorExtensions
                 @Inject extension KContainerRenderingExtensions
@@ -576,32 +579,99 @@ class GenerateSyntheses {
                 @Inject extension KRenderingExtensions
                 
                 // The colors used for the visualization.
-                public static final String DEFAULT_BACKGROUND_COLOR = "white"
-                
+                /**
+                 * Returns the default background color for project and overview renderings.
+                 *
+                 * @return The default color.
+                 */
+                def String getDefaultBackgroundColor() { "white" }
+
                 // Artifact colors
                 «FOR artifact : data.artifacts»
-                    public static final String COLOR_«artifact.name» = "«colors.get(artifact)»"
-                    public static final String SECONDARY_COLOR_«artifact.name» = "«secondaryColors.get(artifact)»"
-                    public static final String EXTERNAL_COLOR_«artifact.name» = "«externalColors.get(artifact)»"
-                    public static final String EXTERNAL_SECONDARY_COLOR_«artifact.name» = "«externalSecondaryColors.get(artifact)»"
+                    /**
+                     * Returns the primary gradient color for non-external {@link «artifact.name»} renderings.
+                     */
+                    def String getColor«artifact.name»() { "«colors.get(artifact)»" }
+                    
+                    /**
+                     * Returns the secondary gradient color for non-external {@link «artifact.name»} renderings.
+                     */
+                    def String getSecondaryColor«artifact.name»() { "«secondaryColors.get(artifact)»" }
+                    
+                    /**
+                     * Returns the primary gradient color for external {@link «artifact.name»} renderings.
+                     */
+                    def String getExternalColor«artifact.name»() { "«externalColors.get(artifact)»" }
+                    
+                    /**
+                     * Returns the secondary gradient color for external {@link «artifact.name»} renderings.
+                     */
+                    def String getExternalSecondaryColor«artifact.name»() { "«externalSecondaryColors.get(artifact)»" }
+                    
                 «ENDFOR»
             
                 // Port colors.
-                public static final String ALL_SHOWN_COLOR = "white"
-                public static final String NOT_ALL_SHOWN_COLOR = "black"
+                /**
+                 * Returns the port background color when all referenced artifacts are shown.
+                 */
+                def String getAllShownColor() { "white" }
                 
-                public static final String SHADOW_COLOR = "black"
+                /**
+                 * Returns the port background color when not all referenced artifacts are shown.
+                 */
+                def String getNotAllShownColor() { "black" }
                 
-                // Selection color.
-                public static final String SELECTION_COLOR = "orange"
+                /**
+                 * Returns the color used for rendering shadows.
+                 */
+                def String getShadowColor() { "black" }
                 
-                /** The roundness of visualized rounded rectangles. */
-                static final int ROUNDNESS = 4
+                /**
+                 * Returns the color used to highlight selections.
+                 */
+                def String getSelectionColor() { "orange" }
+                
+                /**
+                 * Returns the roundness of visualized rounded rectangles.
+                 */
+                def int getRoundness() { 4 }
                 
                 // comparison colors.
-                public static final String ADDED = "#00cc00"
-                public static final String REMOVED = "#ff0000"
-                public static final String MODIFIED = "#2a00ff"
+                /**
+                 * Returns the comparison color for elements added in the target model.
+                 */
+                def String getAddedColor() { "#00cc00" }
+                
+                /**
+                 * Returns the comparison color for elements removed from the target model.
+                 */
+                def String getRemovedColor() { "#ff0000" }
+                
+                /**
+                 * Returns the comparison color for modified elements.
+                 */
+                def String getModifiedColor() { "#2a00ff" }
+                
+                // Port sizes.
+                /**
+                 * Returns the default width used when a connection endpoint does not override its port width.
+                 */
+                def float getDefaultPortWidth() { 12f }
+                
+                /**
+                 * Returns the default height used when a connection endpoint does not override its port height.
+                 */
+                def float getDefaultPortHeight() { 12f }
+                
+                /**
+                 * Adds the default rendering used when a connection endpoint does not override its port shape.
+                 *
+                 * @param port The port to render.
+                 * @return The default rectangular rendering.
+                 */
+                def KContainerRendering addDefaultPortShape(KPort port) {
+                    port.addRectangle
+                }
                 
                 // ------------------------------------- Generic renderings -------------------------------------
                 
@@ -613,7 +683,7 @@ class GenerateSyntheses {
                         if (!alreadyWide) {
                             selectionLineWidth = 3 * lineWidthValue
                         }
-                        selectionForeground = SELECTION_COLOR.color
+                        selectionForeground = getSelectionColor().color
                     ]
                 }
                 
@@ -626,9 +696,9 @@ class GenerateSyntheses {
                         case SynthesisUtils.ArtifactDifference.UNCHANGED:
                             return
                         case SynthesisUtils.ArtifactDifference.NON_EXISTENT:
-                            color = isTargetModel ? ADDED : REMOVED
+                            color = isTargetModel ? getAddedColor() : getRemovedColor()
                         case SynthesisUtils.ArtifactDifference.MODIFIED:
-                            color = MODIFIED
+                            color = getModifiedColor()
                     }
                     val color_ = color
                     rendering => [
@@ -642,9 +712,9 @@ class GenerateSyntheses {
                  * @param context The used ViewContext.
                  */
                 def KRoundedRectangle addGenericRendering(KNode node, String name, ViewContext context) {
-                    node.addRoundedRectangle(ROUNDNESS, ROUNDNESS) => [
+                    node.addRoundedRectangle(getRoundness(), getRoundness()) => [
                         if (context.getOptionValue(SHOW_SHADOWS) as Boolean) {
-                            setShadow(SHADOW_COLOR.color, 4, 4)
+                            setShadow(getShadowColor().color, 4, 4)
                         }
                         addSimpleLabel(name, false)
                         setSelectionStyle(false)
@@ -666,7 +736,7 @@ class GenerateSyntheses {
                     boolean isConnectable, boolean isFocused, ViewContext context) {
                     if (isExpanded) {
                         // Expanded
-                        node.addRoundedRectangle(ROUNDNESS, ROUNDNESS) => [
+                        node.addRoundedRectangle(getRoundness(), getRoundness()) => [
                             setGridPlacement(1)
                             addDoubleClickAction(OverviewContextCollapseExpandAction.ID)
                             addRectangle => [
@@ -704,15 +774,15 @@ class GenerateSyntheses {
                             addHorizontalSeperatorLine(1, 0)
                             addChildArea
                             if (context.getOptionValue(SHOW_SHADOWS) as Boolean) {
-                                setShadow(SHADOW_COLOR.color, 4, 4)
+                                setShadow(getShadowColor().color, 4, 4)
                             }
-                            background = DEFAULT_BACKGROUND_COLOR.color
+                            background = getDefaultBackgroundColor().color
                             tooltip = tooltipText
                             setSelectionStyle(false)
                         ]
                     } else {
                         // Collapsed
-                        node.addRoundedRectangle(ROUNDNESS, ROUNDNESS) => [
+                        node.addRoundedRectangle(getRoundness(), getRoundness()) => [
                             setGridPlacement(1)
                             addDoubleClickAction(OverviewContextCollapseExpandAction.ID)
                             addRectangle => [
@@ -733,9 +803,9 @@ class GenerateSyntheses {
                                 }
                             ]
                             if (context.getOptionValue(SHOW_SHADOWS) as Boolean) {
-                                setShadow(SHADOW_COLOR.color, 4, 4)
+                                setShadow(getShadowColor().color, 4, 4)
                             }
-                            background = DEFAULT_BACKGROUND_COLOR.color
+                            background = getDefaultBackgroundColor().color
                             tooltip = tooltipText
                             setSelectionStyle(false)
                         ]
@@ -1057,7 +1127,7 @@ class GenerateSyntheses {
                  * @param context The used ViewContext.
                  */
                 def void addProjectRendering(KNode node, «data.projectName» project, ViewContext context) {
-                    node.addRoundedRectangle(ROUNDNESS, ROUNDNESS) => [
+                    node.addRoundedRectangle(getRoundness(), getRoundness()) => [
                         setGridPlacement(1)
                         addRectangle => [
                             invisible = true
@@ -1070,9 +1140,9 @@ class GenerateSyntheses {
                         addHorizontalSeperatorLine(1, 0)
                         addChildArea
                         if (context.getOptionValue(SHOW_SHADOWS) as Boolean) {
-                            setShadow(SHADOW_COLOR.color, 4, 4)
+                            setShadow(getShadowColor().color, 4, 4)
                         }
-                        background = DEFAULT_BACKGROUND_COLOR.color
+                        background = getDefaultBackgroundColor().color
                         tooltip = addInformationToTooltip("The overview of all available views for this project.", project.information)
                         setSelectionStyle(false)
                     ]
@@ -1110,7 +1180,7 @@ class GenerateSyntheses {
                      * @param differentModel The other model to compare against for this artifact's coloring.
                      */
                     def add«artifact.name»InOverviewRendering(KNode node, «artifact.name» artifact, String name, ViewContext context, «data.projectName» differentModel) {
-                        node.addRoundedRectangle(ROUNDNESS, ROUNDNESS) => [
+                        node.addRoundedRectangle(getRoundness(), getRoundness()) => [
                             val interactiveButtons = context.getOptionValue(INTERACTIVE_BUTTONS) as Boolean
                             var columns = 1
                             if (interactiveButtons) {
@@ -1130,15 +1200,15 @@ class GenerateSyntheses {
                                 addCollapseExpandButton(true, context)
                             }
                             if (artifact.isExternal) {
-                                setBackgroundGradient(EXTERNAL_COLOR_«artifact.name».color, EXTERNAL_SECONDARY_COLOR_«artifact.name».color, 90)
+                                setBackgroundGradient(getExternalColor«artifact.name»().color, getExternalSecondaryColor«artifact.name»().color, 90)
                             } else {
-                                setBackgroundGradient(COLOR_«artifact.name».color, SECONDARY_COLOR_«artifact.name».color, 90)
+                                setBackgroundGradient(getColor«artifact.name»().color, getSecondaryColor«artifact.name»().color, 90)
                             }
                             addDoubleClickAction(ContextCollapseExpandAction::ID)
                             addSingleClickAction(SelectRelatedAction::ID, ModifierState.NOT_PRESSED, ModifierState.NOT_PRESSED,
                                 ModifierState.NOT_PRESSED)
                             if (context.getOptionValue(SHOW_SHADOWS) as Boolean) {
-                                setShadow(SHADOW_COLOR.color, 4, 4)
+                                setShadow(getShadowColor().color, 4, 4)
                             }
                             tooltip = addInformationToTooltip("«artifact.name» \"" + artifact.getName + "\"", artifact.information)
                             val diff = SynthesisUtils.differenceInModel(artifact, differentModel)
@@ -1179,11 +1249,11 @@ class GenerateSyntheses {
                      */
                     def KRoundedRectangle add«artifact.name»Rendering(KNode node, «artifact.name» artifact, boolean inOverview, boolean hasChildren,
                         ViewContext context, «data.projectName» differentModel) {
-                        node.addRoundedRectangle(ROUNDNESS, ROUNDNESS) => [
+                        node.addRoundedRectangle(getRoundness(), getRoundness()) => [
                             if (artifact.isExternal) {
-                                setBackgroundGradient(EXTERNAL_COLOR_«artifact.name».color, EXTERNAL_SECONDARY_COLOR_«artifact.name».color, 90)
+                                setBackgroundGradient(getExternalColor«artifact.name»().color, getExternalSecondaryColor«artifact.name»().color, 90)
                             } else {
-                                setBackgroundGradient(COLOR_«artifact.name».color, SECONDARY_COLOR_«artifact.name».color, 90)
+                                setBackgroundGradient(getColor«artifact.name»().color, getSecondaryColor«artifact.name»().color, 90)
                             }
                             setGridPlacement(1)
                             addRectangle => [
@@ -1242,7 +1312,7 @@ class GenerateSyntheses {
                                 addChildArea
                             }
                             if (context.getOptionValue(SHOW_SHADOWS) as Boolean) {
-                                setShadow(SHADOW_COLOR.color, 4, 4)
+                                setShadow(getShadowColor().color, 4, 4)
                             }
                             tooltip = addInformationToTooltip("«artifact.name» \"" + artifact.getName + "\"", artifact.information)
                             addSingleClickAction(SelectRelatedAction::ID, ModifierState.NOT_PRESSED, ModifierState.NOT_PRESSED,
@@ -1255,19 +1325,54 @@ class GenerateSyntheses {
                     
                     «FOR connected : data.getConnectedArtifacts(artifact)»
                         /**
+                         * Returns the width of the outgoing port on the source side of this connection.
+                         * {@code Connected} refers to the source {@link «connected.connecting.name»},
+                         * and the port connects to the target {@link «connected.connected.name»} via {@code «connected.name»}.
+                         *
+                         * @return The width supplied by {@link #getDefaultPortWidth()} unless overridden.
+                         */
+                        def float getConnected«connected.connecting.name»Connects«connected.connected.name»Named«connected.name»PortWidth() {
+                            getDefaultPortWidth()
+                        }
+                        
+                        /**
+                         * Returns the height of the outgoing port on the source side of this connection.
+                         * {@code Connected} refers to the source {@link «connected.connecting.name»},
+                         * and the port connects to the target {@link «connected.connected.name»} via {@code «connected.name»}.
+                         *
+                         * @return The height supplied by {@link #getDefaultPortHeight()} unless overridden.
+                         */
+                        def float getConnected«connected.connecting.name»Connects«connected.connected.name»Named«connected.name»PortHeight() {
+                            getDefaultPortHeight()
+                        }
+                        
+                        /**
+                         * Adds the rendering for the outgoing port on the source side of this connection.
+                         * {@code Connected} refers to the source {@link «connected.connecting.name»},
+                         * and the port connects to the target {@link «connected.connected.name»} via {@code «connected.name»}.
+                         *
+                         * @param port The source port to render.
+                         * @return The rendering supplied by {@link #addDefaultPortShape(KPort)} unless overridden.
+                         */
+                        def KContainerRendering addConnected«connected.connecting.name»Connects«connected.connected.name»Named«connected.name»PortShape(KPort port) {
+                            addDefaultPortShape(port)
+                        }
+                        
+                        /**
                          * The rendering of a port that connects a «artifact.name» with the connected «connected.connected.name»s. Issues the
                          * {@link RevealConnected«connected.connecting.name»Connects«connected.connected.name»Named«connected.name»Action} or {@link RevealConnected«connected.connecting.name»Connects«connected.connected.name»Named«connected.name»Action.Recursive} if
                          * clicked when not all connected «connected.connected.name»s are shown, or the {@link RemoveConnected«connected.connecting.name»Connects«connected.connected.name»Named«connected.name»Action}
                          * if all are already shown.
                          */
-                        def KRectangle addConnected«connected.connecting.name»Connects«connected.connected.name»Named«connected.name»PortRendering(KPort port, int numReferences, boolean allShown) {
-                            return port.addRectangle => [
+                        def KContainerRendering addConnected«connected.connecting.name»Connects«connected.connected.name»Named«connected.name»PortRendering(KPort port, int numReferences, boolean allShown) {
+                            val rendering = addConnected«connected.connecting.name»Connects«connected.connected.name»Named«connected.name»PortShape(port)
+                            return rendering => [
                                 if (allShown) {
-                                    background = ALL_SHOWN_COLOR.color
+                                    background = getAllShownColor().color
                                     tooltip = "Remove connected «connected.connected.name.toFirstLower»s via «connected.name»."
                                     addSingleClickAction(RemoveConnected«connected.connecting.name»Connects«connected.connected.name»Named«connected.name»Action::ID, ModifierState.DONT_CARE, ModifierState.NOT_PRESSED, ModifierState.DONT_CARE)
                                 } else {
-                                    background = NOT_ALL_SHOWN_COLOR.color
+                                background = getNotAllShownColor().color
                                     tooltip = "Show connected «connected.connected.name.toFirstLower»s via «connected.name» (" + numReferences + " total)."
                                     addSingleClickAction(RevealConnected«connected.connecting.name»Connects«connected.connected.name»Named«connected.name»Action::ID, ModifierState.DONT_CARE, ModifierState.NOT_PRESSED, ModifierState.DONT_CARE)
                                 }
@@ -1301,8 +1406,8 @@ class GenerateSyntheses {
                                         setDifferenceStyle(difference, SynthesisUtils.isTargetModel(edge), true)
                                         lineWidth = thick ? 2 : 1
                                         selectionLineWidth = thick ? 3 : 1.5f
-                                        selectionForeground = SELECTION_COLOR.color
-                                        selectionBackground = SELECTION_COLOR.color
+                                        selectionForeground = getSelectionColor().color
+                                        selectionBackground = getSelectionColor().color
                                         addSingleClickAction(SelectRelatedAction::ID, ModifierState.NOT_PRESSED, ModifierState.NOT_PRESSED,
                                             ModifierState.NOT_PRESSED)
                                         suppressSelectablility
@@ -1311,7 +1416,7 @@ class GenerateSyntheses {
                                 setDifferenceStyle(difference, SynthesisUtils.isTargetModel(edge), true)
                                 lineStyle = LineStyle.DASH
                                 selectionLineWidth = thick ? 6 : 3
-                                selectionForeground = SELECTION_COLOR.color
+                                selectionForeground = getSelectionColor().color
                                 addSingleClickAction(SelectRelatedAction::ID, ModifierState.NOT_PRESSED, ModifierState.NOT_PRESSED,
                                     ModifierState.NOT_PRESSED)
                             ]
@@ -1320,19 +1425,54 @@ class GenerateSyntheses {
                     «ENDFOR»
                     «FOR connecting : data.getConnectingArtifacts(artifact)»
                         /**
+                         * Returns the width of the incoming port on the target side of this connection.
+                         * {@code Connecting} refers to the target {@link «connecting.connected.name»},
+                         * reached from the source {@link «connecting.connecting.name»} via {@code «connecting.name»}.
+                         *
+                         * @return The width supplied by {@link #getDefaultPortWidth()} unless overridden.
+                         */
+                        def float getConnecting«connecting.connecting.name»Connects«connecting.connected.name»Named«connecting.name»PortWidth() {
+                            getDefaultPortWidth()
+                        }
+                        
+                        /**
+                         * Returns the height of the incoming port on the target side of this connection.
+                         * {@code Connecting} refers to the target {@link «connecting.connected.name»},
+                         * reached from the source {@link «connecting.connecting.name»} via {@code «connecting.name»}.
+                         *
+                         * @return The height supplied by {@link #getDefaultPortHeight()} unless overridden.
+                         */
+                        def float getConnecting«connecting.connecting.name»Connects«connecting.connected.name»Named«connecting.name»PortHeight() {
+                            getDefaultPortHeight()
+                        }
+                        
+                        /**
+                         * Adds the rendering for the incoming port on the target side of this connection.
+                         * {@code Connecting} refers to the target {@link «connecting.connected.name»},
+                         * reached from the source {@link «connecting.connecting.name»} via {@code «connecting.name»}.
+                         *
+                         * @param port The target port to render.
+                         * @return The rendering supplied by {@link #addDefaultPortShape(KPort)} unless overridden.
+                         */
+                        def KContainerRendering addConnecting«connecting.connecting.name»Connects«connecting.connected.name»Named«connecting.name»PortShape(KPort port) {
+                            addDefaultPortShape(port)
+                        }
+                        
+                        /**
                          * The rendering of a port that connects a «artifact.name.toFirstLower» with the «connecting.connecting.name»s that connect it. Issues the
                          * {@link RevealConnecting«connecting.connecting.name»Connects«connecting.connected.name»Named«connecting.name»Action} or {@link RevealConnecting«connecting.connecting.name»Connects«connecting.connected.name»Named«connecting.name»Action.Recursive} if
                          * clicked when not all connecting «connecting.connecting.name»s are shown, or the {@link RemoveConnecting«connecting.connecting.name»Connects«connecting.connected.name»Named«connecting.name»Action}
                          * if all are already shown.
                          */
-                        def KRectangle addConnecting«connecting.connecting.name»Connects«connecting.connected.name»Named«connecting.name»PortRendering(KPort port, int numReferences, boolean allShown) {
-                            return port.addRectangle => [
+                        def KContainerRendering addConnecting«connecting.connecting.name»Connects«connecting.connected.name»Named«connecting.name»PortRendering(KPort port, int numReferences, boolean allShown) {
+                            val rendering = addConnecting«connecting.connecting.name»Connects«connecting.connected.name»Named«connecting.name»PortShape(port)
+                            return rendering => [
                                 if (allShown) {
-                                    background = ALL_SHOWN_COLOR.color
+                                    background = getAllShownColor().color
                                     tooltip = "Remove connecting «connecting.connecting.name.toFirstLower»s via «connecting.name»."
                                     addSingleClickAction(RemoveConnecting«connecting.connecting.name»Connects«connecting.connected.name»Named«connecting.name»Action::ID, ModifierState.DONT_CARE, ModifierState.NOT_PRESSED, ModifierState.DONT_CARE)
                                 } else {
-                                    background = NOT_ALL_SHOWN_COLOR.color
+                                    background = getNotAllShownColor().color
                                     tooltip = "Show connecting «connecting.connecting.name.toFirstLower»s via «connecting.name» (" + numReferences + " total)."
                                     addSingleClickAction(RevealConnecting«connecting.connecting.name»Connects«connecting.connected.name»Named«connecting.name»Action::ID, ModifierState.DONT_CARE, ModifierState.NOT_PRESSED, ModifierState.DONT_CARE)
                                 }
@@ -1352,7 +1492,7 @@ class GenerateSyntheses {
                             lineWidth = 4
                             lineStyle = LineStyle.DASH
                             selectionLineWidth = 6
-                            selectionForeground = SELECTION_COLOR.color
+                            selectionForeground = getSelectionColor().color
                             addSingleClickAction(SelectRelatedAction::ID, ModifierState.NOT_PRESSED, ModifierState.NOT_PRESSED,
                                 ModifierState.NOT_PRESSED)
                         ]
@@ -1360,6 +1500,38 @@ class GenerateSyntheses {
                 «ENDFOR»
             }
             
+        '''
+    }
+
+    def static String generateStylesProvider(DataAccess data) {
+        return '''
+            package «data.getBundleNamePrefix».viz
+            
+            import com.google.inject.Inject
+            import com.google.inject.Injector
+            import com.google.inject.Provider
+            import java.util.ServiceLoader
+            
+            /**
+             * Lets Guice supply the default styles or the one user-registered subclass.
+             */
+            final class StylesProvider implements Provider<Styles> {
+                @Inject Injector injector
+                
+                override get() {
+                    val implementations = ServiceLoader.load(Styles, Styles.classLoader).stream.iterator
+                    if (!implementations.hasNext) {
+                        val defaults = new Styles
+                        injector.injectMembers(defaults)
+                        return defaults
+                    }
+                    val implementation = implementations.next.type
+                    if (implementations.hasNext) {
+                        throw new IllegalStateException("Register only one Styles subclass in META-INF/services.")
+                    }
+                    injector.getInstance(implementation)
+                }
+            }
         '''
     }
     

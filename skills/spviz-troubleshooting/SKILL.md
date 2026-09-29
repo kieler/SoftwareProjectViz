@@ -48,10 +48,10 @@ On Windows, use `mvn.cmd` when `mvn` is not available.
 The compilation may fail due to stale sources in the generated packages, because SPViz does not clean the target directory.
 Artifacts or views removed from the A2M or VC2M can remain in generated projects and cause build errors.
 Prefer a new, empty output directory.
-Before deleting obsolete generated files, preserve manual changes, especially completed `.generate` implementations.
+Before deleting obsolete generated files, preserve manual changes, especially completed `.generate` implementations and any customization under `<visualization-package>.viz/src` and registrations under `META-INF/services/` other than the IKlighdStartupHook registration.
 
 Never edit `*-gen`, `xtend-gen`, generated Java, or generated EMF implementation files
-to fix a source problem. Change the DSL or supported source customization point and
+to fix a source problem. Change the DSL or supported source customization in `viz/src` and
 regenerate.
 
 ## Generator and model failures
