@@ -18,7 +18,7 @@ import de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.Artifact
 import de.cau.cs.kieler.spviz.spvizmodel.sPVizModel.Connection
 import java.io.File
 import java.util.ArrayList
-import java.util.HashMap
+import java.util.LinkedHashMap
 import java.util.List
 import java.util.Map
 
@@ -843,7 +843,7 @@ class GenerateActions {
      */
     def static generateConnectAllAction(DataAccess data) {
         // Map for each artifact to the connections and the names of the reveal actions that they support.
-        val Map<Artifact, List<Pair<Connection, String>>> revealActions = new HashMap
+        val Map<Artifact, List<Pair<Connection, String>>> revealActions = new LinkedHashMap
         for (connection : data.connections) {
             // Reveal connected actions
             var List<Pair<Connection, String>> connectionActions = revealActions.get(connection.connecting)

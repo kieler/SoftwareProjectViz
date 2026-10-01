@@ -199,10 +199,11 @@ class SPVizGenerator extends AbstractGenerator {
                 "minimize.svg", "minimize128.png",
                 "restore.svg", "restore128.png"]
             for (fileName : fileNames) {
-                val InputStream source = SPVizGenerator.classLoader.getResourceAsStream("icons/" + fileName)
                 val newFile = new File(targetFolder, fileName)
                 if (!newFile.exists) {
+                    val InputStream source = SPVizGenerator.classLoader.getResourceAsStream("icons/" + fileName)
                     Files.copy(source, newFile.toPath)
+                    source.close
                 }
             }
         }

@@ -7,6 +7,7 @@
  * + Kiel University
  *   + Department of Computer Science
  *   + Real-Time and Embedded Systems Group
+ * + and Scheidt & Bachmann System Technik GmbH, 24109 Melsdorf
  * 
  * This code is provided under the terms of the Eclipse Public License 2.0 (EPL-2.0).
  */
@@ -185,12 +186,12 @@ class GenerateModelMavenBuild {
                         <dependency>
                             <groupId>org.eclipse.emf</groupId>
                             <artifactId>org.eclipse.emf.ecore.xcore</artifactId>
-                            <version>1.35.0</version>
+                            <version>${xcore-version}</version>
                         </dependency>
                         <dependency>
                             <groupId>org.eclipse.emf</groupId>
                             <artifactId>org.eclipse.emf.ecore.xcore.lib</artifactId>
-                            <version>1.7.1</version>
+                            <version>${xcore-lib-version}</version>
                         </dependency>
                     </dependencies>
                   </plugin>
@@ -227,6 +228,8 @@ class GenerateModelMavenBuild {
                 <klighd-version>3.1.0.v20250428</klighd-version>
                 <lsp4j-version>0.24.0</lsp4j-version>
                 <tycho-version>4.0.13</tycho-version>
+                <xcore-lib-version>1.7.1</xcore-lib-version>
+                <xcore-version>1.35.0</xcore-version>
                 <xtext-version>2.41.0</xtext-version>
                 <xtend-version>2.41.0</xtend-version>
                 
