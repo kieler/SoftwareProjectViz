@@ -281,6 +281,7 @@ class SPVizGenerator extends AbstractGenerator {
         val deps = newLinkedList(
            new Dependency("com.google.code.gson", "gson", "${gson-version}"),
            new Dependency("com.google.inject", "guice", "${guice-version}"),
+           new Dependency("com.google.guava", "guava", "${guava-version}"),
            new Dependency("de.cau.cs.kieler.klighd", "de.cau.cs.kieler.kgraph.text", "${klighd-version}"),
            new Dependency("de.cau.cs.kieler.klighd", "de.cau.cs.kieler.kgraph.text.ide", "${klighd-version}"),
            new Dependency("de.cau.cs.kieler.klighd", "de.cau.cs.kieler.klighd", "${klighd-version}"),
@@ -299,6 +300,8 @@ class SPVizGenerator extends AbstractGenerator {
            new Dependency("org.eclipse.xtend", "org.eclipse.xtend.lib", "${xtend-version}"),
            new Dependency("org.eclipse.xtext", "org.eclipse.xtext.ide", "${xtext-version}"),
            new Dependency("org.eclipse.xtext", "org.eclipse.xtext.xbase.lib", "${xtext-version}"),
+           new Dependency("org.eclipse.platform", "org.eclipse.core.runtime", "${core-runtime-version}"),
+           new Dependency("org.eclipse.platform", "org.eclipse.equinox.common", "${equinox-common-version}"),
            new Dependency("info.picocli", "picocli", "4.7.7"),
            new Dependency("org.eclipse.emf", "org.eclipse.emf.ecore.xmi", "2.39.0"),
            new Dependency(data.bundleNamePrefix, data.bundleNamePrefix + ".model", "${project.version}"),

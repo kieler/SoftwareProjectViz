@@ -222,12 +222,17 @@ class GenerateModelMavenBuild {
                 
                 <elk-version>0.11.0</elk-version>
                 <gson-version>2.13.2</gson-version>
+                <guava-version>33.7.1-jre</guava-version>
                 <guice-version>7.0.0</guice-version>
                 <klighd-version>3.1.0.v20250428</klighd-version>
                 <lsp4j-version>0.24.0</lsp4j-version>
                 <tycho-version>4.0.13</tycho-version>
                 <xtext-version>2.41.0</xtext-version>
                 <xtend-version>2.41.0</xtend-version>
+                
+                <!-- a few dependency versions from the currently used Eclipse Platform release to avoid signer mismatches from incompatible version numbers -->
+                <core-runtime-version>3.34.100</core-runtime-version>
+                <equinox-common-version>3.20.300</equinox-common-version>
                 
                 <sourceFeatureLabelSuffix>&#xA0;(Sources)</sourceFeatureLabelSuffix>
                 <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
