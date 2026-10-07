@@ -46,6 +46,7 @@ class GenerateModelUtils {
 
             import «importedNamespace».model.ConnectionLabel;
             import «importedNamespace».model.Identifiable;
+            import «importedNamespace».model.Labeled;
             import «importedNamespace».model.«spvizModel.name»Factory;
             «FOR artifact : spvizModel.artifacts»
                 import «importedNamespace».model.«artifact.name»;
@@ -62,6 +63,19 @@ class GenerateModelUtils {
              * Handy methods for handling with OSGi model elements.
              */
             public final class ModelUtil {
+                
+                /**
+                 * Adds an information entry to {@code labeled}.
+                 */
+                public static void addInformation(Labeled labeled, String information) {
+                    if (labeled == null) {
+                        throw new IllegalArgumentException("The labeled element must not be null.");
+                    }
+                    if (information == null) {
+                        throw new IllegalArgumentException("The information text must not be null.");
+                    }
+                    labeled.getInformation().add(information);
+                }
                 
                 «FOR artifact : spvizModel.artifacts»
                     «FOR connection : artifact.references.filter(Connection)»

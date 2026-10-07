@@ -75,6 +75,7 @@ class GenerateSubSyntheses {
             import de.cau.cs.kieler.klighd.kgraph.KNode
             import de.cau.cs.kieler.klighd.krendering.extensions.KContainerRenderingExtensions
             import de.cau.cs.kieler.klighd.krendering.extensions.KEdgeExtensions
+            import de.cau.cs.kieler.klighd.krendering.extensions.KLabelExtensions
             import de.cau.cs.kieler.klighd.krendering.extensions.KNodeExtensions
             import de.cau.cs.kieler.klighd.krendering.extensions.KPortExtensions
             import de.cau.cs.kieler.klighd.krendering.extensions.KRenderingExtensions
@@ -115,6 +116,7 @@ class GenerateSubSyntheses {
             class «viewName»OverviewSynthesis extends AbstractSubSynthesis<«viewName»OverviewContext, KNode> {
                 @Inject extension KContainerRenderingExtensions
                 @Inject extension KEdgeExtensions
+                @Inject extension KLabelExtensions
                 @Inject extension KNodeExtensions
                 @Inject extension KPortExtensions
                 @Inject extension KRenderingExtensions
@@ -132,8 +134,7 @@ class GenerateSubSyntheses {
                     }
                     if (usedContext.getOptionValue(SHOW_CONNECTION_LABELS) as Boolean && show) {
                         labels.filter[it !== null && !it.empty].toSet.forEach [ label |
-                            edge.labels += createKLabel => [
-                                text = label
+                            edge.addCenterEdgeLabel(label) => [
                                 tooltip = label
                             ]
                         ]
