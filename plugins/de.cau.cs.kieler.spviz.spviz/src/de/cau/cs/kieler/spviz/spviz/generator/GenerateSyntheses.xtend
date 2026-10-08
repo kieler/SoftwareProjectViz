@@ -83,12 +83,15 @@ class GenerateSyntheses {
                 import «data.getBundleNamePrefix».viz.subsyntheses.«view.name»OverviewSynthesis
             «ENDFOR»
             import «data.modelBundleNamePrefix».model.«data.projectName»
+            import java.util.EnumSet
             import java.util.LinkedHashSet
             import java.util.List
             import org.eclipse.elk.alg.layered.options.CrossingMinimizationStrategy
             import org.eclipse.elk.alg.layered.options.LayeredMetaDataProvider
             import org.eclipse.elk.alg.layered.options.LayeredOptions
             import org.eclipse.elk.core.options.BoxLayouterOptions
+            import org.eclipse.elk.core.options.CoreOptions
+            import org.eclipse.elk.core.options.SizeConstraint
             import org.eclipse.elk.core.util.BoxLayoutProvider.PackingMode
             
             import static «data.bundleNamePrefix».viz.Options.*
@@ -222,6 +225,7 @@ class GenerateSyntheses {
                             if (TOPDOWN_LAYOUT.booleanValue) {
                                 SynthesisUtils.configureTopdownLayout(it, false)
                             }
+                            setLayoutOption(CoreOptions::NODE_SIZE_CONSTRAINTS, EnumSet.of(SizeConstraint.MINIMUM_SIZE))
                             setLayoutOption(BoxLayouterOptions.BOX_PACKING_MODE, PackingMode.GROUP_MIXED)
                             addProjectRendering(model, usedContext)
                             
