@@ -543,6 +543,7 @@ class GenerateSyntheses {
             import de.cau.cs.kieler.klighd.krendering.extensions.KPolylineExtensions
             import de.cau.cs.kieler.klighd.krendering.extensions.KRenderingExtensions
             import de.cau.cs.kieler.klighd.util.KlighdProperties
+            import «data.getBundleNamePrefix».viz.Options.ArtifactLabel
             import «data.bundleNamePrefix».viz.actions.ConnectAllAction
             import «data.getBundleNamePrefix».viz.actions.ContextCollapseExpandAction
             import «data.getBundleNamePrefix».viz.actions.ContextExpandAllAction
@@ -1167,11 +1168,10 @@ class GenerateSyntheses {
                      * 
                      * @param node The KNode to add this rendering to.
                      * @param artifact The «artifact.name.toFirstLower» this rendering should represent.
-                     * @param label The representing name of this feature that should be shown.
                      * @param context The used ViewContext.
                      */
-                    def add«artifact.name»InOverviewRendering(KNode node, «artifact.name» artifact, String name, ViewContext context) {
-                        add«artifact.name»InOverviewRendering(node, artifact, name, context, null)
+                    def add«artifact.name»InOverviewRendering(KNode node, «artifact.name» artifact, ViewContext context) {
+                        add«artifact.name»InOverviewRendering(node, artifact, context, null)
                     }
                     
                     /**
@@ -1180,10 +1180,9 @@ class GenerateSyntheses {
                      * 
                      * @param node The KNode to add this rendering to.
                      * @param artifact The «artifact.name.toFirstLower» this rendering should represent.
-                     * @param label The representing name of this feature that should be shown.
                      * @param differentModel The other model to compare against for this artifact's coloring.
                      */
-                    def add«artifact.name»InOverviewRendering(KNode node, «artifact.name» artifact, String name, ViewContext context, «data.projectName» differentModel) {
+                    def add«artifact.name»InOverviewRendering(KNode node, «artifact.name» artifact, ViewContext context, «data.projectName» differentModel) {
                         node.addRoundedRectangle(getRoundness(), getRoundness()) => [
                             val interactiveButtons = context.getOptionValue(INTERACTIVE_BUTTONS) as Boolean
                             var columns = 1
@@ -1193,11 +1192,7 @@ class GenerateSyntheses {
                             setGridPlacement(columns)
                             addRectangle => [
                                 invisible = true
-                                if (context.getOptionValue(IDS) as Boolean) {
-                                    addSimpleLabel(name, false)
-                                } else {
-                                    addSimpleLabel("", false)
-                                }
+                                addSimpleLabel(SynthesisUtils.getArtifactLabel(artifact, context), false)
                             ]
                             if (interactiveButtons) {
                                 addVerticalLine
@@ -1270,8 +1265,8 @@ class GenerateSyntheses {
                                 invisible = true
                                 addRectangle => [
                                     invisible = true
-                                    if (context.getOptionValue(IDS) as Boolean) {
-                                        addSimpleLabel(SynthesisUtils.getId(artifact.getName, context), hasChildren) => [
+                                    if (context.getOptionValue(IDS) != ArtifactLabel.None) {
+                                        addSimpleLabel(SynthesisUtils.getArtifactLabel(artifact, context), hasChildren) => [
                                             fontBold = true
                                             selectionFontBold = true
                                         ]
@@ -1291,7 +1286,7 @@ class GenerateSyntheses {
 «««                            addHorizontalSeperatorLine(1, 0)
 «««                            addRectangle => [
 «««                                invisible = true
-«««                                addSimpleLabel("ID: " + SynthesisUtils.getId(artifact.getName, context)) => [
+«««                                addSimpleLabel("ID: " + SynthesisUtils.shortenLabel(artifact.getName, context)) => [
 «««                                    tooltip = "«artifact.name» \"" + artifact.getName + "\""
 «««                                    addSingleClickAction(SelectRelatedAction::ID, ModifierState.NOT_PRESSED, ModifierState.NOT_PRESSED,
 «««                                        ModifierState.NOT_PRESSED)
@@ -1587,6 +1582,7 @@ class GenerateSyntheses {
             import «data.modelBundleNamePrefix».model.Identifiable
             import «data.modelBundleNamePrefix».model.«data.projectName»
             import «data.bundleNamePrefix».model.«data.visualizationName»
+            import «data.bundleNamePrefix».viz.Options.ArtifactLabel
             «FOR artifact : data.artifacts»
                 import «data.modelBundleNamePrefix».model.«artifact.name.toFirstUpper»
             «ENDFOR»
@@ -1722,18 +1718,30 @@ class GenerateSyntheses {
                 }
                 
                 /**
-                 * If the id should be truncated by the prefix of the {@link Options#SHORTEN_BY} option, this returns a
-                 * truncated version of the id, otherwise the id itself.
+                 * Replaces the prefix configured by {@link Options#SHORTEN_BY} with "..." if the label starts with it.
+                 * Otherwise, returns the label unchanged.
                  * 
-                 * @param id The id that should possibly be truncated.
-                 * @return The possibly truncated id.
+                 * @param label The label to shorten.
+                 * @return The possibly shortened label.
                  */
-                def static String getId(String id, ViewContext usedContext) {
+                def static String shortenLabel(String label, ViewContext usedContext) {
                     val prefix = usedContext.getOptionValue(SHORTEN_BY) as String
-                    if (!prefix.empty && id.startsWith(prefix)) {
-                        return "..." + id.substring(prefix.length)
+                    if (!prefix.empty && label.startsWith(prefix)) {
+                        return "..." + label.substring(prefix.length)
                     }
-                    return id
+                    return label
+                }
+
+                /**
+                 * Selects and shortens the artifact label, falling back to its ID when no display name is set.
+                 */
+                def static String getArtifactLabel(Identifiable artifact, ViewContext usedContext) {
+                    val label = switch (usedContext.getOptionValue(IDS) as ArtifactLabel) {
+                        case Names: artifact.displayName ?: artifact.name
+                        case IDs: artifact.name
+                        case None: return ""
+                    }
+                    return shortenLabel(label ?: "", usedContext)
                 }
                 
                 def static <M> Iterable<M> filteredElements(List<M> elements, IOverviewVisualizationContext<M> oc,
@@ -2346,15 +2354,21 @@ class GenerateSyntheses {
                     "Description text length", 0, 500, 1, 20).setCategory(VIEW_FILTER_CATEGORY)
                     .description = "Limit the length of descriptive texts to this maximum value."
                 
-                /** Option for shortening all IDs by the prefix in the option. */
+                /** Option for shortening artifact labels by the prefix in the option. */
                 public static final SynthesisOption SHORTEN_BY = SynthesisOption.createTextOption(
-                    "Shorten IDs by").setCategory(VIEW_FILTER_CATEGORY)
-                    .description = "Shorten the IDs of all artifacts by this prefix."
+                    "Shorten artifact labels by").setCategory(VIEW_FILTER_CATEGORY)
+                    .description = "Shorten the display names or IDs of all artifacts by this prefix."
                 
-                /** Option for removing all artifact IDs completely. */
-                public static final SynthesisOption IDS = SynthesisOption.createCheckOption(
-                    "IDs", true).setCategory(VIEW_FILTER_CATEGORY)
-                    .description = "Show artifact IDs."
+                /** The enum holding all possible values for the {@link #IDS} option. */
+                enum ArtifactLabel {
+                    Names, IDs, None
+                }
+
+                /** Option for showing display names, human-readable IDs, or no artifact labels. */
+                public static final SynthesisOption IDS = SynthesisOption.createChoiceOption(
+                    "IDs", #[ArtifactLabel.Names, ArtifactLabel.IDs, ArtifactLabel.None],
+                    ArtifactLabel.Names).setCategory(VIEW_FILTER_CATEGORY)
+                    .description = "Show artifact display names, IDs, or no labels."
                 
                 /** Option for showing interactive buttons. */
                 public static final SynthesisOption INTERACTIVE_BUTTONS = SynthesisOption.createCheckOption(
