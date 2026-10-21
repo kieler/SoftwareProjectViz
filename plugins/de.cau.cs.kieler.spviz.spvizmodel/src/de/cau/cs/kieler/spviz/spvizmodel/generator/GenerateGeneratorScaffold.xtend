@@ -161,8 +161,9 @@ class GenerateGeneratorScaffold {
                         final String projectName = displayNames.get(projectKey);
                         LOGGER.log(System.Logger.Level.INFO, "Reading Project Data for " + projectName);
                         try {
-                            projectMap.put(projectKey, «model.name.toFirstUpper»ModelDataGenerator.generateData(
-                                    projectEntry.getValue().toString(), projectName, Optional.of(outputDirectory.toString())));
+                            OSGiProject projectData = «model.name.toFirstUpper»ModelDataGenerator.generateData(
+                                projectEntry.getValue().toString(), projectName, Optional.of(outputDirectory.toString()));
+                            projectMap.put(projectKey, projectData);
                         } catch (final ModelGenerationException | RuntimeException e) {
                             LOGGER.log(System.Logger.Level.ERROR, "Generating the model for project " + projectName + " failed.", e);
                             return CommandLine.ExitCode.SOFTWARE;
@@ -251,13 +252,14 @@ class GenerateGeneratorScaffold {
                     final Set<String> usedFileNames = new HashSet<>();
                     for (final String projectKey : projectKeys) {
                         final String name = projectNames.getOrDefault(projectKey, projectKey);
-                        displayNames.put(projectKey, name);
                         if (name == null || name.isBlank() || name.equals(".") || name.equals("..")
                                 || name.endsWith(".") || name.endsWith(" ")
                                 || INVALID_FILE_NAME_CHARACTERS.matcher(name).find()) {
                             errors.add("The name '" + name + "' of project " + projectKey + " cannot be used as a file name.");
                         } else if (!usedFileNames.add(name.toLowerCase(Locale.ROOT))) {
                             errors.add("The name '" + name + "' is used for more than one project. The model files would overwrite each other.");
+                        } else {
+                            displayNames.put(projectKey, name);
                         }
                     }
                     for (final String nameKey : projectNames.keySet()) {
