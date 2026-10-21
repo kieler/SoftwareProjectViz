@@ -94,6 +94,7 @@ class GenerateSyntheses {
             import org.eclipse.elk.core.options.CoreOptions
             import org.eclipse.elk.core.options.SizeConstraint
             import org.eclipse.elk.core.util.BoxLayoutProvider.PackingMode
+            import org.eclipse.xtext.resource.XtextResource
             
             import static «data.bundleNamePrefix».viz.Options.*
             import static extension «data.getBundleNamePrefix».model.util.ContextExtensions.*
@@ -190,28 +191,36 @@ class GenerateSyntheses {
                     var «data.visualizationName» visualizationContext = null 
                     var visContextsProperty = SynthesisProperties.VISUALIZATION_CONTEXTS
                     var visContextIndexProperty = SynthesisProperties.CURRENT_VISUALIZATION_CONTEXT_INDEX
+                    var parseResultProperty = SynthesisProperties.MODEL_PARSE_RESULT
                     if (SynthesisUtils.isTargetModel(modelNode)) {
                         visContextsProperty = SynthesisProperties.VISUALIZATION_CONTEXTS_OTHER
                         visContextIndexProperty = SynthesisProperties.CURRENT_VISUALIZATION_CONTEXT_INDEX_OTHER
+                        parseResultProperty = SynthesisProperties.MODEL_PARSE_RESULT_OTHER
                     }
                     
                     // Create a view with the currently stored visualization context in mind. If there is no current context, create
                     // a new one for the general model overview and store that for later use.
                     val visualizationContexts = usedContext.getProperty(visContextsProperty)
                     var index = usedContext.getProperty(visContextIndexProperty)
+                    val previousParseResult = usedContext.getProperty(parseResultProperty)
+                    val resource = model.eResource
+                    val parseResult = if (resource instanceof XtextResource) resource.parseResult else null
                     
                     if (!visualizationContexts.empty && index !== null) {
                         visualizationContext = visualizationContexts.get(index)
                     }
-                    // If the visualization context is for another model than the model this method was called for or does not exist
-                    // yet, reset the contexts.
-                    if (visualizationContext === null || !visualizationContext.isRootModel(model)) {
+                    // If the visualization context is for another model than the model this method was called for, does not exist
+                    // yet, or if the model as a parsed DSL model itself has changed, reset the contexts.
+                    if (visualizationContext === null ||
+                        !visualizationContext.isRootModel(model) ||
+                        previousParseResult !== parseResult) {
                         visualizationContexts.removeIf [ true ]
                         index = 0
                         usedContext.setProperty(visContextIndexProperty, index)
                         visualizationContext = VizModelUtil.create«data.visualizationName»(model)
                         visualizationContexts.add(visualizationContext)
                     }
+                    usedContext.setProperty(parseResultProperty, parseResult)
             
                     // Make this variable final here for later usage in the lambda.
                     val visContext = visualizationContext
@@ -290,6 +299,7 @@ class GenerateSyntheses {
            import de.cau.cs.kieler.klighd.syntheses.AbstractDiagramSynthesis
            import org.eclipse.elk.core.service.ILayoutConfigurationStore
            import org.eclipse.elk.core.service.LayoutConnectorsService
+           import org.eclipse.xtext.resource.XtextResource
            import «data.bundleNamePrefix».model.Option
            import «data.bundleNamePrefix».model.«data.visualizationName»
            import «data.bundleNamePrefix».model.impl.«data.visualizationName»Impl
@@ -327,23 +337,30 @@ class GenerateSyntheses {
                    var visContextsProperty = SynthesisProperties.VISUALIZATION_CONTEXTS
                    var currentVisContextIndexProperty = SynthesisProperties.CURRENT_VISUALIZATION_CONTEXT_INDEX
                    var modelVisualizationContextProperty = SynthesisProperties.MODEL_VISUALIZATION_CONTEXT
+                   var parseResultProperty = SynthesisProperties.MODEL_PARSE_RESULT
                    
                    if (SynthesisUtils.isTargetModel(usedContext.getViewModel())) {
                        visContextsProperty = SynthesisProperties.VISUALIZATION_CONTEXTS_OTHER
                        currentVisContextIndexProperty = SynthesisProperties.CURRENT_VISUALIZATION_CONTEXT_INDEX_OTHER
                        modelVisualizationContextProperty = SynthesisProperties.MODEL_VISUALIZATION_CONTEXT_OTHER
+                       parseResultProperty = SynthesisProperties.MODEL_PARSE_RESULT_OTHER
                    }
                    
                    val visualizationContexts = usedContext.getProperty(visContextsProperty)
                    var index = usedContext.getProperty(currentVisContextIndexProperty)
                    val rootVisualization = usedContext.getProperty(modelVisualizationContextProperty)
+                   val resource = model.getModelElement.eResource
+                   val parseResult = if (resource instanceof XtextResource) resource.parseResult else null
+                   val previousParseResult = usedContext.getProperty(parseResultProperty)
                    
                    if (!visualizationContexts.empty && index !== null) {
                        visualizationContext = visualizationContexts.get(index)
                    }
-                   // If the visualization context is for another model than the model this method was called for or does not exist
-                   // yet, reset the contexts.
-                   if (visualizationContext === null || rootVisualization !== model) {
+                   // If the visualization context is for another model than the model this method was called for, does not exist
+                   // yet, or if the model as a parsed DSL model itself has changed, reset the contexts.
+                   if (visualizationContext === null ||
+                       rootVisualization !== model ||
+                       previousParseResult !== parseResult) {
                        visualizationContexts.removeIf [ true ]
                        index = 0
                        usedContext.setProperty(currentVisContextIndexProperty, index)
@@ -354,6 +371,7 @@ class GenerateSyntheses {
                        visualizationContext = VisualizationReInitializer.reInitialize(model)
                        visualizationContexts.add(visualizationContext)
                        usedContext.setProperty(modelVisualizationContextProperty, model)
+                       usedContext.setProperty(parseResultProperty, parseResult)
                        
                        // Set synthesis and layout options according to the stored options.
                        setSynthesisOptions(model.getSynthesisOptions)
@@ -2187,6 +2205,7 @@ class GenerateSyntheses {
             import java.util.List
             import org.eclipse.elk.graph.properties.IProperty
             import org.eclipse.elk.graph.properties.Property
+            import org.eclipse.xtext.parser.IParseResult
             
             /**
              * Class to provide easy access to properties stored for the syntheses.
@@ -2217,6 +2236,17 @@ class GenerateSyntheses {
                  * The other visualization context index in a difference visualization, see {@code CURRENT_VISUALIZATION_CONTEXT_INDEX}.
                  */
                 public static final IProperty<Integer> CURRENT_VISUALIZATION_CONTEXT_INDEX_OTHER = new Property<Integer>("model.currentVisualizationContextIndexOther", null)
+                
+                /**
+                 * Property for the parse result used to reinitialize the cached contexts.
+                 * {@code null} for models that do not come from an Xtext resource.
+                 */
+                public static final IProperty<IParseResult> MODEL_PARSE_RESULT = new Property<IParseResult>("model.parseResult", null)
+
+                /**
+                 * The other parse result in a difference visualization, see {@code MODEL_PARSE_RESULT}.
+                 */
+                public static final IProperty<IParseResult> MODEL_PARSE_RESULT_OTHER = new Property<IParseResult>("model.parseResultOther", null)
                 
                 /**
                  * The root model visualization context for the VizSynthesis to figure out the change of file against the usual
