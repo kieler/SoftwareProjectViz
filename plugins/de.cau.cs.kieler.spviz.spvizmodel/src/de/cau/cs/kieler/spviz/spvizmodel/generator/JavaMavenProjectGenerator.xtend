@@ -53,6 +53,9 @@ class JavaMavenProjectGenerator {
     
     /** Indicates whether this project contains xtend sources that need to be compiled as well. */
     var boolean xtendSources = false
+    
+    /** The content of the generated .gitignore file. */
+    var String gitIgnoreContent = GeneratedProjectGitIgnore.GENERATED
 
     /**
      * Create a new generator.
@@ -133,11 +136,22 @@ class JavaMavenProjectGenerator {
         this.mainClass = mainClass
         return this
     }
+    
+    /**
+     * Configures the gitignore rules, replacing the default that ignores the entire generated project.
+     */
+    def JavaMavenProjectGenerator configureGitIgnore(String content) {
+        this.gitIgnoreContent = content
+        return this
+    }
 
     /**
      * Starts the generation of this generator and returns the fully generated Java project.
      */
     def void generate() {
+        // Create the .gitignore file
+        FileGenerator.generateFile(projectDirectory, ".gitignore", gitIgnoreContent)
+        
         val File settingsDirectory = FileGenerator.createDirectory(projectDirectory, ".settings")
         
         // Create the .classpath file

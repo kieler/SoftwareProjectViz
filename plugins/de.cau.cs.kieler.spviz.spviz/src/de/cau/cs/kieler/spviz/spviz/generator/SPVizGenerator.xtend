@@ -85,7 +85,6 @@ class SPVizGenerator extends AbstractGenerator {
             .configureMaven(true)
             .additionalSourceFolder("xtend-gen")
             .generate()
-        GeneratedProjectGitIgnore.generated(vizModelProjectDirectory)
         
         
         val sourceVizModelFolder = FileGenerator.createDirectory(vizModelProjectDirectory, "src-gen")
@@ -109,8 +108,8 @@ class SPVizGenerator extends AbstractGenerator {
             .additionalSourceFolder("xtend-gen")
             .configureRequiredBundles(requiredVizBundles(data))
             .configureExportedPackages(exportedVizPackages(data))
+            .configureGitIgnore(GeneratedProjectGitIgnore.visualizationContent(data.getBundleNamePrefix))
             .generate()
-        GeneratedProjectGitIgnore.visualization(vizProjectDirectory, data.getBundleNamePrefix)
             
         val sourceVizFolder = new File(vizProjectPath, "src-gen")
         
@@ -133,7 +132,7 @@ class SPVizGenerator extends AbstractGenerator {
             } else {
                 LOGGER.info("Generating project {}", diffVizProjectPath)
             }
-            val diffVizProjectDirectory = FileGenerator.createDirectory(diffVizProjectPath)
+            FileGenerator.createDirectory(diffVizProjectPath)
             new ProjectGenerator(diffVizProjectName, diffVizProjectPath)
                 .configureMaven(true)
                 .configureKlighd(true)
@@ -141,7 +140,6 @@ class SPVizGenerator extends AbstractGenerator {
                 .configureRequiredBundles(requiredDiffVizBundles(data))
                 .configureExportedPackages(exportedDiffVizPackages(data))
                 .generate()
-            GeneratedProjectGitIgnore.generated(diffVizProjectDirectory)
                 
             val sourceDiffVizFolder = new File(diffVizProjectPath, "src-gen")
             GenerateDiffViz.generate(sourceDiffVizFolder, data)
@@ -165,7 +163,6 @@ class SPVizGenerator extends AbstractGenerator {
             .configureGenerateShadedJar(true)
             .configureMainClass(data.visualizationName + "LanguageServer")
             .generate()
-        GeneratedProjectGitIgnore.generated(lsProjectDirectory)
         
         // Generate further source files for the java project
         val launchFolder = FileGenerator.createDirectory(lsProjectDirectory, "launch")
@@ -174,7 +171,6 @@ class SPVizGenerator extends AbstractGenerator {
         
         // Generate the Maven build framework for this visualization.
         GenerateMavenBuild.generate(root, data.bundleNamePrefix, data.visualizationName.toFirstUpper, data.modelBundleNamePrefix, "0.1.0", noModelDsl, noDiff)
-        GeneratedProjectGitIgnore.generated(new File(root, data.bundleNamePrefix + ".build"))
     }
     
     /**

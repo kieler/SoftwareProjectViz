@@ -52,6 +52,7 @@ class GenerateModelMavenBuild {
             LOGGER.info("Generating project {}", existingDirectory.absolutePath)
         }
         val buildDirectory = FileGenerator.createDirectory(rootDirectoy, spvizPath)
+        GeneratedProjectGitIgnore.generated(buildDirectory)
         
         // Put the pom.xml in the project.
         val content = spvizPomXmlContent(version)

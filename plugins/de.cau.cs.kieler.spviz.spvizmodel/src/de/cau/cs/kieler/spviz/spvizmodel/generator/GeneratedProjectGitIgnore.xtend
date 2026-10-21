@@ -18,26 +18,37 @@ import java.io.File
  */
 class GeneratedProjectGitIgnore {
     
+    /** {@code .gitignore} content for automatically generated projects. */
+    public static val String GENERATED = '''
+        /*
+    '''
+    
+    /** {@code .gitignore} content for project model generator projects. */
+    public static val String GENERATOR = '''
+        /bin/
+        /target/
+        /xtend-gen/
+        /test-bin/
+        /dependencies.txt
+    '''
+    
     /**
      * Generates a {@code .gitignore} that ignores every file in the project.
      *
      * @param projectDirectory the generated project directory
      */
     static def void generated(File projectDirectory) {
-        FileGenerator.generateFile(projectDirectory, ".gitignore", '''
-            /*
-        ''')
+        FileGenerator.generateFile(projectDirectory, ".gitignore", GENERATED)
     }
     
     /**
-     * Generates a {@code .gitignore} for the visualization project.
+     * Returns the {@code .gitignore} content for the visualization project.
      * The project is ignored by default, with its custom source files and the style service declaration retained.
      *
-     * @param projectDirectory the generated visualization project directory
      * @param packageName the base package name
      */
-    static def void visualization(File projectDirectory, String packageName) {
-        FileGenerator.generateFile(projectDirectory, ".gitignore", '''
+    static def String visualizationContent(String packageName) {
+        return '''
             /*
             !/src/
             !/META-INF/
@@ -45,22 +56,7 @@ class GeneratedProjectGitIgnore {
             !/META-INF/services/
             /META-INF/services/*
             !/META-INF/services/«packageName».viz.Styles
-        ''')
-    }
-    
-    /**
-     * Generates a {@code .gitignore} for a model generator project, excluding only build files.
-     *
-     * @param projectDirectory the generated model generator project directory
-     */
-    static def void generator(File projectDirectory) {
-        FileGenerator.generateFile(projectDirectory, ".gitignore", '''
-            /bin/
-            /target/
-            /xtend-gen/
-            /test-bin/
-            /dependencies.txt
-        ''')
+        '''
     }
     
     /**

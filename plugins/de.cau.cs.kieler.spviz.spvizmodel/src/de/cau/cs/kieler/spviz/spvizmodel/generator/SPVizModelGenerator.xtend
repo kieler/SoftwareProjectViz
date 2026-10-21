@@ -78,7 +78,6 @@ class SPVizModelGenerator extends AbstractGenerator {
             ])
             .configureMaven(true)
             .generate()
-        GeneratedProjectGitIgnore.generated(new File(projectPath))
             
         val sourceFolder = new File(projectPath, "src-gen")
         
@@ -91,11 +90,9 @@ class SPVizModelGenerator extends AbstractGenerator {
         GenerateModelMavenBuild.addPluginPom(projectDirectory, model, version)
         
         GenerateModelMavenBuild.addSpvizBuildProject(rootDirectory, version)
-        GeneratedProjectGitIgnore.generated(new File(rootDirectory, "spviz.build"))
         
         // Generate a .generate scaffold for the model if not already existent.
         GenerateGeneratorScaffold.generate(rootDirectory, model, version)
-        GeneratedProjectGitIgnore.generator(new File(rootDirectory, model.package + ".generate"))
         
         if (noDiff) {
             LOGGER.info("Skip generating difference DSL.")

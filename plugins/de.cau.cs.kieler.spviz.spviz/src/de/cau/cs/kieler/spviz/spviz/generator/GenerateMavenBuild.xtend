@@ -14,6 +14,7 @@
 package de.cau.cs.kieler.spviz.spviz.generator
 
 import de.cau.cs.kieler.spviz.spvizmodel.generator.FileGenerator
+import de.cau.cs.kieler.spviz.spvizmodel.generator.GeneratedProjectGitIgnore
 import java.io.File
 import java.util.List
 
@@ -67,6 +68,7 @@ class GenerateMavenBuild {
         // Create a project to hold the build artifacts.
         val buildProjectName = artifactIdPrefix + ".build"
         val project = FileGenerator.createDirectory(root, buildProjectName)
+        GeneratedProjectGitIgnore.generated(project)
         
         // Put the pom.xml in the project.
         val content = spvizPomXmlContent(artifactIdPrefix, modelIdPrefix, version)
