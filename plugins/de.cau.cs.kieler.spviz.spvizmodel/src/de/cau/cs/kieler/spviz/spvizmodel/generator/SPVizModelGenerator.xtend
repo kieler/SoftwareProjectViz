@@ -116,6 +116,7 @@ class SPVizModelGenerator extends AbstractGenerator {
             creator.lineDelimiter = LineDelimiter.UNIX.value
             
             creator.createProjects(config)
+            GeneratedProjectGitIgnore.xtextProjects(rootDirectory, config.baseName)
             
             // modify xtext grammar
             val diffDslFolder = new File(config.rootLocation + "/" + config.baseName)
@@ -153,6 +154,7 @@ class SPVizModelGenerator extends AbstractGenerator {
             creator.lineDelimiter = LineDelimiter.UNIX.value
             
             creator.createProjects(config)
+            GeneratedProjectGitIgnore.xtextProjects(rootDirectory, config.baseName)
             
             // modify xtext grammar
             val dslFolder = new File(config.rootLocation + "/" + config.baseName)

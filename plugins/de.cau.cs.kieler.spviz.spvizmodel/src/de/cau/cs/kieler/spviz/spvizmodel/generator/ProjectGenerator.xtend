@@ -56,6 +56,9 @@ class ProjectGenerator {
     
     /** Additional source folders that should be included in this project's build process. */
     val List<String> additionalSourceFolders = newArrayList
+    
+    /** The content of the generated .gitignore file. */
+    var String gitIgnoreContent = GeneratedProjectGitIgnore.GENERATED
 
     /**
      * Create a new generator.
@@ -157,11 +160,22 @@ class ProjectGenerator {
         this.additionalSourceFolders.add(sourceFolder)
         return this
     }
+    
+    /**
+     * Configures the gitignore rules, replacing the default that ignores the entire generated project.
+     */
+    def ProjectGenerator configureGitIgnore(String content) {
+        this.gitIgnoreContent = content
+        return this
+    }
 
     /**
      * Starts the generation of this generator.
      */
     def void generate() {
+        // Create the .gitignore file
+        FileGenerator.generateFile(projectDirectory, ".gitignore", gitIgnoreContent)
+        
         // Create all necessary directories
         FileGenerator.createDirectory(projectDirectory, "src-gen")
         for (sourceFolder : additionalSourceFolders) {

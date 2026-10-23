@@ -14,6 +14,7 @@
 package de.cau.cs.kieler.spviz.spviz.generator
 
 import de.cau.cs.kieler.spviz.spvizmodel.generator.FileGenerator
+import de.cau.cs.kieler.spviz.spvizmodel.generator.GeneratedProjectGitIgnore
 import de.cau.cs.kieler.spviz.spvizmodel.generator.JavaMavenProjectGenerator
 import de.cau.cs.kieler.spviz.spvizmodel.generator.ProjectGenerator
 import de.cau.cs.kieler.spviz.spvizmodel.generator.maven.Dependency
@@ -107,6 +108,7 @@ class SPVizGenerator extends AbstractGenerator {
             .additionalSourceFolder("xtend-gen")
             .configureRequiredBundles(requiredVizBundles(data))
             .configureExportedPackages(exportedVizPackages(data))
+            .configureGitIgnore(GeneratedProjectGitIgnore.visualizationContent(data.getBundleNamePrefix))
             .generate()
             
         val sourceVizFolder = new File(vizProjectPath, "src-gen")

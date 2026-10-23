@@ -48,6 +48,7 @@ class GenerateGeneratorScaffold {
             .configureSourceFolderName("src")
             .configureGenerateShadedJar(true)
             .configureMainClass("ConfigAndExecuteCli")
+            .configureGitIgnore(GeneratedProjectGitIgnore.GENERATOR)
             .generate()
         
         val packageFolder = FileGenerator.createDirectory(projectDirectory, "src/" + projectName.replace('.', '/'))

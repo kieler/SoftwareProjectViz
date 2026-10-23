@@ -7,22 +7,18 @@
  * + Kiel University
  *   + Department of Computer Science
  *   + Real-Time and Embedded Systems Group
+ * + and Scheidt & Bachmann System Technik GmbH, 24109 Melsdorf
  * 
  * This code is provided under the terms of the Eclipse Public License 2.0 (EPL-2.0).
  */
 package de.cau.cs.kieler.spviz.spviz.generator
 
 import de.cau.cs.kieler.spviz.spvizmodel.generator.FileGenerator
+import de.cau.cs.kieler.spviz.spvizmodel.generator.GeneratedProjectGitIgnore
 import java.io.File
 import java.util.List
 
 class GenerateMavenBuild {
-    /* 
-     * TODO: 
-     * - generate a full .gitignore for each project/feature/other main folder for an easier build process
-     *   (/bin, /target, dependencies.txt, ...)
-     */
-    
     static List<String> vizBundleSuffixes
     static List<String> modelBundleSuffixes
     
@@ -72,6 +68,7 @@ class GenerateMavenBuild {
         // Create a project to hold the build artifacts.
         val buildProjectName = artifactIdPrefix + ".build"
         val project = FileGenerator.createDirectory(root, buildProjectName)
+        GeneratedProjectGitIgnore.generated(project)
         
         // Put the pom.xml in the project.
         val content = spvizPomXmlContent(artifactIdPrefix, modelIdPrefix, version)
