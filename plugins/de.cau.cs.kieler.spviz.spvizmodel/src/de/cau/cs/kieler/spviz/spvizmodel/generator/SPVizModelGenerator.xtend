@@ -470,7 +470,9 @@ class SPVizModelGenerator extends AbstractGenerator {
                         return;
                     }
                     
-                    if (!modelUri.isFile() || !Files.isRegularFile(Paths.get(modelUri.toFileString()))) {
+                    boolean modelExists = modelUri.isFile() && Files.isRegularFile(Paths.get(modelUri.toFileString()));
+                    boolean modelResourceExists = modelUri.isPlatformResource() && differenceResource.getResourceSet() != null && differenceResource.getResourceSet().getURIConverter().exists(modelUri, null);
+                    if (!modelExists && !modelResourceExists) {
                         error("The " + role + " model file does not exist: " + modelPathString, difference, feature);
                     }
                 }
