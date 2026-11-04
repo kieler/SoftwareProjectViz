@@ -162,7 +162,7 @@ class GenerateGeneratorScaffold {
                         final String projectName = displayNames.get(projectKey);
                         LOGGER.log(System.Logger.Level.INFO, "Reading Project Data for " + projectName);
                         try {
-                            OSGiProject projectData = «model.name.toFirstUpper»ModelDataGenerator.generateData(
+                            «model.name.toFirstUpper»Project projectData = «model.name.toFirstUpper»ModelDataGenerator.generateData(
                                 projectEntry.getValue().toString(), projectName, Optional.of(outputDirectory.toString()));
                             projectMap.put(projectKey, projectData);
                         } catch (final ModelGenerationException | RuntimeException e) {
