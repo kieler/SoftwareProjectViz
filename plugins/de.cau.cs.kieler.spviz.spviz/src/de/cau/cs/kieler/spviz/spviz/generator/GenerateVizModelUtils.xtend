@@ -192,7 +192,7 @@ class GenerateVizModelUtils {
             import static extension «data.getBundleNamePrefix».model.util.VizModelUtil.*
             
             /**
-             * Extension class that contains some static methods commonly used in the OSGi synthesis for modifying the visualization
+             * Extension class that contains some static methods commonly used in the synthesis for modifying the visualization
              * context.
              */
             class ContextExtensions {

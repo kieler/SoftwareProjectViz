@@ -60,7 +60,7 @@ class GenerateModelUtils {
             import org.eclipse.emf.ecore.EObject;
             
             /**
-             * Handy methods for handling with OSGi model elements.
+             * Handy methods for handling with project model elements.
              */
             public final class ModelUtil {
                 

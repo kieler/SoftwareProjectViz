@@ -218,7 +218,7 @@ class GenerateSyntheses {
                     if (visContext.focus === null) {
                         // This synthesis can be used.
                         
-                        // The overview of the entire OSGi Project.
+                        // The overview of the entire project.
                         modelNode.children += createNode => [
                             associateWith(model)
                             data += createKIdentifier => [ it.id = visContext.hashCode.toString ]
