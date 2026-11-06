@@ -264,6 +264,7 @@ class SPVizModelGenerator extends AbstractGenerator {
         abstract class Identifiable extends Labeled {
             unique id String ecoreId
             String name
+            String displayName
             boolean external
             /**
              * Managed by ModelUtil.add... methods. Modify this list only when importing or transforming a model.
@@ -340,6 +341,7 @@ class SPVizModelGenerator extends AbstractGenerator {
                     (external?='external')?
                     '«artifact.name.toFirstLower»'
                     name=EString
+                    (displayName=STRING)?
                     ('{'
                         «FOR containment : artifact.references.filter(Containment)»
                             ('«containment.contains.name.toFirstLower»s:' '[' «containment.contains.name.toFirstLower»s += [«containment.contains.name.toFirstUpper»|EString] ( "," «containment.contains.name.toFirstLower»s += [«containment.contains.name.toFirstUpper»|EString])* ']' )?

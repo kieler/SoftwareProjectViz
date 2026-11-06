@@ -38,10 +38,9 @@ This makes failures distinguishable from an empty but successful run.
 2. Scan and parse source files.
 Also identify if the build system or other tools can provide additional facts, requiring the generator to run during the build or using build artifacts.
 Verify with the user if such additional facts are needed for the requested views.
-Register every artifact with a stable key before resolving references.
-The generated `createOrFind<Type>` helpers and per-type maps are intended for this purpose.
-3. Set each artifact's display name and a stable ASCII-safe `ecoreId`.
-Reuse the generated `toAscii` helper or an equivalent deterministic normalization.
+3. Register artifacts with `createOrFind<Type>(id)` or `createOrFind<Type>(id, displayName)`.
+`id` needs to be a unique and stable key, and the optional `displayName` is a non-unique presentation label.
+A non-null display name updates an existing artifact; the one-argument overload leaves an existing display name unchanged.
 Do not use a traversal index as the identity.
 4. Set `external` deliberately.
 A source artifact known to belong to the analyzed repository is normally internal; an unresolved dependency stub can be external.

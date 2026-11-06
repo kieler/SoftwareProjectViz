@@ -94,6 +94,7 @@ class GenerateSyntheses {
             import org.eclipse.elk.core.options.CoreOptions
             import org.eclipse.elk.core.options.SizeConstraint
             import org.eclipse.elk.core.util.BoxLayoutProvider.PackingMode
+            import org.eclipse.xtext.resource.XtextResource
             
             import static «data.bundleNamePrefix».viz.Options.*
             import static extension «data.getBundleNamePrefix».model.util.ContextExtensions.*
@@ -190,28 +191,36 @@ class GenerateSyntheses {
                     var «data.visualizationName» visualizationContext = null 
                     var visContextsProperty = SynthesisProperties.VISUALIZATION_CONTEXTS
                     var visContextIndexProperty = SynthesisProperties.CURRENT_VISUALIZATION_CONTEXT_INDEX
+                    var parseResultProperty = SynthesisProperties.MODEL_PARSE_RESULT
                     if (SynthesisUtils.isTargetModel(modelNode)) {
                         visContextsProperty = SynthesisProperties.VISUALIZATION_CONTEXTS_OTHER
                         visContextIndexProperty = SynthesisProperties.CURRENT_VISUALIZATION_CONTEXT_INDEX_OTHER
+                        parseResultProperty = SynthesisProperties.MODEL_PARSE_RESULT_OTHER
                     }
                     
                     // Create a view with the currently stored visualization context in mind. If there is no current context, create
                     // a new one for the general model overview and store that for later use.
                     val visualizationContexts = usedContext.getProperty(visContextsProperty)
                     var index = usedContext.getProperty(visContextIndexProperty)
+                    val previousParseResult = usedContext.getProperty(parseResultProperty)
+                    val resource = model.eResource
+                    val parseResult = if (resource instanceof XtextResource) resource.parseResult else null
                     
                     if (!visualizationContexts.empty && index !== null) {
                         visualizationContext = visualizationContexts.get(index)
                     }
-                    // If the visualization context is for another model than the model this method was called for or does not exist
-                    // yet, reset the contexts.
-                    if (visualizationContext === null || !visualizationContext.isRootModel(model)) {
+                    // If the visualization context is for another model than the model this method was called for, does not exist
+                    // yet, or if the model as a parsed DSL model itself has changed, reset the contexts.
+                    if (visualizationContext === null ||
+                        !visualizationContext.isRootModel(model) ||
+                        previousParseResult !== parseResult) {
                         visualizationContexts.removeIf [ true ]
                         index = 0
                         usedContext.setProperty(visContextIndexProperty, index)
                         visualizationContext = VizModelUtil.create«data.visualizationName»(model)
                         visualizationContexts.add(visualizationContext)
                     }
+                    usedContext.setProperty(parseResultProperty, parseResult)
             
                     // Make this variable final here for later usage in the lambda.
                     val visContext = visualizationContext
@@ -290,6 +299,7 @@ class GenerateSyntheses {
            import de.cau.cs.kieler.klighd.syntheses.AbstractDiagramSynthesis
            import org.eclipse.elk.core.service.ILayoutConfigurationStore
            import org.eclipse.elk.core.service.LayoutConnectorsService
+           import org.eclipse.xtext.resource.XtextResource
            import «data.bundleNamePrefix».model.Option
            import «data.bundleNamePrefix».model.«data.visualizationName»
            import «data.bundleNamePrefix».model.impl.«data.visualizationName»Impl
@@ -327,23 +337,30 @@ class GenerateSyntheses {
                    var visContextsProperty = SynthesisProperties.VISUALIZATION_CONTEXTS
                    var currentVisContextIndexProperty = SynthesisProperties.CURRENT_VISUALIZATION_CONTEXT_INDEX
                    var modelVisualizationContextProperty = SynthesisProperties.MODEL_VISUALIZATION_CONTEXT
+                   var parseResultProperty = SynthesisProperties.MODEL_PARSE_RESULT
                    
                    if (SynthesisUtils.isTargetModel(usedContext.getViewModel())) {
                        visContextsProperty = SynthesisProperties.VISUALIZATION_CONTEXTS_OTHER
                        currentVisContextIndexProperty = SynthesisProperties.CURRENT_VISUALIZATION_CONTEXT_INDEX_OTHER
                        modelVisualizationContextProperty = SynthesisProperties.MODEL_VISUALIZATION_CONTEXT_OTHER
+                       parseResultProperty = SynthesisProperties.MODEL_PARSE_RESULT_OTHER
                    }
                    
                    val visualizationContexts = usedContext.getProperty(visContextsProperty)
                    var index = usedContext.getProperty(currentVisContextIndexProperty)
                    val rootVisualization = usedContext.getProperty(modelVisualizationContextProperty)
+                   val resource = model.getModelElement.eResource
+                   val parseResult = if (resource instanceof XtextResource) resource.parseResult else null
+                   val previousParseResult = usedContext.getProperty(parseResultProperty)
                    
                    if (!visualizationContexts.empty && index !== null) {
                        visualizationContext = visualizationContexts.get(index)
                    }
-                   // If the visualization context is for another model than the model this method was called for or does not exist
-                   // yet, reset the contexts.
-                   if (visualizationContext === null || rootVisualization !== model) {
+                   // If the visualization context is for another model than the model this method was called for, does not exist
+                   // yet, or if the model as a parsed DSL model itself has changed, reset the contexts.
+                   if (visualizationContext === null ||
+                       rootVisualization !== model ||
+                       previousParseResult !== parseResult) {
                        visualizationContexts.removeIf [ true ]
                        index = 0
                        usedContext.setProperty(currentVisContextIndexProperty, index)
@@ -354,6 +371,7 @@ class GenerateSyntheses {
                        visualizationContext = VisualizationReInitializer.reInitialize(model)
                        visualizationContexts.add(visualizationContext)
                        usedContext.setProperty(modelVisualizationContextProperty, model)
+                       usedContext.setProperty(parseResultProperty, parseResult)
                        
                        // Set synthesis and layout options according to the stored options.
                        setSynthesisOptions(model.getSynthesisOptions)
@@ -543,6 +561,7 @@ class GenerateSyntheses {
             import de.cau.cs.kieler.klighd.krendering.extensions.KPolylineExtensions
             import de.cau.cs.kieler.klighd.krendering.extensions.KRenderingExtensions
             import de.cau.cs.kieler.klighd.util.KlighdProperties
+            import «data.getBundleNamePrefix».viz.Options.ArtifactLabel
             import «data.bundleNamePrefix».viz.actions.ConnectAllAction
             import «data.getBundleNamePrefix».viz.actions.ContextCollapseExpandAction
             import «data.getBundleNamePrefix».viz.actions.ContextExpandAllAction
@@ -1167,11 +1186,10 @@ class GenerateSyntheses {
                      * 
                      * @param node The KNode to add this rendering to.
                      * @param artifact The «artifact.name.toFirstLower» this rendering should represent.
-                     * @param label The representing name of this feature that should be shown.
                      * @param context The used ViewContext.
                      */
-                    def add«artifact.name»InOverviewRendering(KNode node, «artifact.name» artifact, String name, ViewContext context) {
-                        add«artifact.name»InOverviewRendering(node, artifact, name, context, null)
+                    def add«artifact.name»InOverviewRendering(KNode node, «artifact.name» artifact, ViewContext context) {
+                        add«artifact.name»InOverviewRendering(node, artifact, context, null)
                     }
                     
                     /**
@@ -1180,10 +1198,9 @@ class GenerateSyntheses {
                      * 
                      * @param node The KNode to add this rendering to.
                      * @param artifact The «artifact.name.toFirstLower» this rendering should represent.
-                     * @param label The representing name of this feature that should be shown.
                      * @param differentModel The other model to compare against for this artifact's coloring.
                      */
-                    def add«artifact.name»InOverviewRendering(KNode node, «artifact.name» artifact, String name, ViewContext context, «data.projectName» differentModel) {
+                    def add«artifact.name»InOverviewRendering(KNode node, «artifact.name» artifact, ViewContext context, «data.projectName» differentModel) {
                         node.addRoundedRectangle(getRoundness(), getRoundness()) => [
                             val interactiveButtons = context.getOptionValue(INTERACTIVE_BUTTONS) as Boolean
                             var columns = 1
@@ -1193,11 +1210,7 @@ class GenerateSyntheses {
                             setGridPlacement(columns)
                             addRectangle => [
                                 invisible = true
-                                if (context.getOptionValue(IDS) as Boolean) {
-                                    addSimpleLabel(name, false)
-                                } else {
-                                    addSimpleLabel("", false)
-                                }
+                                addSimpleLabel(SynthesisUtils.getArtifactLabel(artifact, context), false)
                             ]
                             if (interactiveButtons) {
                                 addVerticalLine
@@ -1270,8 +1283,8 @@ class GenerateSyntheses {
                                 invisible = true
                                 addRectangle => [
                                     invisible = true
-                                    if (context.getOptionValue(IDS) as Boolean) {
-                                        addSimpleLabel(SynthesisUtils.getId(artifact.getName, context), hasChildren) => [
+                                    if (context.getOptionValue(IDS) != ArtifactLabel.None) {
+                                        addSimpleLabel(SynthesisUtils.getArtifactLabel(artifact, context), hasChildren) => [
                                             fontBold = true
                                             selectionFontBold = true
                                         ]
@@ -1291,7 +1304,7 @@ class GenerateSyntheses {
 «««                            addHorizontalSeperatorLine(1, 0)
 «««                            addRectangle => [
 «««                                invisible = true
-«««                                addSimpleLabel("ID: " + SynthesisUtils.getId(artifact.getName, context)) => [
+«««                                addSimpleLabel("ID: " + SynthesisUtils.shortenLabel(artifact.getName, context)) => [
 «««                                    tooltip = "«artifact.name» \"" + artifact.getName + "\""
 «««                                    addSingleClickAction(SelectRelatedAction::ID, ModifierState.NOT_PRESSED, ModifierState.NOT_PRESSED,
 «««                                        ModifierState.NOT_PRESSED)
@@ -1587,6 +1600,7 @@ class GenerateSyntheses {
             import «data.modelBundleNamePrefix».model.Identifiable
             import «data.modelBundleNamePrefix».model.«data.projectName»
             import «data.bundleNamePrefix».model.«data.visualizationName»
+            import «data.bundleNamePrefix».viz.Options.ArtifactLabel
             «FOR artifact : data.artifacts»
                 import «data.modelBundleNamePrefix».model.«artifact.name.toFirstUpper»
             «ENDFOR»
@@ -1722,18 +1736,30 @@ class GenerateSyntheses {
                 }
                 
                 /**
-                 * If the id should be truncated by the prefix of the {@link Options#SHORTEN_BY} option, this returns a
-                 * truncated version of the id, otherwise the id itself.
+                 * Replaces the prefix configured by {@link Options#SHORTEN_BY} with "..." if the label starts with it.
+                 * Otherwise, returns the label unchanged.
                  * 
-                 * @param id The id that should possibly be truncated.
-                 * @return The possibly truncated id.
+                 * @param label The label to shorten.
+                 * @return The possibly shortened label.
                  */
-                def static String getId(String id, ViewContext usedContext) {
+                def static String shortenLabel(String label, ViewContext usedContext) {
                     val prefix = usedContext.getOptionValue(SHORTEN_BY) as String
-                    if (!prefix.empty && id.startsWith(prefix)) {
-                        return "..." + id.substring(prefix.length)
+                    if (!prefix.empty && label.startsWith(prefix)) {
+                        return "..." + label.substring(prefix.length)
                     }
-                    return id
+                    return label
+                }
+
+                /**
+                 * Selects and shortens the artifact label, falling back to its ID when no display name is set.
+                 */
+                def static String getArtifactLabel(Identifiable artifact, ViewContext usedContext) {
+                    val label = switch (usedContext.getOptionValue(IDS) as ArtifactLabel) {
+                        case Names: artifact.displayName ?: artifact.name
+                        case IDs: artifact.name
+                        case None: return ""
+                    }
+                    return shortenLabel(label ?: "", usedContext)
                 }
                 
                 def static <M> Iterable<M> filteredElements(List<M> elements, IOverviewVisualizationContext<M> oc,
@@ -2179,6 +2205,7 @@ class GenerateSyntheses {
             import java.util.List
             import org.eclipse.elk.graph.properties.IProperty
             import org.eclipse.elk.graph.properties.Property
+            import org.eclipse.xtext.parser.IParseResult
             
             /**
              * Class to provide easy access to properties stored for the syntheses.
@@ -2209,6 +2236,17 @@ class GenerateSyntheses {
                  * The other visualization context index in a difference visualization, see {@code CURRENT_VISUALIZATION_CONTEXT_INDEX}.
                  */
                 public static final IProperty<Integer> CURRENT_VISUALIZATION_CONTEXT_INDEX_OTHER = new Property<Integer>("model.currentVisualizationContextIndexOther", null)
+                
+                /**
+                 * Property for the parse result used to reinitialize the cached contexts.
+                 * {@code null} for models that do not come from an Xtext resource.
+                 */
+                public static final IProperty<IParseResult> MODEL_PARSE_RESULT = new Property<IParseResult>("model.parseResult", null)
+
+                /**
+                 * The other parse result in a difference visualization, see {@code MODEL_PARSE_RESULT}.
+                 */
+                public static final IProperty<IParseResult> MODEL_PARSE_RESULT_OTHER = new Property<IParseResult>("model.parseResultOther", null)
                 
                 /**
                  * The root model visualization context for the VizSynthesis to figure out the change of file against the usual
@@ -2346,15 +2384,21 @@ class GenerateSyntheses {
                     "Description text length", 0, 500, 1, 20).setCategory(VIEW_FILTER_CATEGORY)
                     .description = "Limit the length of descriptive texts to this maximum value."
                 
-                /** Option for shortening all IDs by the prefix in the option. */
+                /** Option for shortening artifact labels by the prefix in the option. */
                 public static final SynthesisOption SHORTEN_BY = SynthesisOption.createTextOption(
-                    "Shorten IDs by").setCategory(VIEW_FILTER_CATEGORY)
-                    .description = "Shorten the IDs of all artifacts by this prefix."
+                    "Shorten artifact labels by").setCategory(VIEW_FILTER_CATEGORY)
+                    .description = "Shorten the display names or IDs of all artifacts by this prefix."
                 
-                /** Option for removing all artifact IDs completely. */
-                public static final SynthesisOption IDS = SynthesisOption.createCheckOption(
-                    "IDs", true).setCategory(VIEW_FILTER_CATEGORY)
-                    .description = "Show artifact IDs."
+                /** The enum holding all possible values for the {@link #IDS} option. */
+                enum ArtifactLabel {
+                    Names, IDs, None
+                }
+
+                /** Option for showing display names, human-readable IDs, or no artifact labels. */
+                public static final SynthesisOption IDS = SynthesisOption.createChoiceOption(
+                    "IDs", #[ArtifactLabel.Names, ArtifactLabel.IDs, ArtifactLabel.None],
+                    ArtifactLabel.Names).setCategory(VIEW_FILTER_CATEGORY)
+                    .description = "Show artifact display names, IDs, or no labels."
                 
                 /** Option for showing interactive buttons. */
                 public static final SynthesisOption INTERACTIVE_BUTTONS = SynthesisOption.createCheckOption(
