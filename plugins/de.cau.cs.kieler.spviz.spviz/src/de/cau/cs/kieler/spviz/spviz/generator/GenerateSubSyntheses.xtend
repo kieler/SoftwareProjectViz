@@ -326,7 +326,7 @@ class GenerateSubSyntheses {
                         «FOR shownElement : view.shownElements»
                             // all «shownElement.shownElement.name»s
                             filteredCollapsed«shownElement.shownElement.name»Contexts.sortBy [
-                                SynthesisUtils.getId(modelElement.name, usedContext)
+                                SynthesisUtils.shortenLabel(modelElement.name, usedContext)
                             ].forEach [ collapsed«shownElement.shownElement.name»Context, index |
                                 children += simple«shownElement.shownElement.name»Synthesis.transform(
                                     collapsed«shownElement.shownElement.name»Context as «shownElement.shownElement.name»Context, -index, differentModel)
@@ -1121,9 +1121,8 @@ class GenerateSubSyntheses {
                         context.createNode() => [
                             associateWith(context)
                             data += createKIdentifier => [ it.id = context.hashCode.toString ]
-                            val label = SynthesisUtils.getId(«artifactName.toFirstLower».name, usedContext) ?: ""
                             setLayoutOption(CoreOptions::PRIORITY, priority)
-                            add«artifactName»InOverviewRendering(«artifactName.toFirstLower», label, usedContext, differentModel)
+                            add«artifactName»InOverviewRendering(«artifactName.toFirstLower», usedContext, differentModel)
                         ]
                     ]
                 }

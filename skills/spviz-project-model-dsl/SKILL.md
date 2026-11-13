@@ -21,14 +21,14 @@ Use this generated grammar and its validation diagnostics.
 
 ## General syntax model
 A concrete model normally has an optional project name followed by artifact instances.
-An instance has an artifact-type keyword, a stable name, and an optional body.
-The name is also the cross-reference identifier and is used to derive the generated `ecoreId`:
+An instance has an artifact-type keyword, a stable identifying name, an optional quoted display name, and an optional body.
+The identifying name is also the cross-reference identifier and is used to derive the generated `ecoreId`:
 
 ```
 projectName Example
 information "generated on 2026-09-21"
 
-module core {
+module coreId "core" {
     components: [api]
     dependency utilities "runtime dependency"
     information "Bundle-Version: 1.2.3"

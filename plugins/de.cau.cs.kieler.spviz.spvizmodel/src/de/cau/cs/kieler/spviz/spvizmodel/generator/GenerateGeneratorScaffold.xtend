@@ -528,25 +528,38 @@ class GenerateGeneratorScaffold {
                     }
                     
                     /**
-                     * Return the «artifact.name.toFirstLower» with the given name. If it was generated before, return that, or else return a new one.
-                     * The {@code name} and {@code ecoreId} of the module are pre-set.
+                     * Return the «artifact.name.toFirstLower» with the given ID. If it was generated before, return that, or else return a new one.
                      * 
-                     * @param name The identifying name of the «artifact.name.toFirstLower».
+                     * @param id The identifying name of the «artifact.name.toFirstLower».
                      * @return The (possibly newly created) «artifact.name.toFirstLower».
                      */
-                    private «artifact.name.toFirstUpper» createOrFind«artifact.name.toFirstUpper»(String name) {
-                        if («artifact.name.toFirstLower»s.containsKey(name)) {
-                            return «artifact.name.toFirstLower»s.get(name);
-                        } else {
+                    private «artifact.name.toFirstUpper» createOrFind«artifact.name.toFirstUpper»(String id) {
+                        return createOrFind«artifact.name.toFirstUpper»(id, null);
+                    }
+                    
+                    /**
+                     * Return the «artifact.name.toFirstLower» with the given ID. If it was generated before, return that, or else return a new one.
+                     * A non-null display name sets or updates a separate name to be shown instead of the identifier.
+                     *
+                     * @param id The identifying name of the «artifact.name.toFirstLower».
+                     * @param displayName The optional display name; {@code null} leaves it unchanged.
+                     * @return The (possibly newly created) «artifact.name.toFirstLower».
+                     */
+                    private «artifact.name.toFirstUpper» createOrFind«artifact.name.toFirstUpper»(String id, String displayName) {
+                        «artifact.name.toFirstUpper» the«artifact.name.toFirstUpper» = «artifact.name.toFirstLower»s.get(id);
+                        if (the«artifact.name.toFirstUpper» == null) {
                             // Create a new «artifact.name.toFirstLower» and set it up
-                            final «artifact.name.toFirstUpper» the«artifact.name.toFirstUpper»= «model.name.toFirstUpper»Factory.eINSTANCE.create«artifact.name.toFirstUpper»();
-                            the«artifact.name.toFirstUpper».setName(name);
-                            the«artifact.name.toFirstUpper».setEcoreId("«artifact.name.toUpperCase»_" + toAscii(name));
+                            the«artifact.name.toFirstUpper» = «model.name.toFirstUpper»Factory.eINSTANCE.create«artifact.name.toFirstUpper»();
+                            the«artifact.name.toFirstUpper».setName(id);
+                            the«artifact.name.toFirstUpper».setEcoreId("«artifact.name.toUpperCase»_" + toAscii(id));
                             the«artifact.name.toFirstUpper».setExternal(true);
-                            «artifact.name.toFirstLower»s.put(name, the«artifact.name.toFirstUpper»);
+                            «artifact.name.toFirstLower»s.put(id, the«artifact.name.toFirstUpper»);
                             project.get«artifact.name.toFirstUpper»s().add(the«artifact.name.toFirstUpper»);
-                            return the«artifact.name.toFirstUpper»;
                         }
+                        if (displayName != null) {
+                            the«artifact.name.toFirstUpper».setDisplayName(displayName);
+                        }
+                        return the«artifact.name.toFirstUpper»;
                     }
                     
                 «ENDFOR»

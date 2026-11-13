@@ -331,6 +331,7 @@ class SPVizGenerator extends AbstractGenerator {
             "org.eclipse.elk.core.service",
             "org.eclipse.emf.ecore.xmi",
             "org.eclipse.xtend.lib",
+            "org.eclipse.xtext",
             "org.eclipse.xtext.xbase.lib",
             "com.google.inject",
             data.getBundleNamePrefix + ".model",
